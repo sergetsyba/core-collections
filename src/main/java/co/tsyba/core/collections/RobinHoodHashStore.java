@@ -6,15 +6,28 @@ package co.tsyba.core.collections;
 class RobinHoodHashStore<Item> {
 	private Entry<Item>[] storage;
 	private int capacity;
-	private static final int capacityReserve = 2;
+	private int itemCount;
+
+	private final double maximumLoadFactor;
+	private final int maximumItemCount;
+
+	public RobinHoodHashStore(int capacity, double maximumLoadFactor) {
+		// note: keeping an extra slot in storage allows avoiding index boundary checks
+		// during probe iterations; since probing an empty slot stops probe iteration
+		// anyway, a trailing extra empty slot will thus break probe iteration
+		this.storage = new Entry[capacity + 1];
+		this.capacity = capacity;
+
+		this.maximumLoadFactor = maximumLoadFactor;
+		this.maximumItemCount = (int) Math.floor(capacity * maximumLoadFactor);
+	}
 
 	public RobinHoodHashStore(int capacity) {
-		this.storage = new Entry[capacity + capacityReserve];
-		this.capacity = capacity;
+		this(capacity, 0.75);
 	}
 
 	private void expandCapacity() {
-		final var expandedStore = new RobinHoodHashStore<Item>(capacity * 2);
+		final var expandedStore = new RobinHoodHashStore<Item>(capacity * 2, maximumLoadFactor);
 		for (Entry<Item> entry : storage) {
 			if (entry != null) {
 				expandedStore.unsafeAdd(entry);
@@ -23,6 +36,7 @@ class RobinHoodHashStore<Item> {
 
 		storage = expandedStore.storage;
 		capacity = expandedStore.capacity;
+		itemCount = expandedStore.itemCount;
 	}
 
 	private void unsafeAdd(Entry entry) {
@@ -60,13 +74,19 @@ class RobinHoodHashStore<Item> {
 	}
 
 	public void add(Item item) {
-		while (storage[capacity] != null) {
-			// todo: explain
+		// when the last slot in starage is filled, adding another item, which hashes
+		// to the last slot, is no longer possible; expand storage and re-fill exntries
+		// until the last slot is empty
+		// todo: consider putting probe distance limit
+		while (storage[capacity - 1] != null
+				|| itemCount >= maximumItemCount) {
+
 			expandCapacity();
 		}
 
 		final var entry = new Entry<>(item);
 		unsafeAdd(entry);
+		itemCount += 1;
 	}
 
 	public int find(Item item) {
@@ -103,6 +123,7 @@ class RobinHoodHashStore<Item> {
 				storage[index] = storage[index + 1];
 			}
 
+			itemCount -= 1;
 			return true;
 		}
 	}

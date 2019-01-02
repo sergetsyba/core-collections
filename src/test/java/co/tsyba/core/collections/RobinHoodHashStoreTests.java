@@ -8,7 +8,7 @@ import org.junit.Test;
 public class RobinHoodHashStoreTests {
 	@Test
 	public void testHashStoreAddsItemIntoEmptySlot() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(17);
 		store.add(0);
 
@@ -17,7 +17,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreAddsItemWithHashCollision() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(10);
 		store.add(5);
@@ -27,7 +27,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreAddsItemOccupiedByPoorerEntries() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(5);
 		store.add(10);
@@ -39,7 +39,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreAddsItemOccupiedByRicherEntries() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(1);
 		store.add(6);
@@ -55,17 +55,18 @@ public class RobinHoodHashStoreTests {
 		final var entry2 = new IntegerValue(12);
 		assert entry1 != entry2;
 
-		final var store = new RobinHoodHashStore<IntegerValue>(5);
+		final var store = new RobinHoodHashStore<IntegerValue>(5, 1.0);
 		store.add(entry1);
 		assert store.storageEquals(null, null, entry1, null, null);
 
 		store.add(entry2);
+		// todo: this performs comparison by value
 		assert store.storageEquals(null, null, entry2, null, null);
 	}
 
 	@Test
 	public void testHashStoreFindsItemInExactSlot() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(27);
 		store.add(13);
 		store.add(86);
@@ -76,7 +77,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreFindsItemWithHashCollision() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(2);
 		store.add(12);
 		store.add(7);
@@ -87,7 +88,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreFindsItemOccupiedByPoorerEntries() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(5);
 		store.add(10);
@@ -100,7 +101,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreFindsItemOccupiedByRicherEntries() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(1);
 		store.add(6);
@@ -113,7 +114,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreFindsNoAbsentItem() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(7);
 		store.add(14);
@@ -124,7 +125,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreRemovesItemInExactSlot() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(4);
 		store.add(12);
 		store.add(0);
@@ -135,7 +136,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreRemovesItemWithHashCollision() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(7);
 		store.add(32);
 		store.add(37);
@@ -146,7 +147,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreRemovesItemOccupiedByPoorerEntries() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(1);
 		store.add(21);
 		store.add(16);
@@ -159,7 +160,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreRemovesItemOccupiedByRicherEntries() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(1);
 		store.add(6);
@@ -172,7 +173,7 @@ public class RobinHoodHashStoreTests {
 
 	@Test
 	public void testHashStoreRemovesNoAbsentItem() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(0);
 		store.add(7);
 		store.add(14);
@@ -181,16 +182,29 @@ public class RobinHoodHashStoreTests {
 		assert store.storageEquals(0, null, 7, null, 14);
 	}
 
-	// todo:
-	// @Test
+	@Test
 	public void testHashStoreExpandsStorageAfterLastSlotOccupied() {
-		final var store = new RobinHoodHashStore<Integer>(5);
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
+		store.add(8);
 		store.add(9);
-		store.add(4);
-		assert store.storageEquals(null, null, null, null, 9, 4);
+		assert store.storageEquals(null, null, null, 8, 9);
 
+		store.add(4);
+		assert store.storageEquals(null, null, null, null, 4,
+				null, null, null, 8, 9,
+				null, null, null, null, null,
+				null, null, null, null, null);
+	}
+
+	@Test
+	public void testHashStoreExpandsStorageAfterReachingLoadFactor() {
+		final var store = new RobinHoodHashStore<Integer>(5, 0.5);
 		store.add(0);
-		assert store.storageEquals(0, null, null, null, 4,
-				null, null, null, null, 9);
+		store.add(1);
+		assert store.storageEquals(0, 1, null, null, null);
+
+		store.add(2);
+		assert store.storageEquals(0, 1, 2, null, null,
+				null, null, null, null, null);
 	}
 }
