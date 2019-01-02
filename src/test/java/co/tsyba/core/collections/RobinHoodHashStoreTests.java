@@ -7,6 +7,27 @@ import org.junit.Test;
  */
 public class RobinHoodHashStoreTests {
 	@Test
+	public void testHashStoreCreatesNewInstance() {
+		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
+		assert store.storageEquals(null, null, null, null, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testHashStoreDoesNotCreateNewInstanceWithNegativeCapacity() {
+		new RobinHoodHashStore<Integer>(-1, 1.0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testHashStoreDoesNotCreateNewInstanceWithNegativeLoadFactor() {
+		new RobinHoodHashStore<Integer>(5, -0.1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testHashStoreDoesNotCreateNewInstanceWithLoadFactorOver1() {
+		new RobinHoodHashStore<Integer>(5, 1.1);
+	}
+
+	@Test
 	public void testHashStoreAddsItemIntoEmptySlot() {
 		final var store = new RobinHoodHashStore<Integer>(5, 1.0);
 		store.add(17);

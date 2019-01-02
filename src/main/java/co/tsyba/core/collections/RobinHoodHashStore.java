@@ -12,6 +12,15 @@ class RobinHoodHashStore<Item> {
 	private final int maximumItemCount;
 
 	public RobinHoodHashStore(int capacity, double maximumLoadFactor) {
+		if (capacity < 0) {
+			throw new IllegalArgumentException("Cannot create a hash store with "
+					+ "negative capacity: " + capacity + ".");
+		}
+		if (maximumLoadFactor < 0.0 || maximumLoadFactor > 1.0) {
+			throw new IllegalArgumentException("Cannot create a hash store with "
+					+ "load factor " + maximumLoadFactor + ": value must be within [0.0, 1.0].");
+		}
+
 		// note: keeping an extra slot in storage allows avoiding index boundary checks
 		// during probe iterations; since probing an empty slot stops probe iteration
 		// anyway, a trailing extra empty slot will thus break probe iteration
@@ -19,6 +28,8 @@ class RobinHoodHashStore<Item> {
 		this.capacity = capacity;
 
 		this.maximumLoadFactor = maximumLoadFactor;
+		// todo: add checks for capacity and load factor resulting in invalid
+		// maximum item count
 		this.maximumItemCount = (int) Math.floor(capacity * maximumLoadFactor);
 	}
 
