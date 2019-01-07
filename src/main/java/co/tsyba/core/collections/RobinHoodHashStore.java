@@ -8,104 +8,128 @@ class RobinHoodHashStore<Item> {
 	private int capacity;
 	private int itemCount;
 
-	private final double maximumLoadFactor;
-	private final int maximumItemCount;
+	private final double loadFactorLimit;
+	private final int probeDistanceLimit;
+	private int itemCountLimit;
 
-	public RobinHoodHashStore(int capacity, double maximumLoadFactor) {
+	RobinHoodHashStore(int capacity, double loadFactorLimit, int probeDistanceLimit) {
 		if (capacity < 0) {
-			throw new IllegalArgumentException("Cannot create a hash store with "
-					+ "negative capacity: " + capacity + ".");
+			throw new IllegalArgumentException("Cannot create a hash store with negative capacity: " + capacity + ".");
 		}
-		if (maximumLoadFactor < 0.0 || maximumLoadFactor > 1.0) {
-			throw new IllegalArgumentException("Cannot create a hash store with "
-					+ "load factor " + maximumLoadFactor + ": value must be within [0.0, 1.0].");
+		if (loadFactorLimit <= 0.0 || loadFactorLimit >= 1.0) {
+			throw new IllegalArgumentException("Cannot create a hash store with load factor " + loadFactorLimit + ": value must be in range (0.0, 1.0).");
 		}
 
 		// note: keeping an extra slot in storage allows avoiding index boundary checks
 		// during probe iterations; since probing an empty slot stops probe iteration
 		// anyway, a trailing extra empty slot will thus break probe iteration
-		this.storage = new Entry[capacity + 1];
+		this.storage = new Entry[capacity + probeDistanceLimit + 1];
 		this.capacity = capacity;
+		this.itemCount = 0;
 
-		this.maximumLoadFactor = maximumLoadFactor;
-		// todo: add checks for capacity and load factor resulting in invalid
-		// maximum item count
-		this.maximumItemCount = (int) Math.floor(capacity * maximumLoadFactor);
+		this.loadFactorLimit = loadFactorLimit;
+		this.probeDistanceLimit = probeDistanceLimit;
+		this.itemCountLimit = Math.min(capacity,
+				(int) Math.round(capacity * loadFactorLimit));
+	}
+
+	public RobinHoodHashStore(int capacity, double maximumLoadFactor) {
+		this(capacity, maximumLoadFactor,
+				// todo: find correct probe distance limit estimate
+				(int) Math.round(Math.log(capacity) / Math.log(2.0)));
 	}
 
 	public RobinHoodHashStore(int capacity) {
 		this(capacity, 0.75);
 	}
 
-	private void expandCapacity() {
-		final var expandedStore = new RobinHoodHashStore<Item>(capacity * 2, maximumLoadFactor);
-		for (Entry<Item> entry : storage) {
-			if (entry != null) {
-				expandedStore.unsafeAdd(entry);
-			}
-		}
+	private void shiftEntriesRight(int index) {
+		var storedEntry = storage[index];
 
-		storage = expandedStore.storage;
-		capacity = expandedStore.capacity;
-		itemCount = expandedStore.itemCount;
+		for (; storedEntry != null; index += 1) {
+			final var swapEntry = storage[index + 1];
+			storage[index + 1] = storedEntry;
+			storedEntry = swapEntry;
+		}
 	}
 
-	private void unsafeAdd(Entry entry) {
-		final var bucketIndex = entry.hashCode % capacity;
+	public int prepareInsertionSlot(Entry entry) {
+		final var entryIndex = entry.hashCode % capacity;
+		final var probeIndexLimit = entryIndex + probeDistanceLimit;
 
-		var index = bucketIndex;
-		for (;; index += 1) {
-			final var storedEntry = storage[index];
+		for (var probeIndex = entryIndex; probeIndex < probeIndexLimit; probeIndex += 1) {
+			final var storedEntry = storage[probeIndex];
 
 			if (storedEntry == null) {
-				// probed an empty slot, place the new entry in it
-				storage[index] = entry;
-				return;
+				// probed an empty slot; place the new entry in it
+				return probeIndex;
 			}
 			else if (storedEntry.item.equals(entry.item)) {
-				// probed an equal entry, replace it with the new entry
-				storage[index] = entry;
-				return;
+				// probed an equal entry; replace it with the new entry
+				return probeIndex;
 			}
-			else if (storedEntry.hashCode % capacity > bucketIndex) {
+			else if (storedEntry.hashCode % capacity > entryIndex) {
 				// probed an entry with bucket index higher than that of the new entry
-				// (i.e. probed an entry with lower probe distance, than that of
-				// the new entry)
-				break;
+				// (i.e. an entry with lower probe distance, than that of the new entry);
+				// shift the remainder of the entry cluster one position to the right
+				// and place the entry into the freed slot
+				shiftEntriesRight(probeIndex);
+				return probeIndex;
 			}
 		}
 
-		// shift the remainder of the entry cluster one position to the right and place
-		// the new entry into the freed slot
-		for (; entry != null; index += 1) {
-			final var swapEntry = storage[index];
-			storage[index] = entry;
-			entry = swapEntry;
-		}
+		return -1;
 	}
 
-	public void add(Item item) {
-		// when the last slot in starage is filled, adding another item, which hashes
-		// to the last slot, is no longer possible; expand storage and re-fill exntries
-		// until the last slot is empty
-		// todo: consider putting probe distance limit
-		while (storage[capacity - 1] != null
-				|| itemCount >= maximumItemCount) {
+	private void resizeStorage(int capacity) {
+		final var resizedStore = new RobinHoodHashStore<Item>(capacity, loadFactorLimit);
 
-			expandCapacity();
+		for (var storedEntry : storage) {
+			if (storedEntry != null) {
+				final var entryIndex = resizedStore.prepareInsertionSlot(storedEntry);
+				if (entryIndex < 0) {
+					// cannot find insertion index for a stored entry in resized store;
+					// expand capacity of resized store and re-insert all entries into
+					// expanded store
+					resizeStorage(capacity * 2);
+					return;
+				}
+				else {
+					resizedStore.storage[entryIndex] = storedEntry;
+				}
+			}
 		}
 
-		final var entry = new Entry<>(item);
-		unsafeAdd(entry);
+		this.storage = resizedStore.storage;
+		this.capacity = resizedStore.capacity;
+		this.itemCountLimit = resizedStore.itemCountLimit;
+	}
+
+	public void insert(Item item) {
+		if (itemCount >= itemCountLimit) {
+			// reached maximum fill factor; expand storage capacity
+			resizeStorage(capacity * 2);
+		}
+
+		final var insertedEntry = new Entry<>(item);
+		var entryIndex = prepareInsertionSlot(insertedEntry);
+
+		// keep expanding storage capacity until bucket for the new entry is not full
+		while (entryIndex < 0) {
+			resizeStorage(capacity * 2);
+			entryIndex = prepareInsertionSlot(insertedEntry);
+		}
+
+		storage[entryIndex] = insertedEntry;
 		itemCount += 1;
 	}
 
 	public int find(Item item) {
 		final var entry = new Entry<>(item);
-		final var bucketIndex = entry.hashCode % capacity;
+		final var entryIndex = entry.hashCode % capacity;
 
-		for (var index = bucketIndex;; index += 1) {
-			final var storedEntry = storage[index];
+		for (var probeIndex = entryIndex;; probeIndex += 1) {
+			final var storedEntry = storage[probeIndex];
 
 			if (storedEntry == null) {
 				// probed an empty slot, store contains no such item
@@ -113,9 +137,9 @@ class RobinHoodHashStore<Item> {
 			}
 			else if (storedEntry.item.equals(entry.item)) {
 				// found the equal item
-				return index;
+				return probeIndex;
 			}
-			else if (storedEntry.hashCode % capacity > bucketIndex) {
+			else if (storedEntry.hashCode % capacity > entryIndex) {
 				// probed an entry with bucket index higher than that of the new entry;
 				// store contains no such item
 				return -1;
@@ -123,23 +147,31 @@ class RobinHoodHashStore<Item> {
 		}
 	}
 
+	private void shiftEntriesLeft(int index) {
+		for (; storage[index] != null; index += 1) {
+			storage[index] = storage[index + 1];
+		}
+	}
+
 	public boolean remove(Item item) {
-		var index = find(item);
-		if (index < 0) {
+		var entryIndex = find(item);
+		if (entryIndex < 0) {
 			return false;
 		}
 		else {
 			// shift the remainder of the entry cluster one position to the left
-			for (; storage[index] != null; index += 1) {
-				storage[index] = storage[index + 1];
-			}
-
+			shiftEntriesLeft(entryIndex);
 			itemCount -= 1;
+
 			return true;
 		}
 	}
 
 	boolean storageEquals(Item... items) {
+		if (items.length > capacity) {
+			return false;
+		}
+
 		for (var index = 0; index < items.length; index += 1) {
 			final var item = items[index];
 			final var storedEntry = storage[index];
