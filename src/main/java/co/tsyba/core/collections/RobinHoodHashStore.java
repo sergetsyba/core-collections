@@ -6,37 +6,34 @@ package co.tsyba.core.collections;
 class RobinHoodHashStore<Item> {
 	private Entry<Item>[] storage;
 	private int capacity;
-	private int itemCount;
-
-	private final double loadFactorLimit;
 	private final int probeDistanceLimit;
-	private int itemCountLimit;
 
-	RobinHoodHashStore(int capacity, double loadFactorLimit, int probeDistanceLimit) {
-		if (capacity < 0) {
-			throw new IllegalArgumentException("Cannot create a hash store with negative capacity: " + capacity + ".");
-		}
-		if (loadFactorLimit <= 0.0 || loadFactorLimit >= 1.0) {
-			throw new IllegalArgumentException("Cannot create a hash store with load factor " + loadFactorLimit + ": value must be in range (0.0, 1.0).");
-		}
-
+	RobinHoodHashStore(int capacity, int probeDistanceLimit) {
 		// note: keeping an extra slot in storage allows avoiding index boundary checks
 		// during probe iterations; since probing an empty slot stops probe iteration
 		// anyway, a trailing extra empty slot will thus break probe iteration
 		this.storage = new Entry[capacity + probeDistanceLimit + 1];
 		this.capacity = capacity;
-		this.itemCount = 0;
-
-		this.loadFactorLimit = loadFactorLimit;
 		this.probeDistanceLimit = probeDistanceLimit;
-		this.itemCountLimit = Math.min(capacity,
-				(int) Math.round(capacity * loadFactorLimit));
 	}
 
-	public RobinHoodHashStore(int capacity, double maximumLoadFactor) {
-		this(capacity, maximumLoadFactor,
-				// todo: find correct probe distance limit estimate
-				(int) Math.round(Math.log(capacity) / Math.log(2.0)));
+	public RobinHoodHashStore(int capacity, double loadFactorLimit) {
+		if (capacity < 0) {
+			throw new IllegalArgumentException("Cannot create a hash store with negative capacity: " + capacity + ".");
+		}
+		if (loadFactorLimit <= 0.0 || loadFactorLimit >= 1.0) {
+			throw new IllegalArgumentException("Cannot create a hash store with load factor limit " + loadFactorLimit
+					+ ": value must be in range (0.0, 1.0).");
+		}
+
+		// Source:
+		// P. Celis. "Robin Hood Hashing". University of Waterloo, 1986. Chapter 2,
+		// Theorem 2.1.
+		final var estimatedProbeDistanceLimit = Math.log(1.0 - loadFactorLimit) / -loadFactorLimit;
+		this.probeDistanceLimit = (int) Math.round(estimatedProbeDistanceLimit);
+
+		this.storage = new Entry[capacity + probeDistanceLimit + 1];
+		this.capacity = capacity;
 	}
 
 	public RobinHoodHashStore(int capacity) {
@@ -82,7 +79,7 @@ class RobinHoodHashStore<Item> {
 	}
 
 	private void resizeStorage(int capacity) {
-		final var resizedStore = new RobinHoodHashStore<Item>(capacity, loadFactorLimit);
+		final var resizedStore = new RobinHoodHashStore<Item>(capacity, probeDistanceLimit);
 
 		for (var storedEntry : storage) {
 			if (storedEntry != null) {
@@ -102,26 +99,18 @@ class RobinHoodHashStore<Item> {
 
 		this.storage = resizedStore.storage;
 		this.capacity = resizedStore.capacity;
-		this.itemCountLimit = resizedStore.itemCountLimit;
 	}
 
 	public void insert(Item item) {
-		if (itemCount >= itemCountLimit) {
-			// reached maximum fill factor; expand storage capacity
-			resizeStorage(capacity * 2);
-		}
-
 		final var insertedEntry = new Entry<>(item);
-		var entryIndex = prepareInsertionSlot(insertedEntry);
 
 		// keep expanding storage capacity until bucket for the new entry is not full
-		while (entryIndex < 0) {
+		var entryIndex = prepareInsertionSlot(insertedEntry);
+		for (; entryIndex < 0; entryIndex = prepareInsertionSlot(insertedEntry)) {
 			resizeStorage(capacity * 2);
-			entryIndex = prepareInsertionSlot(insertedEntry);
 		}
 
 		storage[entryIndex] = insertedEntry;
-		itemCount += 1;
 	}
 
 	public int find(Item item) {
@@ -161,8 +150,6 @@ class RobinHoodHashStore<Item> {
 		else {
 			// shift the remainder of the entry cluster one position to the left
 			shiftEntriesLeft(entryIndex);
-			itemCount -= 1;
-
 			return true;
 		}
 	}
