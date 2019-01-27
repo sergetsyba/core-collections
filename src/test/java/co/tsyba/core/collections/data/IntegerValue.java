@@ -1,4 +1,4 @@
-package co.tsyba.core.collections;
+package co.tsyba.core.collections.data;
 
 /*
  * Created by Serge Tsyba <serge.tsyba@tsyba.com> on Dec 24, 2018.

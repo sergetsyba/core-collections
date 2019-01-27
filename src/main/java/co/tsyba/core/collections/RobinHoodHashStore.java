@@ -1,5 +1,7 @@
 package co.tsyba.core.collections;
 
+import java.util.function.BiPredicate;
+
 /*
  * Created by Serge Tsyba <serge.tsyba@tsyba.com> on Dec 21, 2018.
  */
@@ -154,14 +156,14 @@ class RobinHoodHashStore<Item> {
 		}
 	}
 
-	boolean storageEquals(Item... items) {
+	boolean storageMatches(BiPredicate<Item, Item> predicate, Item... items) {
 		if (items.length > capacity) {
 			return false;
 		}
 
-		for (var index = 0; index < items.length; index += 1) {
-			final var item = items[index];
+		for (var index = 0; index < items.length; ++index) {
 			final var storedEntry = storage[index];
+			final var item = items[index];
 
 			if (storedEntry == null) {
 				if (item != null) {
@@ -169,13 +171,21 @@ class RobinHoodHashStore<Item> {
 				}
 			}
 			else {
-				if (!item.equals(storedEntry.item)) {
+				if (!predicate.test(storedEntry.item, item)) {
 					return false;
 				}
 			}
 		}
 
 		return true;
+	}
+
+	boolean storageIs(Item... items) {
+		return storageMatches((item1, item2) -> item1 == item2, items);
+	}
+
+	boolean storageEquals(Item... items) {
+		return storageMatches((item1, item2) -> item1.equals(item2), items);
 	}
 
 	private class Entry<Item> {

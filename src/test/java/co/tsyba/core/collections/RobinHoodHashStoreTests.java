@@ -1,5 +1,7 @@
 package co.tsyba.core.collections;
 
+import co.tsyba.core.collections.data.IntegerValueHash42;
+import co.tsyba.core.collections.data.IntegerValue;
 import org.junit.Test;
 
 /*
@@ -53,7 +55,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreAddsItemWithHashCollision() {
+	public void testHashStoreAddsItemDisplacedBySameDegreeEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(10);
@@ -63,7 +65,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreAddsItemOccupiedByPoorerEntries() {
+	public void testHashStoreAddsItemDisplacedByPoorerEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(5);
@@ -75,7 +77,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreAddsItemOccupiedByRicherEntries() {
+	public void testHashStoreAddsItemDisplacedByRicherEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(1);
@@ -87,6 +89,18 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
+	public void testHashStoreAddsItemDisplacedBySameHashEntry() {
+		final var entry1 = new IntegerValueHash42(0);
+		final var entry2 = new IntegerValueHash42(17);
+
+		final var store = new RobinHoodHashStore<IntegerValueHash42>(5, 5);
+		store.insert(entry1);
+		store.insert(entry2);
+
+		assert store.storageIs(null, null, entry1, entry2, null);
+	}
+
+	@Test
 	public void testHashStoreReplacesEqualItem() {
 		final var entry1 = new IntegerValue(12);
 		final var entry2 = new IntegerValue(12);
@@ -94,11 +108,10 @@ public class RobinHoodHashStoreTests {
 
 		final var store = new RobinHoodHashStore<IntegerValue>(5, 5);
 		store.insert(entry1);
-		assert store.storageEquals(null, null, entry1, null, null);
+		assert store.storageIs(null, null, entry1, null, null);
 
 		store.insert(entry2);
-		// todo: this performs comparison by value
-		assert store.storageEquals(null, null, entry2, null, null);
+		assert store.storageIs(null, null, entry2, null, null);
 	}
 
 	@Test
@@ -113,7 +126,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemWithHashCollision() {
+	public void testHashStoreFindsItemODisplacedBySameDegreeEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(2);
 		store.insert(12);
@@ -124,7 +137,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemOccupiedByPoorerEntries() {
+	public void testHashStoreFindsItemDisplacedByPoorerEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(5);
@@ -137,7 +150,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemOccupiedByRicherEntries() {
+	public void testHashStoreFindsItemDisplacedByRicherEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(1);
@@ -172,7 +185,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesItemWithHashCollision() {
+	public void testHashStoreRemovesItemDisplacedBySameDegreeEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(7);
 		store.insert(32);
@@ -183,7 +196,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesItemOccupiedByPoorerEntries() {
+	public void testHashStoreRemovesItemDisplacedByPoorerEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(1);
 		store.insert(21);
@@ -196,7 +209,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesItemOccupiedByRicherEntries() {
+	public void testHashStoreRemovesItemDisplacedByRicherEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(1);
