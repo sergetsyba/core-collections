@@ -158,6 +158,26 @@ class ArrayStore<Item> implements Iterable<Item> {
 		return removedItems;
 	}
 
+	@Override
+	public Iterator<Item> iterator() {
+		return new Iterator<Item>() {
+			int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < itemCount;
+			}
+
+			@Override
+			public Item next() {
+				final var item = storage[index];
+				index += 1;
+
+				return item;
+			}
+		};
+	}
+
 	boolean itemsEqual(Item[] items) {
 		if (itemCount != items.length) {
 			return false;
@@ -185,15 +205,14 @@ class ArrayStore<Item> implements Iterable<Item> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object == this) {
+		if (this == object) {
 			return true;
 		}
 		else if (object instanceof ArrayStore) {
 			final var store = (ArrayStore) object;
 
-			return store.itemCount == itemCount
-					&& Arrays.equals(store.storage, 0, store.itemCount - 1,
-							storage, 0, itemCount - 1);
+			return itemCount == store.itemCount
+					&& Arrays.equals(storage, 0, itemCount, store.storage, 0, itemCount);
 		}
 		else {
 			return false;
@@ -201,8 +220,23 @@ class ArrayStore<Item> implements Iterable<Item> {
 	}
 
 	@Override
-	public Iterator<Item> iterator() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+	public String toString() {
+		final var builder = new StringBuilder()
+				.append("{");
 
+		final var iterator = iterator();
+		if (iterator.hasNext()) {
+			final var item = iterator.next();
+			builder.append(item);
+		}
+
+		while (iterator.hasNext()) {
+			final var item = iterator.next();
+			builder.append(", ")
+					.append(item);
+		}
+
+		return builder.append("}")
+				.toString();
+	}
 }

@@ -371,6 +371,7 @@ public class ArrayStoreTests {
 		store.remove(0, 6);
 	}
 
+	@Test(expected = AssertionError.class)
 	public void testStoreFailsToRemoveItemsInInvalidIndexRange() {
 		final var store = new ArrayStore<String>(5);
 		store.append(new String[] {
@@ -378,5 +379,76 @@ public class ArrayStoreTests {
 		});
 
 		store.remove(4, 1);
+	}
+
+	@Test
+	public void testStoreIteratesItems() {
+		final var store = new ArrayStore<String>(5);
+		store.append(new String[] {
+			"a", "b", "c", "d", "e"
+		});
+
+		final var iteratedItems = new String[5];
+		var index = 0;
+
+		for (var item : store) {
+			iteratedItems[index] = item;
+			index += 1;
+		}
+
+		assert store.itemsEqual(iteratedItems);
+	}
+
+	@Test
+	public void testStoreIteratesEmptyItems() {
+		final var store = new ArrayStore<String>(5);
+
+		final var iteratedItems = new String[0];
+		var index = 0;
+
+		for (var item : store) {
+			iteratedItems[index] = item;
+			index += 1;
+		}
+
+		assert store.itemsEqual(iteratedItems);
+	}
+
+	@Test
+	public void testStoreConfirmsEqualToEqualStore() {
+		final var store1 = new ArrayStore<String>(5);
+		store1.append(new String[] {
+			"a", "b", "c", "d", "e"
+		});
+
+		final var store2 = new ArrayStore<String>(10);
+		store2.append(new String[] {
+			"a", "b", "c", "d", "e"
+		});
+
+		assert store1.equals(store2);
+	}
+
+	@Test
+	public void testStoreConfirmsEqualToEmptyStore() {
+		final var store1 = new ArrayStore<String>(5);
+		final var store2 = new ArrayStore<String>(0);
+
+		assert store1.equals(store2);
+	}
+
+	@Test
+	public void testStoreDoesNotConfirmEqualToDifferentStore() {
+		final var store1 = new ArrayStore<String>(5);
+		store1.append(new String[] {
+			"a", "b", "c", "d", "e"
+		});
+
+		final var store2 = new ArrayStore<String>(10);
+		store2.append(new String[] {
+			"a", "b", "c", "d", "f"
+		});
+
+		assert !store1.equals(store2);
 	}
 }
