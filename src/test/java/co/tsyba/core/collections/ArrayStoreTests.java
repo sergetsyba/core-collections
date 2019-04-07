@@ -189,7 +189,7 @@ public class ArrayStoreTests {
 	}
 
 	@Test
-	public void testInsertsItemsOverCapacity() {
+	public void testStoreInsertsItemsOverCapacity() {
 		final var store = new ArrayStore<String>(5);
 		store.append(new String[] {
 			"a", "b", "c", "d"
@@ -285,6 +285,21 @@ public class ArrayStoreTests {
 	}
 
 	@Test
+	public void testStoreRemovesFirstItem() {
+		final var store = new ArrayStore<String>(5);
+		store.append(new String[] {
+			"f", "j", "c", "d", "r"
+		});
+
+		final var removedItem = store.remove(0);
+
+		assert removedItem.equals("f");
+		assert store.itemsEqual(new String[] {
+			"j", "c", "d", "r"
+		});
+	}
+
+	@Test
 	public void testStoreRemovesLastItem() {
 		final var store = new ArrayStore<String>(5);
 		store.append(new String[] {
@@ -317,6 +332,57 @@ public class ArrayStoreTests {
 		});
 
 		store.remove(3);
+	}
+
+	@Test
+	public void testStoreRemovesItemReducingCapacity() {
+		final var initialCapacity = 10;
+		final var store = new ArrayStore<String>(10);
+		store.append(new String[] {
+			"f", "j", "c"
+		});
+
+		final var removedItem = store.remove(1);
+
+		assert store.storage.length < initialCapacity;
+		assert removedItem.equals("j");
+		assert store.itemsEqual(new String[] {
+			"f", "c"
+		});
+	}
+
+	@Test
+	public void testStoreRemovesFirstItemReducingCapacity() {
+		final var initialCapacity = 10;
+		final var store = new ArrayStore<String>(initialCapacity);
+		store.append(new String[] {
+			"f", "j", "c"
+		});
+
+		final var removedItem = store.remove(0);
+
+		assert store.storage.length < initialCapacity;
+		assert removedItem.equals("f");
+		store.append(new String[] {
+			"j", "c"
+		});
+	}
+
+	@Test
+	public void testStoreRemovesLastItemReducingCapacity() {
+		final var initialCapacity = 10;
+		final var store = new ArrayStore<String>(initialCapacity);
+		store.append(new String[] {
+			"f", "j", "c"
+		});
+
+		final var removedItem = store.remove(2);
+
+		assert store.storage.length < initialCapacity;
+		assert removedItem.equals("c");
+		store.append(new String[] {
+			"f", "j"
+		});
 	}
 
 	@Test
@@ -382,6 +448,26 @@ public class ArrayStoreTests {
 	}
 
 	@Test
+	public void testStoreRemovesItemsReducingCapacity() {
+		final var initialCapacity = 10;
+		final var store = new ArrayStore<String>(10);
+		store.append(new String[] {
+			"a", "b", "c", "d", "e", "f", "g", "e"
+		});
+
+		final var removedItems = store.remove(1, 7);
+
+		assert store.storage.length < initialCapacity;
+		assert Arrays.equals(removedItems, new Object[] {
+			"b", "c", "d", "e", "f", "g"
+		});
+
+		assert store.itemsEqual(new String[] {
+			"a", "e"
+		});
+	}
+
+	@Test
 	public void testStoreIteratesItems() {
 		final var store = new ArrayStore<String>(5);
 		store.append(new String[] {
@@ -415,7 +501,7 @@ public class ArrayStoreTests {
 	}
 
 	@Test
-	public void testStoreConfirmsEqualToEqualStore() {
+	public void testStoreConfirmsEqual() {
 		final var store1 = new ArrayStore<String>(5);
 		store1.append(new String[] {
 			"a", "b", "c", "d", "e"
@@ -438,7 +524,7 @@ public class ArrayStoreTests {
 	}
 
 	@Test
-	public void testStoreDoesNotConfirmEqualToDifferentStore() {
+	public void testStoreDoesNotConfirmEqual() {
 		final var store1 = new ArrayStore<String>(5);
 		store1.append(new String[] {
 			"a", "b", "c", "d", "e"
