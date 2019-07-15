@@ -3,7 +3,7 @@ package co.tsyba.core.collections;
 import java.util.function.BiPredicate;
 
 /*
- * Created by Serge Tsyba <serge.tsyba@tsyba.com> on Dec 21, 2018.
+ * Created by Serge Tsyba <tsyba@me.com> on Dec 21, 2018.
  */
 class RobinHoodHashStore<Item> {
 	private Entry<Item>[] storage;
@@ -21,11 +21,12 @@ class RobinHoodHashStore<Item> {
 
 	public RobinHoodHashStore(int capacity, double loadFactorLimit) {
 		if (capacity < 0) {
-			throw new IllegalArgumentException("Cannot create a hash store with negative capacity: " + capacity + ".");
+			throw new IllegalArgumentException("Cannot create hash store with negative capacity "
+					+ capacity + ".");
 		}
 		if (loadFactorLimit <= 0.0 || loadFactorLimit >= 1.0) {
-			throw new IllegalArgumentException("Cannot create a hash store with load factor limit " + loadFactorLimit
-					+ ": value must be in range (0.0, 1.0).");
+			throw new IllegalArgumentException("Cannot create hash store with load factor limit "
+					+ loadFactorLimit + ": value must be in range (0.0, 1.0).");
 		}
 
 		// Source:

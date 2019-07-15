@@ -21,6 +21,14 @@ public class IndexRange implements Iterable<Integer> {
 		this.start = start;
 		this.end = end;
 	}
+	
+	public boolean isEmpty() {
+		return start > end;
+	}
+	
+	public int getLength() {
+		return end - start;
+	}
 
 	public boolean contains(int index) {
 		return start <= index
@@ -32,10 +40,10 @@ public class IndexRange implements Iterable<Integer> {
 				&& indexRange.end <= end;
 	}
 	
-	public IndexRange advanceEnd(int distance) {
-		return new IndexRange(start, end + distance);
+	public IndexRange expand(int capacity) {
+		return new IndexRange(start, end + capacity);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		int hash = 3;
