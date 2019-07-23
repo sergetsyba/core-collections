@@ -3,7 +3,8 @@ package co.tsyba.core.collections;
 import java.util.Iterator;
 import static java.lang.System.arraycopy;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Comparator;
+import java.util.Random;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jan 28, 2019.
@@ -31,19 +32,9 @@ class ContigousArrayStore<T> implements Iterable<T> {
 		this.storage = (T[]) new Object[items.itemCount];
 	}
 
-	/**
-	 * Returns {@code true} when this store has no items; returns {@code false}
-	 * otherwise.
-	 */
-	public boolean isEmpty() {
-		return itemCount == 0;
-	}
-
-	/**
-	 * Returns the number of items in this store.
-	 */
-	public int getCount() {
-		return itemCount;
+	ContigousArrayStore(T[] storage, int itemCount) {
+		this.storage = storage;
+		this.itemCount = itemCount;
 	}
 
 	/**
@@ -62,11 +53,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Returns a {@link ContigousArrayStore} with items at the specified index
-	 * range in this store.
+	 * Returns items at the specified index range in this store.
 	 *
-	 * @throws InvalidIndexRangeException when the specified index range start
-	 * index is after the specified end index
 	 * @throws IndexRangeNotInRangeException when the specified index range is
 	 * out of valid index range of this store
 	 */
@@ -77,11 +65,10 @@ class ContigousArrayStore<T> implements Iterable<T> {
 		}
 
 		final var returnedItemCount = indexRange.getLength();
-		final var items = new ContigousArrayStore<T>(returnedItemCount);
-		arraycopy(storage, indexRange.start, items.storage, 0,
-				returnedItemCount);
+		final var items = (T[]) new Object[returnedItemCount];
+		arraycopy(storage, indexRange.start, items, 0, returnedItemCount);
 
-		return items;
+		return new ContigousArrayStore<>(items, returnedItemCount);
 	}
 
 	/**
@@ -119,8 +106,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Appends items from the specified {@link ContigousArrayStore} to the end
-	 * of this store.
+	 * Appends items of the specified store to the end of this store.
 	 */
 	public void append(ContigousArrayStore<T> store) {
 		prepareCapacity(store.itemCount);
@@ -130,8 +116,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Appends the specified items to the end of this store. Ignores any of the
-	 * specified items which are {@code null}.
+	 * Appends the specified items to the end of this store. Ignores any
+	 * {@code null} values among the items.
 	 */
 	public void append(T... items) {
 		prepareCapacity(items.length);
@@ -162,15 +148,15 @@ class ContigousArrayStore<T> implements Iterable<T> {
 
 		// shift items at the insertion index one position to the right
 		// to make room for the inserted item
-		moveStoredItems(index, 1);
+		moveItems(index, 1);
 
 		storage[index] = item;
 		itemCount += 1;
 	}
 
 	/**
-	 * Inserts items from the specified {@link ContigousArrayStore} into this
-	 * store at the specified index.
+	 * Inserts items of the specified store into this store at the specified
+	 * index.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid
 	 * index range of this store
@@ -183,15 +169,14 @@ class ContigousArrayStore<T> implements Iterable<T> {
 
 		// shift items at the insertion index to the right to make room
 		// for the inserted items
-		moveStoredItems(index, store.itemCount);
+		moveItems(index, store.itemCount);
 
 		arraycopy(store.storage, 0, storage, index, store.itemCount);
 		itemCount += store.itemCount;
 	}
 
 	/**
-	 * Removes item at the specified index from this store. Returns the removed
-	 * item.
+	 * Removes item at the specified index from this store.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid
 	 * index range of this store
@@ -203,7 +188,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 		}
 
 		// shift items after the removed index one position to the left
-		moveStoredItems(index + 1, -1);
+		moveItems(index + 1, -1);
 		itemCount -= 1;
 
 		// clear the item after the shifted ones to make it eligible
@@ -212,43 +197,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Removes the first item from this store. Returns the removed item. Does
-	 * nothing when this store is empty;
-	 */
-	public Optional<T> removeFirst() {
-		if (isEmpty()) {
-			return Optional.empty();
-		}
-		else {
-			final var removedItem = storage[0];
-			remove(0);
-
-			return Optional.of(removedItem);
-		}
-	}
-
-	/**
-	 * Removes the first item from this store. Returns the removed item. Does
-	 * nothing when this store is empty;
-	 */
-	public Optional<T> removeLast() {
-		if (isEmpty()) {
-			return Optional.empty();
-		}
-		else {
-			final var removedItem = storage[itemCount - 1];
-			remove(itemCount - 1);
-
-			return Optional.of(removedItem);
-		}
-	}
-
-	/**
-	 * Removes items at the specified index range from this store. Returns a
-	 * {@link ContigousArrayStore} with the removed items.
+	 * Removes items at the specified index range from this store.
 	 *
-	 * @throws InvalidIndexRangeException when the specified index range start
-	 * index is after the specified end index
 	 * @throws IndexRangeNotInRangeException when the specified index range is
 	 * out of valid index range of this store
 	 */
@@ -257,19 +207,83 @@ class ContigousArrayStore<T> implements Iterable<T> {
 			throw new IndexRangeNotInRangeException(indexRange,
 					new IndexRange(0, itemCount));
 		}
+		if (indexRange.isEmpty()) {
+			return;
+		}
 
 		// shift items after the removed index range to the left
 		final var removedItemCount = indexRange.getLength();
-		moveStoredItems(indexRange.end, -removedItemCount);
+		moveItems(indexRange.end, -removedItemCount);
 		itemCount -= removedItemCount;
 
 		// clear items after the shifted ones to make them eligible for
 		// garbage collection
-		var index = indexRange.start;
-		while (storage[index] != null) {
+		final var endIndex = itemCount + removedItemCount;
+		for (var index = itemCount; index < endIndex; index += 1) {
 			storage[index] = null;
-			index += 1;
 		}
+	}
+
+	/**
+	 * Returns items of this store in reverse order.
+	 *
+	 * @return
+	 */
+	public ContigousArrayStore<T> reverse() {
+		final var reverseItems = (T[]) new Object[itemCount];
+		for (var index = 0; index < itemCount; ++index) {
+			final var reverseIndex = itemCount - index - 1;
+			reverseItems[reverseIndex] = storage[index];
+		}
+
+		return new ContigousArrayStore<>(reverseItems, itemCount);
+	}
+
+	/**
+	 * Returns items of this store, ordered according to the specified
+	 * {@link Comparator}.
+	 */
+	public ContigousArrayStore<T> sort(Comparator<T> comparator) {
+		final var sortedItems = (T[]) new Object[itemCount];
+		arraycopy(storage, 0, sortedItems, 0, itemCount);
+
+		Arrays.sort(sortedItems, 0, itemCount, comparator);
+		return new ContigousArrayStore<>(sortedItems, itemCount);
+	}
+
+	/**
+	 * Returns items of this store in random order, according to the specified
+	 * {@link Random}.
+	 *
+	 * <pre>
+	 * Implements in-place version of Fisher-Yates shuffle algorithm.
+	 *
+	 * Sources:
+	 * 1. R. Durstenfeld. "Algorithm 235: Random permutation".
+	 *    Communications of the ACM, vol. 7, July 1964, p. 420.
+	 * 2. D. Knuth. "The Art of Computer Programming" vol. 2.
+	 *    Addison–Wesley, 1969, pp. 139–140, algorithm P.
+	 * </pre>
+	 *
+	 * @param random
+	 * @return
+	 */
+	public ContigousArrayStore<T> shuffle(Random random) {
+		final var shuffledItems = (T[]) new Object[itemCount];
+		arraycopy(storage, 0, shuffledItems, 0, itemCount);
+
+		// it's more convenient to iterate items backwards for simpler
+		// random index generation
+		for (var index = itemCount - 1; index >= 0; --index) {
+			final var randomIndex = random.nextInt(index + 1);
+
+			// swap items at iterated and randomly generated indices
+			final var item = shuffledItems[index];
+			shuffledItems[index] = shuffledItems[randomIndex];
+			shuffledItems[randomIndex] = item;
+		}
+
+		return new ContigousArrayStore<>(shuffledItems, itemCount);
 	}
 
 	private boolean hasIndex(int index) {
@@ -284,20 +298,33 @@ class ContigousArrayStore<T> implements Iterable<T> {
 
 	private void prepareCapacity(int extraItemCount) {
 		final var newItemCount = itemCount + extraItemCount;
-
-		if (newItemCount >= storage.length) {
-			final var newCapacity = 2 * newItemCount + 1;
-			final var newStorage = (T[]) new Object[newCapacity];
-
-			arraycopy(storage, 0, newStorage, 0, itemCount);
-			storage = newStorage;
+		if (newItemCount <= storage.length) {
+			return;
 		}
+
+		final var newCapacity = 2 * newItemCount + 1;
+		final var newStorage = (T[]) new Object[newCapacity];
+		arraycopy(storage, 0, newStorage, 0, itemCount);
+
+		storage = newStorage;
 	}
 
-	private void moveStoredItems(int startIndex, int positions) {
+	public void removeExcessCapacity() {
+		if (itemCount == storage.length) {
+			return;
+		}
+
+		final var newCapacity = storage.length;
+		final var newStorage = (T[]) new Object[newCapacity];
+		arraycopy(storage, 0, newStorage, 0, itemCount);
+
+		storage = newStorage;
+	}
+
+	private void moveItems(int startIndex, int positions) {
 		final var newItemCount = itemCount + positions;
 
-		if (newItemCount >= storage.length) {
+		if (newItemCount > storage.length) {
 			final var newCapacity = 2 * newItemCount + 1;
 			final var newStorage = (T[]) new Object[newCapacity];
 
@@ -315,20 +342,12 @@ class ContigousArrayStore<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		final var indexRange = new IndexRange(0, itemCount);
-		return iterator(indexRange, 1);
+		return iterator(0);
 	}
 
-	public Iterator<T> reverseIterator() {
-		final var indexRange = new IndexRange(0, itemCount);
-		return iterator(indexRange, -1);
-	}
-
-	Iterator<T> iterator(IndexRange indexRange, int stride) {
+	public Iterator<T> iterator(int startIndex) {
 		return new Iterator<T>() {
-			private int index = stride > 0
-					? indexRange.start
-					: indexRange.end;
+			private int index = startIndex;
 
 			@Override
 			public boolean hasNext() {
@@ -338,20 +357,11 @@ class ContigousArrayStore<T> implements Iterable<T> {
 			@Override
 			public T next() {
 				final var nextItem = storage[index];
-				index += stride;
+				index += 1;
 
 				return nextItem;
 			}
 		};
-	}
-
-	boolean itemsEqual(T[] items) {
-		if (storage.length < items.length) {
-			return false;
-		}
-
-		return Arrays.equals(items, 0, items.length,
-				items, 0, items.length);
 	}
 
 	@Override
