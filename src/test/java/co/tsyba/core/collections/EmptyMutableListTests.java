@@ -21,6 +21,12 @@ public class EmptyMutableListTests {
 	}
 
 	@Test
+	public void returnsNoDistinctItems() {
+		assert emptyItems.getDistinct()
+				.equals(emptyItems);
+	}
+
+	@Test
 	public void filtersNoItems() {
 		assert emptyItems.filter(String::isBlank)
 				.equals(emptyItems);

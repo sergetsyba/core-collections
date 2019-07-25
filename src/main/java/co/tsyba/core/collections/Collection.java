@@ -44,7 +44,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @return
 	 */
 	public default boolean contains(T item) {
-		return matches(storedItem -> storedItem.equals(item));
+		return contains(storedItem -> storedItem.equals(item));
 	}
 
 	/**
@@ -143,6 +143,13 @@ public interface Collection<T> extends Iterable<T> {
 
 		return Optional.of(maximum);
 	}
+
+	/**
+	 * Returns distinct items of this collection.
+	 *
+	 * @return
+	 */
+	public Collection<T> getDistinct();
 
 	/**
 	 * Returns items of this collection, ordered according to the specified

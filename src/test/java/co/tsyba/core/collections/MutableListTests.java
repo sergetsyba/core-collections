@@ -31,6 +31,22 @@ public class MutableListTests {
 	}
 
 	@Test
+	public void returnsDistinctItems() {
+		// has reapeated items
+		final var items1 = new List<>("f", "S", "S", "f", "f");
+		final var distinctItems1 = items1.getDistinct();
+
+		assert new List<>("f", "S")
+				.equals(distinctItems1);
+
+		// has no reapeated items
+		final var items2 = new MutableList<>("e", "E", "q", "c", "P");
+		final var distinctItems2 = items2.getDistinct();
+
+		assert distinctItems2.equals(items2);
+	}
+
+	@Test
 	public void filtersItems() {
 		// keeps items in uppercase
 		final var items = new MutableList<>("r", "x", "O", "P", "z")

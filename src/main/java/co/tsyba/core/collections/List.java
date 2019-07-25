@@ -110,11 +110,30 @@ public class List<T> implements IndexedCollection<T> {
 	public T get(int index) {
 		return store.storage[index];
 	}
-	
-	// todo: get(IndexRange)
 
+	// todo: get(IndexRange)
 	// todo: guard(int, Consumer<>);
 	// todo: guard(int, Function<>);
+	/**
+	 * Returns distinct items of this list.
+	 *
+	 * @return
+	 */
+	@Override
+	public List<T> getDistinct() {
+		final var distinctStore = new ContigousArrayStore<T>(store.itemCount);
+		final var distinctItems = new List<>(distinctStore);
+
+		for (var item : this) {
+			if (!distinctItems.contains(item)) {
+				distinctItems.store.append(item);
+			}
+		}
+
+		distinctStore.removeExcessCapacity();
+		return distinctItems;
+	}
+
 	/**
 	 * Returns items of this list in reverse order.
 	 *

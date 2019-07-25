@@ -37,6 +37,22 @@ public class ListTests {
 	}
 
 	@Test
+	public void returnsDistinctItems() {
+		// has reapeated items
+		final var items1 = new List<>("r", "D", "S", "r", "S");
+		final var distinctItems1 = items1.getDistinct();
+
+		assert new List<>("r", "D", "S")
+				.equals(distinctItems1);
+
+		// has no reapeated items
+		final var items2 = new List<>("r", "D", "x", "o", "M");
+		final var distinctItems2 = items2.getDistinct();
+
+		assert distinctItems2.equals(items2);
+	}
+
+	@Test
 	public void filtersItems() {
 		// keeps items in uppercase
 		final var items = new List<>("r", "x", "O", "P", "z")

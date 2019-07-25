@@ -196,6 +196,23 @@ public class MutableList<T> extends List<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public MutableList<T> getDistinct() {
+		final var distinctStore = new ContigousArrayStore<T>(store.itemCount);
+		final var distinctItems = new MutableList<>(distinctStore);
+
+		for (var item : this) {
+			if (!distinctItems.contains(item)) {
+				distinctItems.store.append(item);
+			}
+		}
+
+		return distinctItems;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public MutableList<T> filter(Predicate<T> condition) {
 		final var filteredStore = new ContigousArrayStore<T>(store.itemCount);
 		for (var item : this) {
