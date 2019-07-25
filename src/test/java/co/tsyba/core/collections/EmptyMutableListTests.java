@@ -5,28 +5,18 @@ import org.junit.Test;
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 25, 2019.
  */
-public class EmptyListTests {
-	private static final List<String> emptyItems = new List<>();
+public class EmptyMutableListTests {
+	private static final MutableList<String> emptyItems = new MutableList<>();
 
 	@Test
-	public void verifiesEmpty() {
-		assert emptyItems.isEmpty();
-	}
-
-	@Test
-	public void returnsItemCount() {
-		assert emptyItems.getCount() == 0;
-	}
-
-	@Test
-	public void returnsNoFirstItem() {
-		assert emptyItems.getFirst()
+	public void removesNoFirstItem() {
+		assert emptyItems.removeFirst()
 				.isEmpty();
 	}
 
 	@Test
-	public void returnsNoLastItem() {
-		assert emptyItems.getLast()
+	public void removesNoLastItem() {
+		assert emptyItems.removeLast()
 				.isEmpty();
 	}
 

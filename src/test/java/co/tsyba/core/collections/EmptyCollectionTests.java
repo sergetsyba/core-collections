@@ -29,9 +29,8 @@ public class EmptyCollectionTests {
 		final var items = collect("i", "u", "f", "p");
 		assert emptyItems.contains(items) == false;
 
-		// empty collection does not contain itself;
-		// note: if empty collection contains itself, what index does 
-		// empty collection appear at
+		// empty collection does not contain itself; if it did
+		// what would emptyItems.get(IndexRange.EMPTY) return?
 		assert emptyItems.contains(emptyItems) == false;
 	}
 

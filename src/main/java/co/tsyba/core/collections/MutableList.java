@@ -8,14 +8,43 @@ import java.util.function.Predicate;
  * Created by Serge Tsyba (tsyba@me.com) on May 12, 2019.
  */
 public class MutableList<T> extends List<T> {
+	private static final int minimumCapacity = 64;
+
 	MutableList(ContigousArrayStore<T> store) {
 		super(store);
 	}
 
-	public MutableList(int capacity) {
+	/**
+	 * Creates a copy of the specified items.
+	 *
+	 * @param items
+	 */
+	public MutableList(List<T> items) {
+		this(Math.min(items.getCount(), minimumCapacity));
+		this.store.append(items.store);
 	}
 
-	public MutableList() {
+	/**
+	 * Creates a list with the specified items. Ignores any {@code null} values
+	 * among the items.
+	 *
+	 * @param items
+	 */
+	public MutableList(T... items) {
+		this(Math.min(items.length, minimumCapacity));
+		this.store.append(items);
+	}
+
+	/**
+	 * Creates an empty list with the specified amount of reserved capacity.
+	 *
+	 * When item count is known in advance, reserving item capacity during list
+	 * creation improves performance of item insertion and item appending.
+	 *
+	 * @param capacity
+	 */
+	public MutableList(int capacity) {
+		this(new ContigousArrayStore<T>(capacity));
 	}
 
 	/**
@@ -46,14 +75,25 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Appends items from the specified items to the end of this list. Returns
-	 * itself.
+	 * Appends the specified items to the end of this list. Returns itself.
 	 *
 	 * @param items
 	 * @return
 	 */
 	public MutableList<T> append(List<T> items) {
 		store.append(items.store);
+		return this;
+	}
+
+	/**
+	 * Appends the specified items to the end of this list. Ignores any
+	 * {@code null} values among the items. Returns itself.
+	 *
+	 * @param items
+	 * @return
+	 */
+	public MutableList<T> append(T... items) {
+		store.append(items);
 		return this;
 	}
 
@@ -89,23 +129,33 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes and returns the first item from this list. Returns an empty
-	 * {@link Optional} when this list is empty.
+	 * Removes the first item from this list. Returns the removed item. Returns
+	 * an empty {@link Optional} when this list is empty.
 	 *
 	 * @return
 	 */
 	public Optional<T> removeFirst() {
-		return store.removeFirst();
+		return getFirst()
+				.map(item -> {
+					store.remove(0);
+					return item;
+				});
 	}
 
 	/**
-	 * Removes and returns the last item from this list. Returns an empty
-	 * {@link Optional} when this list is empty.
+	 * Removes the last item from this list. Returns the removed item. Returns
+	 * an empty {@link Optional} when this list is empty.
 	 *
 	 * @return
 	 */
 	public Optional<T> removeLast() {
-		return store.removeLast();
+		return getLast()
+				.map(item -> {
+					final var endIndex = store.itemCount - 1;
+					store.remove(endIndex);
+
+					return item;
+				});
 	}
 
 	/**
@@ -142,13 +192,32 @@ public class MutableList<T> extends List<T> {
 		return new MutableList<>(items);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<T> filter(Predicate<T> condition) {
-		return super.filter(condition); //To change body of generated methods, choose Tools | Templates.
+	public MutableList<T> filter(Predicate<T> condition) {
+		final var filteredStore = new ContigousArrayStore<T>(store.itemCount);
+		for (var item : this) {
+			if (condition.test(item)) {
+				filteredStore.append(item);
+			}
+		}
+
+		return new MutableList<>(filteredStore);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <R> List<R> convert(Function<T, R> converter) {
-		return super.convert(converter); //To change body of generated methods, choose Tools | Templates.
+	public <R> MutableList<R> convert(Function<T, R> converter) {
+		final var convertedStore = new ContigousArrayStore<R>(store.itemCount);
+		for (var item : this) {
+			final var convertedItem = converter.apply(item);
+			convertedStore.append(convertedItem);
+		}
+
+		return new MutableList<>(convertedStore);
 	}
 }

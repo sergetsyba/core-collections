@@ -19,15 +19,22 @@ public class List<T> implements IndexedCollection<T> {
 		this.store = store;
 	}
 
-	public List() {
-		this.store = new ContigousArrayStore<>(0);
-	}
-
+	/**
+	 * Creates a copy of the specified items.
+	 *
+	 * @param items
+	 */
 	public List(List<T> items) {
 		final var indexRange = new IndexRange(0, items.store.itemCount);
 		this.store = new ContigousArrayStore<>(items.store, indexRange);
 	}
 
+	/**
+	 * Creates a list with the specified items. Ignores any {@code null} values
+	 * among the items.
+	 *
+	 * @param items
+	 */
 	public List(T... items) {
 		this.store = new ContigousArrayStore<>(items.length);
 		this.store.append(items);
@@ -64,7 +71,7 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public Optional<T> getFirst() {
 		// todo: return guard(0, this::get);
-		
+
 		if (isEmpty()) {
 			return Optional.empty();
 		}
@@ -104,9 +111,10 @@ public class List<T> implements IndexedCollection<T> {
 		return store.storage[index];
 	}
 	
+	// todo: get(IndexRange)
+
 	// todo: guard(int, Consumer<>);
 	// todo: guard(int, Function<>);
-
 	/**
 	 * Returns items of this list in reverse order.
 	 *
@@ -221,10 +229,7 @@ public class List<T> implements IndexedCollection<T> {
 			convertedStore.append(convertedItem);
 		}
 
-		if (convertedStore.itemCount < store.itemCount) {
-			convertedStore.removeExcessCapacity();
-		}
-
+		convertedStore.removeExcessCapacity();
 		return new List<>(convertedStore);
 	}
 
