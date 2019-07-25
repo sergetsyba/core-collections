@@ -1,7 +1,10 @@
 package co.tsyba.core.collections;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -10,7 +13,6 @@ import java.util.function.Predicate;
  * Created by Serge Tsyba <tsyba@me.com> on May 26, 2019.
  */
 public class List<T> implements IndexedCollection<T> {
-	private static final int defaultMinimumCapacity = 64;
 	final ContigousArrayStore<T> store;
 
 	List(ContigousArrayStore<T> store) {
@@ -18,20 +20,22 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	public List() {
-		this.store = new ContigousArrayStore<>(defaultMinimumCapacity);
+		this.store = new ContigousArrayStore<>(0);
 	}
 
 	public List(List<T> items) {
-		this.store = null;
+		final var indexRange = new IndexRange(0, items.store.itemCount);
+		this.store = new ContigousArrayStore<>(items.store, indexRange);
 	}
 
 	public List(T... items) {
 		this.store = new ContigousArrayStore<>(items.length);
 		this.store.append(items);
+		this.store.removeExcessCapacity();
 	}
 
 	/**
-	 * Returns {@code true} when this list has no items; returns {@code false}
+	 * Returns {@code true} when this list is empty; returns {@code false}
 	 * otherwise.
 	 *
 	 * @return
@@ -52,26 +56,15 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns item at the specified index in this list.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this list
-	 *
-	 * @param index
-	 * @return
-	 */
-	public T get(int index) {
-		return store.get(index);
-	}
-
-	/**
-	 * Returns the first item in this list. Returns an empty {@link Optional}
+	 * Returns the first item of this list. Returns an empty {@link Optional}
 	 * when this list is empty.
 	 *
 	 * @return
 	 */
 	@Override
 	public Optional<T> getFirst() {
+		// todo: return guard(0, this::get);
+		
 		if (isEmpty()) {
 			return Optional.empty();
 		}
@@ -81,7 +74,7 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns the last item in this list. Returns an empty {@link Optional}
+	 * Returns the last item of this list. Returns an empty {@link Optional}
 	 * when this list is empty.
 	 *
 	 * @return
@@ -92,25 +85,147 @@ public class List<T> implements IndexedCollection<T> {
 			return Optional.empty();
 		}
 
-		final var item = store.storage[store.itemCount - 1];
+		final var endIndex = store.itemCount - 1;
+		final var item = store.storage[endIndex];
+
 		return Optional.of(item);
 	}
 
 	/**
-	 * Applies the specified {@link Consumer} to every item in this list.
+	 * Returns item at the specified index in this list.
 	 *
-	 * This operation
+	 * @throws IndexNotInRangeException when the specified index is out of valid
+	 * index range of this list
+	 *
+	 * @param index
+	 * @return
+	 */
+	public T get(int index) {
+		return store.storage[index];
+	}
+	
+	// todo: guard(int, Consumer<>);
+	// todo: guard(int, Function<>);
+
+	/**
+	 * Returns items of this list in reverse order.
+	 *
+	 * @return
+	 */
+	@Override
+	public List<T> reverse() {
+		final var reversedStore = store.reverse();
+		return new List<>(reversedStore);
+	}
+
+	/**
+	 * Returns items of this list, ordered according to the specified
+	 * {@link Comparator}.
+	 *
+	 * @param comparator
+	 * @return
+	 */
+	@Override
+	public List<T> sort(Comparator<T> comparator) {
+		final var sortedStore = store.sort(comparator);
+		return new List<>(sortedStore);
+	}
+
+	/**
+	 * Returns items of this list in random order.
+	 *
+	 * @return
+	 */
+	@Override
+	public List<T> shuffle() {
+		final var random = new Random();
+		final var shuffledStore = store.shuffle(random);
+
+		return new List<>(shuffledStore);
+	}
+
+	/**
+	 * Applies the specified {@link Consumer} to every item of this list.
+	 *
+	 * The specified {@link Consumer} is applied consecutively to every item
+	 * from first to last. Returns itself.
 	 *
 	 * @param operation
 	 * @return
 	 */
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
+		return (List<T>) IndexedCollection.super.iterate(operation);
+	}
+
+	/**
+	 * Applies the specified {@link Consumer} to every item and its index in
+	 * this list.
+	 *
+	 * The specified {@link Consumer} is applied consecutively to every item
+	 * from first to last and to every index from starting to ending. Returns
+	 * itself.
+	 *
+	 * @param operation
+	 * @return
+	 */
+	@Override
+	public List<T> enumerate(BiConsumer<T, Integer> operation) {
+		return (List<T>) IndexedCollection.super.enumerate(operation);
+	}
+
+	/**
+	 * Returns items of this list, which match the specified {@link Predicate}.
+	 *
+	 * This operation preserves relative item order - the filtered items will
+	 * appear in the same relative order in the returned list as they appear in
+	 * this list (accounting for items removed by filtering).
+	 *
+	 * @param condition
+	 * @return
+	 */
+	@Override
+	public List<T> filter(Predicate<T> condition) {
+		final var filteredStore = new ContigousArrayStore<T>(store.itemCount);
 		for (var item : this) {
-			operation.accept(item);
+			if (condition.test(item)) {
+				filteredStore.append(item);
+			}
 		}
 
-		return this;
+		filteredStore.removeExcessCapacity();
+		return new List<>(filteredStore);
+	}
+
+	/**
+	 * Returns items of this list, converted using the specified
+	 * {@link Function}.
+	 *
+	 * This operation preserves relative item order - the converted items will
+	 * appear in the same relative order in the returned list as their originals
+	 * in this list.
+	 *
+	 * Any {@code null} value returned by the specified {@link Function} will be
+	 * ignored. This can be used to achieve item filtering and conversion as a
+	 * single operation.
+	 *
+	 * @param <R>
+	 * @param converter
+	 * @return
+	 */
+	@Override
+	public <R> List<R> convert(Function<T, R> converter) {
+		final var convertedStore = new ContigousArrayStore<R>(store.itemCount);
+		for (var item : this) {
+			final var convertedItem = converter.apply(item);
+			convertedStore.append(convertedItem);
+		}
+
+		if (convertedStore.itemCount < store.itemCount) {
+			convertedStore.removeExcessCapacity();
+		}
+
+		return new List<>(convertedStore);
 	}
 
 	@Override
@@ -119,59 +234,8 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	@Override
-	public Iterator<T> reverseIterator() {
-		return store.reverseIterator();
-	}
-
-	/**
-	 * Returns items, which match the specified {@link Predicate} in this list.
-	 *
-	 * This operation preserves relative item order: filtered items in the
-	 * returned list will appear in the same relative order as they appear in
-	 * this list (accounting for items removed by filtering).
-	 *
-	 * @param condition
-	 * @return
-	 */
-	public List<T> filter(Predicate<T> condition) {
-		final var itemCount = getCount();
-		final var filteredItems = new MutableList<T>(itemCount);
-
-		for (var item : this) {
-			if (condition.test(item)) {
-				filteredItems.append(item);
-			}
-		}
-
-		return new List<>(filteredItems);
-	}
-
-	/**
-	 * Returns items from this list, converted using the specified
-	 * {@link Function}.
-	 *
-	 * This operation preserves relative item order: converted items in the
-	 * returned list will appear in the same order as their originals in this
-	 * list.
-	 *
-	 * Additionally, any {@code null} value returned by the specified
-	 * {@link Function} will be ignored. This can be used to achieve item
-	 * filtering and conversion as a single operation.
-	 *
-	 * @param <R>
-	 * @param converter
-	 * @return
-	 */
-	public <R> List<R> convert(Function<T, R> converter) {
-		final var itemCount = getCount();
-		final var convertedItems = new MutableList<R>(itemCount);
-
-		for (var item : this) {
-			final var convertedItem = converter.apply(item);
-			convertedItems.append(convertedItem);
-		}
-
-		return new List<>(convertedItems);
+	public Iterator<T> iterator(int startIndex) {
+		return store.iterator(startIndex);
 	}
 
 	@Override
