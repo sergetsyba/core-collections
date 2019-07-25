@@ -2,6 +2,7 @@ package co.tsyba.core.collections;
 
 import static java.lang.String.format;
 import java.util.Iterator;
+import java.util.Objects;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Apr 9, 2019.
@@ -21,11 +22,11 @@ public class IndexRange implements Iterable<Integer> {
 		this.start = start;
 		this.end = end;
 	}
-	
+
 	public boolean isEmpty() {
 		return start > end;
 	}
-	
+
 	public int getLength() {
 		return end - start;
 	}
@@ -39,28 +40,24 @@ public class IndexRange implements Iterable<Integer> {
 		return start <= indexRange.start
 				&& indexRange.end <= end;
 	}
-	
-	public IndexRange expand(int capacity) {
-		return new IndexRange(start, end + capacity);
-	}
-	
+
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		return hash;
+		return Objects.hash(start, end);
 	}
 
 	@Override
 	public boolean equals(Object object) {
+		if (object == this) {
+			return true;
+		}
 		if (!(object instanceof IndexRange)) {
 			return false;
 		}
 
 		final var indexRange = (IndexRange) object;
-
-		return this == object
-				|| (start == indexRange.start
-				&& end == indexRange.end);
+		return start == indexRange.start
+				&& end == indexRange.end;
 	}
 
 	@Override
@@ -70,7 +67,7 @@ public class IndexRange implements Iterable<Integer> {
 
 			@Override
 			public boolean hasNext() {
-				return index < end;
+				return index <= end;
 			}
 
 			@Override

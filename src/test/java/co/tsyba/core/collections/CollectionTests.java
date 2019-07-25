@@ -8,119 +8,83 @@ import org.junit.Test;
  */
 public class CollectionTests {
 	@Test
-	public void testCollectionVerifiesEmpty() {
-		// non-empty items
-		final var items1 = collect("g", "r", "b", "q", "E");
-		assert !items1.isEmpty();
-
-		// empty items
-		final var items2 = collect();
-		assert items2.isEmpty();
+	public void verifiesNotEmpty() {
+		final var items = collect("g", "r", "b", "q", "E");
+		assert items.isEmpty() == false;
 	}
 
 	@Test
-	public void testCollectionReturnsItemCount() {
-		// non-empty items
-		final var items1 = collect("g", "r", "b", "q", "E");
-		assert items1.getCount() == 5;
-
-		// empty items
-		final var items2 = collect();
-		assert items2.getCount() == 0;
+	public void returnsItemCount() {
+		final var items = collect("g", "r", "b", "q", "E");
+		assert items.getCount() == 5;
 	}
 
 	@Test
-	public void testCollectionVerifiesItemPresence() {
+	public void checksItemContainment() {
 		final var items = collect("v", "e", "f", "m", "h");
 
-		// contains item
+		// item is present
 		assert items.contains("m");
-		// does not contain item
-		assert !items.contains("t");
+		// item is absent
+		assert items.contains("t") == false;
 	}
 
 	@Test
-	public void testCollectionFindsItem() {
-		final var items = collect("j", "q", "z", "k", "e");
+	public void checksItemsContainment() {
+		final var items = collect("p", "i", "f", "z", "u");
 
-		// finds item
-		final var index1 = items.find("k");
-		assert index1.get() == 3;
+		// all items are present
+		final var items2 = collect("i", "u", "f", "p");
+		assert items.contains(items2);
 
-		// does not find item
-		final var index2 = items.find("f");
-		assert index2.isEmpty();
+		// some items are absent
+		final var items3 = collect("i", "u", "x", "p");
+		assert items.contains(items3) == false;
+
+		// itself is present
+		assert items.contains(items);
 	}
 
 	@Test
-	public void testCollectionMatchesItem() {
-		final var items = collect("f", "b", "e", "E", "e");
+	public void verifiesItemMatch() {
+		final var items = collect("p", "P", "r", "k", "z");
 
-		// finds match
-		final var index1 = items.match(item -> item.equals("e"));
-		assert index1.get() == 2;
-
-		// does not find match
-		final var index2 = items.match(item -> item.equals("z"));
-		assert index2.isEmpty();
+		// matches P
+		assert items.contains(item -> item.equals("P"));
+		// does not match Z
+		assert items.contains(item -> item.contains("Z")) == false;
 	}
 
 	@Test
-	public void testCollectionMatchesEachItem() {
+	public void verifiesItemsMatch() {
 		final var items = collect("K", "D", "s", "k", "c");
 
-		// matches each item
-		assert items.eachMatches(item -> !item.isBlank());
-		// does not match each item
-		assert !items.eachMatches(item -> item.toUpperCase()
-				.equals(item));
+		// matches each item not blank
+		assert items.matches(item -> !item.isBlank());
+		// does not match each item is uppercase
+		assert !items.matches(item -> item.toUpperCase().equals(item));
 	}
 
 	@Test
-	public void testCollectionMatchesNoneItem() {
-		final var items = collect("b", "e", "m", "n", "b");
+	public void returnsMinimumItem() {
+		final var items = collect("g", "l", "u", "e", "r");
+		final var minimum = items.getMinimum(Comparator.naturalOrder())
+				.get();
 
-		// matches no item
-		assert items.noneMatches(item -> item.isBlank());
-		// does not match no items
-		assert items.noneMatches(item -> item.toUpperCase()
-				.equals(item));
+		assert minimum.equals("e");
 	}
 
 	@Test
-	public void testCollectionReturnsMinimumItem() {
-		final var minimum1 = collect("g", "l", "u", "e", "r")
-				.getMinimum(Comparator.naturalOrder());
+	public void returnsMaximumItem() {
+		final var items = collect("D", "r", "w", "n", "p");
+		final var maximum = items.getMaximum(Comparator.naturalOrder())
+				.get();
 
-		// returns minimum
-		assert minimum1.get()
-				.equals("e");
-
-		final var minimum2 = new List<String>()
-				.getMinimum(Comparator.naturalOrder());
-
-		// does not return minimum
-		assert minimum2.isEmpty();
+		assert maximum.equals("w");
 	}
 
 	@Test
-	public void testCollectionReturnsMaximumItem() {
-		final var maximum = collect("D", "r", "w", "n", "p")
-				.getMaximum(Comparator.naturalOrder());
-
-		// return maximum
-		assert maximum.get()
-				.equals("w");
-
-		final var maximum2 = new List<String>()
-				.getMaximum(Comparator.naturalOrder());
-
-		// does not return maximum
-		assert maximum2.isEmpty();
-	}
-
-	@Test
-	public void testCollectionIteratesItems() {
+	public void iteratesItems() {
 		final var items = collect("t", "O", "X", "V", "c");
 
 		final var iteratedItems = new MutableList<String>();
@@ -130,12 +94,20 @@ public class CollectionTests {
 	}
 
 	@Test
-	public void testCollectionCombinesItems() {
+	public void combinesItems() {
 		final var items = collect("n", "M", "m", "a", "y");
 		final var combination = items.combine("7",
 				(combined, item) -> combined + item);
 
 		assert combination.equals("7nMmay");
+	}
+
+	@Test
+	public void joinsItems() {
+		final var items = collect("P", "x", "Z", "j", "e");
+
+		final var joined = items.join(", ");
+		assert "P, x, Z, j, e".equals(joined);
 	}
 
 	private static <T> Collection<T> collect(T... items) {

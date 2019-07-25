@@ -7,35 +7,107 @@ import org.junit.Test;
  */
 public class IndexedCollectionTests {
 	@Test
-	public void testCollectionReturnsFirstItem() {
-		final var item1 = collect("U", "n", "B", "C", "V")
-				.getFirst();
+	public void returnsFirstItem() {
+		final var items = collect("U", "n", "B", "C", "V");
+		final var firstItem = items.getFirst()
+				.get();
 
-		// returns first item
-		assert item1.get()
-				.equals("U");
-
-		final var item2 = collect()
-				.getFirst();
-
-		// does not return first item
-		assert item2.isEmpty();
+		assert firstItem.equals("U");
 	}
 
 	@Test
-	public void testCollectionReturnsLastItem() {
-		final var item1 = collect("U", "n", "B", "C", "V")
-				.getLast();
+	public void returnsLastItem() {
+		final var items = collect("U", "n", "B", "C", "V");
+		final var lastItem = items.getLast()
+				.get();
 
-		// returns last item
-		assert item1.get()
-				.equals("V");
+		assert lastItem.equals("V");
+	}
 
-		final var item2 = collect()
-				.getLast();
+	@Test
+	public void containsItems() {
+		final var items = collect("t", "x", "O", "p", "s");
 
-		// does not return last item
-		assert item2.isEmpty();
+		// contains items
+		final var items1 = collect("O", "p", "s");
+		assert items.contains(items1);
+
+		// does not contain items
+		final var items2 = collect("O", "p", "S");
+		assert items.contains(items2) == false;
+
+		// contains itslef
+		assert items.contains(items);
+
+		// contains empty items
+		final var items4 = IndexedCollectionTests.<String>collect();
+		assert items.contains(items4);
+	}
+
+	@Test
+	public void findsItem() {
+		final var items = collect("j", "q", "z", "k", "e");
+
+		// item is present
+		final var index1 = items.find("k");
+		assert index1.get() == 3;
+
+		// item is absent
+		final var index2 = items.find("K");
+		assert index2.isEmpty();
+	}
+
+	@Test
+	public void findsItems() {
+		final var items = collect("u", "a", "g", "Z", "R");
+
+		// items are present
+		final var items1 = collect("a", "g", "Z", "R");
+		final var index1 = items.find(items1);
+		assert index1.get() == 1;
+
+		// items are absent
+		final var items2 = collect("a", "g", "Z", "r");
+		final var index2 = items.find(items2);
+		assert index2.isEmpty();
+
+		// finds itself
+		final var index3 = items.find(items);
+		assert index3.get() == 0;
+
+		// finds empty items
+		final var emptyItems = IndexedCollectionTests.<String>collect();
+		final var index4 = items.find(emptyItems);
+		assert index4.get() == 0;
+	}
+
+	@Test
+	public void matchesItem() {
+		final var items = collect("f", "b", "e", "E", "e");
+
+		// matches E
+		final var index1 = items.match(item -> item.toUpperCase().equals(item));
+		assert index1.get() == 3;
+
+		// does not match Z
+		final var index2 = items.match(item -> item.equals("Z"));
+		assert index2.isEmpty();
+	}
+
+	@Test
+	public void enumeratesItems() {
+		final var items = collect("t", "Q", "x", "z", "U");
+		final var enumeratedItems = new MutableList<String>();
+		final var indexes = new MutableList<Integer>();
+
+		items.enumerate((item, index) -> {
+			enumeratedItems.append(item);
+			indexes.append(index);
+		});
+
+		assert items.equals(enumeratedItems);
+		assert collect(0, 1, 2, 3, 4)
+				.equals(indexes);
 	}
 
 	private static <T> IndexedCollection<T> collect(T... items) {
