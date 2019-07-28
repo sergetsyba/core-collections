@@ -1,6 +1,7 @@
 package co.tsyba.core.collections;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -135,9 +136,10 @@ public class MutableList<T> extends List<T> {
 	 * @return
 	 */
 	public Optional<T> removeFirst() {
-		return getFirst()
+		final var startIndex = 0;
+		return guard(startIndex)
 				.map(item -> {
-					store.remove(0);
+					store.remove(startIndex);
 					return item;
 				});
 	}
@@ -149,11 +151,10 @@ public class MutableList<T> extends List<T> {
 	 * @return
 	 */
 	public Optional<T> removeLast() {
-		return getLast()
+		final var startIndex = store.itemCount - 1;
+		return guard(startIndex)
 				.map(item -> {
-					final var endIndex = store.itemCount - 1;
-					store.remove(endIndex);
-
+					store.remove(startIndex);
 					return item;
 				});
 	}
@@ -190,6 +191,24 @@ public class MutableList<T> extends List<T> {
 		store.remove(indexRange);
 
 		return new MutableList<>(items);
+	}
+
+	/**
+	 * Applies the specified {@link BiConsumer} to item at the specified index
+	 * when the index is within the valid index range of this list. Does nothing
+	 * otherwise. Returns itself.
+	 *
+	 * @param index
+	 * @param operation
+	 * @return
+	 */
+	public MutableList<T> guard(int index, BiConsumer<T, Integer> operation) {
+		if (store.hasIndex(index)) {
+			final var item = store.storage[index];
+			operation.accept(item, index);
+		}
+
+		return this;
 	}
 
 	/**

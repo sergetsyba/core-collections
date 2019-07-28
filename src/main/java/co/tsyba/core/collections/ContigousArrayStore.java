@@ -38,6 +38,24 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
+	 * Returns {@code true} when this store contains an item at the specified
+	 * index; returns {@code false} otherwise.
+	 */
+	public boolean hasIndex(int index) {
+		return index >= 0
+				&& index < itemCount;
+	}
+
+	/**
+	 * Returns {@code true} when this store contains items at the specified
+	 * index range; returns {@code false} otherwise.
+	 */
+	public boolean hasIndexRange(IndexRange indexRange) {
+		return indexRange.start >= 0
+				&& indexRange.end <= itemCount;
+	}
+
+	/**
 	 * Returns item at the specified index in this store.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid
@@ -284,16 +302,6 @@ class ContigousArrayStore<T> implements Iterable<T> {
 		}
 
 		return new ContigousArrayStore<>(shuffledItems, itemCount);
-	}
-
-	private boolean hasIndex(int index) {
-		return index >= 0
-				&& index < itemCount;
-	}
-
-	private boolean hasIndexRange(IndexRange indexRange) {
-		return indexRange.start >= 0
-				&& indexRange.end <= itemCount;
 	}
 
 	private void prepareCapacity(int extraItemCount) {

@@ -70,14 +70,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public Optional<T> getFirst() {
-		// todo: return guard(0, this::get);
-
-		if (isEmpty()) {
-			return Optional.empty();
-		}
-
-		final var item = store.storage[0];
-		return Optional.of(item);
+		return guard(0);
 	}
 
 	/**
@@ -88,14 +81,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public Optional<T> getLast() {
-		if (isEmpty()) {
-			return Optional.empty();
-		}
-
-		final var endIndex = store.itemCount - 1;
-		final var item = store.storage[endIndex];
-
-		return Optional.of(item);
+		return guard(store.itemCount - 1);
 	}
 
 	/**
@@ -111,9 +97,23 @@ public class List<T> implements IndexedCollection<T> {
 		return store.storage[index];
 	}
 
+	/**
+	 * Returns item at the specified index when the index is within the valid
+	 * index range of this list. Returns an empty {@link Optional} otherwise.
+	 *
+	 * @param index
+	 * @return
+	 */
+	public Optional<T> guard(int index) {
+		if (!store.hasIndex(index)) {
+			return Optional.empty();
+		}
+
+		final var item = store.storage[index];
+		return Optional.of(item);
+	}
+
 	// todo: get(IndexRange)
-	// todo: guard(int, Consumer<>);
-	// todo: guard(int, Function<>);
 	/**
 	 * Returns distinct items of this list.
 	 *

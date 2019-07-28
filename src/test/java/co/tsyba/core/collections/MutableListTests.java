@@ -31,6 +31,51 @@ public class MutableListTests {
 	}
 
 	@Test
+	public void guardsIndex() {
+		final var items = new MutableList<>("W", "W", "x", "x", "X");
+
+		// fisrt index
+		final var items1 = items.guard(0, (item, index)
+				-> items.set(index, item.toLowerCase()));
+
+		assert items1 == items;
+		assert new MutableList<>("w", "W", "x", "x", "X")
+				.equals(items);
+
+		// item in the middle
+		final var items2 = items.guard(1, (item, index)
+				-> items.set(index, item.toLowerCase()));
+
+		assert items2 == items;
+		assert new MutableList<>("w", "w", "x", "x", "X")
+				.equals(items);
+
+		// item at the end
+		final var items3 = items.guard(4, (item, index)
+				-> items.set(index, item.toLowerCase()));
+
+		assert items3 == items;
+		assert new MutableList<>("w", "w", "x", "x", "x")
+				.equals(items);
+
+		// index before valid range
+		final var items4 = items.guard(-1, (item, index)
+				-> items.set(index, item.toLowerCase()));
+
+		assert items4 == items;
+		assert new MutableList<>("w", "w", "x", "x", "x")
+				.equals(items);
+
+		// index after valid range
+		final var items5 = items.guard(5, (item, index)
+				-> items.set(index, item.toLowerCase()));
+
+		assert items5 == items;
+		assert new MutableList<>("w", "w", "x", "x", "x")
+				.equals(items);
+	}
+
+	@Test
 	public void returnsDistinctItems() {
 		// has reapeated items
 		final var items1 = new List<>("f", "S", "S", "f", "f");

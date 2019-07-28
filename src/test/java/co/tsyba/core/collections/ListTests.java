@@ -37,6 +37,34 @@ public class ListTests {
 	}
 
 	@Test
+	public void guardsIndex() {
+		final var items = new List<>("e", "D", "d", "E", "X");
+
+		// fisrt index
+		final var item1 = items.guard(0);
+		assert item1.get()
+				.equals("e");
+
+		// item in the middle
+		final var item2 = items.guard(2);
+		assert item2.get()
+				.equals("d");
+
+		// item at the end
+		final var item3 = items.guard(4);
+		assert item3.get()
+				.equals("X");
+
+		// index before valid range
+		final var item4 = items.guard(-1);
+		assert item4.isEmpty();
+
+		// index after valid range
+		final var item5 = items.guard(5);
+		assert item5.isEmpty();
+	}
+
+	@Test
 	public void returnsDistinctItems() {
 		// has reapeated items
 		final var items1 = new List<>("r", "D", "S", "r", "S");

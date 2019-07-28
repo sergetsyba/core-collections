@@ -31,6 +31,17 @@ public class EmptyListTests {
 	}
 
 	@Test
+	public void guardsIndex() {
+		// index before valid range
+		assert emptyItems.guard(-1)
+				.isEmpty();
+
+		// index after valid range
+		assert emptyItems.guard(0)
+				.isEmpty();
+	}
+
+	@Test
 	public void returnsNoDistinctItems() {
 		assert emptyItems.getDistinct()
 				.equals(emptyItems);
