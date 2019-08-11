@@ -1,5 +1,8 @@
 package co.tsyba.core.collections;
 
+import co.tsyba.core.collections.data.ListCollection;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 
 /*
@@ -97,20 +100,21 @@ public class IndexedCollectionTests {
 	@Test
 	public void enumeratesItems() {
 		final var items = collect("t", "Q", "x", "z", "U");
-		final var enumeratedItems = new MutableList<String>();
-		final var indexes = new MutableList<Integer>();
+		final var enumeratedItems = new ArrayList<String>();
+		final var enumeratedIndexes = new ArrayList<Integer>();
 
 		items.enumerate((item, index) -> {
-			enumeratedItems.append(item);
-			indexes.append(index);
+			enumeratedItems.add(item);
+			enumeratedIndexes.add(index);
 		});
 
-		assert items.equals(enumeratedItems);
-		assert collect(0, 1, 2, 3, 4)
-				.equals(indexes);
+		assert enumeratedItems.equals(
+				List.of("t", "Q", "x", "z", "U"));
+		assert enumeratedIndexes.equals(
+				List.of(0, 1, 2, 3, 4));
 	}
 
 	private static <T> IndexedCollection<T> collect(T... items) {
-		return new List<>(items);
+		return new ListCollection<>(items);
 	}
 }

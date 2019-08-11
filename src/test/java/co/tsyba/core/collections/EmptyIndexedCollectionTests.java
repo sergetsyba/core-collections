@@ -1,34 +1,36 @@
 package co.tsyba.core.collections;
 
+import co.tsyba.core.collections.data.ListCollection;
+import java.util.ArrayList;
 import org.junit.Test;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 17, 2019.
  */
 public class EmptyIndexedCollectionTests {
-	private static final IndexedCollection<String> emptyItems = new List<>();
-
+	private static final IndexedCollection<String> emptyItems = new ListCollection<>();
+	
 	@Test
 	public void returnsNoFirstItem() {
 		assert emptyItems.getFirst()
 				.isEmpty();
 	}
-
+	
 	@Test
 	public void returnsNoLastItem() {
 		assert emptyItems.getLast()
 				.isEmpty();
 	}
-
+	
 	@Test
 	public void findsNoItem() {
 		assert emptyItems.find("F")
 				.isEmpty();
 	}
-
+	
 	@Test
 	public void findsNoItems() {
-		final var items = collect("u", "a", "g");
+		final var items = new ListCollection<>("u", "a", "g");
 		assert emptyItems.find(items)
 				.isEmpty();
 
@@ -36,28 +38,24 @@ public class EmptyIndexedCollectionTests {
 		assert emptyItems.find(emptyItems)
 				.isEmpty();
 	}
-
+	
 	@Test
 	public void matchesNoItem() {
 		assert emptyItems.match(String::isBlank)
 				.isEmpty();
 	}
-
+	
 	@Test
 	public void enumeratesNoItems() {
-		final var items = new MutableList<String>();
-		final var indexes = new MutableList<Integer>();
-
+		final var enumeratedItems = new ArrayList<String>();
+		final var enumeratedIndexes = new ArrayList<Integer>();
+		
 		emptyItems.enumerate((item, index) -> {
-			items.append(item);
-			indexes.append(index);
+			enumeratedItems.add(item);
+			enumeratedIndexes.add(index);
 		});
-
-		assert items.isEmpty();
-		assert indexes.isEmpty();
-	}
-
-	private static <T> IndexedCollection<T> collect(T... items) {
-		return new List<>(items);
+		
+		assert enumeratedItems.isEmpty();
+		assert enumeratedIndexes.isEmpty();
 	}
 }

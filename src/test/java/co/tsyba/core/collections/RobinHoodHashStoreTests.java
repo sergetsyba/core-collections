@@ -126,7 +126,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemODisplacedBySameDegreeEntries() {
+	public void testHashStoreFindsItemDisplacedBySameDegreeEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(2);
 		store.insert(12);

@@ -232,8 +232,8 @@ public interface Collection<T> extends Iterable<T> {
 
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
-			builder.append(separator);
-			builder.append(item);
+			builder.append(separator)
+					.append(item);
 		}
 
 		return builder.toString();

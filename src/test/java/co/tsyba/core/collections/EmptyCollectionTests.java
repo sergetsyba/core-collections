@@ -1,5 +1,7 @@
 package co.tsyba.core.collections;
 
+import co.tsyba.core.collections.data.ListCollection;
+import java.util.ArrayList;
 import java.util.Comparator;
 import org.junit.Test;
 
@@ -7,7 +9,7 @@ import org.junit.Test;
  * Created by Serge Tsyba <tsyba@me.com> on Jul 17, 2019.
  */
 public class EmptyCollectionTests {
-	private static final Collection<String> emptyItems = new List<>();
+	private static final Collection<String> emptyItems = new ListCollection<>();
 
 	@Test
 	public void verifiesEmpty() {
@@ -58,8 +60,8 @@ public class EmptyCollectionTests {
 
 	@Test
 	public void iteratesNoItems() {
-		final var iteratedItems = new MutableList<String>();
-		emptyItems.iterate(iteratedItems::append);
+		final var iteratedItems = new ArrayList<String>();
+		emptyItems.iterate(iteratedItems::add);
 
 		assert iteratedItems.isEmpty();
 	}

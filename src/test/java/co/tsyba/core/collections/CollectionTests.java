@@ -1,5 +1,7 @@
 package co.tsyba.core.collections;
 
+import co.tsyba.core.collections.data.ListCollection;
+import java.util.ArrayList;
 import java.util.Comparator;
 import org.junit.Test;
 
@@ -46,7 +48,7 @@ public class CollectionTests {
 	}
 
 	@Test
-	public void verifiesItemMatch() {
+	public void checksItemMatch() {
 		final var items = collect("p", "P", "r", "k", "z");
 
 		// matches P
@@ -56,7 +58,7 @@ public class CollectionTests {
 	}
 
 	@Test
-	public void verifiesItemsMatch() {
+	public void checksItemsMatch() {
 		final var items = collect("K", "D", "s", "k", "c");
 
 		// matches each item not blank
@@ -86,11 +88,12 @@ public class CollectionTests {
 	@Test
 	public void iteratesItems() {
 		final var items = collect("t", "O", "X", "V", "c");
+		final var iteratedItems = new ArrayList<String>();
 
-		final var iteratedItems = new MutableList<String>();
-		items.iterate(iteratedItems::append);
+		items.iterate(iteratedItems::add);
 
-		assert iteratedItems.equals(items);
+		assert iteratedItems.equals(
+				java.util.List.of("t", "O", "X", "V", "c"));
 	}
 
 	@Test
@@ -111,6 +114,6 @@ public class CollectionTests {
 	}
 
 	private static <T> Collection<T> collect(T... items) {
-		return new List<>(items);
+		return new ListCollection<>(items);
 	}
 }
