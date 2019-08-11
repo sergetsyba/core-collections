@@ -62,9 +62,9 @@ public class CollectionTests {
 		final var items = collect("K", "D", "s", "k", "c");
 
 		// matches each item not blank
-		assert items.matches(item -> !item.isBlank());
+		assert items.eachMatches(item -> !item.isBlank());
 		// does not match each item is uppercase
-		assert !items.matches(item -> item.toUpperCase().equals(item));
+		assert !items.eachMatches(item -> item.toUpperCase().equals(item));
 	}
 
 	@Test

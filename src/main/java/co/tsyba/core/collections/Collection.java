@@ -55,7 +55,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @return
 	 */
 	public default boolean contains(Collection<T> items) {
-		return items.matches(this::contains);
+		return items.eachMatches(this::contains);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @param condition
 	 * @return
 	 */
-	public default boolean matches(Predicate<T> condition) {
+	public default boolean eachMatches(Predicate<T> condition) {
 		for (var item : this) {
 			if (!condition.test(item)) {
 				return false;

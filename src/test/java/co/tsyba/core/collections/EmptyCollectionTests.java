@@ -43,7 +43,7 @@ public class EmptyCollectionTests {
 
 	@Test
 	public void verifiesNoEachItemMatch() {
-		assert emptyItems.matches(String::isBlank) == false;
+		assert emptyItems.eachMatches(String::isBlank) == false;
 	}
 
 	@Test
