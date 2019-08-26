@@ -14,7 +14,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	int itemCount;
 
 	/**
-	 * Creates a new {@link ContigousArrayStore} with the specified capacity.
+	 * Creates a new array store with the specified capacity.
 	 *
 	 * @throws NegativeCapacityException when the specified store capacity is
 	 * negative
@@ -28,11 +28,14 @@ class ContigousArrayStore<T> implements Iterable<T> {
 		this.itemCount = 0;
 	}
 
+	/**
+	 * Creates a copy of the specified index range in the specified array store.
+	 */
 	public ContigousArrayStore(ContigousArrayStore<T> items, IndexRange indexRange) {
 		this.storage = (T[]) new Object[items.itemCount];
 	}
 
-	ContigousArrayStore(T[] storage, int itemCount) {
+	private ContigousArrayStore(T[] storage, int itemCount) {
 		this.storage = storage;
 		this.itemCount = itemCount;
 	}

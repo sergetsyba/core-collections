@@ -82,7 +82,7 @@ public class ListTests {
 
 	@Test
 	public void filtersItems() {
-		// keeps items in uppercase
+		// keeps items, which are in upper case
 		final var items = new List<>("r", "x", "O", "P", "z")
 				.filter(item -> item.toUpperCase().equals(item));
 
@@ -92,14 +92,14 @@ public class ListTests {
 
 	@Test
 	public void convertsItems() {
-		// converts to uppercase
+		// converts to upper case
 		final var items1 = new List<>("c", "G", "d", "Y", "l")
 				.convert(String::toUpperCase);
 
 		assert new List<>("C", "G", "D", "Y", "L")
 				.equals(items1);
 
-		// converts to uppercase, only items in lowecase
+		// converts items to upper case, which are in lower case
 		final var items2 = new List<>("c", "G", "d", "Y", "l")
 				.convert(item -> item.toUpperCase().equals(item)
 				? null

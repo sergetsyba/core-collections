@@ -121,8 +121,8 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public List<T> getDistinct() {
-		final var distinctStore = new ContigousArrayStore<T>(store.itemCount);
-		final var distinctItems = new List<>(distinctStore);
+		final var distinctItems = new List<T>(
+				new ContigousArrayStore<>(store.itemCount));
 
 		for (var item : this) {
 			if (!distinctItems.contains(item)) {
@@ -130,7 +130,7 @@ public class List<T> implements IndexedCollection<T> {
 			}
 		}
 
-		distinctStore.removeExcessCapacity();
+		distinctItems.store.removeExcessCapacity();
 		return distinctItems;
 	}
 
@@ -141,8 +141,8 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public List<T> reverse() {
-		final var reversedStore = store.reverse();
-		return new List<>(reversedStore);
+		final var reversedItems = store.reverse();
+		return new List<>(reversedItems);
 	}
 
 	/**
@@ -154,8 +154,8 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
-		final var sortedStore = store.sort(comparator);
-		return new List<>(sortedStore);
+		final var sortedItems = store.sort(comparator);
+		return new List<>(sortedItems);
 	}
 
 	/**
@@ -166,9 +166,9 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public List<T> shuffle() {
 		final var random = new Random();
-		final var shuffledStore = store.shuffle(random);
+		final var shuffledItems = store.shuffle(random);
 
-		return new List<>(shuffledStore);
+		return new List<>(shuffledItems);
 	}
 
 	/**
@@ -213,15 +213,15 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public List<T> filter(Predicate<T> condition) {
-		final var filteredStore = new ContigousArrayStore<T>(store.itemCount);
+		final var filteredItems = new ContigousArrayStore<T>(store.itemCount);
 		for (var item : this) {
 			if (condition.test(item)) {
-				filteredStore.append(item);
+				filteredItems.append(item);
 			}
 		}
 
-		filteredStore.removeExcessCapacity();
-		return new List<>(filteredStore);
+		filteredItems.removeExcessCapacity();
+		return new List<>(filteredItems);
 	}
 
 	/**
@@ -233,8 +233,8 @@ public class List<T> implements IndexedCollection<T> {
 	 * in this list.
 	 *
 	 * Any {@code null} value returned by the specified {@link Function} will be
-	 * ignored. This can be used to achieve item filtering and conversion as a
-	 * single operation.
+	 * ignored. This can be used to perform both item filtering and conversion
+	 * in a single operation.
 	 *
 	 * @param <R>
 	 * @param converter
@@ -242,14 +242,14 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public <R> List<R> convert(Function<T, R> converter) {
-		final var convertedStore = new ContigousArrayStore<R>(store.itemCount);
+		final var convertedItems = new ContigousArrayStore<R>(store.itemCount);
 		for (var item : this) {
 			final var convertedItem = converter.apply(item);
-			convertedStore.append(convertedItem);
+			convertedItems.append(convertedItem);
 		}
 
-		convertedStore.removeExcessCapacity();
-		return new List<>(convertedStore);
+		convertedItems.removeExcessCapacity();
+		return new List<>(convertedItems);
 	}
 
 	@Override
