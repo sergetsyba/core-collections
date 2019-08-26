@@ -48,23 +48,33 @@ public class CollectionTests {
 	}
 
 	@Test
-	public void checksItemMatch() {
-		final var items = collect("p", "P", "r", "k", "z");
+	public void checksNoItemMatch() {
+		final var items = collect("f", "e", "c", "l");
 
-		// matches P
-		assert items.contains(item -> item.equals("P"));
-		// does not match Z
-		assert items.contains(item -> item.contains("Z")) == false;
+		// matches no item is in upper case
+		assert items.noneMatches(item -> item.toUpperCase().equals(item));
+		// does not match no item is c
+		assert items.noneMatches(item -> item.equals("c")) == false;
 	}
 
 	@Test
-	public void checksItemsMatch() {
+	public void checksAnyItemMatch() {
+		final var items = collect("p", "P", "z", "p", "P");
+
+		// matches any item is in upper case
+		assert items.anyMatches(item -> item.toUpperCase().equals(item));
+		// does not match any item is Z
+		assert items.anyMatches(item -> item.equals("Z")) == false;
+	}
+
+	@Test
+	public void checksEachItemMatch() {
 		final var items = collect("K", "D", "s", "k", "c");
 
-		// matches each item not blank
+		// matches each item is not blank
 		assert items.eachMatches(item -> !item.isBlank());
-		// does not match each item is uppercase
-		assert !items.eachMatches(item -> item.toUpperCase().equals(item));
+		// does not match each item is in upper case
+		assert items.eachMatches(item -> item.toUpperCase().equals(item)) == false;
 	}
 
 	@Test

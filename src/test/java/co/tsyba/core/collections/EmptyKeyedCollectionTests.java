@@ -45,8 +45,15 @@ public class EmptyKeyedCollectionTests {
 
 	@Test
 	public void verifiesNoEntryMatch() {
+		// does not contain an entry with empty key and value
+		assert emptyEntries.noneMatches((key, value)
+				-> key.isBlank() && value.isBlank());
+	}
+
+	@Test
+	public void verifiesNoAnyEntryMatch() {
 		// doesn not contain entry with empty key or value
-		assert emptyEntries.contains((key, value)
+		assert emptyEntries.anyMatches((key, value)
 				-> key.isBlank() || value.isBlank()) == false;
 	}
 

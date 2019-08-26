@@ -84,7 +84,24 @@ public class KeyedCollectionTests {
 	}
 
 	@Test
-	public void checksEntryMatch() {
+	public void checksNoEntryMatch() {
+		final var entries = collect(
+				"f", "nanaba",
+				"a", "poaopa",
+				"s", "iuiqha",
+				"t", "annaj");
+
+		// contains no entries where value starts with key
+		assert entries.noneMatches((key, value)
+				-> value.startsWith(key));
+
+		// does not contain no entries where value length is less than 6
+		assert entries.noneMatches((key, value)
+				-> value.length() < 6) == false;
+	}
+
+	@Test
+	public void checksAnyEntryMatch() {
 		final var entries = collect(
 				"I", "dndndbxj",
 				"F", "nfxsuus",
@@ -92,11 +109,11 @@ public class KeyedCollectionTests {
 				"E", "aananzt");
 
 		// contains entry with upper case key and value containing z
-		assert entries.contains((key, value)
+		assert entries.anyMatches((key, value)
 				-> isUpperCase(key) && value.contains("z"));
 
 		// does not contain entry with upper case key value containing i
-		assert entries.contains((key, value)
+		assert entries.anyMatches((key, value)
 				-> isLowerCase(key) && value.contains("i")) == false;
 	}
 

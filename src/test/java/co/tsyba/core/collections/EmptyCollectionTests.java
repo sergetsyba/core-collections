@@ -17,7 +17,7 @@ public class EmptyCollectionTests {
 	}
 
 	@Test
-	public void returnsItemCount() {
+	public void returnsZeroItemCount() {
 		assert emptyItems.getCount() == 0;
 	}
 
@@ -38,7 +38,12 @@ public class EmptyCollectionTests {
 
 	@Test
 	public void verifiesNoItemMatch() {
-		assert emptyItems.contains(item -> item.equals("P")) == false;
+		assert emptyItems.noneMatches(String::isBlank);
+	}
+
+	@Test
+	public void verifiesNoAnyItemMatch() {
+		assert emptyItems.anyMatches(item -> item.equals("P")) == false;
 	}
 
 	@Test

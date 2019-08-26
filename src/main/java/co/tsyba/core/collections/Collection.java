@@ -12,8 +12,8 @@ import java.util.function.Predicate;
  */
 public interface Collection<T> extends Iterable<T> {
 	/**
-	 * Returns {@code true} when this collection is empty; returns {@code false}
-	 * otherwise.
+	 * Returns {@code true} when this collection has no items; returns
+	 * {@code false} otherwise.
 	 *
 	 * @return
 	 */
@@ -44,7 +44,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @return
 	 */
 	public default boolean contains(T item) {
-		return contains(storedItem -> storedItem.equals(item));
+		return anyMatches(storedItem -> storedItem.equals(item));
 	}
 
 	/**
@@ -59,14 +59,30 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this collection contains an item which
-	 * satisfies the specified {@link Predicate}; returns {@code false}
-	 * otherwise.
+	 * Returns {@code true} when every item in this collection does not satisfy
+	 * the specified {@link Predicate}; return {@code false} otherwise.
 	 *
 	 * @param condition
 	 * @return
 	 */
-	public default boolean contains(Predicate<T> condition) {
+	public default boolean noneMatches(Predicate<T> condition) {
+		for (var item : this) {
+			if (condition.test(item)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns {@code true} when at least one item in this collection satisfies
+	 * the specified {@link Predicate}; returns {@code false} otherwise.
+	 *
+	 * @param condition
+	 * @return
+	 */
+	public default boolean anyMatches(Predicate<T> condition) {
 		for (var item : this) {
 			if (condition.test(item)) {
 				return true;

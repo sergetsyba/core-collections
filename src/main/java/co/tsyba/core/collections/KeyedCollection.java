@@ -9,8 +9,8 @@ import java.util.function.BiPredicate;
  */
 public interface KeyedCollection<K, V> extends Iterable<Map.Entry<K, V>> {
 	/**
-	 * Returns {@link true} when this collection is empty; returns {@link false}
-	 * otherwise.
+	 * Returns {@link true} when this collection ha no entries; returns
+	 * {@link false} otherwise.
 	 *
 	 * @return
 	 */
@@ -41,7 +41,7 @@ public interface KeyedCollection<K, V> extends Iterable<Map.Entry<K, V>> {
 	 * @return
 	 */
 	public default boolean contains(K key) {
-		return contains((storedKey, value) -> storedKey.equals(key));
+		return anyMatches((storedKey, value) -> storedKey.equals(key));
 	}
 
 	/**
@@ -53,7 +53,7 @@ public interface KeyedCollection<K, V> extends Iterable<Map.Entry<K, V>> {
 	 * @return
 	 */
 	public default boolean contains(K key, V value) {
-		return contains((storedKey, storedValue) -> storedKey.equals(key)
+		return anyMatches((storedKey, storedValue) -> storedKey.equals(key)
 				&& storedValue.equals(value));
 	}
 
@@ -70,14 +70,32 @@ public interface KeyedCollection<K, V> extends Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Returns {@code true} when this collection contains an entry, whose key
-	 * and value satisfy the specified {@link BiPredicate}; returns
+	 * Returns {@code true} when key and value of every entry in this collection
+	 * does not satisfy the specified {@link BiPredicate}; returns {@code false}
+	 * otherwise.
+	 *
+	 * @param condition
+	 * @return
+	 */
+	public default boolean noneMatches(BiPredicate<K, V> condition) {
+		for (var entry : this) {
+			if (condition.test(entry.key, entry.value)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns {@code true} when key and value of at least one entry in this
+	 * collection satisfies the specified {@link BiPredicate}; returns
 	 * {@code false} otherwise.
 	 *
 	 * @param condition
 	 * @return
 	 */
-	public default boolean contains(BiPredicate<K, V> condition) {
+	public default boolean anyMatches(BiPredicate<K, V> condition) {
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
 				return true;
