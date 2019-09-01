@@ -279,4 +279,9 @@ public class List<T> implements IndexedCollection<T> {
 		final var items = (List) object;
 		return store.equals(items.store);
 	}
+
+	@Override
+	public String toString() {
+		return "[" + join(", ") + "]";
+	}
 }
