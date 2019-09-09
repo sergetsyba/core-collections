@@ -9,7 +9,7 @@ import java.util.function.BiPredicate;
  * Created by Serge Tsyba <tsyba@me.com> on Jul 29, 2019.
  */
 public class Map<K, V> implements LameKeyedCollection<K, V> {
-	final RobinHoodHashStore<Entry<K, V>> store;
+	RobinHoodHashStore<Entry<K, V>> store;
 
 	Map(RobinHoodHashStore<Entry<K, V>> store) {
 		this.store = new RobinHoodHashStore<>(store);
@@ -128,6 +128,10 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * @return
 	 */
 	public Optional<V> get(K key) {
+		if (key == null) {
+			return Optional.empty();
+		}
+
 		final var index = store.find(key);
 		if (index < 0) {
 			return Optional.empty();

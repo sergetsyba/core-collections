@@ -192,6 +192,16 @@ public class MutableList<T> extends List<T> {
 
 		return new MutableList<>(items);
 	}
+	
+	/**
+	 * Removes all items from this list. Returns itself.
+	 * 
+	 * @return 
+	 */
+	public MutableList<T> clear() {
+		// todo
+		return this;
+	}
 
 	/**
 	 * Applies the specified {@link BiConsumer} to item at the specified index

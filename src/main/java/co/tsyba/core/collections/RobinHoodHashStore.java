@@ -14,9 +14,10 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 	private final int probeDistanceLimit;
 
 	RobinHoodHashStore(int capacity, int probeDistanceLimit) {
-		// note: keeping an extra slot in storage allows avoiding index boundary checks
-		// during probe iterations; since probing an empty slot stops probe iteration
-		// anyway, a trailing extra empty slot will thus break probe iteration
+		// note: keeping an extra slot in storage allows avoiding index
+		// boundary checks during probe iterations; since probing an empty slot
+		// stops probe iteration anyway, a trailing extra empty slot will thus
+		// break probe iteration
 		this.storage = new Entry[capacity + probeDistanceLimit + 1];
 		this.capacity = capacity;
 		this.entryCount = 0;
@@ -62,16 +63,6 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		this.entryCount = store.entryCount;
 	}
 
-	private void shiftEntriesRight(int index) {
-		var storedEntry = storage[index];
-
-		for (; storedEntry != null; index += 1) {
-			final var swapEntry = storage[index + 1];
-			storage[index + 1] = storedEntry;
-			storedEntry = swapEntry;
-		}
-	}
-
 	private int prepareInsertionSlot(Entry entry) {
 		final var entryIndex = entry.hashCode % capacity;
 		final var probeIndexLimit = entryIndex + probeDistanceLimit;
@@ -88,16 +79,51 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 				return probeIndex;
 			}
 			else if (storedEntry.hashCode % capacity > entryIndex) {
-				// probed an entry with bucket index higher than that of the new entry
-				// (i.e. an entry with lower probe distance, than that of the new entry);
-				// shift the remainder of the entry cluster one position to the right
-				// and place the entry into the freed slot
+				// probed an entry with bucket index higher than that of the
+				// new entry (i.e. an entry with lower probe distance, than
+				// that of the new entry); shift the remainder of the entry
+				// cluster one position to the right and place the entry into
+				// the freed slot
 				shiftEntriesRight(probeIndex);
+
+				// clear insertion slot to indicate a new entry being inserted
+				storage[probeIndex] = null;
+
 				return probeIndex;
 			}
 		}
 
 		return -1;
+	}
+
+	private void shiftEntriesRight(int index) {
+		var storedEntry = storage[index];
+
+		for (; storedEntry != null; index += 1) {
+			final var swapEntry = storage[index + 1];
+			storage[index + 1] = storedEntry;
+			storedEntry = swapEntry;
+		}
+	}
+
+	public void insert(E item) {
+		final var insertedEntry = new Entry<>(item);
+
+		// keep expanding storage capacity until bucket for the new entry
+		// is not full
+		var entryIndex = prepareInsertionSlot(insertedEntry);
+		for (; entryIndex < 0; entryIndex = prepareInsertionSlot(insertedEntry)) {
+			resizeStorage(capacity * 2);
+		}
+
+		final var replacedEntry = storage[entryIndex];
+		storage[entryIndex] = insertedEntry;
+
+		// increment entry count when insertion slot was empty, i.e. inserted
+		// new entry
+		if (replacedEntry == null) {
+			entryCount += 1;
+		}
 	}
 
 	private void resizeStorage(int capacity) {
@@ -107,9 +133,9 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			if (storedEntry != null) {
 				final var entryIndex = resizedStore.prepareInsertionSlot(storedEntry);
 				if (entryIndex < 0) {
-					// cannot find insertion index for a stored entry in resized store;
-					// expand capacity of resized store and re-insert all entries into
-					// expanded store
+					// cannot find insertion index for a stored entry in
+					// resized store; expand capacity of resized store and
+					// re-insert all entries into expanded store
 					resizeStorage(capacity * 2);
 					return;
 				}
@@ -121,19 +147,6 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 
 		this.storage = resizedStore.storage;
 		this.capacity = resizedStore.capacity;
-	}
-
-	public void insert(E item) {
-		final var insertedEntry = new Entry<>(item);
-
-		// keep expanding storage capacity until bucket for the new entry is not full
-		var entryIndex = prepareInsertionSlot(insertedEntry);
-		for (; entryIndex < 0; entryIndex = prepareInsertionSlot(insertedEntry)) {
-			resizeStorage(capacity * 2);
-		}
-
-		storage[entryIndex] = insertedEntry;
-		entryCount += 1;
 	}
 
 	public int find(Object entry) {
@@ -151,16 +164,10 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 				return probeIndex;
 			}
 			else if (storedEntry.hashCode % capacity > entryIndex) {
-				// probed an entry with bucket index higher than that of the new entry;
-				// store contains no such item
+				// probed an entry with bucket index higher than that
+				// of the new entry; store contains no such item
 				return -1;
 			}
-		}
-	}
-
-	private void shiftEntriesLeft(int index) {
-		for (; storage[index] != null; index += 1) {
-			storage[index] = storage[index + 1];
 		}
 	}
 
@@ -175,6 +182,12 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			entryCount -= 1;
 
 			return true;
+		}
+	}
+
+	private void shiftEntriesLeft(int index) {
+		for (; storage[index] != null; index += 1) {
+			storage[index] = storage[index + 1];
 		}
 	}
 
@@ -259,15 +272,14 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			return false;
 		}
 
-		// ensure this store contains same number of entries 
-		// as the specififed one
+		// ensure this store contains same number of entries as the specififed
+		// one
 		final var store = (RobinHoodHashStore) object;
 		if (entryCount != store.entryCount) {
 			return false;
 		}
 
-		// ensure each entry from this store is present in 
-		// the specified one
+		// ensure each entry from this store is present in the specified one
 		for (var entry : storage) {
 			if (entry == null) {
 				continue;
