@@ -7,7 +7,7 @@ import org.junit.Test;
  */
 public class ListTests {
 	@Test
-	public void verifiesNotEmpty() {
+	public void checksEmpty() {
 		final var items = new List<>("t", "g", "e", "b", "T");
 		assert items.isEmpty() == false;
 	}
@@ -21,19 +21,19 @@ public class ListTests {
 	@Test
 	public void returnsFirstItem() {
 		final var items = new List<>("O", "T", "q", "M", "s");
-		final var firstItem = items.getFirst()
-				.get();
 
-		assert firstItem.equals("O");
+		assert items.getFirst()
+				.get()
+				.equals("O");
 	}
 
 	@Test
 	public void returnsLastItem() {
 		final var items = new List<>("O", "T", "q", "M", "s");
-		final var lastItem = items.getLast()
-				.get();
 
-		assert lastItem.equals("s");
+		assert items.getLast()
+				.get()
+				.equals("s");
 	}
 
 	@Test
@@ -41,71 +41,73 @@ public class ListTests {
 		final var items = new List<>("e", "D", "d", "E", "X");
 
 		// fisrt index
-		final var item1 = items.guard(0);
-		assert item1.get()
+		assert items.guard(0)
+				.get()
 				.equals("e");
 
 		// item in the middle
-		final var item2 = items.guard(2);
-		assert item2.get()
+		assert items.guard(2)
+				.get()
 				.equals("d");
 
 		// item at the end
-		final var item3 = items.guard(4);
-		assert item3.get()
+		assert items.guard(4)
+				.get()
 				.equals("X");
 
 		// index before valid range
-		final var item4 = items.guard(-1);
-		assert item4.isEmpty();
+		assert items.guard(-1)
+				.isEmpty();
 
 		// index after valid range
-		final var item5 = items.guard(5);
-		assert item5.isEmpty();
+		assert items.guard(5)
+				.isEmpty();
 	}
 
 	@Test
 	public void returnsDistinctItems() {
 		// has reapeated items
 		final var items1 = new List<>("r", "D", "S", "r", "S");
-		final var distinctItems1 = items1.getDistinct();
-
-		assert new List<>("r", "D", "S")
-				.equals(distinctItems1);
+		assert items1.getDistinct()
+				.equals(new List<>("r", "D", "S"));
 
 		// has no reapeated items
 		final var items2 = new List<>("r", "D", "x", "o", "M");
-		final var distinctItems2 = items2.getDistinct();
-
-		assert distinctItems2.equals(items2);
+		assert items2.getDistinct()
+				.equals(items2);
 	}
 
 	@Test
 	public void filtersItems() {
-		// keeps items, which are in upper case
-		final var items = new List<>("r", "x", "O", "P", "z")
-				.filter(item -> item.toUpperCase().equals(item));
+		final var items = new List<>("r", "x", "O", "P", "z");
 
-		assert new List<>("O", "P")
-				.equals(items);
+		// keeps items, which are in upper case
+		assert items.filter(this::isUpperCase)
+				.equals(new List<>("O", "P"));
 	}
 
 	@Test
 	public void convertsItems() {
 		// converts to upper case
-		final var items1 = new List<>("c", "G", "d", "Y", "l")
-				.convert(String::toUpperCase);
+		// filters out no items
+		final var items1 = new List<>("c", "G", "d", "Y", "l");
+		assert items1.convert(String::toUpperCase)
+				.equals(new List<>("C", "G", "D", "Y", "L"));
 
-		assert new List<>("C", "G", "D", "Y", "L")
-				.equals(items1);
+		// converts items to upper case, only if it is in lower case
+		// filters out some items
+		final var items2 = new List<>("c", "G", "d", "Y", "l");
+		assert items2.convert(item -> isUpperCase(item) ? null : item.toUpperCase())
+				.equals(new List<>("C", "D", "L"));
 
-		// converts items to upper case, which are in lower case
-		final var items2 = new List<>("c", "G", "d", "Y", "l")
-				.convert(item -> item.toUpperCase().equals(item)
-				? null
-				: item.toUpperCase());
+		// filters out all items
+		final var items3 = new List<>("c", "G", "d", "Y", "l");
+		assert items3.convert(item -> null)
+				.equals(new List<>());
+	}
 
-		assert new List<>("C", "D", "L")
-				.equals(items2);
+	private boolean isUpperCase(String string) {
+		return string.toUpperCase()
+				.equals(string);
 	}
 }

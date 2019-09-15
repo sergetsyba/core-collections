@@ -73,12 +73,6 @@ public class EmptyMutableMapTests {
 				-> "bdbdgd") == entries3;
 
 		assert entries3.equals(emptyEntries);
-
-		// key is absent, but resolver is null;
-		// does nothing
-		final var entries4 = new MutableMap<String, String>();
-		assert entries4.set("p", "ndndbdh", null) == entries4;
-		assert entries4.equals(emptyEntries);
 	}
 
 	@Test

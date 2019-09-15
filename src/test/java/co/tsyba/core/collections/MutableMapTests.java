@@ -161,15 +161,6 @@ public class MutableMapTests {
 				"p", "jjsisi",
 				"r", "nbfbhd",
 				"f", "nsjjsn"));
-
-		// key is present, but resolver is null;
-		// does nothing
-		assert entries.set("p", "ndndbdh", null) == entries;
-		assert entries.equals(map(
-				"g", "aanjjakka",
-				"p", "jjsisi",
-				"r", "nbfbhd",
-				"f", "nsjjsn"));
 	}
 
 	@Test

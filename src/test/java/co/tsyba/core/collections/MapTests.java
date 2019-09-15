@@ -1,6 +1,5 @@
 package co.tsyba.core.collections;
 
-import java.util.Arrays;
 import org.junit.Test;
 
 /*
@@ -38,6 +37,8 @@ public class MapTests {
 		assert entries.contains("e");
 		// key is absent
 		assert entries.contains("U") == false;
+		// null key
+		assert entries.contains((String) null) == false;
 	}
 
 	@Test
@@ -58,6 +59,10 @@ public class MapTests {
 		assert entries.contains("E", "ms") == false;
 		// entry is absent
 		assert entries.contains("F", "asmanan") == false;
+		// null key
+		assert entries.contains(null, "ms") == false;
+		// null value
+		assert entries.contains("D", null) == false;
 	}
 
 	@Test
@@ -86,7 +91,8 @@ public class MapTests {
 				"Q", "osiem",
 				"z", "znznaha");
 
-		// some keys are absent
+		// some keys are absent;
+		// retuns those, which are present
 		final var entries2 = entries1.get(
 				new List<>("F", "Z", "z"));
 
@@ -94,19 +100,45 @@ public class MapTests {
 				"F", "annammja",
 				"z", "znznaha"));
 
-		// empty keys specified
+		// empty keys; returns nothing
 		final var entries3 = entries1.get(
 				new List<>());
 
 		assert entries3.equals(
 				map());
+
+		// null keys; returns nothing
+		final var entries4 = entries1.get((Collection<String>) null);
+		assert entries4.equals(
+				map());
+	}
+
+	@Test
+	public void returnsEntriesVariadic() {
+		final var entries1 = map(
+				"F", "annammja",
+				"f", "poqmma",
+				"Q", "osiem",
+				"z", "znznaha");
+
+		// some keys are absent;
+		// retuns those, which are present
+		entries1.get("F", "Z", "z")
+				.equals(map(
+						"F", "annammja",
+						"z", "znznaha"));
+
+		// empty keys; returns nothing
+		assert entries1.get()
+				.equals(map());
+
+		// null keys; returns nothing
+		assert entries1.get((String[]) null)
+				.equals(map());
 	}
 
 	@Test
 	public void filtersEntries() {
-		System.out.println(Arrays.hashCode(new String[] {"a", "b", null}));
-		System.out.println(Arrays.hashCode(new String[] {null, "a", "b", null}));
-
 		final var entries = map(
 				"p", "mnnnq",
 				"k", "kananj",
@@ -182,7 +214,7 @@ public class MapTests {
 				"c", "AMAMKKQ"));
 
 		// converts values to uppercase only when key in upper case
-		// filters out some entries nu returning null keys
+		// filters out some entries by returning null keys
 		final var entries3 = entries.convert((key, value)
 				-> new Map.Entry<>(isUpperCase(key) ? key : null, value));
 

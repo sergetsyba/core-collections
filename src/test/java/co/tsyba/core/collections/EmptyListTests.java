@@ -9,7 +9,7 @@ public class EmptyListTests {
 	private static final List<String> emptyItems = new List<>();
 
 	@Test
-	public void verifiesEmpty() {
+	public void checksEmpty() {
 		assert emptyItems.isEmpty();
 	}
 
@@ -19,13 +19,13 @@ public class EmptyListTests {
 	}
 
 	@Test
-	public void returnsNoFirstItem() {
+	public void returnsFirstItem() {
 		assert emptyItems.getFirst()
 				.isEmpty();
 	}
 
 	@Test
-	public void returnsNoLastItem() {
+	public void returnsLastItem() {
 		assert emptyItems.getLast()
 				.isEmpty();
 	}
@@ -42,13 +42,13 @@ public class EmptyListTests {
 	}
 
 	@Test
-	public void returnsNoDistinctItems() {
+	public void returnsDistinctItems() {
 		assert emptyItems.getDistinct()
 				.equals(emptyItems);
 	}
 
 	@Test
-	public void filtersNoItems() {
+	public void filtersItems() {
 		assert emptyItems.filter(String::isBlank)
 				.equals(emptyItems);
 	}

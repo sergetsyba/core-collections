@@ -150,8 +150,11 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 	}
 
 	public int find(Object entry) {
-		final var entryIndex = entry.hashCode() % capacity;
+		if (capacity == 0) {
+			return -1;
+		}
 
+		final var entryIndex = entry.hashCode() % capacity;
 		for (var probeIndex = entryIndex;; probeIndex += 1) {
 			final var storedEntry = storage[probeIndex];
 

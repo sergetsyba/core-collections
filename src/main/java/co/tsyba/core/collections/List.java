@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  * Created by Serge Tsyba <tsyba@me.com> on May 26, 2019.
  */
 public class List<T> implements IndexedCollection<T> {
-	final ContigousArrayStore<T> store;
+	ContigousArrayStore<T> store;
 
 	List(ContigousArrayStore<T> store) {
 		this.store = store;

@@ -9,29 +9,39 @@ public class MutableListTests {
 	@Test
 	public void removesFirstItem() {
 		final var items = new MutableList<>("g", "E", "x", "P", "d");
-		final var firstItem = items.removeFirst()
-				.get();
 
-		assert new List<>("E", "x", "P", "d")
-				.equals(items);
+		assert items.removeFirst()
+				.get()
+				.equals("g");
 
-		assert firstItem.equals("g");
+		assert items.equals(
+				new List<>("E", "x", "P", "d"));
 	}
 
 	@Test
 	public void removesLastItem() {
 		final var items = new MutableList<>("g", "E", "x", "P", "d");
-		final var firstItem = items.removeLast()
-				.get();
 
-		assert new List<>("g", "E", "x", "P")
-				.equals(items);
+		assert items.removeLast()
+				.get()
+				.equals("d");
 
-		assert firstItem.equals("d");
+		assert items.equals(
+				new List<>("g", "E", "x", "P"));
+	}
+
+	@Test
+	public void clearsItems() {
+		final var items = new MutableList<>("a", "R", "o", "c");
+
+		assert items.clear() == items;
+		assert items.equals(
+				new List<>());
 	}
 
 	@Test
 	public void guardsIndex() {
+		// note: this tests guarding also works with mutation
 		final var items = new MutableList<>("W", "W", "x", "x", "X");
 
 		// fisrt index
@@ -39,84 +49,85 @@ public class MutableListTests {
 				-> items.set(index, item.toLowerCase()));
 
 		assert items1 == items;
-		assert new MutableList<>("w", "W", "x", "x", "X")
-				.equals(items);
+		assert items.equals(
+				new List<>("w", "W", "x", "x", "X"));
 
 		// item in the middle
 		final var items2 = items.guard(1, (item, index)
 				-> items.set(index, item.toLowerCase()));
 
 		assert items2 == items;
-		assert new MutableList<>("w", "w", "x", "x", "X")
-				.equals(items);
+		assert items.equals(
+				new List<>("w", "w", "x", "x", "X"));
 
 		// item at the end
 		final var items3 = items.guard(4, (item, index)
 				-> items.set(index, item.toLowerCase()));
 
 		assert items3 == items;
-		assert new MutableList<>("w", "w", "x", "x", "x")
-				.equals(items);
+		assert items.equals(
+				new List<>("w", "w", "x", "x", "x"));
 
 		// index before valid range
 		final var items4 = items.guard(-1, (item, index)
 				-> items.set(index, item.toLowerCase()));
 
 		assert items4 == items;
-		assert new MutableList<>("w", "w", "x", "x", "x")
-				.equals(items);
+		assert items.equals(
+				new List<>("w", "w", "x", "x", "x"));
 
 		// index after valid range
 		final var items5 = items.guard(5, (item, index)
 				-> items.set(index, item.toLowerCase()));
 
 		assert items5 == items;
-		assert new MutableList<>("w", "w", "x", "x", "x")
-				.equals(items);
+		assert items.equals(
+				new List<>("w", "w", "x", "x", "x"));
 	}
 
 	@Test
 	public void returnsDistinctItems() {
 		// has reapeated items
 		final var items1 = new List<>("f", "S", "S", "f", "f");
-		final var distinctItems1 = items1.getDistinct();
-
-		assert new List<>("f", "S")
-				.equals(distinctItems1);
+		assert items1.getDistinct()
+				.equals(new List<>("f", "S"));
 
 		// has no reapeated items
 		final var items2 = new MutableList<>("e", "E", "q", "c", "P");
-		final var distinctItems2 = items2.getDistinct();
-
-		assert distinctItems2.equals(items2);
+		assert items2.getDistinct()
+				.equals(items2);
 	}
 
 	@Test
 	public void filtersItems() {
-		// keeps items in uppercase
-		final var items = new MutableList<>("r", "x", "O", "P", "z")
-				.filter(item -> item.toUpperCase().equals(item));
+		final var items = new MutableList<>("r", "x", "O", "P", "z");
 
-		assert new List<>("O", "P")
-				.equals(items);
+		// keeps items in uppercase
+		assert items.filter(this::isUpperCase)
+				.equals(new List<>("O", "P"));
 	}
 
 	@Test
 	public void convertsItems() {
-		// converts to uppercase
-		final var items1 = new MutableList<>("c", "G", "d", "Y", "l")
-				.convert(String::toUpperCase);
+		// converts to upper case
+		final var items1 = new List<>("c", "G", "d", "Y", "l");
+		assert items1.convert(String::toUpperCase)
+				.equals(new List<>("C", "G", "D", "Y", "L"));
 
-		assert new List<>("C", "G", "D", "Y", "L")
-				.equals(items1);
+		// converts items to upper case, only if it is in lower case
+		// filters out some items
+		final var items2 = new List<>("c", "G", "d", "Y", "l");
+		assert items2.convert(item -> isUpperCase(item) ? null : item.toUpperCase())
+				.equals(new List<>("C", "D", "L"));
 
-		// converts to uppercase, only items in lowecase
-		final var items2 = new MutableList<>("c", "G", "d", "Y", "l")
-				.convert(item -> item.toUpperCase().equals(item)
-				? null
-				: item.toUpperCase());
+		// filters out all values
+		final var items3 = new List<>("c", "G", "d", "Y", "l");
+		assert items3.convert(item -> null)
+				.equals(new List<>());
+	}
 
-		assert new List<>("C", "D", "L")
-				.equals(items2);
+	private boolean isUpperCase(String string) {
+		return string.toUpperCase()
+				.equals(string);
 	}
 }

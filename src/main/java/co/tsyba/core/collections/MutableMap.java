@@ -43,12 +43,12 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 * value, just like {@link #get(K)}.
 	 * <p>
 	 * When this map does not contain an entry with the specified key,
-	 * <em>inserts an new entry</em> with the specified key and backup value
-	 * into this map and returns the specified backup value.
+	 * <em>inserts a new entry</em> with the specified key and backup value into
+	 * this map and returns the specified backup value.
 	 * <p>
 	 * Does nothing when the specified key {@code null}. Similarly, does nothing
 	 * when this map does not contain an entry with the specified key and the
-	 * specified backup value is {@code null} and .
+	 * specified backup value is {@code null}.
 	 *
 	 * @param key
 	 * @param backupValue
@@ -113,11 +113,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 * @return
 	 */
 	public MutableMap<K, V> set(K key, V value, BiFunction<V, V, V> merger) {
-		if (merger == null) {
-			// do nothing when merger is null
-			return this;
-		}
-
 		final var setValue = get(key)
 				.map(storedValue -> merger.apply(storedValue, value))
 				.orElse(value);

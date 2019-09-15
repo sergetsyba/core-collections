@@ -88,6 +88,10 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 */
 	@Override
 	public boolean contains(K key) {
+		if (key == null) {
+			return false;
+		}
+
 		return store.find(key) >= 0;
 	}
 
@@ -142,12 +146,46 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns entries with the specified keys, which are present in this map.
+	 * Returns entries with the specified keys in this map.
 	 *
 	 * @param keys
 	 * @return
 	 */
 	public Map<K, V> get(Collection<K> keys) {
+		if (keys == null) {
+			// return nothing when the keys is null
+			return new Map<>();
+		}
+
+		final var returnedStore = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
+		for (var key : keys) {
+			get(key).ifPresent(value -> {
+				final var entry = new Entry<>(key, value);
+				returnedStore.insert(entry);
+			});
+		}
+
+		return new Map<>(returnedStore);
+	}
+
+	/**
+	 * Returns entries with the specified in from the map. Ignores any
+	 * {@code null}s among the specified keys.
+	 *
+	 * <p>
+	 * Does nothing when the specified variadic array is {@code null}.
+	 * <p>
+	 * Returns itself.
+	 *
+	 * @param keys
+	 * @return
+	 */
+	public Map<K, V> get(K... keys) {
+		if (keys == null) {
+			// return nothing when the keys is null
+			return new Map<>();
+		}
+
 		final var returnedStore = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
 		for (var key : keys) {
 			get(key).ifPresent(value -> {

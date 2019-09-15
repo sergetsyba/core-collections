@@ -9,31 +9,31 @@ public class EmptyMutableListTests {
 	private static final MutableList<String> emptyItems = new MutableList<>();
 
 	@Test
-	public void removesNoFirstItem() {
+	public void removesFirstItem() {
 		assert emptyItems.removeFirst()
 				.isEmpty();
 	}
 
 	@Test
-	public void removesNoLastItem() {
+	public void removesLastItem() {
 		assert emptyItems.removeLast()
 				.isEmpty();
 	}
 
 	@Test
-	public void returnsNoDistinctItems() {
+	public void returnsDistinctItems() {
 		assert emptyItems.getDistinct()
 				.equals(emptyItems);
 	}
 
 	@Test
-	public void filtersNoItems() {
+	public void filtersItems() {
 		assert emptyItems.filter(String::isBlank)
 				.equals(emptyItems);
 	}
 
 	@Test
-	public void convertsNoItems() {
+	public void convertsItems() {
 		assert emptyItems.convert(String::toUpperCase)
 				.equals(emptyItems);
 	}
