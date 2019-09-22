@@ -1,5 +1,6 @@
 package co.tsyba.core.collections;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Optional;
@@ -38,6 +39,21 @@ public class List<T> implements IndexedCollection<T> {
 	public List(T... items) {
 		this.store = new ContigousArrayStore<>(items.length);
 		this.store.append(items);
+		this.store.removeExcessCapacity();
+	}
+
+	/**
+	 * Creates a list with the specified items. Ignores any {@code null} values
+	 * among the items.
+	 *
+	 * @param items
+	 */
+	public List(Iterable<T> items) {
+		this.store = new ContigousArrayStore<>(64);
+		for (var item : items) {
+			this.store.append(item);
+		}
+
 		this.store.removeExcessCapacity();
 	}
 
@@ -250,6 +266,16 @@ public class List<T> implements IndexedCollection<T> {
 
 		convertedItems.removeExcessCapacity();
 		return new List<>(convertedItems);
+	}
+
+	/**
+	 * Converts this list into an instance of {@link java.util.List}.
+	 *
+	 * @return
+	 */
+	public java.util.List<T> bridge() {
+		final var items = Arrays.copyOf(store.storage, store.itemCount);
+		return Arrays.asList(items);
 	}
 
 	@Override

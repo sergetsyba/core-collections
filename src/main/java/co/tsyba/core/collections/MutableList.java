@@ -37,6 +37,16 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Creates a list with the specified items. Ignores any {@code null} values
+	 * among the items.
+	 *
+	 * @param items
+	 */
+	public MutableList(Iterable<T> items) {
+		super(items);
+	}
+
+	/**
 	 * Creates an empty list with the specified amount of reserved capacity.
 	 *
 	 * When item count is known in advance, reserving item capacity during list

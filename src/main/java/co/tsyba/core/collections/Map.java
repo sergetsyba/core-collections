@@ -1,5 +1,6 @@
 package co.tsyba.core.collections;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -56,6 +57,24 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 */
 	public Map() {
 		this.store = new RobinHoodHashStore<>(0);
+	}
+
+	/**
+	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores
+	 * any entries with {@code null} key or value.
+	 *
+	 * @param entries
+	 */
+	public Map(java.util.Map<K, V> entries) {
+		final var entryCount = entries.size();
+		this.store = new RobinHoodHashStore<>(entryCount);
+
+		entries.forEach((key, value) -> {
+			if (key != null && value != null) {
+				final var entry = new Entry<>(key, value);
+				this.store.insert(entry);
+			}
+		});
 	}
 
 	/**
@@ -262,6 +281,18 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		}
 
 		return new Map<>(convertEntries);
+	}
+
+	/**
+	 * Converts this map into an instance of {@link java.util.Map}.
+	 *
+	 * @return
+	 */
+	public java.util.Map<K, V> bridge() {
+		final var entries = new HashMap<K, V>();
+		iterate(entries::put);
+
+		return entries;
 	}
 
 	@Override

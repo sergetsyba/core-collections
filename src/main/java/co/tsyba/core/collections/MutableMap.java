@@ -35,12 +35,22 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
+	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores
+	 * any entries with {@code null} key or value.
+	 *
+	 * @param entries
+	 */
+	public MutableMap(java.util.Map<K, V> entries) {
+		super(entries);
+	}
+
+	/**
 	 * Returns value of an entry with the specified key in this map, keeping the
 	 * specified value as a backup.
 	 *
 	 * <p>
 	 * When this map contains an entry with the specified key, returns its
-	 * value, just like {@link #get(K)}.
+	 * value, just like {@link #get(java.lang.Object)}.
 	 * <p>
 	 * When this map does not contain an entry with the specified key,
 	 * <em>inserts a new entry</em> with the specified key and backup value into
@@ -95,7 +105,8 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 *
 	 * <p>
 	 * When this map does not contain an entry with the specified key, inserts a
-	 * new entry with the specified key and value, just like {@link #set(K, V)}.
+	 * new entry with the specified key and value, just like {@link #set(java.lang.Object, java.lang.Object)
+	 * }.
 	 * <p>
 	 * When this map contains an entry with the specified key, calls the
 	 * specified {@link BiFunction} with value of the existing entry and the

@@ -9,8 +9,8 @@ import java.util.function.BiPredicate;
  */
 public interface KeyedCollection<K, V> extends Iterable<Map.Entry<K, V>> {
 	/**
-	 * Returns {@link true} when this collection ha no entries; returns
-	 * {@link false} otherwise.
+	 * Returns {@code true} when this collection ha no entries; returns
+	 * {@code false} otherwise.
 	 *
 	 * @return
 	 */
