@@ -389,7 +389,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 			return false;
 		}
 
-		final var store = (ContigousArrayStore<T>) object;
+		final var store = (ContigousArrayStore) object;
 		return Arrays.equals(storage, 0, itemCount,
 				store.storage, 0, store.itemCount);
 	}

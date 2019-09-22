@@ -53,7 +53,7 @@ public class MapCollection<K, V> implements KeyedCollection<K, V> {
 				final var key = entry.getKey();
 				final var value = entry.getValue();
 
-				return new Entry(key, value) {
+				return new Entry<>(key, value) {
 				};
 			}
 		};

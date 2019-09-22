@@ -59,6 +59,21 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Returns items at the specified index range in this list.
+	 *
+	 * @throws IndexRangeNotInRangeException when the specified index range is
+	 * out of valid index range of this list
+	 *
+	 * @param indexRange
+	 * @return
+	 */
+	@Override
+	public MutableList<T> get(IndexRange indexRange) {
+		final var items = store.get(indexRange);
+		return new MutableList<>(items);
+	}
+
+	/**
 	 * Replaces item at the specified index in this list with the specified one.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid

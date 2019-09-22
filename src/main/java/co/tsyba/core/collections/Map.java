@@ -232,7 +232,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 			}
 		}
 
-		return new Map(filteredEntries);
+		return new Map<>(filteredEntries);
 	}
 
 	/**
@@ -364,7 +364,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 				return false;
 			}
 
-			final var entry = (Entry<K, V>) object;
+			final var entry = (Entry) object;
 			return key.equals(entry.key);
 		}
 	}

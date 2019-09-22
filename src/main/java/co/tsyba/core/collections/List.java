@@ -114,6 +114,20 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
+	 * Returns items at the specified index range in this list.
+	 *
+	 * @throws IndexRangeNotInRangeException when the specified index range is
+	 * out of valid index range of this list
+	 *
+	 * @param indexRange
+	 * @return
+	 */
+	public List<T> get(IndexRange indexRange) {
+		final var items = store.get(indexRange);
+		return new List<>(items);
+	}
+
+	/**
 	 * Returns item at the specified index when the index is within the valid
 	 * index range of this list. Returns an empty {@link Optional} otherwise.
 	 *
@@ -129,7 +143,6 @@ public class List<T> implements IndexedCollection<T> {
 		return Optional.of(item);
 	}
 
-	// todo: get(IndexRange)
 	/**
 	 * Returns distinct items of this list.
 	 *
