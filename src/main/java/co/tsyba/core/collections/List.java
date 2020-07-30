@@ -16,6 +16,12 @@ import java.util.function.Predicate;
 public class List<T> implements IndexedCollection<T> {
 	ContigousArrayStore<T> store;
 
+	/**
+	 * Creates a new list using the specified {@link ContigousArrayStore} as its
+	 * backing store.
+	 *
+	 * @param store
+	 */
 	List(ContigousArrayStore<T> store) {
 		this.store = store;
 	}
@@ -26,7 +32,7 @@ public class List<T> implements IndexedCollection<T> {
 	 * @param items
 	 */
 	public List(List<T> items) {
-		final var indexRange = new IndexRange(0, items.store.itemCount);
+		final var indexRange = new IndexRange(0, items.store.itemCount - 1);
 		this.store = new ContigousArrayStore<>(items.store, indexRange);
 	}
 

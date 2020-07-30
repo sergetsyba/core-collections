@@ -16,8 +16,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Creates a new array store with the specified capacity.
 	 *
-	 * @throws NegativeCapacityException when the specified store capacity is
-	 * negative
+	 * @throws NegativeCapacityException when the specified store capacity is negative
 	 */
 	public ContigousArrayStore(int capacity) {
 		if (capacity < 0) {
@@ -32,7 +31,9 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * Creates a copy of the specified index range in the specified array store.
 	 */
 	public ContigousArrayStore(ContigousArrayStore<T> items, IndexRange indexRange) {
-		this.storage = (T[]) new Object[items.itemCount];
+		this.itemCount = indexRange.end - indexRange.start + 1;
+		this.storage = (T[]) new Object[itemCount];
+		arraycopy(items.storage, indexRange.start, storage, 0, itemCount);
 	}
 
 	private ContigousArrayStore(T[] storage, int itemCount) {
@@ -41,8 +42,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this store contains an item at the specified
-	 * index; returns {@code false} otherwise.
+	 * Returns {@code true} when this store contains an item at the specified index;
+	 * returns {@code false} otherwise.
 	 */
 	public boolean hasIndex(int index) {
 		return index >= 0
@@ -50,8 +51,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this store contains items at the specified
-	 * index range; returns {@code false} otherwise.
+	 * Returns {@code true} when this store contains items at the specified index range;
+	 * returns {@code false} otherwise.
 	 */
 	public boolean hasIndexRange(IndexRange indexRange) {
 		return indexRange.start >= 0
@@ -61,8 +62,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Returns item at the specified index in this store.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this store
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this store
 	 */
 	public T get(int index) {
 		if (!hasIndex(index)) {
@@ -76,8 +77,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Returns items at the specified index range in this store.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is
-	 * out of valid index range of this store
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this store
 	 */
 	public ContigousArrayStore<T> get(IndexRange indexRange) {
 		if (!hasIndexRange(indexRange)) {
@@ -93,11 +94,11 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Replaces item at the specified index with the specified one. Does nothing
-	 * when the specified item is {@code null}.
+	 * Replaces item at the specified index with the specified one. Does nothing when the
+	 * specified item is {@code null}.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this store
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this store
 	 */
 	public void set(int index, T item) {
 		if (!hasIndex(index)) {
@@ -112,8 +113,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Appends the specified item to the end of this store. Does nothing when
-	 * the specified item is {@code null}.
+	 * Appends the specified item to the end of this store. Does nothing when the
+	 * specified item is {@code null}.
 	 */
 	public void append(T item) {
 		if (item == null) {
@@ -137,8 +138,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Appends the specified items to the end of this store. Ignores any
-	 * {@code null} values among the items.
+	 * Appends the specified items to the end of this store. Ignores any {@code null}
+	 * values among the items.
 	 */
 	public void append(T... items) {
 		prepareCapacity(items.length);
@@ -152,11 +153,11 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Inserts the specified item into this store at the specified index. Does
-	 * nothing when the specified item is {@code null}.
+	 * Inserts the specified item into this store at the specified index. Does nothing
+	 * when the specified item is {@code null}.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this store
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this store
 	 */
 	public void insert(int index, T item) {
 		if (!hasIndex(index)) {
@@ -176,11 +177,10 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Inserts items of the specified store into this store at the specified
-	 * index.
+	 * Inserts items of the specified store into this store at the specified index.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this store
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this store
 	 */
 	public void insert(int index, ContigousArrayStore<T> store) {
 		if (!hasIndex(index)) {
@@ -199,8 +199,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Removes item at the specified index from this store.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this store
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this store
 	 */
 	public void remove(int index) {
 		if (!hasIndex(index)) {
@@ -220,8 +220,8 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Removes items at the specified index range from this store.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is
-	 * out of valid index range of this store
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this store
 	 */
 	public void remove(IndexRange indexRange) {
 		if (!hasIndexRange(indexRange)) {
@@ -261,8 +261,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this store, ordered according to the specified
-	 * {@link Comparator}.
+	 * Returns items of this store, ordered according to the specified {@link Comparator}.
 	 */
 	public ContigousArrayStore<T> sort(Comparator<T> comparator) {
 		final var sortedItems = (T[]) new Object[itemCount];

@@ -291,4 +291,11 @@ public class MutableList<T> extends List<T> {
 
 		return new MutableList<>(convertedStore);
 	}
+
+	/**
+	 * @return
+	 */
+	public List<T> toImmutable() {
+		return new List<>(this);
+	}
 }
