@@ -9,44 +9,44 @@ import org.junit.Test;
  */
 public class RobinHoodHashStoreTests {
 	@Test
-	public void testHashStoreCreatesEmptyHashStore() {
+	public void createsEmptyHashStore() {
 		final var store = new RobinHoodHashStore<Integer>(0);
 		assert store.storageEquals();
 	}
 
 	@Test
-	public void testHashStoreCreatesHashStore() {
+	public void createsHashStore() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		assert store.storageEquals(null, null, null, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testHashStoreDoesNotCreateHashStoreWithNegativeCapacity() {
+	public void doesNotCreateHashStoreWithNegativeCapacity() {
 		new RobinHoodHashStore<Integer>(-1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testHashStoreDoesNotCreateHashStoreWithNegativeLoadFactor() {
+	public void doesNotCreateHashStoreWithNegativeLoadFactor() {
 		new RobinHoodHashStore<Integer>(5, -0.1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testHashStoreDoesNotCreateHashStoreWithLoadFactorZero() {
+	public void doesNotCreateHashStoreWithLoadFactorZero() {
 		new RobinHoodHashStore<Integer>(5, 0.0);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testHashStoreDoesNotCreateHashStoreWithLoadFactorOne() {
+	public void doesNotCreateHashStoreWithLoadFactorOne() {
 		new RobinHoodHashStore<Integer>(5, 1.0);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testHashStoreDoesNotCreateHashStoreWithLoadFactorOverOne() {
+	public void doesNotCreateHashStoreWithLoadFactorOverOne() {
 		new RobinHoodHashStore<Integer>(5, 1.1);
 	}
 
 	@Test
-	public void testHashStoreAddsItemIntoEmptySlot() {
+	public void addsItemIntoEmptySlot() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(17);
 		store.insert(0);
@@ -55,7 +55,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreAddsItemDisplacedBySameDegreeEntries() {
+	public void addsItemDisplacedBySameDegreeEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(10);
@@ -65,7 +65,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreAddsItemDisplacedByPoorerEntries() {
+	public void addsItemDisplacedByPoorerEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(5);
@@ -77,7 +77,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreAddsItemDisplacedByRicherEntries() {
+	public void addsItemDisplacedByRicherEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(1);
@@ -89,7 +89,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreAddsItemDisplacedBySameHashEntry() {
+	public void addsItemDisplacedBySameHashEntry() {
 		final var entry1 = new IntegerValueHash42(0);
 		final var entry2 = new IntegerValueHash42(17);
 
@@ -101,7 +101,24 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreReplacesEqualItem() {
+	public void addsItemWithNegativeHashCode() {
+		final var store = new RobinHoodHashStore<Integer>(5, 5);
+		store.insert(-3);
+
+		assert store.storageIs(null, null, -3, null, null);
+	}
+
+	@Test
+	public void addsItemDisplacedByItemWithNegativeHashCode() {
+		final var store = new RobinHoodHashStore<Integer>(5, 5);
+		store.insert(-3);
+		store.insert(7);
+
+		assert store.storageIs(null, null, -3, 7, null);
+	}
+
+	@Test
+	public void storeReplacesEqualItem() {
 		final var entry1 = new IntegerValue(12);
 		final var entry2 = new IntegerValue(12);
 		assert entry1 != entry2;
@@ -115,7 +132,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemInExactSlot() {
+	public void storeFindsItemInExactSlot() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(27);
 		store.insert(13);
@@ -126,7 +143,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemDisplacedBySameDegreeEntries() {
+	public void findsItemDisplacedBySameDegreeEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(2);
 		store.insert(12);
@@ -137,7 +154,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemDisplacedByPoorerEntries() {
+	public void findsItemDisplacedByPoorerEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(5);
@@ -150,7 +167,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsItemDisplacedByRicherEntries() {
+	public void findsItemDisplacedByRicherEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(1);
@@ -163,7 +180,29 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreFindsNoAbsentItem() {
+	public void findsItemWithNegativeHashCode() {
+		final var store = new RobinHoodHashStore<Integer>(5, 5);
+		store.insert(7);
+		store.insert(2);
+		store.insert(-3);
+
+		final var index = store.find(-3);
+		assert index == 4;
+	}
+
+	@Test
+	public void findsItemDisplacedByItemWithNegativeHashCode() {
+		final var store = new RobinHoodHashStore<Integer>(5, 5);
+		store.insert(-8);
+		store.insert(-13);
+		store.insert(7);
+
+		final var index = store.find(7);
+		assert index == 4;
+	}
+
+	@Test
+	public void findsNoAbsentItem() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(7);
@@ -174,7 +213,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesItemInExactSlot() {
+	public void removesItemInExactSlot() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(4);
 		store.insert(12);
@@ -185,7 +224,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesItemDisplacedBySameDegreeEntries() {
+	public void removesItemDisplacedBySameDegreeEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(7);
 		store.insert(32);
@@ -196,7 +235,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesItemDisplacedByPoorerEntries() {
+	public void removesItemDisplacedByPoorerEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(1);
 		store.insert(21);
@@ -209,7 +248,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesItemDisplacedByRicherEntries() {
+	public void removesItemDisplacedByRicherEntries() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(1);
@@ -222,7 +261,29 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreRemovesNoAbsentItem() {
+	public void removesItemWithNegativeHashCode() {
+		final var store = new RobinHoodHashStore<Integer>(5, 5);
+		store.insert(6);
+		store.insert(-3);
+		store.insert(2);
+
+		assert store.remove(-3);
+		assert store.storageEquals(null, 6, 2, null, null);
+	}
+
+	@Test
+	public void removesItemDisplacedByItemWithNegativeHashCode() {
+		final var store = new RobinHoodHashStore<Integer>(5, 5);
+		store.insert(-13);
+		store.insert(-3);
+		store.insert(2);
+
+		assert store.remove(2);
+		assert store.storageEquals(null, null, -13, -3, null);
+	}
+
+	@Test
+	public void removesNoAbsentItem() {
 		final var store = new RobinHoodHashStore<Integer>(5, 5);
 		store.insert(0);
 		store.insert(7);
@@ -233,7 +294,7 @@ public class RobinHoodHashStoreTests {
 	}
 
 	@Test
-	public void testHashStoreExpandsStorageAfterBucketReachesProbeDistanceLimit() {
+	public void expandsStorageAfterBucketReachesProbeDistanceLimit() {
 		final var store = new RobinHoodHashStore<Integer>(5, 0.75);
 		store.insert(0);
 		store.insert(5);

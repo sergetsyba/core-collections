@@ -64,7 +64,7 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 	}
 
 	private int prepareInsertionSlot(Entry entry) {
-		final var entryIndex = entry.hashCode % capacity;
+		final var entryIndex = estimateIndex(entry);
 		final var probeIndexLimit = entryIndex + probeDistanceLimit;
 
 		for (var probeIndex = entryIndex; probeIndex < probeIndexLimit; probeIndex += 1) {
@@ -78,22 +78,30 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 				// probed an equal entry; replace it with the new entry
 				return probeIndex;
 			}
-			else if (storedEntry.hashCode % capacity > entryIndex) {
-				// probed an entry with bucket index higher than that of the
-				// new entry (i.e. an entry with lower probe distance, than
-				// that of the new entry); shift the remainder of the entry
-				// cluster one position to the right and place the entry into
-				// the freed slot
-				shiftEntriesRight(probeIndex);
+			else {
+				final var storedEntryIndex = estimateIndex(storedEntry);
+				if (storedEntryIndex > entryIndex) {
+					// probed an entry with bucket index higher than that of the
+					// new entry (i.e. an entry with lower probe distance, than
+					// that of the new entry); shift the remainder of the entry
+					// cluster one position to the right and place the entry into
+					// the freed slot
+					shiftEntriesRight(probeIndex);
 
-				// clear insertion slot to indicate a new entry being inserted
-				storage[probeIndex] = null;
+					// clear insertion slot to indicate a new entry being inserted
+					storage[probeIndex] = null;
 
-				return probeIndex;
+					return probeIndex;
+				}
 			}
 		}
 
 		return -1;
+	}
+
+	private int estimateIndex(Object entry) {
+		final var hashCode = entry.hashCode();
+		return Math.floorMod(hashCode, capacity);
 	}
 
 	private void shiftEntriesRight(int index) {
@@ -154,7 +162,7 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			return -1;
 		}
 
-		final var entryIndex = entry.hashCode() % capacity;
+		final var entryIndex = estimateIndex(entry);
 		for (var probeIndex = entryIndex;; probeIndex += 1) {
 			final var storedEntry = storage[probeIndex];
 
@@ -166,10 +174,13 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 				// found the equal item
 				return probeIndex;
 			}
-			else if (storedEntry.hashCode % capacity > entryIndex) {
-				// probed an entry with bucket index higher than that
-				// of the new entry; store contains no such item
-				return -1;
+			else {
+				final var storedEntryIndex = estimateIndex(entry);
+				if (storedEntryIndex > entryIndex) {
+					// probed an entry with bucket index higher than that
+					// of the new entry; store contains no such item
+					return -1;
+				}
 			}
 		}
 	}
@@ -302,6 +313,21 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		public Entry(T item) {
 			this.item = item;
 			this.hashCode = item.hashCode();
+		}
+
+		@Override
+		public int hashCode() {
+			return hashCode;
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (!(object instanceof Entry)) {
+				return false;
+			}
+
+			final var entry = (Entry) object;
+			return item.equals(entry.item);
 		}
 	}
 }
