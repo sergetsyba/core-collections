@@ -26,8 +26,8 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values
-	 * among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the
+	 * items.
 	 *
 	 * @param items
 	 */
@@ -37,8 +37,8 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values
-	 * among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the
+	 * items.
 	 *
 	 * @param items
 	 */
@@ -49,8 +49,8 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Creates an empty list with the specified amount of reserved capacity.
 	 *
-	 * When item count is known in advance, reserving item capacity during list
-	 * creation improves performance of item insertion and item appending.
+	 * When item count is known in advance, reserving item capacity during list creation
+	 * improves performance of item insertion and item appending.
 	 *
 	 * @param capacity
 	 */
@@ -61,8 +61,8 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Returns items at the specified index range in this list.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is
-	 * out of valid index range of this list
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this list.
 	 *
 	 * @param indexRange
 	 * @return
@@ -76,8 +76,8 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Replaces item at the specified index in this list with the specified one.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 *
 	 * @param index
 	 * @param item
@@ -89,8 +89,8 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Appends the specified item to the end of this list. Does nothing when the
-	 * specified item is {@code null}. Returns itself.
+	 * Appends the specified item to the end of this list. Does nothing when the specified
+	 * item is {@code null}. Returns itself.
 	 *
 	 * @param item
 	 * @return
@@ -112,8 +112,8 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Appends the specified items to the end of this list. Ignores any
-	 * {@code null} values among the items. Returns itself.
+	 * Appends the specified items to the end of this list. Ignores any {@code null}
+	 * values among the items. Returns itself.
 	 *
 	 * @param items
 	 * @return
@@ -124,11 +124,11 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Inserts the specified item into this list at the specified index. Does
-	 * nothing when the specified item is {@code null}.
+	 * Inserts the specified item into this list at the specified index. Does nothing when
+	 * the specified item is {@code null}.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 *
 	 * @param index
 	 * @param item
@@ -142,8 +142,8 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Inserts the specified items into this list at the specified index.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 *
 	 * @param index
 	 * @param items
@@ -155,8 +155,8 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes the first item from this list. Returns the removed item. Returns
-	 * an empty {@link Optional} when this list is empty.
+	 * Removes the first item from this list. Returns the removed item. Returns an empty
+	 * {@link Optional} when this list is empty.
 	 *
 	 * @return
 	 */
@@ -170,8 +170,8 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes the last item from this list. Returns the removed item. Returns
-	 * an empty {@link Optional} when this list is empty.
+	 * Removes the last item from this list. Returns the removed item. Returns an empty
+	 * {@link Optional} when this list is empty.
 	 *
 	 * @return
 	 */
@@ -185,37 +185,31 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes item at the specified index from this list. Returns the removed
-	 * item.
+	 * Removes item at the specified index from this list. Returns itself.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 *
 	 * @param index
 	 * @return
 	 */
-	public T remove(int index) {
-		final var item = get(index);
+	public MutableList<T> remove(int index) {
 		store.remove(index);
-
-		return item;
+		return this;
 	}
 
 	/**
-	 * Removes items at the specified index range from this list. Returns the
-	 * removed items.
+	 * Removes items at the specified index range from this list. Returns itself.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is
-	 * out of valid index range of this list
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this list
 	 *
 	 * @param indexRange
 	 * @return
 	 */
 	public MutableList<T> remove(IndexRange indexRange) {
-		final var items = store.get(indexRange);
 		store.remove(indexRange);
-
-		return new MutableList<>(items);
+		return this;
 	}
 
 	/**
@@ -229,9 +223,9 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Applies the specified {@link BiConsumer} to item at the specified index
-	 * when the index is within the valid index range of this list. Does nothing
-	 * otherwise. Returns itself.
+	 * Applies the specified {@link BiConsumer} to item at the specified index when the
+	 * index is within the valid index range of this list. Does nothing otherwise. Returns
+	 * itself.
 	 *
 	 * @param index
 	 * @param operation

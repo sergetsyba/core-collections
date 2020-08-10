@@ -17,8 +17,8 @@ public class List<T> implements IndexedCollection<T> {
 	ContigousArrayStore<T> store;
 
 	/**
-	 * Creates a new list using the specified {@link ContigousArrayStore} as its
-	 * backing store.
+	 * Creates a new list using the specified {@link ContigousArrayStore} as its backing
+	 * store.
 	 *
 	 * @param store
 	 */
@@ -32,13 +32,18 @@ public class List<T> implements IndexedCollection<T> {
 	 * @param items
 	 */
 	public List(List<T> items) {
-		final var indexRange = new IndexRange(0, items.store.itemCount - 1);
-		this.store = new ContigousArrayStore<>(items.store, indexRange);
+		if (items.isEmpty()) {
+			this.store = new ContigousArrayStore<>(0);
+		}
+		else {
+			final var indexRange = new IndexRange(0, items.store.itemCount - 1);
+			this.store = new ContigousArrayStore<>(items.store, indexRange);
+		}
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values
-	 * among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the
+	 * items.
 	 *
 	 * @param items
 	 */
@@ -49,8 +54,8 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values
-	 * among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the
+	 * items.
 	 *
 	 * @param items
 	 */
@@ -64,8 +69,7 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this list is empty; returns {@code false}
-	 * otherwise.
+	 * Returns {@code true} when this list is empty; returns {@code false} otherwise.
 	 *
 	 * @return
 	 */
@@ -85,8 +89,8 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns the first item of this list. Returns an empty {@link Optional}
-	 * when this list is empty.
+	 * Returns the first item of this list. Returns an empty {@link Optional} when this
+	 * list is empty.
 	 *
 	 * @return
 	 */
@@ -96,8 +100,8 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns the last item of this list. Returns an empty {@link Optional}
-	 * when this list is empty.
+	 * Returns the last item of this list. Returns an empty {@link Optional} when this
+	 * list is empty.
 	 *
 	 * @return
 	 */
@@ -109,8 +113,8 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Returns item at the specified index in this list.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 * index range of this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 *
 	 * @param index
 	 * @return
@@ -122,8 +126,8 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Returns items at the specified index range in this list.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is
-	 * out of valid index range of this list
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this list
 	 *
 	 * @param indexRange
 	 * @return
@@ -134,8 +138,8 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns item at the specified index when the index is within the valid
-	 * index range of this list. Returns an empty {@link Optional} otherwise.
+	 * Returns item at the specified index when the index is within the valid index range
+	 * of this list. Returns an empty {@link Optional} otherwise.
 	 *
 	 * @param index
 	 * @return
@@ -181,8 +185,7 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns items of this list, ordered according to the specified
-	 * {@link Comparator}.
+	 * Returns items of this list, ordered according to the specified {@link Comparator}.
 	 *
 	 * @param comparator
 	 * @return
@@ -209,8 +212,8 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Applies the specified {@link Consumer} to every item of this list.
 	 *
-	 * The specified {@link Consumer} is applied consecutively to every item
-	 * from first to last. Returns itself.
+	 * The specified {@link Consumer} is applied consecutively to every item from first to
+	 * last. Returns itself.
 	 *
 	 * @param operation
 	 * @return
@@ -221,12 +224,10 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Applies the specified {@link Consumer} to every item and its index in
-	 * this list.
+	 * Applies the specified {@link Consumer} to every item and its index in this list.
 	 *
-	 * The specified {@link Consumer} is applied consecutively to every item
-	 * from first to last and to every index from starting to ending. Returns
-	 * itself.
+	 * The specified {@link Consumer} is applied consecutively to every item from first to
+	 * last and to every index from starting to ending. Returns itself.
 	 *
 	 * @param operation
 	 * @return
@@ -239,9 +240,9 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Returns items of this list, which match the specified {@link Predicate}.
 	 *
-	 * This operation preserves relative item order - the filtered items will
-	 * appear in the same relative order in the returned list as they appear in
-	 * this list (accounting for items removed by filtering).
+	 * This operation preserves relative item order - the filtered items will appear in
+	 * the same relative order in the returned list as they appear in this list
+	 * (accounting for items removed by filtering).
 	 *
 	 * @param condition
 	 * @return
@@ -260,16 +261,14 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns items of this list, converted using the specified
-	 * {@link Function}.
+	 * Returns items of this list, converted using the specified {@link Function}.
 	 *
-	 * This operation preserves relative item order - the converted items will
-	 * appear in the same relative order in the returned list as their originals
-	 * in this list.
+	 * This operation preserves relative item order - the converted items will appear in
+	 * the same relative order in the returned list as their originals in this list.
 	 *
-	 * Any {@code null} value returned by the specified {@link Function} will be
-	 * ignored. This can be used to perform both item filtering and conversion
-	 * in a single operation.
+	 * Any {@code null} value returned by the specified {@link Function} will be ignored.
+	 * This can be used to perform both item filtering and conversion in a single
+	 * operation.
 	 *
 	 * @param <R>
 	 * @param converter
