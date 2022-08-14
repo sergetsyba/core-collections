@@ -1,16 +1,16 @@
 package co.tsyba.core.collections.data;
 
 import co.tsyba.core.collections.Collection;
-import co.tsyba.core.collections.IndexedCollection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import co.tsyba.core.collections.OrderedCollection;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Aug 11, 2019.
  */
-public class ListCollection<T> implements IndexedCollection<T> {
+public class ListCollection<T> implements OrderedCollection<T> {
 	private final java.util.List<T> items;
 
 	public ListCollection(T... items) {
@@ -23,17 +23,17 @@ public class ListCollection<T> implements IndexedCollection<T> {
 	}
 
 	@Override
-	public IndexedCollection<T> reverse() {
+	public OrderedCollection<T> reverse() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IndexedCollection<T> shuffle() {
+	public OrderedCollection<T> shuffle() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IndexedCollection<T> sort(Comparator<T> comparator) {
+	public OrderedCollection<T> sort(Comparator<T> comparator) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -56,4 +56,9 @@ public class ListCollection<T> implements IndexedCollection<T> {
 	public Iterator<T> iterator(int startIndex) {
 		return items.listIterator(startIndex);
 	}
+
+    @Override
+    public Iterator<T> reverseIterator() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

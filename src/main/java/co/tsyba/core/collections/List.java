@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 /*
  * Created by Serge Tsyba <tsyba@me.com> on May 26, 2019.
  */
-public class List<T> implements IndexedCollection<T> {
+public class List<T> implements OrderedCollection<T> {
 	ContigousArrayStore<T> store;
 
 	/**
@@ -220,7 +220,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
-		return (List<T>) IndexedCollection.super.iterate(operation);
+		return (List<T>) OrderedCollection.super.iterate(operation);
 	}
 
 	/**
@@ -234,7 +234,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
-		return (List<T>) IndexedCollection.super.enumerate(operation);
+		return (List<T>) OrderedCollection.super.enumerate(operation);
 	}
 
 	/**
@@ -328,4 +328,9 @@ public class List<T> implements IndexedCollection<T> {
 	public String toString() {
 		return "[" + join(", ") + "]";
 	}
+
+    @Override
+    public Iterator<T> reverseIterator() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
