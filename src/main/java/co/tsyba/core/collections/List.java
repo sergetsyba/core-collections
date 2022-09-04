@@ -74,8 +74,6 @@ public class List<T> implements OrderedCollection<T> {
 
 	/**
 	 * Returns the number of items in this list.
-	 *
-	 * @return
 	 */
 	@Override
 	public int getCount() {

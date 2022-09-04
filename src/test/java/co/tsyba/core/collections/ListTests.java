@@ -26,18 +26,22 @@ public class ListTests {
 		}
 	}
 
-	@Test
-	@DisplayName("verifies not empty")
-	public void checksEmpty() {
-		final var items = new List<>("t", "g", "e", "b", "T");
-		assert items.isEmpty() == false;
-	}
+	@Nested
+	@DisplayName(".getCount")
+	class GetCountTests {
+		@Test
+		@DisplayName("returns item count")
+		void returnsCount() {
+			final var items = new List<>("g", "T", "e", "e");
+			assert items.getCount() == 4;
+		}
 
-	@Test
-	@DisplayName("returns item count")
-	public void returnsCount() {
-		final var items = new List<>("g", "T", "e", "e");
-		assert items.getCount() == 4;
+		@Test
+		@DisplayName("return 0 when empty")
+		void returnsCountWhenEmpty() {
+			assert new List<>()
+					.getCount() == 0;
+		}
 	}
 
 	@Test
