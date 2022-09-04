@@ -84,8 +84,6 @@ public class List<T> implements OrderedCollection<T> {
 	 * Returns the first item of this list.
 	 * <p>
 	 * Returns an empty {@link Optional} when this list is empty.
-	 *
-	 * @return
 	 */
 	@Override
 	public Optional<T> getFirst() {
@@ -96,8 +94,6 @@ public class List<T> implements OrderedCollection<T> {
 	 * Returns the last item of this list.
 	 * <p>
 	 * Returns an empty {@link Optional} when this list is empty.
-	 *
-	 * @return
 	 */
 	@Override
 	public Optional<T> getLast() {
