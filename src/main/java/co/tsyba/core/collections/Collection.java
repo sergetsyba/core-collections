@@ -178,7 +178,7 @@ public interface Collection<T> extends Iterable<T> {
      * @param comparator
      * @return
      */
-    OrderedCollection<T> sort(Comparator<T> comparator);
+    IndexedCollection<T> sort(Comparator<T> comparator);
 
     /**
      * Applies the specified {@link Consumer} to every item of this collection.

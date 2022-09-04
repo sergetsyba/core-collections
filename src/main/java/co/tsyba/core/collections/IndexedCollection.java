@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 3, 2019.
  */
-public interface OrderedCollection<T> extends Collection<T> {
+public interface IndexedCollection<T> extends Collection<T> {
     /**
      * Returns the first item of this collection.
      *
@@ -51,7 +51,7 @@ public interface OrderedCollection<T> extends Collection<T> {
      * @param items
      * @return
      */
-    default boolean contains(OrderedCollection<T> items) {
+    default boolean contains(IndexedCollection<T> items) {
         return find(items)
                 .isPresent();
     }
@@ -80,7 +80,7 @@ public interface OrderedCollection<T> extends Collection<T> {
      * @param items
      * @return
      */
-    default Optional<Integer> find(OrderedCollection<T> items) {
+    default Optional<Integer> find(IndexedCollection<T> items) {
         var iterator1 = iterator();
         if (!iterator1.hasNext()) {
             // this collection is empty
@@ -147,14 +147,14 @@ public interface OrderedCollection<T> extends Collection<T> {
      *
      * @return
      */
-    OrderedCollection<T> reverse();
+    IndexedCollection<T> reverse();
 
     /**
      * Returns items of this collection in random order.
      *
      * @return
      */
-    OrderedCollection<T> shuffle();
+    IndexedCollection<T> shuffle();
 
     /**
      * Applies the specified {@link Consumer} to every item and its index in
@@ -165,7 +165,7 @@ public interface OrderedCollection<T> extends Collection<T> {
      * @param operation
      * @return
      */
-    default OrderedCollection<T> enumerate(BiConsumer<T, Integer> operation) {
+    default IndexedCollection<T> enumerate(BiConsumer<T, Integer> operation) {
         var index = 0;
         for (var item : this) {
             operation.accept(item, index);

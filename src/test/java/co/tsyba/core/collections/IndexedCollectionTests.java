@@ -114,7 +114,7 @@ public class IndexedCollectionTests {
 				List.of(0, 1, 2, 3, 4));
 	}
 
-	private static <T> OrderedCollection<T> collect(T... items) {
+	private static <T> IndexedCollection<T> collect(T... items) {
 		return new ListCollection<>(items);
 	}
 }

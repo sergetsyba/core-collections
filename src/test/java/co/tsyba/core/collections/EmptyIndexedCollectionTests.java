@@ -8,7 +8,7 @@ import org.junit.Test;
  * Created by Serge Tsyba <tsyba@me.com> on Jul 17, 2019.
  */
 public class EmptyIndexedCollectionTests {
-	private static final OrderedCollection<String> emptyItems = new ListCollection<>();
+	private static final IndexedCollection<String> emptyItems = new ListCollection<>();
 	
 	@Test
 	public void returnsNoFirstItem() {
