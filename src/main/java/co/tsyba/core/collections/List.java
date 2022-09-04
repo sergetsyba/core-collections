@@ -1,10 +1,6 @@
 package co.tsyba.core.collections;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -17,8 +13,8 @@ public class List<T> implements OrderedCollection<T> {
 	ContigousArrayStore<T> store;
 
 	/**
-	 * Creates a new list using the specified {@link ContigousArrayStore} as its backing
-	 * store.
+	 * Creates a new list using the specified {@link ContigousArrayStore} as its
+	 * backing store.
 	 *
 	 * @param store
 	 */
@@ -34,16 +30,15 @@ public class List<T> implements OrderedCollection<T> {
 	public List(List<T> items) {
 		if (items.isEmpty()) {
 			this.store = new ContigousArrayStore<>(0);
-		}
-		else {
+		} else {
 			final var indexRange = new IndexRange(0, items.store.itemCount - 1);
 			this.store = new ContigousArrayStore<>(items.store, indexRange);
 		}
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the
-	 * items.
+	 * Creates a list with the specified items. Ignores any {@code null} values
+	 * among the items.
 	 *
 	 * @param items
 	 */
@@ -54,8 +49,8 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the
-	 * items.
+	 * Creates a list with the specified items. Ignores any {@code null} values
+	 * among the items.
 	 *
 	 * @param items
 	 */
@@ -69,9 +64,8 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this list is empty; returns {@code false} otherwise.
-	 *
-	 * @return
+	 * Returns {@code true} when this list is empty; returns {@code false}
+	 * otherwise.
 	 */
 	@Override
 	public boolean isEmpty() {
@@ -89,8 +83,9 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns the first item of this list. Returns an empty {@link Optional} when this
-	 * list is empty.
+	 * Returns the first item of this list.
+	 * <p>
+	 * Returns an empty {@link Optional} when this list is empty.
 	 *
 	 * @return
 	 */
@@ -100,8 +95,9 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns the last item of this list. Returns an empty {@link Optional} when this
-	 * list is empty.
+	 * Returns the last item of this list.
+	 * <p>
+	 * Returns an empty {@link Optional} when this list is empty.
 	 *
 	 * @return
 	 */
@@ -113,11 +109,10 @@ public class List<T> implements OrderedCollection<T> {
 	/**
 	 * Returns item at the specified index in this list.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this list
-	 *
 	 * @param index
 	 * @return
+	 * @throws IndexNotInRangeException when the specified index is out of valid
+	 *                                  index range of this list
 	 */
 	public T get(int index) {
 		return store.storage[index];
@@ -126,11 +121,10 @@ public class List<T> implements OrderedCollection<T> {
 	/**
 	 * Returns items at the specified index range in this list.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this list
-	 *
 	 * @param indexRange
 	 * @return
+	 * @throws IndexRangeNotInRangeException when the specified index range is
+	 *                                       out of valid index range of this list
 	 */
 	public List<T> get(IndexRange indexRange) {
 		final var items = store.get(indexRange);
@@ -138,8 +132,8 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns item at the specified index when the index is within the valid index range
-	 * of this list. Returns an empty {@link Optional} otherwise.
+	 * Returns item at the specified index when the index is within the valid
+	 * index range of this list. Returns an empty {@link Optional} otherwise.
 	 *
 	 * @param index
 	 * @return
@@ -185,7 +179,8 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns items of this list, ordered according to the specified {@link Comparator}.
+	 * Returns items of this list, ordered according to the specified
+	 * {@link Comparator}.
 	 *
 	 * @param comparator
 	 * @return
@@ -211,9 +206,9 @@ public class List<T> implements OrderedCollection<T> {
 
 	/**
 	 * Applies the specified {@link Consumer} to every item of this list.
-	 *
-	 * The specified {@link Consumer} is applied consecutively to every item from first to
-	 * last. Returns itself.
+	 * <p>
+	 * The specified {@link Consumer} is applied consecutively to every item
+	 * from first to last. Returns itself.
 	 *
 	 * @param operation
 	 * @return
@@ -224,10 +219,12 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Applies the specified {@link Consumer} to every item and its index in this list.
-	 *
-	 * The specified {@link Consumer} is applied consecutively to every item from first to
-	 * last and to every index from starting to ending. Returns itself.
+	 * Applies the specified {@link Consumer} to every item and its index in
+	 * this list.
+	 * <p>
+	 * The specified {@link Consumer} is applied consecutively to every item
+	 * from first to last and to every index from starting to ending. Returns
+	 * itself.
 	 *
 	 * @param operation
 	 * @return
@@ -239,10 +236,10 @@ public class List<T> implements OrderedCollection<T> {
 
 	/**
 	 * Returns items of this list, which match the specified {@link Predicate}.
-	 *
-	 * This operation preserves relative item order - the filtered items will appear in
-	 * the same relative order in the returned list as they appear in this list
-	 * (accounting for items removed by filtering).
+	 * <p>
+	 * This operation preserves relative item order - the filtered items will
+	 * appear in the same relative order in the returned list as they appear in
+	 * this list (accounting for items removed by filtering).
 	 *
 	 * @param condition
 	 * @return
@@ -261,14 +258,16 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns items of this list, converted using the specified {@link Function}.
-	 *
-	 * This operation preserves relative item order - the converted items will appear in
-	 * the same relative order in the returned list as their originals in this list.
-	 *
-	 * Any {@code null} value returned by the specified {@link Function} will be ignored.
-	 * This can be used to perform both item filtering and conversion in a single
-	 * operation.
+	 * Returns items of this list, converted using the specified
+	 * {@link Function}.
+	 * <p>
+	 * This operation preserves relative item order - the converted items will
+	 * appear in the same relative order in the returned list as their originals
+	 * in this list.
+	 * <p>
+	 * Any {@code null} value returned by the specified {@link Function} will be
+	 * ignored. This can be used to perform both item filtering and conversion
+	 * in a single operation.
 	 *
 	 * @param <R>
 	 * @param converter
@@ -329,8 +328,8 @@ public class List<T> implements OrderedCollection<T> {
 		return "[" + join(", ") + "]";
 	}
 
-    @Override
-    public Iterator<T> reverseIterator() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+	@Override
+	public Iterator<T> reverseIterator() {
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+	}
 }

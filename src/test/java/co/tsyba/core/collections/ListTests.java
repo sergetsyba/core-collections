@@ -1,24 +1,47 @@
 package co.tsyba.core.collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 10, 2019.
  */
 public class ListTests {
+	@Nested
+	@DisplayName(".isEmpty")
+	class IsEmptyTests {
+		@Test
+		@DisplayName("returns true when empty")
+		void verifiesEmpty() {
+			assert new List<>()
+					.isEmpty();
+		}
+
+		@Test
+		@DisplayName("returns false when not empty")
+		void doesNotVerifyEmpty() {
+			final var items = new List<>("h", "4", "G");
+			assert !items.isEmpty();
+		}
+	}
+
 	@Test
+	@DisplayName("verifies not empty")
 	public void checksEmpty() {
 		final var items = new List<>("t", "g", "e", "b", "T");
 		assert items.isEmpty() == false;
 	}
 
 	@Test
-	public void returnsItemCount() {
-		final var items = new List<>("t", "F", "g", "e", "b");
-		assert items.getCount() == 5;
+	@DisplayName("returns item count")
+	public void returnsCount() {
+		final var items = new List<>("g", "T", "e", "e");
+		assert items.getCount() == 4;
 	}
 
 	@Test
+	@DisplayName("returns first item")
 	public void returnsFirstItem() {
 		final var items = new List<>("O", "T", "q", "M", "s");
 
@@ -28,12 +51,19 @@ public class ListTests {
 	}
 
 	@Test
+	@DisplayName("returns last item")
 	public void returnsLastItem() {
 		final var items = new List<>("O", "T", "q", "M", "s");
 
 		assert items.getLast()
 				.get()
 				.equals("s");
+	}
+
+	@Test
+	@DisplayName("returns item at index")
+	public void returnsItemAtIndex() {
+
 	}
 
 	@Test
