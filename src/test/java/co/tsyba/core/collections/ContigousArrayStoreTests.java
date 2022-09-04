@@ -55,10 +55,6 @@ public class ContigousArrayStoreTests {
 		assert store.get(range3)
 				.equals(store("l", "p", "x"));
 
-		// empty range
-		assert store.get(IndexRange.EMPTY)
-				.equals(store());
-
 		// full range
 		final var range5 = new IndexRange(0, 5);
 		assert store.get(range5)
@@ -302,13 +298,6 @@ public class ContigousArrayStoreTests {
 
 		assert store("y", "i")
 				.equals(store3);
-
-		// empty range
-		final var store4 = store("y", "i", "x", "p", "r");
-		store4.remove(IndexRange.EMPTY);
-
-		assert store("y", "i", "x", "p", "r")
-				.equals(store4);
 
 		// full range
 		final var store5 = store("y", "i", "x", "p", "r");

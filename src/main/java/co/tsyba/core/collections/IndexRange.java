@@ -1,44 +1,71 @@
+// Created by Serge Tsyba <tsyba@me.com> on Apr 9, 2019.
 package co.tsyba.core.collections;
 
-import static java.lang.String.format;
 import java.util.Iterator;
 import java.util.Objects;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Apr 9, 2019.
+/**
+ * A contiguous range of indexes in an {@link IndexedCollection}.
  */
 public class IndexRange implements Iterable<Integer> {
-	public static final IndexRange EMPTY = new IndexRange(0, 0);
-
+	/**
+	 * Start index of this range.
+	 */
 	public final int start;
+
+	/**
+	 * End index of this range.
+	 */
 	public final int end;
 
+	/**
+	 * Number of indexes in this range.
+	 */
+	public final int length;
+
+	/**
+	 * Creates a new index range with the specified start and end indexes.
+	 *
+	 * @throws IllegalArgumentException when the specified start index is negative
+	 * @throws IllegalArgumentException when the specified end index is negative
+	 * @throws IllegalArgumentException when the specified start index is greater than or equal to
+	 * 	the specified end index
+	 */
 	public IndexRange(int start, int end) {
-		if (end < start) {
-			final String messsage = format("Invalid index range [%d, %d).", start, end);
-			throw new IllegalArgumentException(messsage);
+		if (start < 0) {
+			throw new IllegalArgumentException("Cannot create an index range with a negative start index: " + start + ".");
+		}
+		if (end < 0) {
+			throw new IllegalArgumentException("Cannot create an index range with a negative end index: " + end + ".");
+		}
+		if (start == end) {
+			throw new IllegalArgumentException("Cannot create an empty index range: [" + start + ", " + end + "].");
+		}
+		if (start > end) {
+			throw new IllegalArgumentException("Cannot create an index range of negative length: [" + start + ", " + end + "].");
 		}
 
 		this.start = start;
 		this.end = end;
+		this.length = end - start + 1;
 	}
 
-	public boolean isEmpty() {
-		return start > end;
-	}
-
-	public int getLength() {
-		return end - start;
-	}
-
+	/**
+	 * Returns {@code true} when the specified index is within this index range; returns
+	 * {@code false} otherwise.
+	 */
 	public boolean contains(int index) {
 		return start <= index
-				&& index < end;
+			&& index < end;
 	}
 
+	/**
+	 * Returns {@code true} when the specified {@link IndexRange} is within this index range;
+	 * returns {@code false} otherwise.
+	 */
 	public boolean contains(IndexRange indexRange) {
 		return start <= indexRange.start
-				&& indexRange.end <= end;
+			&& indexRange.end <= end;
 	}
 
 	@Override
@@ -57,12 +84,12 @@ public class IndexRange implements Iterable<Integer> {
 
 		final var indexRange = (IndexRange) object;
 		return start == indexRange.start
-				&& end == indexRange.end;
+			&& end == indexRange.end;
 	}
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return new Iterator<Integer>() {
+		return new Iterator<>() {
 			private int index = start;
 
 			@Override
