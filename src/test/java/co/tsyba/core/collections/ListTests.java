@@ -9,17 +9,17 @@ import org.junit.jupiter.api.Test;
  */
 public class ListTests {
 	@Nested
-	@DisplayName(".isEmpty")
+	@DisplayName(".isEmpty()")
 	class IsEmptyTests {
 		@Test
-		@DisplayName("returns true when empty")
+		@DisplayName("returns true when list is empty")
 		void returnsTrueWhenEmpty() {
 			final var items = new List<>();
 			assert items.isEmpty();
 		}
 
 		@Test
-		@DisplayName("returns false when not empty")
+		@DisplayName("returns false when list is not empty")
 		void returnsFalseWhenNotEmpty() {
 			final var items = new List<>("h", "4", "G");
 			assert !items.isEmpty();
@@ -27,7 +27,7 @@ public class ListTests {
 	}
 
 	@Nested
-	@DisplayName(".getCount")
+	@DisplayName(".getCount()")
 	class GetCountTests {
 		@Test
 		@DisplayName("returns item count")
@@ -37,7 +37,7 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("return 0 when empty")
+		@DisplayName("return 0 when list is empty")
 		void returnsZeroWhenEmpty() {
 			final var items = new List<>();
 			assert items.getCount() == 0;
@@ -45,7 +45,7 @@ public class ListTests {
 	}
 
 	@Nested
-	@DisplayName(".getFirst")
+	@DisplayName(".getFirst()")
 	class GetFirstTests {
 		@Test
 		@DisplayName("returns first item")
@@ -55,11 +55,11 @@ public class ListTests {
 
 			assert first.isPresent();
 			assert first.get()
-					.equals("O");
+				.equals("O");
 		}
 
 		@Test
-		@DisplayName("returns nothing when empty")
+		@DisplayName("returns nothing when list is empty")
 		void returnsEmptyWhenEmpty() {
 			final var items = new List<>();
 			final var first = items.getFirst();
@@ -69,7 +69,7 @@ public class ListTests {
 	}
 
 	@Nested
-	@DisplayName(".getLast")
+	@DisplayName(".getLast()")
 	class GetLastTests {
 		@Test
 		@DisplayName("returns last item")
@@ -79,11 +79,11 @@ public class ListTests {
 
 			assert last.isPresent();
 			assert last.get()
-					.equals("s");
+				.equals("s");
 		}
 
 		@Test
-		@DisplayName("returns nothing when empty")
+		@DisplayName("returns nothing when list is empty")
 		void returnsEmptyWhenEmpty() {
 			final var items = new List<>();
 			final var first = items.getFirst();
@@ -92,47 +92,150 @@ public class ListTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".get(int)")
+	class GetAtIndexTests {
+		private final List<String> items = new List<>("e", "D", "d", "E", "X");
+		// index range: [0, 4]
+
+		@Test
+		@DisplayName("returns item at index")
+		void returnsItem() {
+			assert items.get(2)
+				.equals("d");
+		}
+
+		@Test
+		@DisplayName("returns item at first index")
+		void returnsItemAtFirstIndex() {
+			assert items.get(0)
+				.equals("e");
+		}
+
+		@Test
+		@DisplayName("returns item at last index")
+		void returnsItemAtLastIndex() {
+			assert items.get(4)
+				.equals("X");
+		}
+
+		@Test
+		@DisplayName("fails when index before valid index range")
+		void failsWhenIndexBeforeValidIndexRange() {
+			try {
+				items.get(-1);
+			} catch (IndexNotInRangeException ignored) {
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("fails when index after valid index range")
+		void failsWhenIndexAfterValidIndexRange() {
+			try {
+				items.get(5);
+			} catch (IndexNotInRangeException ignored) {
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("fails when list is empty")
+		void failsWhenEmpty() {
+			try {
+				new List<>()
+					.get(0);
+			} catch (IndexNotInRangeException ignored) {
+				return;
+			}
+			assert false;
+		}
+	}
+
+	@Nested
+	@DisplayName(".get(IndexRange)")
+	class GetAtIndexRangeTests {
+		final List<String> items = new List<>("r", "4", "v", "E", "P", "e", "Q");
+		// index range: [0, 6]
+
+		@Test
+		@DisplayName("returns items at index range")
+		void returnsItems() {
+			final var range = new IndexRange(2, 5);
+			final var expected = new List<>("v", "E", "P", "e");
+
+			assert items.get(range)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("fails when index range ends after valid index range")
+		void failsWhenIndexRangeEndsAfterValidIndexRange() {
+			try {
+				final var range = new IndexRange(5, 8);
+				items.get(range);
+			} catch (IndexRangeNotInRangeException ignored) {
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("fails when index range after valid index range")
+		void failsWhenIndexRangeAfterValidIndexRange() {
+			try {
+				final var range = new IndexRange(7, 12);
+				items.get(range);
+			} catch (IndexRangeNotInRangeException ignored) {
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("fails when list is empty")
+		void failsWhenEmpty() {
+			try {
+				final var range = new IndexRange(0, 1);
+				new List<>()
+					.get(range);
+			} catch (IndexRangeNotInRangeException ignored) {
+				return;
+			}
+			assert false;
+		}
+	}
 }
 
 class LegacyListTests {
-	@Test
-	@DisplayName("returns last item")
-	public void returnsLastItem() {
-
-	}
-
-	@Test
-	@DisplayName("returns item at index")
-	public void returnsItemAtIndex() {
-
-	}
-
 	@Test
 	public void guardsIndex() {
 		final var items = new List<>("e", "D", "d", "E", "X");
 
 		// fisrt index
 		assert items.guard(0)
-				.get()
-				.equals("e");
+			.get()
+			.equals("e");
 
 		// item in the middle
 		assert items.guard(2)
-				.get()
-				.equals("d");
+			.get()
+			.equals("d");
 
 		// item at the end
 		assert items.guard(4)
-				.get()
-				.equals("X");
+			.get()
+			.equals("X");
 
 		// index before valid range
 		assert items.guard(-1)
-				.isEmpty();
+			.isEmpty();
 
 		// index after valid range
 		assert items.guard(5)
-				.isEmpty();
+			.isEmpty();
 	}
 
 	@Test
@@ -140,12 +243,12 @@ class LegacyListTests {
 		// has reapeated items
 		final var items1 = new List<>("r", "D", "S", "r", "S");
 		assert items1.getDistinct()
-				.equals(new List<>("r", "D", "S"));
+			.equals(new List<>("r", "D", "S"));
 
 		// has no reapeated items
 		final var items2 = new List<>("r", "D", "x", "o", "M");
 		assert items2.getDistinct()
-				.equals(items2);
+			.equals(items2);
 	}
 
 	@Test
@@ -154,7 +257,7 @@ class LegacyListTests {
 
 		// keeps items, which are in upper case
 		assert items.filter(this::isUpperCase)
-				.equals(new List<>("O", "P"));
+			.equals(new List<>("O", "P"));
 	}
 
 	@Test
@@ -163,22 +266,22 @@ class LegacyListTests {
 		// filters out no items
 		final var items1 = new List<>("c", "G", "d", "Y", "l");
 		assert items1.convert(String::toUpperCase)
-				.equals(new List<>("C", "G", "D", "Y", "L"));
+			.equals(new List<>("C", "G", "D", "Y", "L"));
 
 		// converts items to upper case, only if it is in lower case
 		// filters out some items
 		final var items2 = new List<>("c", "G", "d", "Y", "l");
 		assert items2.convert(item -> isUpperCase(item) ? null : item.toUpperCase())
-				.equals(new List<>("C", "D", "L"));
+			.equals(new List<>("C", "D", "L"));
 
 		// filters out all items
 		final var items3 = new List<>("c", "G", "d", "Y", "l");
 		assert items3.convert(item -> null)
-				.equals(new List<>());
+			.equals(new List<>());
 	}
 
 	private boolean isUpperCase(String string) {
 		return string.toUpperCase()
-				.equals(string);
+			.equals(string);
 	}
 }
