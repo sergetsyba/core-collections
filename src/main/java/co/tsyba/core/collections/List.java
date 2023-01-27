@@ -242,23 +242,19 @@ public class List<T> implements IndexedCollection<T> {
 	 * the same relative order in the returned list as their originals in this list.
 	 * <p>
 	 * Any {@code null} value returned by the specified {@link Function} will be ignored.
-	 * This can be used to perform both item filtering and conversion in a single
-	 * operation.
-	 *
-	 * @param <R>
-	 * @param converter
-	 * @return
+	 * Therefore, this method can be used to perform both item filtering and conversion in
+	 * a single operation.
 	 */
 	@Override
 	public <R> List<R> convert(Function<T, R> converter) {
-		final var convertedItems = new ContigousArrayStore<R>(store.itemCount);
+		final var converted = new ContigousArrayStore<R>(store.itemCount);
 		for (var item : this) {
 			final var convertedItem = converter.apply(item);
-			convertedItems.append(convertedItem);
+			converted.append(convertedItem);
 		}
 
-		convertedItems.removeExcessCapacity();
-		return new List<>(convertedItems);
+		converted.removeExcessCapacity();
+		return new List<>(converted);
 	}
 
 	/**
@@ -306,6 +302,6 @@ public class List<T> implements IndexedCollection<T> {
 
 	@Override
 	public Iterator<T> reverseIterator() {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

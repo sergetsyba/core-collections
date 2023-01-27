@@ -285,6 +285,44 @@ public class ListTests {
 				.equals(evens);
 		}
 	}
+
+	@Nested
+	@DisplayName(".convert(Function<T, R>)")
+	class ConvertTests {
+		@Test
+		@DisplayName("converts items")
+		void convertsItems() {
+			final var items = new List<>(3, 6, 1, 2);
+			final var converted = items.convert((item) -> Integer.toString(item));
+
+			assert new List<>("3", "6", "1", "2")
+				.equals(converted);
+		}
+
+		@Test
+		@DisplayName("ignores items converted to null")
+		void ignoresItemsConvertedToNull() {
+			final var items = new List<>(4, 6, 2, 1, 7, 8, 5);
+			final var evens = items.convert((item) -> {
+				return item % 2 == 0
+					? Integer.toString(item)
+					: null;
+			});
+
+			assert new List<>("4", "6", "2", "8")
+				.equals(evens);
+		}
+
+		@Test
+		@DisplayName("returns empty list when list is empty")
+		void returnsEmptyListWhenListIsEmpty() {
+			final var items = new List<Integer>();
+			final var evens = items.convert((item) -> item * 2);
+
+			assert new List<>()
+				.equals(evens);
+		}
+	}
 }
 
 class LegacyListTests {
