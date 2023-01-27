@@ -237,6 +237,30 @@ public class ListTests {
 			assert index.isEmpty();
 		}
 	}
+
+	@Nested
+	@DisplayName(".getDistinct()")
+	class GetDistinctTests {
+		@Test
+		@DisplayName("returns distinct items")
+		void returnsDistinctItems() {
+			final var items = new List<>("a", "b", "5", "a", "4", "4");
+			final var distinct = items.getDistinct();
+
+			assert new List<>("a", "b", "5", "4")
+				.equals(distinct);
+		}
+
+		@Test
+		@DisplayName("returns empty list when list is empty")
+		void returnsEmptyListWhenListIsEmpty() {
+			final var items = new List<String>();
+			final var distinct = items.getDistinct();
+
+			assert new List<String>()
+				.equals(distinct);
+		}
+	}
 }
 
 class LegacyListTests {

@@ -123,7 +123,7 @@ public class List<T> implements IndexedCollection<T> {
 	 * Returns an {@link Optional} with the specified index when it is within the valid index
 	 * range of this list; returns an empty {@link Optional} otherwise.
 	 * <p>
-	 * This method safeguards any index-based operations with the list. It may serve as an
+	 * This method safeguards any index-based operations on the list. It may serve as an
 	 * alternative to explicitly checking whether an index is within valid index range of this
 	 * list.
 	 * <p>
