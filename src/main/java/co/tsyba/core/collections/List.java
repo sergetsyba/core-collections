@@ -13,7 +13,8 @@ public class List<T> implements IndexedCollection<T> {
 	ContigousArrayStore<T> store;
 
 	/**
-	 * Creates a new list using the specified {@link ContigousArrayStore} as its backing store.
+	 * Creates a new list using the specified {@link ContigousArrayStore} as its backing
+	 * store.
 	 *
 	 * @param store
 	 */
@@ -36,7 +37,8 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the
+	 * items.
 	 *
 	 * @param items
 	 */
@@ -47,7 +49,8 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the
+	 * items.
 	 *
 	 * @param items
 	 */
@@ -101,8 +104,8 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Returns item at the specified index in this list.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index range of
-	 * this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 */
 	public T get(int index) {
 		return store.get(index);
@@ -111,8 +114,8 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Returns items at the specified {@link IndexRange} in this list.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified {@link IndexRange} is out of valid
-	 * index range of this list
+	 * @throws IndexRangeNotInRangeException when the specified {@link IndexRange} is out
+	 * of valid index range of this list
 	 */
 	public List<T> get(IndexRange indexRange) {
 		final var items = store.get(indexRange);
@@ -120,12 +123,12 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns an {@link Optional} with the specified index when it is within the valid index
-	 * range of this list; returns an empty {@link Optional} otherwise.
+	 * Returns an {@link Optional} with the specified index when it is within the valid
+	 * index range of this list; returns an empty {@link Optional} otherwise.
 	 * <p>
 	 * This method safeguards any index-based operations on the list. It may serve as an
-	 * alternative to explicitly checking whether an index is within valid index range of this
-	 * list.
+	 * alternative to explicitly checking whether an index is within valid index range of
+	 * this list.
 	 * <p>
 	 * For instance, to safely get an item at an index
 	 * <pre>{@code
@@ -162,8 +165,6 @@ public class List<T> implements IndexedCollection<T> {
 
 	/**
 	 * Returns items of this list in reverse order.
-	 *
-	 * @return
 	 */
 	@Override
 	public List<T> reverse() {
@@ -173,9 +174,6 @@ public class List<T> implements IndexedCollection<T> {
 
 	/**
 	 * Returns items of this list, ordered according to the specified {@link Comparator}.
-	 *
-	 * @param comparator
-	 * @return
 	 */
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
@@ -185,8 +183,6 @@ public class List<T> implements IndexedCollection<T> {
 
 	/**
 	 * Returns items of this list in random order.
-	 *
-	 * @return
 	 */
 	@Override
 	public List<T> shuffle() {
@@ -197,13 +193,10 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Applies the specified {@link Consumer} to every item of this list.
+	 * Applies the specified {@link Consumer} to every item of this list. Returns itself.
 	 * <p>
-	 * The specified {@link Consumer} is applied consecutively to every item from first to last.
-	 * Returns itself.
-	 *
-	 * @param operation
-	 * @return
+	 * The specified {@link Consumer} is applied consecutively to every item from first to
+	 * last.
 	 */
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
@@ -211,13 +204,11 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Applies the specified {@link Consumer} to every item and its index in this list.
+	 * Applies the specified {@link BiConsumer} to every item and its index in this list.
+	 * Returns itself.
 	 * <p>
-	 * The specified {@link Consumer} is applied consecutively to every item from first to last and
-	 * to every index from starting to ending. Returns itself.
-	 *
-	 * @param operation
-	 * @return
+	 * The specified {@link BiConsumer} is applied consecutively to every item and its
+	 * index from first to last.
 	 */
 	@Override
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
@@ -227,34 +218,32 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Returns items of this list, which match the specified {@link Predicate}.
 	 * <p>
-	 * This operation preserves relative item order - the filtered items will appear in the same
-	 * relative order in the returned list as they appear in this list (accounting for items removed
-	 * by filtering).
-	 *
-	 * @param condition
-	 * @return
+	 * This operation preserves relative item order - the filtered items will appear in
+	 * the same relative order in the returned list as they appear in this list
+	 * (accounting for items removed by filtering).
 	 */
 	@Override
 	public List<T> filter(Predicate<T> condition) {
-		final var filteredItems = new ContigousArrayStore<T>(store.itemCount);
+		final var filtered = new ContigousArrayStore<T>(store.itemCount);
 		for (var item : this) {
 			if (condition.test(item)) {
-				filteredItems.append(item);
+				filtered.append(item);
 			}
 		}
 
-		filteredItems.removeExcessCapacity();
-		return new List<>(filteredItems);
+		filtered.removeExcessCapacity();
+		return new List<>(filtered);
 	}
 
 	/**
 	 * Returns items of this list, converted using the specified {@link Function}.
 	 * <p>
-	 * This operation preserves relative item order - the converted items will appear in the same
-	 * relative order in the returned list as their originals in this list.
+	 * This operation preserves relative item order - the converted items will appear in
+	 * the same relative order in the returned list as their originals in this list.
 	 * <p>
-	 * Any {@code null} value returned by the specified {@link Function} will be ignored. This can
-	 * be used to perform both item filtering and conversion in a single operation.
+	 * Any {@code null} value returned by the specified {@link Function} will be ignored.
+	 * This can be used to perform both item filtering and conversion in a single
+	 * operation.
 	 *
 	 * @param <R>
 	 * @param converter

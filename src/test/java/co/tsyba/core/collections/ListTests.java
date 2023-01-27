@@ -261,6 +261,30 @@ public class ListTests {
 				.equals(distinct);
 		}
 	}
+
+	@Nested
+	@DisplayName(".filter(Predicate<T>)")
+	class FilterTests {
+		@Test
+		@DisplayName("filters items")
+		void filtersItems() {
+			final var items = new List<>(2, 4, 3, 2, 1, 9);
+			final var odds = items.filter((item) -> item % 2 == 1);
+
+			assert new List<>(3, 1, 9)
+				.equals(odds);
+		}
+
+		@Test
+		@DisplayName("filters items")
+		void returnsEmptyListWhenListIsEmpty() {
+			final var items = new List<Integer>();
+			final var evens = items.filter((item) -> item % 2 == 0);
+
+			assert new List<Integer>()
+				.equals(evens);
+		}
+	}
 }
 
 class LegacyListTests {
