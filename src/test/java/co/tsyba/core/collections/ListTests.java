@@ -59,8 +59,8 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("returns nothing when list is empty")
-		void returnsEmptyWhenEmpty() {
+		@DisplayName("returns empty when list is empty")
+		void returnsEmptyWhenListIsEmpty() {
 			final var items = new List<>();
 			final var first = items.getFirst();
 
@@ -83,8 +83,8 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("returns nothing when list is empty")
-		void returnsEmptyWhenEmpty() {
+		@DisplayName("returns empty when list is empty")
+		void returnsEmptyWhenListIsEmpty() {
 			final var items = new List<>();
 			final var first = items.getFirst();
 
@@ -99,8 +99,8 @@ public class ListTests {
 		// index range: [0, 4]
 
 		@Test
-		@DisplayName("returns item at index")
-		void returnsItem() {
+		@DisplayName("returns item when index in valid range")
+		void returnsItemWhenIndexInValidRange() {
 			assert items.get(2)
 				.equals("d");
 		}
@@ -120,8 +120,8 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("fails when index before valid index range")
-		void failsWhenIndexBeforeValidIndexRange() {
+		@DisplayName("fails when index before valid range")
+		void failsWhenIndexBeforeValidRange() {
 			try {
 				items.get(-1);
 			} catch (IndexNotInRangeException ignored) {
@@ -131,8 +131,8 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("fails when index after valid index range")
-		void failsWhenIndexAfterValidIndexRange() {
+		@DisplayName("fails when index after valid range")
+		void failsWhenIndexAfterValidRange() {
 			try {
 				items.get(5);
 			} catch (IndexNotInRangeException ignored) {
@@ -143,7 +143,7 @@ public class ListTests {
 
 		@Test
 		@DisplayName("fails when list is empty")
-		void failsWhenEmpty() {
+		void failsWhenListIsEmpty() {
 			try {
 				new List<>()
 					.get(0);
@@ -157,12 +157,12 @@ public class ListTests {
 	@Nested
 	@DisplayName(".get(IndexRange)")
 	class GetAtIndexRangeTests {
-		final List<String> items = new List<>("r", "4", "v", "E", "P", "e", "Q");
+		private final List<String> items = new List<>("r", "4", "v", "E", "P", "e", "Q");
 		// index range: [0, 6]
 
 		@Test
 		@DisplayName("returns items at index range")
-		void returnsItems() {
+		void returnsItemsWhenIndexRangeInValidRange() {
 			final var range = new IndexRange(2, 5);
 			final var expected = new List<>("v", "E", "P", "e");
 
@@ -171,8 +171,8 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("fails when index range ends after valid index range")
-		void failsWhenIndexRangeEndsAfterValidIndexRange() {
+		@DisplayName("fails when index range ends after valid range")
+		void failsWhenIndexRangeEndsAfterValidRange() {
 			try {
 				final var range = new IndexRange(5, 8);
 				items.get(range);
@@ -183,8 +183,8 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("fails when index range after valid index range")
-		void failsWhenIndexRangeAfterValidIndexRange() {
+		@DisplayName("fails when index range after valid range")
+		void failsWhenIndexRangeStartsAfterValidRange() {
 			try {
 				final var range = new IndexRange(7, 12);
 				items.get(range);
@@ -196,7 +196,7 @@ public class ListTests {
 
 		@Test
 		@DisplayName("fails when list is empty")
-		void failsWhenEmpty() {
+		void failsWhenListIsEmpty() {
 			try {
 				final var range = new IndexRange(0, 1);
 				new List<>()
@@ -205,6 +205,36 @@ public class ListTests {
 				return;
 			}
 			assert false;
+		}
+	}
+
+	@Nested
+	@DisplayName(".guard(int)")
+	class GuardTests {
+		private final List<String> items = new List<>("e", "4", "6", "7");
+		// index range: [0, 3]
+
+		@Test
+		@DisplayName("returns index when in valid range")
+		void returnsIndexWhenInValidRange() {
+			final var index = items.guard(2);
+			assert index.isPresent();
+			assert index.get() == 2;
+		}
+
+		@Test
+		@DisplayName("returns empty when index is out of valid range")
+		void returnsEmptyWhenIndexIsOutOfValidRange() {
+			final var index = items.guard(7);
+			assert index.isEmpty();
+		}
+
+		@Test
+		@DisplayName("returns empty when list is empty")
+		void returnsEmptyWhenListIsEmpty() {
+			final var items = new List<>();
+			final var index = items.guard(2);
+			assert index.isEmpty();
 		}
 	}
 }

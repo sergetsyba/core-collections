@@ -9,12 +9,11 @@ import java.util.function.Predicate;
 /*
  * Created by Serge Tsyba <tsyba@me.com> on May 26, 2019.
  */
-public class List<T> implements OrderedCollection<T> {
+public class List<T> implements IndexedCollection<T> {
 	ContigousArrayStore<T> store;
 
 	/**
-	 * Creates a new list using the specified {@link ContigousArrayStore} as its
-	 * backing store.
+	 * Creates a new list using the specified {@link ContigousArrayStore} as its backing store.
 	 *
 	 * @param store
 	 */
@@ -37,8 +36,7 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values
-	 * among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the items.
 	 *
 	 * @param items
 	 */
@@ -49,8 +47,7 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values
-	 * among the items.
+	 * Creates a list with the specified items. Ignores any {@code null} values among the items.
 	 *
 	 * @param items
 	 */
@@ -64,8 +61,7 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this list is empty; returns {@code false}
-	 * otherwise.
+	 * Returns {@code true} when this list is empty; returns {@code false} otherwise.
 	 */
 	@Override
 	public boolean isEmpty() {
@@ -87,7 +83,8 @@ public class List<T> implements OrderedCollection<T> {
 	 */
 	@Override
 	public Optional<T> getFirst() {
-		return guard(0);
+		return guard(0)
+			.map(this::get);
 	}
 
 	/**
@@ -97,28 +94,25 @@ public class List<T> implements OrderedCollection<T> {
 	 */
 	@Override
 	public Optional<T> getLast() {
-		return guard(store.itemCount - 1);
+		return guard(store.itemCount - 1)
+			.map(this::get);
 	}
 
 	/**
 	 * Returns item at the specified index in this list.
 	 *
-	 * @param index
-	 * @return
-	 * @throws IndexNotInRangeException when the specified index is out of valid
-	 *                                  index range of this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index range of
+	 * this list
 	 */
 	public T get(int index) {
-		return store.storage[index];
+		return store.get(index);
 	}
 
 	/**
-	 * Returns items at the specified index range in this list.
+	 * Returns items at the specified {@link IndexRange} in this list.
 	 *
-	 * @param indexRange
-	 * @return
-	 * @throws IndexRangeNotInRangeException when the specified index range is
-	 *                                       out of valid index range of this list
+	 * @throws IndexRangeNotInRangeException when the specified {@link IndexRange} is out of valid
+	 * index range of this list
 	 */
 	public List<T> get(IndexRange indexRange) {
 		final var items = store.get(indexRange);
@@ -126,30 +120,35 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns item at the specified index when the index is within the valid
-	 * index range of this list. Returns an empty {@link Optional} otherwise.
-	 *
-	 * @param index
-	 * @return
+	 * Returns an {@link Optional} with the specified index when it is within the valid index
+	 * range of this list; returns an empty {@link Optional} otherwise.
+	 * <p>
+	 * This method safeguards any index-based operations with the list. It may serve as an
+	 * alternative to explicitly checking whether an index is within valid index range of this
+	 * list.
+	 * <p>
+	 * For instance, to safely get an item at an index
+	 * <pre>{@code
+	 * 	final var list = new List<String>("a", "b", "c");
+	 * 	final var c = list.guard(2)
+	 * 		.map(list::get);
+	 * }</pre>
 	 */
-	public Optional<T> guard(int index) {
+	public Optional<Integer> guard(int index) {
 		if (!store.hasIndex(index)) {
 			return Optional.empty();
 		}
 
-		final var item = store.storage[index];
-		return Optional.of(item);
+		return Optional.of(index);
 	}
 
 	/**
 	 * Returns distinct items of this list.
-	 *
-	 * @return
 	 */
 	@Override
 	public List<T> getDistinct() {
 		final var distinctItems = new List<T>(
-				new ContigousArrayStore<>(store.itemCount));
+			new ContigousArrayStore<>(store.itemCount));
 
 		for (var item : this) {
 			if (!distinctItems.contains(item)) {
@@ -173,8 +172,7 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns items of this list, ordered according to the specified
-	 * {@link Comparator}.
+	 * Returns items of this list, ordered according to the specified {@link Comparator}.
 	 *
 	 * @param comparator
 	 * @return
@@ -201,39 +199,37 @@ public class List<T> implements OrderedCollection<T> {
 	/**
 	 * Applies the specified {@link Consumer} to every item of this list.
 	 * <p>
-	 * The specified {@link Consumer} is applied consecutively to every item
-	 * from first to last. Returns itself.
+	 * The specified {@link Consumer} is applied consecutively to every item from first to last.
+	 * Returns itself.
 	 *
 	 * @param operation
 	 * @return
 	 */
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
-		return (List<T>) OrderedCollection.super.iterate(operation);
+		return (List<T>) IndexedCollection.super.iterate(operation);
 	}
 
 	/**
-	 * Applies the specified {@link Consumer} to every item and its index in
-	 * this list.
+	 * Applies the specified {@link Consumer} to every item and its index in this list.
 	 * <p>
-	 * The specified {@link Consumer} is applied consecutively to every item
-	 * from first to last and to every index from starting to ending. Returns
-	 * itself.
+	 * The specified {@link Consumer} is applied consecutively to every item from first to last and
+	 * to every index from starting to ending. Returns itself.
 	 *
 	 * @param operation
 	 * @return
 	 */
 	@Override
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
-		return (List<T>) OrderedCollection.super.enumerate(operation);
+		return (List<T>) IndexedCollection.super.enumerate(operation);
 	}
 
 	/**
 	 * Returns items of this list, which match the specified {@link Predicate}.
 	 * <p>
-	 * This operation preserves relative item order - the filtered items will
-	 * appear in the same relative order in the returned list as they appear in
-	 * this list (accounting for items removed by filtering).
+	 * This operation preserves relative item order - the filtered items will appear in the same
+	 * relative order in the returned list as they appear in this list (accounting for items removed
+	 * by filtering).
 	 *
 	 * @param condition
 	 * @return
@@ -252,16 +248,13 @@ public class List<T> implements OrderedCollection<T> {
 	}
 
 	/**
-	 * Returns items of this list, converted using the specified
-	 * {@link Function}.
+	 * Returns items of this list, converted using the specified {@link Function}.
 	 * <p>
-	 * This operation preserves relative item order - the converted items will
-	 * appear in the same relative order in the returned list as their originals
-	 * in this list.
+	 * This operation preserves relative item order - the converted items will appear in the same
+	 * relative order in the returned list as their originals in this list.
 	 * <p>
-	 * Any {@code null} value returned by the specified {@link Function} will be
-	 * ignored. This can be used to perform both item filtering and conversion
-	 * in a single operation.
+	 * Any {@code null} value returned by the specified {@link Function} will be ignored. This can
+	 * be used to perform both item filtering and conversion in a single operation.
 	 *
 	 * @param <R>
 	 * @param converter
