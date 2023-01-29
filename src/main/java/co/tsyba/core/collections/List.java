@@ -264,8 +264,10 @@ public class List<T> implements IndexedCollection<T> {
 	 * Returns items of this list as a {@link java.util.List}.
 	 */
 	public java.util.List<T> bridge() {
-		final var items = Arrays.copyOf(store.storage, store.itemCount);
-		return Arrays.asList(items);
+		final var items = Arrays.copyOf(store.items, store.itemCount);
+		@SuppressWarnings("unchecked")
+		final var list = (java.util.List<T>) Arrays.asList(items);
+		return list;
 	}
 
 	@Override

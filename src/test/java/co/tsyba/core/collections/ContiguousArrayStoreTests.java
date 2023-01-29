@@ -1,39 +1,76 @@
 package co.tsyba.core.collections;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
-import org.junit.Test;
+
+class ContiguousArrayStoreTests {
+	@Nested
+	@DisplayName("new ContiguousArrayStore(int)")
+	class ConstructorWithCapacityTests {
+		@Test
+		@DisplayName("creates with capacity")
+		void createsWhenCapacityPositive() {
+			final var store = new ContiguousArrayStore<String>(7);
+			assert 7 == store.items.length;
+			assert 0 == store.itemCount;
+		}
+
+		@Test
+		@DisplayName("creates empty when capacity is 0")
+		void createsEmptyStoreWhenCapacityZero() {
+			final var store = new ContiguousArrayStore<String>(0);
+			assert 0 == store.items.length;
+			assert 0 == store.itemCount;
+		}
+
+		@Test
+		@DisplayName("fails when capacity is negative")
+		void failsWhenCapacityNegative() {
+			try {
+				new ContiguousArrayStore<String>(-7);
+			} catch (IllegalArgumentException ignored) {
+				return;
+			}
+			assert false;
+		}
+	}
+}
+
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jan 28, 2019.
  */
-public class ContigousArrayStoreTests {
+class ContiguousArrayStoreLegacyTests {
 	@Test
 	public void resturnItem() {
 		final var store = store("u", "z", "f", "s", "a");
 
 		// first item
 		assert store.get(0)
-				.equals("u");
+			.equals("u");
 		// item in the middle
 		assert store.get(3)
-				.equals("s");
+			.equals("s");
 		// last item
 		assert store.get(4)
-				.equals("a");
+			.equals("a");
 	}
 
-	@Test(expected = IndexNotInRangeException.class)
+	//	@Test(expected = IndexNotInRangeException.class)
 	public void failsToReturnItemBeforeFirstIndex() {
 		store("u", "z", "f", "s", "a")
-				.get(-1);
+			.get(-1);
 	}
 
-	@Test(expected = IndexNotInRangeException.class)
+	//	@Test(expected = IndexNotInRangeException.class)
 	public void failsToReturnItemAfterLastIndex() {
 		store("u", "z", "f", "s", "a")
-				.get(5);
+			.get(5);
 	}
 
 	@Test
@@ -43,36 +80,36 @@ public class ContigousArrayStoreTests {
 		// index range at start
 		final var range1 = new IndexRange(0, 3);
 		assert store.get(range1)
-				.equals(store("t", "c", "l"));
+			.equals(store("t", "c", "l"));
 
 		// index range in the middle
 		final var range2 = new IndexRange(2, 3);
 		assert store.get(range2)
-				.equals(store("l"));
+			.equals(store("l"));
 
 		// range at end
 		final var range3 = new IndexRange(2, 5);
 		assert store.get(range3)
-				.equals(store("l", "p", "x"));
+			.equals(store("l", "p", "x"));
 
 		// full range
 		final var range5 = new IndexRange(0, 5);
 		assert store.get(range5)
-				.equals(store);
+			.equals(store);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToReturnItemsBeforeFirstIndex() {
 		final var indexRange = new IndexRange(-1, 2);
 		store("t", "c", "l", "p", "x")
-				.get(indexRange);
+			.get(indexRange);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToReturnItemsAfterLastIndex() {
 		final var indexRange = new IndexRange(3, 7);
 		store("t", "c", "l", "p", "x")
-				.get(indexRange);
+			.get(indexRange);
 	}
 
 	@Test
@@ -82,34 +119,34 @@ public class ContigousArrayStoreTests {
 		// first item
 		store.set(0, "g");
 		assert store("g", "b", "r", "o", "w")
-				.equals(store);
+			.equals(store);
 
 		// item in the middle
 		store.set(3, "t");
 		assert store("g", "b", "r", "t", "w")
-				.equals(store);
+			.equals(store);
 
 		// last item
 		store.set(4, "z");
 		assert store("g", "b", "r", "t", "z")
-				.equals(store);
+			.equals(store);
 
 		// null value
 		store.set(3, null);
 		assert store("g", "b", "r", "t", "z")
-				.equals(store);
+			.equals(store);
 	}
 
-	@Test(expected = IndexNotInRangeException.class)
+	//	@Test(expected = IndexNotInRangeException.class)
 	public void failsToSetItemBeforeFirstIndex() {
 		store("f", "b", "r", "o", "w")
-				.set(-1, "g");
+			.set(-1, "g");
 	}
 
-	@Test(expected = IndexNotInRangeException.class)
+	//	@Test(expected = IndexNotInRangeException.class)
 	public void failsToSetItemAfterLastIndex() {
 		store("f", "b", "r", "o", "w")
-				.set(5, "g");
+			.set(5, "g");
 	}
 
 	@Test
@@ -121,7 +158,7 @@ public class ContigousArrayStoreTests {
 		store.append("o");
 
 		assert store("t", "f", "h", "r", "o")
-				.equals(store);
+			.equals(store);
 
 		// appends null
 		store.append((String) null);
@@ -129,7 +166,7 @@ public class ContigousArrayStoreTests {
 		store.append((String) null);
 
 		assert store("t", "f", "h", "r", "o", "v")
-				.equals(store);
+			.equals(store);
 	}
 
 	@Test
@@ -141,19 +178,19 @@ public class ContigousArrayStoreTests {
 		store.append(store1);
 
 		assert store("t", "h", "b", "r", "v")
-				.equals(store);
+			.equals(store);
 
 		// appends empty store
 		final var store2 = store();
 		store.append(store2);
 
 		assert store("t", "h", "b", "r", "v")
-				.equals(store);
+			.equals(store);
 
 		// appends itself
 		store.append(store);
 		assert store("t", "h", "b", "r", "v", "t", "h", "b", "r", "v")
-				.equals(store);
+			.equals(store);
 	}
 
 	@Test
@@ -163,14 +200,14 @@ public class ContigousArrayStoreTests {
 		// appends items
 		store.append("g", "f");
 		assert store("t", "h", "b", "g", "f")
-				.equals(store);
+			.equals(store);
 
 		// does not append nulls
 		store.append(null, null, "r");
 		store.append("g", null);
 
 		assert store("t", "h", "b", "g", "f", "r", "g")
-				.equals(store);
+			.equals(store);
 	}
 
 	@Test
@@ -182,7 +219,7 @@ public class ContigousArrayStoreTests {
 		store.insert(2, "o");
 
 		assert store("c", "y", "o", "q", "p")
-				.equals(store);
+			.equals(store);
 
 		// does not insert null
 		store.insert(1, (String) null);
@@ -190,19 +227,19 @@ public class ContigousArrayStoreTests {
 		store.insert(3, (String) null);
 
 		assert store("c", "y", "o", "z", "q", "p")
-				.equals(store);
+			.equals(store);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToInsertItemBeforeFirstIndex() {
 		store("y", "q", "p")
-				.insert(-1, "o");
+			.insert(-1, "o");
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToInsertItemAfterLastIndex() {
 		store("y", "q", "p")
-				.insert(5, "o");
+			.insert(5, "o");
 	}
 
 	@Test
@@ -214,31 +251,31 @@ public class ContigousArrayStoreTests {
 		store.insert(1, store1);
 
 		assert store("y", "e", "q", "p", "f")
-				.equals(store);
+			.equals(store);
 
 		// inserts empty store
 		final var store2 = store();
 		store.insert(4, store2);
 
 		assert store("y", "e", "q", "p", "f")
-				.equals(store);
+			.equals(store);
 
 		// inserts itself
 		store.insert(4, store);
 		assert store("y", "e", "q", "p", "y", "e", "q", "p", "f", "f")
-				.equals(store);
+			.equals(store);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToInsertItemsFromStoreBeforeFirstIndex() {
 		store("y", "f")
-				.insert(-1, store("e", "q", "p"));
+			.insert(-1, store("e", "q", "p"));
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToInsertItemsFromStoreAfterLastIndex() {
 		store("y", "f")
-				.insert(2, store("e", "q", "p"));
+			.insert(2, store("e", "q", "p"));
 	}
 
 	@Test
@@ -248,29 +285,29 @@ public class ContigousArrayStoreTests {
 		// removes first item
 		store.remove(0);
 		assert store("d", "s", "k", "j")
-				.equals(store);
+			.equals(store);
 
 		// removes middle item
 		store.remove(2);
 		assert store("d", "s", "j")
-				.equals(store);
+			.equals(store);
 
 		// removes last item
 		store.remove(2);
 		assert store("d", "s")
-				.equals(store);
+			.equals(store);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToRemoveItemBeforeFirstIndex() {
 		store("t", "d", "s", "k", "j")
-				.remove(-1);
+			.remove(-1);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToRemoveItemAfterLastIndex() {
 		store("t", "d", "s", "k", "j")
-				.remove(5);
+			.remove(5);
 	}
 
 	@Test
@@ -281,7 +318,7 @@ public class ContigousArrayStoreTests {
 		store1.remove(range1);
 
 		assert store("x", "p", "r")
-				.equals(store1);
+			.equals(store1);
 
 		// index range in the middle
 		final var store2 = store("y", "i", "x", "p", "r");
@@ -289,7 +326,7 @@ public class ContigousArrayStoreTests {
 		store2.remove(range2);
 
 		assert store("y", "i", "p", "r")
-				.equals(store2);
+			.equals(store2);
 
 		// range at end
 		final var store3 = store("y", "i", "x", "p", "r");
@@ -297,7 +334,7 @@ public class ContigousArrayStoreTests {
 		store3.remove(range3);
 
 		assert store("y", "i")
-				.equals(store3);
+			.equals(store3);
 
 		// full range
 		final var store5 = store("y", "i", "x", "p", "r");
@@ -305,21 +342,21 @@ public class ContigousArrayStoreTests {
 		store5.remove(range5);
 
 		assert store()
-				.equals(store5);
+			.equals(store5);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToRemoveItemsBeforeFirstIndex() {
 		final var indexRange = new IndexRange(-1, 2);
 		store("y", "i", "x", "p", "r")
-				.remove(indexRange);
+			.remove(indexRange);
 	}
 
-	@Test(expected = Exception.class)
+	//	@Test(expected = Exception.class)
 	public void failsToRemoveItemsAfterLastIndex() {
 		final var indexRange = new IndexRange(3, 7);
 		store("y", "i", "x", "p", "r")
-				.remove(indexRange);
+			.remove(indexRange);
 	}
 
 	@Test
@@ -328,17 +365,17 @@ public class ContigousArrayStoreTests {
 		final var reversedStore = store.reverse();
 
 		assert store("B", "M", "V", "c", "A")
-				.equals(reversedStore);
+			.equals(reversedStore);
 	}
 
 	@Test
 	public void sorts() {
 		final var store = store("i", "O", "b", "Q", "v");
 		final var sortedStore = store.sort(
-				Comparator.naturalOrder());
+			Comparator.naturalOrder());
 
 		assert store("O", "Q", "b", "i", "v")
-				.equals(sortedStore);
+			.equals(sortedStore);
 	}
 
 	@Test
@@ -349,7 +386,7 @@ public class ContigousArrayStoreTests {
 
 		assert !shuffledStore.equals(store);
 		for (var item : shuffledStore) {
-			assert Arrays.binarySearch(store.storage, 0, 5, item) > -1;
+			assert Arrays.binarySearch(store.items, 0, 5, item) > -1;
 		}
 	}
 

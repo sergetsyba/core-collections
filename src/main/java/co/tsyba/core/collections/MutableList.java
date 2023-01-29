@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 public class MutableList<T> extends List<T> {
 	private static final int minimumCapacity = 64;
 
-	MutableList(ContigousArrayStore<T> store) {
+	MutableList(ContiguousArrayStore<T> store) {
 		super(store);
 	}
 
@@ -48,24 +48,23 @@ public class MutableList<T> extends List<T> {
 
 	/**
 	 * Creates an empty list with the specified amount of reserved capacity.
-	 *
+	 * <p>
 	 * When item count is known in advance, reserving item capacity during list creation
 	 * improves performance of item insertion and item appending.
 	 *
 	 * @param capacity
 	 */
 	public MutableList(int capacity) {
-		this(new ContigousArrayStore<T>(capacity));
+		this(new ContiguousArrayStore<T>(capacity));
 	}
 
 	/**
 	 * Returns items at the specified index range in this list.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this list.
-	 *
 	 * @param indexRange
 	 * @return
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this list.
 	 */
 	@Override
 	public MutableList<T> get(IndexRange indexRange) {
@@ -76,12 +75,11 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Replaces item at the specified index in this list with the specified one.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this list
-	 *
 	 * @param index
 	 * @param item
 	 * @return
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 */
 	public MutableList<T> set(int index, T item) {
 		store.set(index, item);
@@ -127,12 +125,11 @@ public class MutableList<T> extends List<T> {
 	 * Inserts the specified item into this list at the specified index. Does nothing when
 	 * the specified item is {@code null}.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this list
-	 *
 	 * @param index
 	 * @param item
 	 * @return
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 */
 	public MutableList<T> insert(int index, T item) {
 		store.insert(index, item);
@@ -142,12 +139,11 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Inserts the specified items into this list at the specified index.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this list
-	 *
 	 * @param index
 	 * @param items
 	 * @return
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 */
 	public MutableList<T> insert(int index, List<T> items) {
 		store.insert(index, items.store);
@@ -162,11 +158,12 @@ public class MutableList<T> extends List<T> {
 	 */
 	public Optional<T> removeFirst() {
 		final var startIndex = 0;
-		return guard(startIndex)
-				.map(item -> {
-					store.remove(startIndex);
-					return item;
-				});
+		return guard(0)
+			.map(index -> {
+				final var item = store.get(index);
+				store.remove(index);
+				return item;
+			});
 	}
 
 	/**
@@ -176,22 +173,21 @@ public class MutableList<T> extends List<T> {
 	 * @return
 	 */
 	public Optional<T> removeLast() {
-		final var startIndex = store.itemCount - 1;
-		return guard(startIndex)
-				.map(item -> {
-					store.remove(startIndex);
-					return item;
-				});
+		return guard(store.itemCount - 1)
+			.map(index -> {
+				final var item = store.get(index);
+				store.remove(index);
+				return item;
+			});
 	}
 
 	/**
 	 * Removes item at the specified index from this list. Returns itself.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this list
-	 *
 	 * @param index
 	 * @return
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 */
 	public MutableList<T> remove(int index) {
 		store.remove(index);
@@ -201,11 +197,10 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Removes items at the specified index range from this list. Returns itself.
 	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this list
-	 *
 	 * @param indexRange
 	 * @return
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this list
 	 */
 	public MutableList<T> remove(IndexRange indexRange) {
 		store.remove(indexRange);
@@ -218,7 +213,7 @@ public class MutableList<T> extends List<T> {
 	 * @return
 	 */
 	public MutableList<T> clear() {
-		store = new ContigousArrayStore<>(minimumCapacity);
+		store = new ContiguousArrayStore<>(minimumCapacity);
 		return this;
 	}
 
@@ -233,7 +228,7 @@ public class MutableList<T> extends List<T> {
 	 */
 	public MutableList<T> guard(int index, BiConsumer<T, Integer> operation) {
 		if (store.hasIndex(index)) {
-			final var item = store.storage[index];
+			final var item = (T) store.items[index];
 			operation.accept(item, index);
 		}
 
@@ -245,7 +240,7 @@ public class MutableList<T> extends List<T> {
 	 */
 	@Override
 	public MutableList<T> getDistinct() {
-		final var distinctStore = new ContigousArrayStore<T>(store.itemCount);
+		final var distinctStore = new ContiguousArrayStore<T>(store.itemCount);
 		final var distinctItems = new MutableList<>(distinctStore);
 
 		for (var item : this) {
@@ -262,7 +257,7 @@ public class MutableList<T> extends List<T> {
 	 */
 	@Override
 	public MutableList<T> filter(Predicate<T> condition) {
-		final var filteredStore = new ContigousArrayStore<T>(store.itemCount);
+		final var filteredStore = new ContiguousArrayStore<T>(store.itemCount);
 		for (var item : this) {
 			if (condition.test(item)) {
 				filteredStore.append(item);
@@ -277,7 +272,7 @@ public class MutableList<T> extends List<T> {
 	 */
 	@Override
 	public <R> MutableList<R> convert(Function<T, R> converter) {
-		final var convertedStore = new ContigousArrayStore<R>(store.itemCount);
+		final var convertedStore = new ContiguousArrayStore<R>(store.itemCount);
 		for (var item : this) {
 			final var convertedItem = converter.apply(item);
 			convertedStore.append(convertedItem);
