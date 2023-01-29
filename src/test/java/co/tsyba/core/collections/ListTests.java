@@ -327,8 +327,8 @@ public class ListTests {
 	@DisplayName(".bridge()")
 	class BridgeTests {
 		@Test
-		@DisplayName("converts to java.util.List")
-		void convertsToJavaList() {
+		@DisplayName("bridges to java.util.List")
+		void bridges() {
 			final var items = new List<>("5", "y", "a", "v");
 			final var bridged = items.bridge();
 
@@ -337,8 +337,8 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("converts empty list to empty java.util.List")
-		void convertsEmptyListToJavaList() {
+		@DisplayName("bridges to empty java.util.List when empty")
+		void bridgesToEmptyJavaListWhenEmpty() {
 			final var items = new List<>();
 			final var bridged = items.bridge();
 

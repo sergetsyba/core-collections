@@ -127,8 +127,8 @@ public class List<T> implements IndexedCollection<T> {
 	 * index range of this list; returns an empty {@link Optional} otherwise.
 	 * <p>
 	 * This method safeguards any index-based operations on the list. It may serve as an
-	 * alternative to explicitly checking whether an index is within valid index range of
-	 * this list.
+	 * alternative to explicitly checking whether an index is within the valid index range
+	 * of this list.
 	 * <p>
 	 * For instance, to safely get an item at an index
 	 * <pre>{@code
@@ -193,10 +193,12 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Applies the specified {@link Consumer} to every item of this list. Returns itself.
+	 * Applies the specified {@link Consumer} to every item of this list.
 	 * <p>
 	 * The specified {@link Consumer} is applied consecutively to every item from first to
 	 * last.
+	 *
+	 * @return itself
 	 */
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
@@ -205,10 +207,11 @@ public class List<T> implements IndexedCollection<T> {
 
 	/**
 	 * Applies the specified {@link BiConsumer} to every item and its index in this list.
-	 * Returns itself.
 	 * <p>
 	 * The specified {@link BiConsumer} is applied consecutively to every item and its
 	 * index from first to last.
+	 *
+	 * @return itself
 	 */
 	@Override
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
@@ -258,7 +261,7 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Converts this list into a {@link java.util.List}.
+	 * Returns items of this list as a {@link java.util.List}.
 	 */
 	public java.util.List<T> bridge() {
 		final var items = Arrays.copyOf(store.storage, store.itemCount);
@@ -296,7 +299,7 @@ public class List<T> implements IndexedCollection<T> {
 	/**
 	 * Returns a {@link String} representation of this list.
 	 * <p>
-	 * A {@link String} representation of the {@link List} is {@link String}
+	 * A {@link String} representation of the {@link List} is a {@link String}
 	 * representation of its items, joined by comma (,) and enclosed into square brackets
 	 * ([...]).
 	 * <p>For instance,
