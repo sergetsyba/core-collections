@@ -347,6 +347,30 @@ public class ListTests {
 				.equals(bridged);
 		}
 	}
+
+	@Nested
+	@DisplayName(".toString()")
+	class ToStringTests {
+		@Test
+		@DisplayName("converts to string")
+		void convertsToString() {
+			final var items = new List<>("g", "H", "6", "c", "E");
+			final var string = items.toString();
+
+			assert "[g, H, 6, c, E]"
+				.equals(string);
+		}
+
+		@Test
+		@DisplayName("converts empty list to string")
+		void convertsEmptyListToString() {
+			final var items = new List<>();
+			final var string = items.toString();
+
+			assert "[]"
+				.equals(string);
+		}
+	}
 }
 
 class LegacyListTests {

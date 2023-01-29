@@ -293,6 +293,19 @@ public class List<T> implements IndexedCollection<T> {
 		return store.equals(items.store);
 	}
 
+	/**
+	 * Returns a {@link String} representation of this list.
+	 * <p>
+	 * A {@link String} representation of the {@link List} is {@link String}
+	 * representation of its items, joined by comma (,) and enclosed into square brackets
+	 * ([...]).
+	 * <p>For instance,
+	 * <pre>{@code
+	 * final var items = new List<>("a", "b", "c");
+	 * final var string = items.toString();
+	 * // [a, b, c]
+	 * }</pre>
+	 */
 	@Override
 	public String toString() {
 		return "[" + join(", ") + "]";
