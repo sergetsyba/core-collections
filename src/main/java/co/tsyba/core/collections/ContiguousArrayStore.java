@@ -10,7 +10,7 @@ import static java.lang.System.arraycopy;
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jan 28, 2019.
  */
-class ContigousArrayStore<T> implements Iterable<T> {
+class ContiguousArrayStore<T> implements Iterable<T> {
 	T[] storage;
 	int itemCount;
 
@@ -19,7 +19,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 *
 	 * @throws NegativeCapacityException when the specified store capacity is negative
 	 */
-	public ContigousArrayStore(int capacity) {
+	public ContiguousArrayStore(int capacity) {
 		if (capacity < 0) {
 			throw new NegativeCapacityException(capacity);
 		}
@@ -31,13 +31,13 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Creates a copy of the specified index range in the specified array store.
 	 */
-	public ContigousArrayStore(ContigousArrayStore<T> items, IndexRange indexRange) {
+	public ContiguousArrayStore(ContiguousArrayStore<T> items, IndexRange indexRange) {
 		this.itemCount = indexRange.end - indexRange.start + 1;
 		this.storage = (T[]) new Object[itemCount];
 		arraycopy(items.storage, indexRange.start, storage, 0, itemCount);
 	}
 
-	private ContigousArrayStore(T[] storage, int itemCount) {
+	private ContiguousArrayStore(T[] storage, int itemCount) {
 		this.storage = storage;
 		this.itemCount = itemCount;
 	}
@@ -64,9 +64,12 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * Returns item at the specified index in this store.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index range of
-	 * 	this store
+	 * this store
 	 */
 	public T get(int index) {
+		if (itemCount == 0) {
+			throw new IndexNotInRangeException(index);
+		}
 		if (!hasIndex(index)) {
 			throw new IndexNotInRangeException(index,
 				new IndexRange(0, itemCount));
@@ -79,9 +82,12 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * Returns items at the specified index range in this store.
 	 *
 	 * @throws IndexRangeNotInRangeException when the specified index range is out of valid index
-	 * 	range of this store
+	 * range of this store
 	 */
-	public ContigousArrayStore<T> get(IndexRange indexRange) {
+	public ContiguousArrayStore<T> get(IndexRange indexRange) {
+		if (itemCount == 0) {
+			throw new IndexRangeNotInRangeException(indexRange);
+		}
 		if (!hasIndexRange(indexRange)) {
 			throw new IndexRangeNotInRangeException(indexRange,
 				new IndexRange(0, itemCount));
@@ -90,7 +96,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 		final var items = (T[]) new Object[indexRange.length];
 		arraycopy(storage, indexRange.start, items, 0, indexRange.length);
 
-		return new ContigousArrayStore<>(items, indexRange.length);
+		return new ContiguousArrayStore<>(items, indexRange.length);
 	}
 
 	/**
@@ -98,7 +104,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * item is {@code null}.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index range of
-	 * 	this store
+	 * this store
 	 */
 	public void set(int index, T item) {
 		if (!hasIndex(index)) {
@@ -130,7 +136,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Appends items of the specified store to the end of this store.
 	 */
-	public void append(ContigousArrayStore<T> store) {
+	public void append(ContiguousArrayStore<T> store) {
 		prepareCapacity(store.itemCount);
 
 		arraycopy(store.storage, 0, storage, itemCount, store.itemCount);
@@ -157,7 +163,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * specified item is {@code null}.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index range of
-	 * 	this store
+	 * this store
 	 */
 	public void insert(int index, T item) {
 		if (!hasIndex(index)) {
@@ -180,9 +186,9 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * Inserts items of the specified store into this store at the specified index.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index range of
-	 * 	this store
+	 * this store
 	 */
-	public void insert(int index, ContigousArrayStore<T> store) {
+	public void insert(int index, ContiguousArrayStore<T> store) {
 		if (!hasIndex(index)) {
 			throw new IndexNotInRangeException(index,
 				new IndexRange(0, itemCount));
@@ -200,7 +206,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * Removes item at the specified index from this store.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index range of
-	 * 	this store
+	 * this store
 	 */
 	public void remove(int index) {
 		if (!hasIndex(index)) {
@@ -221,7 +227,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * Removes items at the specified index range from this store.
 	 *
 	 * @throws IndexRangeNotInRangeException when the specified index range is out of valid index
-	 * 	range of this store
+	 * range of this store
 	 */
 	public void remove(IndexRange indexRange) {
 		if (!hasIndexRange(indexRange)) {
@@ -246,25 +252,25 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 *
 	 * @return
 	 */
-	public ContigousArrayStore<T> reverse() {
+	public ContiguousArrayStore<T> reverse() {
 		final var reverseItems = (T[]) new Object[itemCount];
 		for (var index = 0; index < itemCount; ++index) {
 			final var reverseIndex = itemCount - index - 1;
 			reverseItems[reverseIndex] = storage[index];
 		}
 
-		return new ContigousArrayStore<>(reverseItems, itemCount);
+		return new ContiguousArrayStore<>(reverseItems, itemCount);
 	}
 
 	/**
 	 * Returns items of this store, ordered according to the specified {@link Comparator}.
 	 */
-	public ContigousArrayStore<T> sort(Comparator<T> comparator) {
+	public ContiguousArrayStore<T> sort(Comparator<T> comparator) {
 		final var sortedItems = (T[]) new Object[itemCount];
 		arraycopy(storage, 0, sortedItems, 0, itemCount);
 
 		Arrays.sort(sortedItems, 0, itemCount, comparator);
-		return new ContigousArrayStore<>(sortedItems, itemCount);
+		return new ContiguousArrayStore<>(sortedItems, itemCount);
 	}
 
 	/**
@@ -283,7 +289,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 	 * @param random
 	 * @return
 	 */
-	public ContigousArrayStore<T> shuffle(Random random) {
+	public ContiguousArrayStore<T> shuffle(Random random) {
 		final var shuffledItems = (T[]) new Object[itemCount];
 		arraycopy(storage, 0, shuffledItems, 0, itemCount);
 
@@ -298,7 +304,7 @@ class ContigousArrayStore<T> implements Iterable<T> {
 			shuffledItems[randomIndex] = item;
 		}
 
-		return new ContigousArrayStore<>(shuffledItems, itemCount);
+		return new ContiguousArrayStore<>(shuffledItems, itemCount);
 	}
 
 	private void prepareCapacity(int extraItemCount) {
@@ -378,11 +384,11 @@ class ContigousArrayStore<T> implements Iterable<T> {
 		if (object == this) {
 			return true;
 		}
-		if (!(object instanceof ContigousArrayStore)) {
+		if (!(object instanceof ContiguousArrayStore)) {
 			return false;
 		}
 
-		final var store = (ContigousArrayStore) object;
+		final var store = (ContiguousArrayStore) object;
 		return Arrays.equals(storage, 0, itemCount,
 			store.storage, 0, store.itemCount);
 	}

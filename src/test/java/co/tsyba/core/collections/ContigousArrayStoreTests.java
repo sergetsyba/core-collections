@@ -353,8 +353,8 @@ public class ContigousArrayStoreTests {
 		}
 	}
 
-	private static ContigousArrayStore<String> store(String... items) {
-		final var store = new ContigousArrayStore<String>(items.length);
+	private static ContiguousArrayStore<String> store(String... items) {
+		final var store = new ContiguousArrayStore<String>(items.length);
 		store.append(items);
 
 		return store;

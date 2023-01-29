@@ -10,15 +10,15 @@ import java.util.function.Predicate;
  * Created by Serge Tsyba <tsyba@me.com> on May 26, 2019.
  */
 public class List<T> implements IndexedCollection<T> {
-	ContigousArrayStore<T> store;
+	ContiguousArrayStore<T> store;
 
 	/**
-	 * Creates a new list using the specified {@link ContigousArrayStore} as its backing
+	 * Creates a new list using the specified {@link ContiguousArrayStore} as its backing
 	 * store.
 	 *
 	 * @param store
 	 */
-	List(ContigousArrayStore<T> store) {
+	List(ContiguousArrayStore<T> store) {
 		this.store = store;
 	}
 
@@ -29,10 +29,10 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	public List(List<T> items) {
 		if (items.isEmpty()) {
-			this.store = new ContigousArrayStore<>(0);
+			this.store = new ContiguousArrayStore<>(0);
 		} else {
 			final var indexRange = new IndexRange(0, items.store.itemCount - 1);
-			this.store = new ContigousArrayStore<>(items.store, indexRange);
+			this.store = new ContiguousArrayStore<>(items.store, indexRange);
 		}
 	}
 
@@ -43,7 +43,7 @@ public class List<T> implements IndexedCollection<T> {
 	 * @param items
 	 */
 	public List(T... items) {
-		this.store = new ContigousArrayStore<>(items.length);
+		this.store = new ContiguousArrayStore<>(items.length);
 		this.store.append(items);
 		this.store.removeExcessCapacity();
 	}
@@ -55,7 +55,7 @@ public class List<T> implements IndexedCollection<T> {
 	 * @param items
 	 */
 	public List(Iterable<T> items) {
-		this.store = new ContigousArrayStore<>(64);
+		this.store = new ContiguousArrayStore<>(64);
 		for (var item : items) {
 			this.store.append(item);
 		}
@@ -151,7 +151,7 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public List<T> getDistinct() {
 		final var distinctItems = new List<T>(
-			new ContigousArrayStore<>(store.itemCount));
+			new ContiguousArrayStore<>(store.itemCount));
 
 		for (var item : this) {
 			if (!distinctItems.contains(item)) {
@@ -227,7 +227,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public List<T> filter(Predicate<T> condition) {
-		final var filtered = new ContigousArrayStore<T>(store.itemCount);
+		final var filtered = new ContiguousArrayStore<T>(store.itemCount);
 		for (var item : this) {
 			if (condition.test(item)) {
 				filtered.append(item);
@@ -250,7 +250,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@Override
 	public <R> List<R> convert(Function<T, R> converter) {
-		final var converted = new ContigousArrayStore<R>(store.itemCount);
+		final var converted = new ContiguousArrayStore<R>(store.itemCount);
 		for (var item : this) {
 			final var convertedItem = converter.apply(item);
 			converted.append(convertedItem);
