@@ -276,7 +276,7 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("filters items")
+		@DisplayName("returns empty list when list is empty")
 		void returnsEmptyListWhenListIsEmpty() {
 			final var items = new List<Integer>();
 			final var evens = items.filter((item) -> item % 2 == 0);
@@ -321,6 +321,30 @@ public class ListTests {
 
 			assert new List<>()
 				.equals(evens);
+		}
+	}
+
+	@Nested
+	@DisplayName(".bridge()")
+	class BridgeTests {
+		@Test
+		@DisplayName("converts to java.util.List")
+		void convertsToJavaList() {
+			final var items = new List<>("5", "y", "a", "v");
+			final var bridged = items.bridge();
+
+			assert java.util.List.of("5", "y", "a", "v")
+				.equals(bridged);
+		}
+
+		@Test
+		@DisplayName("converts empty list to empty java.util.List")
+		void convertsEmptyListToJavaList() {
+			final var items = new List<>();
+			final var bridged = items.bridge();
+
+			assert java.util.List.of()
+				.equals(bridged);
 		}
 	}
 }

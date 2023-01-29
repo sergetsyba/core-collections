@@ -258,9 +258,7 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Converts this list into an instance of {@link java.util.List}.
-	 *
-	 * @return
+	 * Converts this list into a {@link java.util.List}.
 	 */
 	public java.util.List<T> bridge() {
 		final var items = Arrays.copyOf(store.storage, store.itemCount);
