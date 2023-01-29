@@ -11,19 +11,28 @@ class IndexRangeTests {
 	@DisplayName("new IndexRange(int, int)")
 	class IndexRangeConstructorTests {
 		@Test
-		@DisplayName("creates index range")
-		void createsIndexRange() {
-			final var range = new IndexRange(4, 9);
-			assert range.start == 4;
-			assert range.end == 9;
-			assert range.length == 6;
+		@DisplayName("creates range")
+		void createsRange() {
+			final var range = new IndexRange(5, 8);
+			assert 5 == range.start;
+			assert 8 == range.end;
+			assert 3 == range.length;
 		}
 
 		@Test
-		@DisplayName("fails when start index is negative")
-		void failsWhenStartIndexIsNegative() {
+		@DisplayName("creates empty range when end is at start")
+		void createsEmptyRangeWhenEndAtStart() {
+			final var range = new IndexRange(5, 5);
+			assert 5 == range.start;
+			assert 5 == range.end;
+			assert 0 == range.length;
+		}
+
+		@Test
+		@DisplayName("fails when start is negative")
+		void failsWhenStartNegative() {
 			try {
-				new IndexRange(-2, 4);
+				new IndexRange(-4, 12);
 			} catch (IllegalArgumentException ignored) {
 				return;
 			}
@@ -31,32 +40,10 @@ class IndexRangeTests {
 		}
 
 		@Test
-		@DisplayName("fails when end index is negative")
-		void failsWhenEndIndexIsNegative() {
+		@DisplayName("fails when end is before start")
+		void failsWhenEndBeforeStart() {
 			try {
-				new IndexRange(2, -4);
-			} catch (IllegalArgumentException ignored) {
-				return;
-			}
-			assert false;
-		}
-
-		@Test
-		@DisplayName("fails when start index is equal end index")
-		void failsWhenStartIndexEqualsEndIndex() {
-			try {
-				new IndexRange(3, 3);
-			} catch (IllegalArgumentException ignored) {
-				return;
-			}
-			assert false;
-		}
-
-		@Test
-		@DisplayName("fails when start index is larger than end index")
-		void failsWhenStartIndexAfterEndIndex() {
-			try {
-				new IndexRange(3, 2);
+				new IndexRange(5, 2);
 			} catch (IllegalArgumentException ignored) {
 				return;
 			}
@@ -70,32 +57,32 @@ class IndexRangeTests {
 		private final IndexRange range = new IndexRange(3, 12);
 
 		@Test
-		@DisplayName("returns false when index before range start")
-		void returnsFalseWhenIndexBeforeRange() {
-			assert !range.contains(2);
+		@DisplayName("returns true when index is within range")
+		void returnsTrueWhenIndexWithinRange() {
+			assert range.contains(6);
 		}
 
 		@Test
-		@DisplayName("returns true when index at range start")
-		void returnsTrueWhenIndexAtRangeStart() {
+		@DisplayName("returns false when index is before start")
+		void returnsFalseWhenIndexBeforeStart() {
+			assert !range.contains(1);
+		}
+
+		@Test
+		@DisplayName("returns true when index is at start")
+		void returnsTrueWhenIndexAtStart() {
 			assert range.contains(3);
 		}
 
 		@Test
-		@DisplayName("returns true when index in range")
-		void returnsTrueWhenIndexInRange() {
-			assert range.contains(5);
+		@DisplayName("returns false when index is after end")
+		void returnsFalseWhenIndexAfterEnd() {
+			assert !range.contains(15);
 		}
 
 		@Test
-		@DisplayName("returns true when index at range end")
-		void returnsTrueWhenIndexAtRangeEnd() {
-			assert range.contains(11);
-		}
-
-		@Test
-		@DisplayName("returns false when index after range end")
-		void returnsFalseWhenIndexAfterRange() {
+		@DisplayName("returns false when index is at end")
+		void returnsFalseWhenIndexAtEnd() {
 			assert !range.contains(12);
 		}
 	}
@@ -106,70 +93,86 @@ class IndexRangeTests {
 		private final IndexRange range = new IndexRange(5, 18);
 
 		@Test
-		@DisplayName("returns false when the specified range before range")
-		void returnsFalseWhenRangeBeforeRange() {
-			final var range2 = new IndexRange(0, 3);
-			assert !range.contains(range2);
-		}
-
-		@Test
-		@DisplayName("returns false when the specified range start before range start")
-		void returnsFalseWhenRangeStartBeforeRangeStart() {
-			final var range2 = new IndexRange(0, 7);
-			assert !range.contains(range2);
-		}
-
-		@Test
-		@DisplayName("returns true when the specified range start at range start")
-		void returnsTrueWhenRangeStartAtRangeStart() {
-			final var range2 = new IndexRange(5, 12);
-			assert range.contains(range2);
-		}
-
-		@Test
-		@DisplayName("returns true when the specified range within range")
+		@DisplayName("returns true when range is within range")
 		void returnsTrueWhenRangeWithinRange() {
 			final var range2 = new IndexRange(7, 12);
 			assert range.contains(range2);
 		}
 
 		@Test
-		@DisplayName("returns true when the specified range equals range")
-		void returnsTrueWhenRangeEqualsRange() {
-			final var range2 = new IndexRange(5, 18);
-			assert range.contains(range2);
-		}
-
-		@Test
-		@DisplayName("returns true when the specified range at range end")
-		void returnsTrueWhenRangeAtRangeEnd() {
-			final var range2 = new IndexRange(14, 18);
-			assert range.contains(range2);
-		}
-
-		@Test
-		@DisplayName("returns false when the specified range end after range end")
-		void returnsFalseWhenRangeEndAfterRangeEnd() {
-			final var range2 = new IndexRange(7, 19);
+		@DisplayName("returns false when range is outside range")
+		void returnsFalseWhenRangeOutsideRange() {
+			final var range2 = new IndexRange(2, 22);
 			assert !range.contains(range2);
 		}
 
 		@Test
-		@DisplayName("returns false when the specified range after range")
-		void returnsFalseWhenRangeAfterRange() {
-			final var range2 = new IndexRange(19, 22);
+		@DisplayName("returns false when range starts before start")
+		void returnsFalseWhenRangeStartsBeforeStarts() {
+			final var range2 = new IndexRange(3, 12);
 			assert !range.contains(range2);
+		}
+
+		@Test
+		@DisplayName("returns true when range starts at start")
+		void returnsTrueWhenRangeStartsAtStart() {
+			final var range2 = new IndexRange(5, 12);
+			assert range.contains(range2);
+		}
+
+		@Test
+		@DisplayName("returns false when range ends after end")
+		void returnsFalseWhenRangeEndsAfterEnd() {
+			final var range2 = new IndexRange(7, 22);
+			assert !range.contains(range2);
+		}
+
+		@Test
+		@DisplayName("returns true when range ends at end")
+		void returnsTrueWhenRangeEndsAtEnd() {
+			final var range2 = new IndexRange(7, 18);
+			assert range.contains(range2);
+		}
+	}
+
+	@Nested
+	@DisplayName(".equals(Object)")
+	class EqualsTests {
+		@Test
+		@DisplayName("returns true when range equals")
+		void returnsTrueWhenEqual() {
+			final var range1 = new IndexRange(4, 9);
+			final var range2 = new IndexRange(4, 9);
+
+			assert range1.equals(range2);
+		}
+
+		@Test
+		@DisplayName("returns false when range start differs")
+		void returnsFalseWhenRangeStartDiffers() {
+			final var range1 = new IndexRange(4, 9);
+			final var range2 = new IndexRange(7, 9);
+
+			assert !range1.equals(range2);
+		}
+
+		@Test
+		@DisplayName("returns false when range end differs")
+		void returnsFalseWhenRangeEndDiffers() {
+			final var range1 = new IndexRange(4, 9);
+			final var range2 = new IndexRange(4, 6);
+
+			assert !range1.equals(range2);
 		}
 	}
 
 	@Nested
 	@DisplayName(".iterator()")
 	class IteratorTests {
-		private final IndexRange range = new IndexRange(3, 8);
-
 		@Test
 		@DisplayName("returns iterator")
 		void returnsIterator() {
+			final var range = new IndexRange(3, 8);
 			final var indexes = new int[range.length];
 			var i = 0;
 
@@ -178,8 +181,24 @@ class IndexRangeTests {
 				++i;
 			}
 
-			final var expected = new int[]{3, 4, 5, 6, 7, 8};
-			assert Arrays.equals(indexes, expected);
+			assert Arrays.equals(indexes, new int[]{
+				3, 4, 5, 6, 7
+			});
+		}
+
+		@Test
+		@DisplayName("returns empty iterator when range is empty")
+		void returnsEmptyIteratorWhenRangeEmpty() {
+			final var range = new IndexRange(2, 2);
+			final var indexes = new int[range.length];
+			var i = 0;
+
+			for (var index : range) {
+				indexes[i] = index;
+				++i;
+			}
+
+			assert Arrays.equals(indexes, new int[]{});
 		}
 	}
 }
