@@ -34,7 +34,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Returns the first item in this sequence.
 	 * <p>
-	 * Returns an empty {@link Optional} when this sequence is empty.
+	 * When this sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getFirst() {
 		for (var item : this) {
@@ -47,7 +47,7 @@ public interface Sequence<T> extends Iterable<T> {
 	/**
 	 * Returns the last item in this sequence.
 	 * <p>
-	 * Returns an empty {@link Optional} when this sequence is empty.
+	 * When this sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getLast() {
 		var last = (T) null;
@@ -62,7 +62,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Returns the smallest item in this sequence, according to the specified
 	 * {@link Comparator}.
 	 * <p>
-	 * Returns an empty {@link Optional} when this sequence is empty.
+	 * When this sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getMinimum(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -85,7 +85,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Returns the largest item in this sequence, according to the specified
 	 * {@link Comparator}.
 	 * <p>
-	 * Returns an empty {@link Optional} when this sequence is empty.
+	 * When this sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getMaximum(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -109,7 +109,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * {@code false} otherwise.
 	 */
 	default boolean contains(T item) {
-		return anyMatches(storedItem -> storedItem.equals(item));
+		return matchFirst(sequenceItem -> sequenceItem.equals(item))
+			.isPresent();
 	}
 
 	/**
@@ -121,19 +122,30 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns the first item in this sequence, which matches the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When this sequence is empty, returns an empty {@link Optional}.
+	 */
+	default Optional<T> matchFirst(Predicate<T> condition) {
+		for (var item : this) {
+			if (condition.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
 	 * Returns {@code true} when no item in this sequence satisfies the specified
 	 * {@link Predicate}; returns {@code false} when at least one does.
 	 * <p>
 	 * When this sequence is empty, returns {@code true}.
 	 */
 	default boolean noneMatches(Predicate<T> condition) {
-		for (var item : this) {
-			if (condition.test(item)) {
-				return false;
-			}
-		}
-
-		return true;
+		return matchFirst(condition)
+			.isEmpty();
 	}
 
 	/**
@@ -143,13 +155,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * When this sequence is empty, returns {@code true}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
-		for (var item : this) {
-			if (condition.test(item)) {
-				return true;
-			}
-		}
-
-		return false;
+		return matchFirst(condition)
+			.isPresent();
 	}
 
 	/**
@@ -159,13 +166,8 @@ public interface Sequence<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean eachMatches(Predicate<T> condition) {
-		for (var item : this) {
-			if (!condition.test(item)) {
-				return false;
-			}
-		}
-
-		return true;
+		return matchFirst(item -> !condition.test(item))
+			.isEmpty();
 	}
 
 	/**

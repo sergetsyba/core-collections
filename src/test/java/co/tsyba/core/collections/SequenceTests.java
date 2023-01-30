@@ -148,6 +148,40 @@ public class SequenceTests {
 	}
 
 	@Nested
+	@DisplayName(".matchFirst(Predicate<T>)")
+	class MatchFirstTests {
+		@Test
+		@DisplayName("returns first item when any item matches")
+		void returnsItemWhenAnyMatches() {
+			final var sequence = new TestSequence<>(9, 3, 7, 8, 5, 2);
+			final var match = sequence.matchFirst(item -> item % 2 == 0);
+
+			assert Optional.of(8)
+				.equals(match);
+		}
+
+		@Test
+		@DisplayName("returns empty when no item matches")
+		void returnsEmptyWhenNoneMatches() {
+			final var sequence = new TestSequence<>(9, 3, 7, 5, 5, 1);
+			final var match = sequence.matchFirst(item -> item % 2 == 0);
+
+			assert Optional.empty()
+				.equals(match);
+		}
+
+		@Test
+		@DisplayName("returns empty when no sequence is empty")
+		void returnsEmptyWhenEmpty() {
+			final var sequence = new TestSequence<>(9, 3, 7, 5, 5, 1);
+			final var match = sequence.matchFirst(item -> item % 2 == 0);
+
+			assert Optional.empty()
+				.equals(match);
+		}
+	}
+
+	@Nested
 	@DisplayName(".contains(T)")
 	class ContainsItemTests {
 		@Test
