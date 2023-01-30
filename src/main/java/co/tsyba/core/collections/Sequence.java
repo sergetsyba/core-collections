@@ -64,11 +64,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when at least one item in this collection satisfies the
+	 * Returns {@code true} when at least one item in this sequence satisfies the
 	 * specified {@link Predicate}; returns {@code false} otherwise.
-	 *
-	 * @param condition
-	 * @return
+	 * <p>
+	 * Returns {@code false} when this sequence is empty.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
 		for (var item : this) {
