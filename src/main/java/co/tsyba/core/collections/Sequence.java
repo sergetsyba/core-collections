@@ -40,7 +40,22 @@ public interface Sequence<T> extends Iterable<T> {
 		for (var item : this) {
 			return Optional.of(item);
 		}
+
 		return Optional.empty();
+	}
+
+	/**
+	 * Returns the last item in this sequence.
+	 * <p>
+	 * Returns an empty {@link Optional} when this sequence is empty.
+	 */
+	default Optional<T> getLast() {
+		var last = (T) null;
+		for (var item : this) {
+			last = item;
+		}
+
+		return Optional.ofNullable(last);
 	}
 
 	/**

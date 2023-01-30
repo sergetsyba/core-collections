@@ -76,6 +76,30 @@ public class SequenceTests {
 	}
 
 	@Nested
+	@DisplayName(".getLast()")
+	class GetLastTests {
+		@Test
+		@DisplayName("returns last item when sequence is not empty")
+		void returnsLastWhenNotEmpty() {
+			final var sequence = new TestSequence<>("B", "V", "4");
+			final var last = sequence.getLast();
+
+			assert Optional.of("4")
+				.equals(last);
+		}
+
+		@Test
+		@DisplayName("returns empty when sequence is empty")
+		void returnsEmptyWhenEmpty() {
+			final var sequence = new TestSequence<>();
+			final var first = sequence.getFirst();
+
+			assert Optional.empty()
+				.equals(first);
+		}
+	}
+
+	@Nested
 	@DisplayName(".contains(T)")
 	class ContainsItemTests {
 		@Test
