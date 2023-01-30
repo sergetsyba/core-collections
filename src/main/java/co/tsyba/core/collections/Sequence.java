@@ -51,7 +51,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Returns {@code true} when no item in this sequence satisfies the specified
 	 * {@link Predicate}; returns {@code false} when at least one does.
 	 * <p>
-	 * Returns {@code true} when this sequence is empty;
+	 * When this sequence is empty, returns {@code true}.
 	 */
 	default boolean noneMatches(Predicate<T> condition) {
 		for (var item : this) {
@@ -67,7 +67,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Returns {@code true} when at least one item in this sequence satisfies the
 	 * specified {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
-	 * Returns {@code false} when this sequence is empty.
+	 * When this sequence is empty, returns {@code true}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
 		for (var item : this) {
@@ -80,13 +80,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when every item of this collection satisfies the specified
-	 * {@link Predicate}; returns {@code false} otherwise.
+	 * Returns {@code true} when each item of this sequence satisfies the specified
+	 * {@link Predicate}; returns {@code false} when at least one does not.
 	 * <p>
-	 * When this collection is empty, returns {@code false}.
-	 *
-	 * @param condition
-	 * @return
+	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean eachMatches(Predicate<T> condition) {
 		for (var item : this) {
@@ -94,6 +91,7 @@ public interface Sequence<T> extends Iterable<T> {
 				return false;
 			}
 		}
+		
 		return true;
 	}
 

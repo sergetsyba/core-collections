@@ -149,8 +149,8 @@ public class SequenceTests {
 		}
 
 		@Test
-		@DisplayName("returns false when all items match")
-		void returnsFalseWhenAllMatch() {
+		@DisplayName("returns false when each item matches")
+		void returnsFalseWhenEachMatches() {
 			final var sequence = new TestSequence<>(8, 6, 2, 4);
 			assert !sequence.noneMatches(item -> item % 2 == 0);
 		}
@@ -174,8 +174,8 @@ public class SequenceTests {
 		}
 
 		@Test
-		@DisplayName("returns true when all items match")
-		void returnsTrueWhenAllMatch() {
+		@DisplayName("returns true when each item matches")
+		void returnsTrueWhenEachMatches() {
 			final var sequence = new TestSequence<>(8, 6, 2, 4);
 			assert sequence.anyMatches(item -> item % 2 == 0);
 		}
@@ -192,6 +192,39 @@ public class SequenceTests {
 		void returnsFalseWhenEmpty() {
 			final var sequence = new TestSequence<Integer>();
 			assert !sequence.anyMatches(item -> item % 2 == 0);
+		}
+	}
+
+	@Nested
+	@DisplayName(".eachMatches(Predicate<T>)")
+	class EachMatchesTests {
+		@Test
+		@DisplayName("returns true when each items matches")
+		void returnsTrueWhenEachMatches() {
+			final var sequence = new TestSequence<>(8, 6, 2, 4);
+			assert sequence.eachMatches(item -> item % 2 == 0);
+		}
+
+
+		@Test
+		@DisplayName("returns false when any item matches")
+		void returnsFalseWhenAnyMatches() {
+			final var sequence = new TestSequence<>(5, 7, 1, 4, 9, 2);
+			assert !sequence.eachMatches(item -> item % 2 == 0);
+		}
+
+		@Test
+		@DisplayName("returns false when no item matches")
+		void returnsFalseWhenNoneMatches() {
+			final var sequence = new TestSequence<>(3, 7, 1, 9, 11, 5);
+			assert !sequence.eachMatches(item -> item % 2 == 0);
+		}
+
+		@Test
+		@DisplayName("returns true when sequence is empty")
+		void returnsTrueWhenEmpty() {
+			final var sequence = new TestSequence<Integer>();
+			assert sequence.eachMatches(item -> item % 2 == 0);
 		}
 	}
 }
