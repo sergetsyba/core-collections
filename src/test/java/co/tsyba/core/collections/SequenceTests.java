@@ -130,6 +130,38 @@ public class SequenceTests {
 			assert sequence1.contains(sequence2);
 		}
 	}
+
+	@Nested
+	@DisplayName(".noneMatches(Predicate<T>)")
+	class NoneMatchesTests {
+		@Test
+		@DisplayName("returns true when no item matches")
+		void returnsTrueWhenNoneMatches() {
+			final var sequence = new TestSequence<>(3, 7, 1, 9, 11, 5);
+			assert sequence.noneMatches(item -> item % 2 == 0);
+		}
+
+		@Test
+		@DisplayName("returns false when some item matches")
+		void returnsFalseWhenSomeMatches() {
+			final var sequence = new TestSequence<>(5, 7, 1, 4, 9, 2);
+			assert !sequence.noneMatches(item -> item % 2 == 0);
+		}
+
+		@Test
+		@DisplayName("returns false when all items match")
+		void returnsFalseWhenAllMatch() {
+			final var sequence = new TestSequence<>(8, 6, 2, 4);
+			assert !sequence.noneMatches(item -> item % 2 == 0);
+		}
+
+		@Test
+		@DisplayName("returns false when some item matches")
+		void returnsTrueWhenEmpty() {
+			final var sequence = new TestSequence<Integer>();
+			assert sequence.noneMatches(item -> item % 2 == 0);
+		}
+	}
 }
 
 class TestSequence<T> implements Sequence<T> {
