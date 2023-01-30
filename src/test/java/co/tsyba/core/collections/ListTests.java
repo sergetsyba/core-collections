@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 10, 2019.
@@ -67,6 +68,44 @@ public class ListTests {
 			assert Arrays.equals(items.store.items,
 				new Object[]{
 					"h", "5", "R"
+				});
+		}
+	}
+
+	@Nested
+	@DisplayName("List(Iterable<T>)")
+	class NewWithIterableTests {
+		@Test
+		@DisplayName("creates list")
+		void createsList() {
+			final var items = new List<>(
+				Arrays.asList("b", "Y", "u", "3"));
+
+			assert Arrays.equals(items.store.items,
+				new String[]{
+					"b", "Y", "u", "3"
+				});
+		}
+
+		@Test
+		@DisplayName("creates empty list")
+		void createsEmptyList() {
+			final var items = new List<>(
+				new LinkedList<String>());
+
+			assert Arrays.equals(items.store.items,
+				new String[]{});
+		}
+
+		@Test
+		@DisplayName("ignores null values")
+		void ignoresNulls() {
+			final var items = new List<>(
+				Arrays.asList(null, "y", "5", null, "4", "5"));
+
+			assert Arrays.equals(items.store.items,
+				new Object[]{
+					"y", "5", "4", "5"
 				});
 		}
 	}

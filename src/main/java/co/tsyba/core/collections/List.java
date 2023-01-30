@@ -6,8 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static java.lang.System.arraycopy;
-
 /*
  * Created by Serge Tsyba <tsyba@me.com> on May 26, 2019.
  */
@@ -15,10 +13,8 @@ public class List<T> implements IndexedCollection<T> {
 	ContiguousArrayStore<T> store;
 
 	/**
-	 * Creates a new list using the specified {@link ContiguousArrayStore} as its backing
+	 * Creates a list using the specified {@link ContiguousArrayStore} as its backing
 	 * store.
-	 *
-	 * @param store
 	 */
 	List(ContiguousArrayStore<T> store) {
 		this.store = store;
@@ -28,9 +24,7 @@ public class List<T> implements IndexedCollection<T> {
 	 * Creates a copy of the specified items.
 	 */
 	public List(List<T> items) {
-		final var store = new Object[items.store.itemCount];
-		arraycopy(items.store.items, 0, store, 0, items.store.itemCount);
-		this.store = new ContiguousArrayStore<>(store);
+		this.store = new ContiguousArrayStore<>(items.store);
 	}
 
 	/**
@@ -40,39 +34,28 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@SafeVarargs
 	public List(T... items) {
-		var store = new Object[items.length];
-		var count = 0;
-
+		final var store = new ContiguousArrayStore<T>(items.length);
 		for (var item : items) {
-			if (item != null) {
-				store[count] = item;
-				++count;
-			}
+			store.append(item);
 		}
 
-		// trim excess capacity
-		if (count < items.length) {
-			final var trimmed = new Object[count];
-			arraycopy(store, 0, trimmed, 0, count);
-			store = trimmed;
-		}
-
-		this.store = new ContiguousArrayStore<>(store);
+		store.removeExcessCapacity();
+		this.store = new ContiguousArrayStore<>(store.items);
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the
-	 * items.
-	 *
-	 * @param items
+	 * Creates a list with the specified items.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
 	 */
 	public List(Iterable<T> items) {
-		this.store = new ContiguousArrayStore<>(64);
+		final var store = new ContiguousArrayStore<T>(64);
 		for (var item : items) {
-			this.store.append(item);
+			store.append(item);
 		}
 
-		this.store.removeExcessCapacity();
+		store.removeExcessCapacity();
+		this.store = new ContiguousArrayStore<>(store.items);
 	}
 
 	/**
@@ -306,7 +289,8 @@ public class List<T> implements IndexedCollection<T> {
 			return false;
 		}
 
-		final var items = (List) object;
+		@SuppressWarnings("unchecked")
+		final var items = (List<T>) object;
 		return store.equals(items.store);
 	}
 

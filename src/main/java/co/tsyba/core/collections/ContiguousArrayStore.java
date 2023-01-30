@@ -14,6 +14,11 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	Object[] items;
 	int itemCount;
 
+	ContiguousArrayStore(Object[] items) {
+		this.items = items;
+		this.itemCount = items.length;
+	}
+
 	/**
 	 * Creates a new array store with the specified capacity.
 	 *
@@ -26,6 +31,12 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 
 		this.items = new Object[capacity];
 		this.itemCount = 0;
+	}
+
+	ContiguousArrayStore(ContiguousArrayStore<T> store) {
+		this.items = new Object[store.items.length];
+		this.itemCount = store.itemCount;
+		arraycopy(store.items, 0, this.items, 0, this.itemCount);
 	}
 
 	/**
@@ -327,7 +338,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 			return;
 		}
 
-		final var newCapacity = items.length;
+		final var newCapacity = itemCount;
 		final var newStorage = (T[]) new Object[newCapacity];
 		arraycopy(items, 0, newStorage, 0, itemCount);
 
