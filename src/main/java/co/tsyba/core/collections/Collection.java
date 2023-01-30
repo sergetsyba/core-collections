@@ -13,8 +13,6 @@ import java.util.function.Predicate;
  * This interface mainly serves as extension to the standard {@link Iterable}. It provides
  * operations, which can be based solely on iterability, but are missing from
  * {@link Iterable}.
- *
- * @author Serge Tsyba (tsyba@me.com)
  */
 public interface Collection<T> extends Iterable<T> {
 	/**
@@ -118,7 +116,7 @@ public interface Collection<T> extends Iterable<T> {
 
 	/**
 	 * Returns {@code true} when no item in this sequence satisfies the specified
-	 * {@link Predicate}; returns {@code false} when at least one does.
+	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this sequence is empty, returns {@code true}.
 	 */
@@ -140,7 +138,7 @@ public interface Collection<T> extends Iterable<T> {
 
 	/**
 	 * Returns {@code true} when each item of this sequence satisfies the specified
-	 * {@link Predicate}; returns {@code false} when at least one does not.
+	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this collection is empty, returns {@code true}.
 	 */
@@ -150,7 +148,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns distinct items of this collection.
+	 * Returns distinct items in this collection.
 	 */
 	Collection<T> getDistinct();
 
