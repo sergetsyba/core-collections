@@ -32,6 +32,70 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns the first item in this sequence.
+	 * <p>
+	 * Returns an empty {@link Optional} when this sequence is empty.
+	 */
+	default Optional<T> getFirst() {
+		for (var item : this) {
+			return Optional.of(item);
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns the smallest item of this collection, according to the specified
+	 * {@link Comparator}.
+	 * <p>
+	 * Returns an empty {@link Optional} when this collection is empty.
+	 *
+	 * @param comparator
+	 * @return
+	 */
+	default Optional<T> getMinimum(Comparator<T> comparator) {
+		final var iterator = iterator();
+		if (!iterator.hasNext()) {
+			return Optional.empty();
+		}
+
+		var minimum = iterator.next();
+		while (iterator.hasNext()) {
+			final var item = iterator.next();
+			if (comparator.compare(minimum, item) > 0) {
+				minimum = item;
+			}
+		}
+
+		return Optional.of(minimum);
+	}
+
+	/**
+	 * Returns the largest item of this collection, according to the specified
+	 * {@link Comparator}.
+	 * <p>
+	 * Returns an empty {@link Optional} when this collection is empty.
+	 *
+	 * @param comparator
+	 * @return
+	 */
+	default Optional<T> getMaximum(Comparator<T> comparator) {
+		final var iterator = iterator();
+		if (!iterator.hasNext()) {
+			return Optional.empty();
+		}
+
+		var maximum = iterator.next();
+		while (iterator.hasNext()) {
+			final var item = iterator.next();
+			if (comparator.compare(maximum, item) < 0) {
+				maximum = item;
+			}
+		}
+
+		return Optional.of(maximum);
+	}
+
+	/**
 	 * Returns {@code true} when this sequence contains the specified item; returns
 	 * {@code false} otherwise.
 	 */
@@ -91,60 +155,8 @@ public interface Sequence<T> extends Iterable<T> {
 				return false;
 			}
 		}
-		
+
 		return true;
-	}
-
-	/**
-	 * Returns the smallest item of this collection, according to the specified
-	 * {@link Comparator}.
-	 * <p>
-	 * Returns an empty {@link Optional} when this collection is empty.
-	 *
-	 * @param comparator
-	 * @return
-	 */
-	default Optional<T> getMinimum(Comparator<T> comparator) {
-		final var iterator = iterator();
-		if (!iterator.hasNext()) {
-			return Optional.empty();
-		}
-
-		var minimum = iterator.next();
-		while (iterator.hasNext()) {
-			final var item = iterator.next();
-			if (comparator.compare(minimum, item) > 0) {
-				minimum = item;
-			}
-		}
-
-		return Optional.of(minimum);
-	}
-
-	/**
-	 * Returns the largest item of this collection, according to the specified
-	 * {@link Comparator}.
-	 * <p>
-	 * Returns an empty {@link Optional} when this collection is empty.
-	 *
-	 * @param comparator
-	 * @return
-	 */
-	default Optional<T> getMaximum(Comparator<T> comparator) {
-		final var iterator = iterator();
-		if (!iterator.hasNext()) {
-			return Optional.empty();
-		}
-
-		var maximum = iterator.next();
-		while (iterator.hasNext()) {
-			final var item = iterator.next();
-			if (comparator.compare(maximum, item) < 0) {
-				maximum = item;
-			}
-		}
-
-		return Optional.of(maximum);
 	}
 
 	/**

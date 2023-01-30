@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -33,9 +34,10 @@ public class SequenceTests {
 	class GetCountTests {
 		@Test
 		@DisplayName("returns item count")
-		void returnsItemCount() {
+		void returnsCount() {
 			final var sequence = new TestSequence<>("b", "5", "F", "e");
 			final var count = sequence.getCount();
+
 			assert 4 == count;
 		}
 
@@ -44,7 +46,32 @@ public class SequenceTests {
 		void returnsZeroWhenEmpty() {
 			final var sequence = new TestSequence<>();
 			final var count = sequence.getCount();
+
 			assert 0 == count;
+		}
+	}
+
+	@Nested
+	@DisplayName(".getFirst()")
+	class GetFirstTests {
+		@Test
+		@DisplayName("returns first item when sequence is not empty")
+		void returnsFirstWhenNotEmpty() {
+			final var sequence = new TestSequence<>("B", "V", "4");
+			final var first = sequence.getFirst();
+
+			assert Optional.of("B")
+				.equals(first);
+		}
+
+		@Test
+		@DisplayName("returns empty when sequence is empty")
+		void returnsEmptyWhenEmpty() {
+			final var sequence = new TestSequence<>();
+			final var first = sequence.getFirst();
+
+			assert Optional.empty()
+				.equals(first);
 		}
 	}
 
