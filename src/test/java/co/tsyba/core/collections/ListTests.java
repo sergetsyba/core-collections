@@ -17,17 +17,57 @@ public class ListTests {
 		@DisplayName("creates list")
 		void createsList() {
 			final var items = new List<>("v", "4", "G", "5");
-			final var expected = new String[]{
-				"v", "4", "G", "5"
-			};
-			assert Arrays.equals(expected, items.store.items);
+			final var copy = new List<>(items);
+
+			assert Arrays.equals(copy.store.items,
+				new String[]{
+					"v", "4", "G", "5"
+				});
 		}
 
 		@Test
 		@DisplayName("creates empty list")
 		void createsEmptyList() {
 			final var items = new List<>();
-			assert 0 == items.store.items.length;
+			final var copy = new List<>(items);
+
+			assert Arrays.equals(copy.store.items,
+				new String[]{});
+		}
+	}
+
+	@Nested
+	@DisplayName("List(T...)")
+	class NewWithArrayTests {
+		@Test
+		@DisplayName("creates list")
+		void createsList() {
+			final var items = new List<>("v", "4", "G", "5");
+
+			assert Arrays.equals(items.store.items,
+				new String[]{
+					"v", "4", "G", "5"
+				});
+		}
+
+		@Test
+		@DisplayName("creates empty list")
+		void createsEmptyList() {
+			final var items = new List<>();
+
+			assert Arrays.equals(items.store.items,
+				new String[]{});
+		}
+
+		@Test
+		@DisplayName("ignores null values")
+		void ignoresNulls() {
+			final var items = new List<>("h", "5", null, "R", null, null);
+
+			assert Arrays.equals(items.store.items,
+				new Object[]{
+					"h", "5", "R"
+				});
 		}
 	}
 
