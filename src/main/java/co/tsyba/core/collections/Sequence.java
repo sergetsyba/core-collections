@@ -7,8 +7,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/*
- * Created by Serge Tsyba (tsyba@me.com) on May 12, 2019.
+/**
+ * A group of items, which can be iterated.
+ * <p>
+ * This interface mainly serves as extension to the standard {@link Iterable}. It provides
+ * operations, which can be based solely on iterability, but are missing from
+ * {@link Iterable}.
+ *
+ * @author Serge Tsyba (tsyba@me.com)
+ * @created May 12, 2019
  */
 public interface Sequence<T> extends Iterable<T> {
 	/**
@@ -29,33 +36,6 @@ public interface Sequence<T> extends Iterable<T> {
 		}
 
 		return count;
-	}
-
-	/**
-	 * Returns the first item in this sequence.
-	 * <p>
-	 * When this sequence is empty, returns an empty {@link Optional}.
-	 */
-	default Optional<T> getFirst() {
-		for (var item : this) {
-			return Optional.of(item);
-		}
-
-		return Optional.empty();
-	}
-
-	/**
-	 * Returns the last item in this sequence.
-	 * <p>
-	 * When this sequence is empty, returns an empty {@link Optional}.
-	 */
-	default Optional<T> getLast() {
-		var last = (T) null;
-		for (var item : this) {
-			last = item;
-		}
-
-		return Optional.ofNullable(last);
 	}
 
 	/**

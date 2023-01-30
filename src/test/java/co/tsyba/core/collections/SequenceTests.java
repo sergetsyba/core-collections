@@ -52,54 +52,6 @@ public class SequenceTests {
 	}
 
 	@Nested
-	@DisplayName(".getFirst()")
-	class GetFirstTests {
-		@Test
-		@DisplayName("returns first item when sequence is not empty")
-		void returnsFirstWhenNotEmpty() {
-			final var sequence = new TestSequence<>("B", "V", "4");
-			final var first = sequence.getFirst();
-
-			assert Optional.of("B")
-				.equals(first);
-		}
-
-		@Test
-		@DisplayName("returns empty when sequence is empty")
-		void returnsEmptyWhenEmpty() {
-			final var sequence = new TestSequence<String>();
-			final var first = sequence.getFirst();
-
-			assert Optional.empty()
-				.equals(first);
-		}
-	}
-
-	@Nested
-	@DisplayName(".getLast()")
-	class GetLastTests {
-		@Test
-		@DisplayName("returns last item when sequence is not empty")
-		void returnsLastWhenNotEmpty() {
-			final var sequence = new TestSequence<>("B", "V", "4");
-			final var last = sequence.getLast();
-
-			assert Optional.of("4")
-				.equals(last);
-		}
-
-		@Test
-		@DisplayName("returns empty when sequence is empty")
-		void returnsEmptyWhenEmpty() {
-			final var sequence = new TestSequence<String>();
-			final var last = sequence.getFirst();
-
-			assert Optional.empty()
-				.equals(last);
-		}
-	}
-
-	@Nested
 	@DisplayName(".getMinimum()")
 	class GetMinimumTests {
 		@Test
