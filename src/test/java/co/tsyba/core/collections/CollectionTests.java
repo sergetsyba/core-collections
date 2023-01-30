@@ -17,17 +17,17 @@ public class CollectionTests {
 	@DisplayName(".isEmpty()")
 	class IsEmptyTests {
 		@Test
-		@DisplayName("returns true when empty")
+		@DisplayName("returns true when collection is empty")
 		void returnsTrueWhenEmpty() {
-			final var sequence = new TestCollection<>();
-			assert sequence.isEmpty();
+			final var items = new TestCollection<>();
+			assert items.isEmpty();
 		}
 
 		@Test
-		@DisplayName("returns false when not empty")
+		@DisplayName("returns false when collection is not empty")
 		void returnsFalseWhenNotEmpty() {
-			final var sequence = new TestCollection<>("f", "T", "q", "r");
-			assert !sequence.isEmpty();
+			final var items = new TestCollection<>("f", "T", "q", "r");
+			assert !items.isEmpty();
 		}
 	}
 
@@ -35,19 +35,19 @@ public class CollectionTests {
 	@DisplayName(".getCount()")
 	class GetCountTests {
 		@Test
-		@DisplayName("returns item count")
-		void returnsCount() {
-			final var sequence = new TestCollection<>("b", "5", "F", "e");
-			final var count = sequence.getCount();
+		@DisplayName("returns item count when collection is not empty")
+		void returnsCountWhenNotEmpty() {
+			final var items = new TestCollection<>("b", "5", "F", "e");
+			final var count = items.getCount();
 
 			assert 4 == count;
 		}
 
 		@Test
-		@DisplayName("returns 0 when empty")
+		@DisplayName("returns 0 when collection is empty")
 		void returnsZeroWhenEmpty() {
-			final var sequence = new TestCollection<>();
-			final var count = sequence.getCount();
+			final var items = new TestCollection<>();
+			final var count = items.getCount();
 
 			assert 0 == count;
 		}
@@ -57,20 +57,20 @@ public class CollectionTests {
 	@DisplayName(".getMinimum()")
 	class GetMinimumTests {
 		@Test
-		@DisplayName("returns minimum item when sequence is not empty")
-		void returnsMaxWhenNotEmpty() {
-			final var sequence = new TestCollection<>(5, 12, 7, 0, 3, 6);
-			final var minimum = sequence.getMinimum(Comparator.naturalOrder());
+		@DisplayName("returns minimum item when collection is not empty")
+		void returnsMinWhenNotEmpty() {
+			final var items = new TestCollection<>(5, 12, 7, 0, 3, 6);
+			final var minimum = items.getMinimum(Comparator.naturalOrder());
 
 			assert Optional.of(0)
 				.equals(minimum);
 		}
 
 		@Test
-		@DisplayName("returns empty when sequence is empty")
+		@DisplayName("returns empty when collection is empty")
 		void returnsEmptyWhenEmpty() {
-			final var sequence = new TestCollection<Integer>();
-			final var minimum = sequence.getMinimum(Comparator.naturalOrder());
+			final var items = new TestCollection<Integer>();
+			final var minimum = items.getMinimum(Comparator.naturalOrder());
 
 			assert Optional.empty()
 				.equals(minimum);
@@ -81,20 +81,20 @@ public class CollectionTests {
 	@DisplayName(".getMaximum()")
 	class GetMaximumTests {
 		@Test
-		@DisplayName("returns maximum item when sequence is not empty")
+		@DisplayName("returns maximum item when collection is not empty")
 		void returnsMaxWhenNotEmpty() {
-			final var sequence = new TestCollection<>(5, 12, 7, 0, 3, 6);
-			final var maximum = sequence.getMaximum(Comparator.naturalOrder());
+			final var items = new TestCollection<>(5, 12, 7, 0, 3, 6);
+			final var maximum = items.getMaximum(Comparator.naturalOrder());
 
 			assert Optional.of(12)
 				.equals(maximum);
 		}
 
 		@Test
-		@DisplayName("returns empty when sequence is empty")
+		@DisplayName("returns empty when collection is empty")
 		void returnsEmptyWhenEmpty() {
-			final var sequence = new TestCollection<Integer>();
-			final var maximum = sequence.getMaximum(Comparator.naturalOrder());
+			final var items = new TestCollection<Integer>();
+			final var maximum = items.getMaximum(Comparator.naturalOrder());
 
 			assert Optional.empty()
 				.equals(maximum);
@@ -107,80 +107,80 @@ public class CollectionTests {
 		@Test
 		@DisplayName("returns true when item is present")
 		void returnsTrueWhenPresent() {
-			final var sequence = new TestCollection<>("t", "d", "5", "V", "A");
-			assert sequence.contains("5");
+			final var items = new TestCollection<>("t", "d", "5", "V", "A");
+			assert items.contains("5");
 		}
 
 		@Test
 		@DisplayName("returns false when item is absent")
 		void returnsFalseWhenAbsent() {
-			final var sequence = new TestCollection<>("O", "P", "q");
-			assert !sequence.contains("5");
+			final var items = new TestCollection<>("O", "P", "q");
+			assert !items.contains("5");
 		}
 
 		@Test
-		@DisplayName("returns false when sequence is empty")
+		@DisplayName("returns false when collection is empty")
 		void returnsFalseWhenEmpty() {
-			final var sequence = new TestCollection<>();
-			assert !sequence.contains("5");
+			final var items = new TestCollection<>();
+			assert !items.contains("5");
 		}
 	}
 
 	@Nested
-	@DisplayName(".contains(Sequence<T>)")
+	@DisplayName(".contains(collection<T>)")
 	class ContainsItemsTests {
 		@Test
 		@DisplayName("returns true when all items are present")
 		void returnsTrueWhenAllPresent() {
-			final var sequence1 = new TestCollection<>("t", "d", "5", "V", "A");
-			final var sequence2 = new TestCollection<>("A", "d", "t");
+			final var items1 = new TestCollection<>("t", "d", "5", "V", "A");
+			final var items2 = new TestCollection<>("A", "d", "t");
 
-			assert sequence1.contains(sequence2);
+			assert items1.contains(items2);
 		}
 
 		@Test
 		@DisplayName("returns false when some items are absent")
 		void returnsFalseWhenSomeAbsent() {
-			final var sequence1 = new TestCollection<>("O", "P", "q");
-			final var sequence2 = new TestCollection<>("P", "0", "O");
+			final var items1 = new TestCollection<>("O", "P", "q");
+			final var items2 = new TestCollection<>("P", "0", "O");
 
-			assert !sequence1.contains(sequence2);
+			assert !items1.contains(items2);
 		}
 
 		@Test
 		@DisplayName("returns false when all items are absent")
 		void returnsFalseWhenAllAbsent() {
-			final var sequence1 = new TestCollection<>("Y", "f", "E", "3");
-			final var sequence2 = new TestCollection<>("N", "R", "P");
+			final var items1 = new TestCollection<>("Y", "f", "E", "3");
+			final var items2 = new TestCollection<>("N", "R", "P");
 
-			assert !sequence1.contains(sequence2);
+			assert !items1.contains(items2);
 		}
 
 		@Test
-		@DisplayName("returns false when sequence is empty")
+		@DisplayName("returns false when collection is empty")
 		void returnsFalseWhenEmpty() {
-			final var sequence1 = new TestCollection<String>();
-			final var sequence2 = new TestCollection<>("G", "Q");
+			final var items1 = new TestCollection<String>();
+			final var items2 = new TestCollection<>("G", "Q");
 
-			assert !sequence1.contains(sequence2);
+			assert !items1.contains(items2);
 		}
 
 		@Test
 		@DisplayName("returns true when items is empty")
 		void returnsTrueWhenItemsEmpty() {
-			final var sequence1 = new TestCollection<>("A", "t", "I", "P");
-			final var sequence2 = new TestCollection<String>();
+			final var items1 = new TestCollection<>("A", "t", "I", "P");
+			final var items2 = new TestCollection<String>();
 
-			assert sequence1.contains(sequence2);
+			assert items1.contains(items2);
 		}
 
 		@Test
-		@DisplayName("returns true when sequence and items are empty")
+		@DisplayName("returns true when collection and items are empty")
 		void returnsTrueWhenBothEmpty() {
-			final var sequence1 = new TestCollection<String>();
-			final var sequence2 = new TestCollection<String>();
+			final var items1 = new TestCollection<String>();
+			final var items2 = new TestCollection<String>();
 
-			assert sequence1.contains(sequence2);
+			assert items1.contains(items2);
 		}
 	}
 
@@ -188,10 +188,10 @@ public class CollectionTests {
 	@DisplayName(".matchFirst(Predicate<T>)")
 	class MatchFirstTests {
 		@Test
-		@DisplayName("returns first item when any item matches")
+		@DisplayName("returns matched item when item matches")
 		void returnsItemWhenAnyMatches() {
-			final var sequence = new TestCollection<>(9, 3, 7, 8, 5, 2);
-			final var match = sequence.matchFirst(item -> item % 2 == 0);
+			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
+			final var match = items.matchFirst(item -> item % 2 == 0);
 
 			assert Optional.of(8)
 				.equals(match);
@@ -200,18 +200,18 @@ public class CollectionTests {
 		@Test
 		@DisplayName("returns empty when no item matches")
 		void returnsEmptyWhenNoneMatches() {
-			final var sequence = new TestCollection<>(9, 3, 7, 5, 5, 1);
-			final var match = sequence.matchFirst(item -> item % 2 == 0);
+			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
+			final var match = items.matchFirst(item -> item % 2 == 0);
 
 			assert Optional.empty()
 				.equals(match);
 		}
 
 		@Test
-		@DisplayName("returns empty when no sequence is empty")
+		@DisplayName("returns empty when collection is empty")
 		void returnsEmptyWhenEmpty() {
-			final var sequence = new TestCollection<>(9, 3, 7, 5, 5, 1);
-			final var match = sequence.matchFirst(item -> item % 2 == 0);
+			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
+			final var match = items.matchFirst(item -> item % 2 == 0);
 
 			assert Optional.empty()
 				.equals(match);
@@ -224,29 +224,29 @@ public class CollectionTests {
 		@Test
 		@DisplayName("returns true when no item matches")
 		void returnsTrueWhenNoneMatches() {
-			final var sequence = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert sequence.noneMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
+			assert items.noneMatches(item -> item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when any item matches")
 		void returnsFalseWhenAnyMatches() {
-			final var sequence = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert !sequence.noneMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
+			assert !items.noneMatches(item -> item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when each item matches")
 		void returnsFalseWhenEachMatches() {
-			final var sequence = new TestCollection<>(8, 6, 2, 4);
-			assert !sequence.noneMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(8, 6, 2, 4);
+			assert !items.noneMatches(item -> item % 2 == 0);
 		}
 
 		@Test
-		@DisplayName("returns when sequence is empty")
+		@DisplayName("returns true when collection is empty")
 		void returnsTrueWhenEmpty() {
-			final var sequence = new TestCollection<Integer>();
-			assert sequence.noneMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<Integer>();
+			assert items.noneMatches(item -> item % 2 == 0);
 		}
 	}
 
@@ -256,29 +256,29 @@ public class CollectionTests {
 		@Test
 		@DisplayName("returns true when any item matches")
 		void returnsTrueWhenAnyMatches() {
-			final var sequence = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert sequence.anyMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
+			assert items.anyMatches(item -> item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns true when each item matches")
 		void returnsTrueWhenEachMatches() {
-			final var sequence = new TestCollection<>(8, 6, 2, 4);
-			assert sequence.anyMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(8, 6, 2, 4);
+			assert items.anyMatches(item -> item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when no item matches")
 		void returnsFalseWhenNoneMatches() {
-			final var sequence = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert !sequence.anyMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
+			assert !items.anyMatches(item -> item % 2 == 0);
 		}
 
 		@Test
-		@DisplayName("returns false when sequence is empty")
+		@DisplayName("returns false when collection is empty")
 		void returnsFalseWhenEmpty() {
-			final var sequence = new TestCollection<Integer>();
-			assert !sequence.anyMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<Integer>();
+			assert !items.anyMatches(item -> item % 2 == 0);
 		}
 	}
 
@@ -288,30 +288,30 @@ public class CollectionTests {
 		@Test
 		@DisplayName("returns true when each items matches")
 		void returnsTrueWhenEachMatches() {
-			final var sequence = new TestCollection<>(8, 6, 2, 4);
-			assert sequence.eachMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(8, 6, 2, 4);
+			assert items.eachMatches(item -> item % 2 == 0);
 		}
 
 
 		@Test
 		@DisplayName("returns false when any item matches")
 		void returnsFalseWhenAnyMatches() {
-			final var sequence = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert !sequence.eachMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
+			assert !items.eachMatches(item -> item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when no item matches")
 		void returnsFalseWhenNoneMatches() {
-			final var sequence = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert !sequence.eachMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
+			assert !items.eachMatches(item -> item % 2 == 0);
 		}
 
 		@Test
-		@DisplayName("returns true when sequence is empty")
+		@DisplayName("returns true when collection is empty")
 		void returnsTrueWhenEmpty() {
-			final var sequence = new TestCollection<Integer>();
-			assert sequence.eachMatches(item -> item % 2 == 0);
+			final var items = new TestCollection<Integer>();
+			assert items.eachMatches(item -> item % 2 == 0);
 		}
 	}
 
@@ -319,22 +319,22 @@ public class CollectionTests {
 	@DisplayName(".iterate(Consumer<T>)")
 	class IterateTests {
 		@Test
-		@DisplayName("iterates when sequence is not empty")
+		@DisplayName("iterates when collection is not empty")
 		void iteratesWhenNotEmpty() {
-			final var sequence = new TestCollection<>(3, 7, 1, 2, 3, 0);
+			final var items = new TestCollection<>(3, 7, 1, 2, 3, 0);
 			final var iterated = new LinkedList<Integer>();
-			sequence.iterate(iterated::add);
+			items.iterate(iterated::add);
 
 			assert List.of(3, 7, 1, 2, 3, 0)
 				.equals(iterated);
 		}
 
 		@Test
-		@DisplayName("does not iterate when sequence is empty")
-		void doesNotIterateWhenEmpty() {
-			final var sequence = new TestCollection<Integer>();
+		@DisplayName("does nothing when collection is empty")
+		void doesNothingWhenEmpty() {
+			final var items = new TestCollection<Integer>();
 			final var iterated = new LinkedList<Integer>();
-			sequence.iterate(iterated::add);
+			items.iterate(iterated::add);
 
 			assert List.of()
 				.equals(iterated);
@@ -345,19 +345,19 @@ public class CollectionTests {
 	@DisplayName(".combine(R, BiFunction<R, T, R>)")
 	class CombineTests {
 		@Test
-		@DisplayName("combines when sequence is not empty")
+		@DisplayName("combines when collection is not empty")
 		void combinesWhenNotEmpty() {
-			final var sequence = new TestCollection<>(5, 3, 2, 9, 4, 7);
-			final var sum = sequence.combine(4, Integer::sum);
+			final var items = new TestCollection<>(5, 3, 2, 9, 4, 7);
+			final var sum = items.combine(4, Integer::sum);
 
 			assert 34 == sum;
 		}
 
 		@Test
-		@DisplayName("does nothing when sequence is empty")
+		@DisplayName("does nothing when collection is empty")
 		void doesNothingWhenEmpty() {
-			final var sequence = new TestCollection<Integer>();
-			final var sum = sequence.combine(4, Integer::sum);
+			final var items = new TestCollection<Integer>();
+			final var sum = items.combine(4, Integer::sum);
 
 			assert 4 == sum;
 		}
@@ -367,20 +367,20 @@ public class CollectionTests {
 	@DisplayName(".join(String)")
 	class JoinTests {
 		@Test
-		@DisplayName("joins items into a string when sequence is not empty")
+		@DisplayName("joins items into a string when collection is not empty")
 		void joinsWhenNotEmpty() {
-			final var sequence = new TestCollection<>("B", "3", "A", "4", "n");
-			final var joined = sequence.join(", ");
+			final var items = new TestCollection<>("B", "3", "A", "4", "n");
+			final var joined = items.join(", ");
 
 			assert "B, 3, A, 4, n"
 				.equals(joined);
 		}
 
 		@Test
-		@DisplayName("returns empty string when sequence is empty")
+		@DisplayName("returns empty string when collection is empty")
 		void doesNothingWhenEmpty() {
-			final var sequence = new TestCollection<>();
-			final var joined = sequence.join(", ");
+			final var items = new TestCollection<>();
+			final var joined = items.join(", ");
 
 			assert ""
 				.equals(joined);
