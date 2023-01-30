@@ -266,7 +266,7 @@ public class ListTests {
 		@DisplayName("returns items at index range")
 		void returnsItemsWhenIndexRangeInValidRange() {
 			final var range = new IndexRange(2, 5);
-			final var expected = new List<>("v", "E", "P", "e");
+			final var expected = new List<>("v", "E", "P");
 
 			assert items.get(range)
 				.equals(expected);
