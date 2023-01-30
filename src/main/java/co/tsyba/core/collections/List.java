@@ -24,16 +24,10 @@ public class List<T> implements IndexedCollection<T> {
 
 	/**
 	 * Creates a copy of the specified items.
-	 *
-	 * @param items
 	 */
 	public List(List<T> items) {
-		if (items.isEmpty()) {
-			this.store = new ContiguousArrayStore<>(0);
-		} else {
-			final var indexRange = new IndexRange(0, items.store.itemCount - 1);
-			this.store = new ContiguousArrayStore<>(items.store, indexRange);
-		}
+		this.store = new ContiguousArrayStore<>(items.store.itemCount);
+		System.arraycopy(items.store.items, 0, this.store.items, 0, items.store.itemCount);
 	}
 
 	/**

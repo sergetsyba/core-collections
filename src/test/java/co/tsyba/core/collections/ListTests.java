@@ -4,10 +4,33 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 10, 2019.
  */
 public class ListTests {
+	@Nested
+	@DisplayName("List(List)")
+	class NewWithListTests {
+		@Test
+		@DisplayName("creates list")
+		void createsList() {
+			final var items = new List<>("v", "4", "G", "5");
+			final var expected = new String[]{
+				"v", "4", "G", "5"
+			};
+			assert Arrays.equals(expected, items.store.items);
+		}
+
+		@Test
+		@DisplayName("creates empty list")
+		void createsEmptyList() {
+			final var items = new List<>();
+			assert 0 == items.store.items.length;
+		}
+	}
+
 	@Nested
 	@DisplayName(".isEmpty()")
 	class IsEmptyTests {
