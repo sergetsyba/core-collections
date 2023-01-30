@@ -32,22 +32,16 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this collection contains the specified item; returns
+	 * Returns {@code true} when this sequence contains the specified item; returns
 	 * {@code false} otherwise.
-	 *
-	 * @param item
-	 * @return
 	 */
 	default boolean contains(T item) {
 		return anyMatches(storedItem -> storedItem.equals(item));
 	}
 
 	/**
-	 * Returns {@code true} when this collection contains every item of the specified
-	 * collection; returns {@code false} otherwise.
-	 *
-	 * @param items
-	 * @return
+	 * Returns {@code true} when this sequence contains every item of the specified
+	 * sequence; returns {@code false} otherwise.
 	 */
 	default boolean contains(Sequence<T> items) {
 		return items.eachMatches(this::contains);
@@ -102,9 +96,7 @@ public interface Sequence<T> extends Iterable<T> {
 				return false;
 			}
 		}
-
-		// empty collection matches no item
-		return !isEmpty();
+		return true;
 	}
 
 	/**

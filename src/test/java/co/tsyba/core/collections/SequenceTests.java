@@ -47,6 +47,89 @@ public class SequenceTests {
 			assert 0 == count;
 		}
 	}
+
+	@Nested
+	@DisplayName(".contains(T)")
+	class ContainsItemTests {
+		@Test
+		@DisplayName("returns true when item is present")
+		void returnsTrueWhenPresent() {
+			final var sequence = new TestSequence<>("t", "d", "5", "V", "A");
+			assert sequence.contains("5");
+		}
+
+		@Test
+		@DisplayName("returns false when item is absent")
+		void returnsFalseWhenAbsent() {
+			final var sequence = new TestSequence<>("O", "P", "q");
+			assert !sequence.contains("5");
+		}
+
+		@Test
+		@DisplayName("returns false when sequence is empty")
+		void returnsFalseWhenEmpty() {
+			final var sequence = new TestSequence<>();
+			assert !sequence.contains("5");
+		}
+	}
+
+	@Nested
+	@DisplayName(".contains(Sequence<T>)")
+	class ContainsItemsTests {
+		@Test
+		@DisplayName("returns true when all items are present")
+		void returnsTrueWhenAllPresent() {
+			final var sequence1 = new TestSequence<>("t", "d", "5", "V", "A");
+			final var sequence2 = new TestSequence<>("A", "d", "t");
+
+			assert sequence1.contains(sequence2);
+		}
+
+		@Test
+		@DisplayName("returns false when some items are absent")
+		void returnsFalseWhenSomeAbsent() {
+			final var sequence1 = new TestSequence<>("O", "P", "q");
+			final var sequence2 = new TestSequence<>("P", "0", "O");
+
+			assert !sequence1.contains(sequence2);
+		}
+
+		@Test
+		@DisplayName("returns false when all items are absent")
+		void returnsFalseWhenAllAbsent() {
+			final var sequence1 = new TestSequence<>("Y", "f", "E", "3");
+			final var sequence2 = new TestSequence<>("N", "R", "P");
+
+			assert !sequence1.contains(sequence2);
+		}
+
+		@Test
+		@DisplayName("returns false when sequence is empty")
+		void returnsFalseWhenEmpty() {
+			final var sequence1 = new TestSequence<String>();
+			final var sequence2 = new TestSequence<>("G", "Q");
+
+			assert !sequence1.contains(sequence2);
+		}
+
+		@Test
+		@DisplayName("returns true when items is empty")
+		void returnsTrueWhenItemsEmpty() {
+			final var sequence1 = new TestSequence<>("A", "t", "I", "P");
+			final var sequence2 = new TestSequence<String>();
+
+			assert sequence1.contains(sequence2);
+		}
+
+		@Test
+		@DisplayName("returns true when sequence and items are empty")
+		void returnsTrueWhenBothEmpty() {
+			final var sequence1 = new TestSequence<String>();
+			final var sequence2 = new TestSequence<String>();
+
+			assert sequence1.contains(sequence2);
+		}
+	}
 }
 
 class TestSequence<T> implements Sequence<T> {
