@@ -342,6 +342,28 @@ public class CollectionTests {
 	}
 
 	@Nested
+	@DisplayName(".combine(R, BiFunction<R, T, R>)")
+	class CombineTests {
+		@Test
+		@DisplayName("combines when sequence is not empty")
+		void combinesWhenNotEmpty() {
+			final var sequence = new TestCollection<>(5, 3, 2, 9, 4, 7);
+			final var sum = sequence.combine(4, Integer::sum);
+
+			assert 34 == sum;
+		}
+
+		@Test
+		@DisplayName("does nothing when sequence is empty")
+		void doesNothingWhenEmpty() {
+			final var sequence = new TestCollection<Integer>();
+			final var sum = sequence.combine(4, Integer::sum);
+
+			assert 4 == sum;
+		}
+	}
+
+	@Nested
 	@DisplayName(".join(String)")
 	class JoinTests {
 		@Test
