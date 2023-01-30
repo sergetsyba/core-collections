@@ -59,13 +59,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the smallest item of this collection, according to the specified
+	 * Returns the smallest item in this sequence, according to the specified
 	 * {@link Comparator}.
 	 * <p>
-	 * Returns an empty {@link Optional} when this collection is empty.
-	 *
-	 * @param comparator
-	 * @return
+	 * Returns an empty {@link Optional} when this sequence is empty.
 	 */
 	default Optional<T> getMinimum(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -85,13 +82,10 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the largest item of this collection, according to the specified
+	 * Returns the largest item in this sequence, according to the specified
 	 * {@link Comparator}.
 	 * <p>
-	 * Returns an empty {@link Optional} when this collection is empty.
-	 *
-	 * @param comparator
-	 * @return
+	 * Returns an empty {@link Optional} when this sequence is empty.
 	 */
 	default Optional<T> getMaximum(Comparator<T> comparator) {
 		final var iterator = iterator();

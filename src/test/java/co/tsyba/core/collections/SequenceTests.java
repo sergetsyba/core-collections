@@ -67,7 +67,7 @@ public class SequenceTests {
 		@Test
 		@DisplayName("returns empty when sequence is empty")
 		void returnsEmptyWhenEmpty() {
-			final var sequence = new TestSequence<>();
+			final var sequence = new TestSequence<String>();
 			final var first = sequence.getFirst();
 
 			assert Optional.empty()
@@ -91,11 +91,59 @@ public class SequenceTests {
 		@Test
 		@DisplayName("returns empty when sequence is empty")
 		void returnsEmptyWhenEmpty() {
-			final var sequence = new TestSequence<>();
-			final var first = sequence.getFirst();
+			final var sequence = new TestSequence<String>();
+			final var last = sequence.getFirst();
 
 			assert Optional.empty()
-				.equals(first);
+				.equals(last);
+		}
+	}
+
+	@Nested
+	@DisplayName(".getMinimum()")
+	class GetMinimumTests {
+		@Test
+		@DisplayName("returns minimum item when sequence is not empty")
+		void returnsMaxWhenNotEmpty() {
+			final var sequence = new TestSequence<>(5, 12, 7, 0, 3, 6);
+			final var minimum = sequence.getMinimum(Comparator.naturalOrder());
+
+			assert Optional.of(0)
+				.equals(minimum);
+		}
+
+		@Test
+		@DisplayName("returns empty when sequence is empty")
+		void returnsEmptyWhenEmpty() {
+			final var sequence = new TestSequence<Integer>();
+			final var minimum = sequence.getMinimum(Comparator.naturalOrder());
+
+			assert Optional.empty()
+				.equals(minimum);
+		}
+	}
+
+	@Nested
+	@DisplayName(".getMaximum()")
+	class GetMaximumTests {
+		@Test
+		@DisplayName("returns maximum item when sequence is not empty")
+		void returnsMaxWhenNotEmpty() {
+			final var sequence = new TestSequence<>(5, 12, 7, 0, 3, 6);
+			final var maximum = sequence.getMaximum(Comparator.naturalOrder());
+
+			assert Optional.of(12)
+				.equals(maximum);
+		}
+
+		@Test
+		@DisplayName("returns empty when sequence is empty")
+		void returnsEmptyWhenEmpty() {
+			final var sequence = new TestSequence<Integer>();
+			final var maximum = sequence.getMaximum(Comparator.naturalOrder());
+
+			assert Optional.empty()
+				.equals(maximum);
 		}
 	}
 
