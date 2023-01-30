@@ -123,7 +123,7 @@ public class CollectionTests {
 		assert "P, x, Z, j, e".equals(joined);
 	}
 
-	private static <T> Collection<T> collect(T... items) {
+	private static <T> Sequence<T> collect(T... items) {
 		return new ListCollection<>(items);
 	}
 }
