@@ -15,9 +15,8 @@ import java.util.function.Predicate;
  * {@link Iterable}.
  *
  * @author Serge Tsyba (tsyba@me.com)
- * @created May 12, 2019
  */
-public interface Sequence<T> extends Iterable<T> {
+public interface Collection<T> extends Iterable<T> {
 	/**
 	 * Returns {@code true} when this sequence is empty; returns {@code false} otherwise.
 	 */
@@ -97,7 +96,7 @@ public interface Sequence<T> extends Iterable<T> {
 	 * Returns {@code true} when this sequence contains every item of the specified
 	 * sequence; returns {@code false} otherwise.
 	 */
-	default boolean contains(Sequence<T> items) {
+	default boolean contains(Collection<T> items) {
 		return items.eachMatches(this::contains);
 	}
 
@@ -152,28 +151,21 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Returns distinct items of this collection.
-	 *
-	 * @return
 	 */
-	Sequence<T> getDistinct();
+	Collection<T> getDistinct();
 
 	/**
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
-	 *
-	 * @param comparator
-	 * @return
 	 */
 	IndexedCollection<T> sort(Comparator<T> comparator);
 
 	/**
-	 * Applies the specified {@link Consumer} to every item of this collection. Returns
-	 * itself.
+	 * Applies the specified {@link Consumer} to every item of this collection.
 	 *
-	 * @param operation
-	 * @return
+	 * @return itself
 	 */
-	default Sequence<T> iterate(Consumer<T> operation) {
+	default Collection<T> iterate(Consumer<T> operation) {
 		for (var item : this) {
 			operation.accept(item);
 		}
@@ -183,30 +175,18 @@ public interface Sequence<T> extends Iterable<T> {
 
 	/**
 	 * Returns items of this collection, which satisfy the specified {@link Predicate}.
-	 *
-	 * @param condition
-	 * @return
 	 */
-	Sequence<T> filter(Predicate<T> condition);
+	Collection<T> filter(Predicate<T> condition);
 
 	/**
 	 * Returns items of this collection, converted by the specified {@link Function}.
-	 *
-	 * @param <R>
-	 * @param converter
-	 * @return
 	 */
-	<R> Sequence<R> convert(Function<T, R> converter);
+	<R> Collection<R> convert(Function<T, R> converter);
 
 	/**
 	 * Combines this collection into a single value by applying the specified
 	 * {@link BiFunction} to every item and an intermediate combination, using the
 	 * specified value as a starting point.
-	 *
-	 * @param <R>
-	 * @param initial
-	 * @param combiner
-	 * @return
 	 */
 	default <R> R combine(R initial, BiFunction<R, T, R> combiner) {
 		var combination = initial;
@@ -239,3 +219,5 @@ public interface Sequence<T> extends Iterable<T> {
 		return builder.toString();
 	}
 }
+
+// created on May 12, 2019
