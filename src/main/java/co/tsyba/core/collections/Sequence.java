@@ -20,17 +20,15 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the number of items in this collection.
-	 *
-	 * @return
+	 * Returns the number of items in this sequence.
 	 */
 	default int getCount() {
-		var itemCount = 0;
-		for (var item : this) {
-			itemCount += 1;
+		var count = 0;
+		for (var ignored : this) {
+			count += 1;
 		}
 
-		return itemCount;
+		return count;
 	}
 
 	/**

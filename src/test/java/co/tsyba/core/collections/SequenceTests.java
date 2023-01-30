@@ -27,6 +27,26 @@ public class SequenceTests {
 			assert !sequence.isEmpty();
 		}
 	}
+
+	@Nested
+	@DisplayName(".getCount()")
+	class GetCountTests {
+		@Test
+		@DisplayName("returns item count")
+		void returnsItemCount() {
+			final var sequence = new TestSequence<>("b", "5", "F", "e");
+			final var count = sequence.getCount();
+			assert 4 == count;
+		}
+
+		@Test
+		@DisplayName("returns 0 when empty")
+		void returnsZeroWhenEmpty() {
+			final var sequence = new TestSequence<>();
+			final var count = sequence.getCount();
+			assert 0 == count;
+		}
+	}
 }
 
 class TestSequence<T> implements Sequence<T> {
