@@ -360,6 +360,30 @@ public class SequenceTests {
 			assert sequence.eachMatches(item -> item % 2 == 0);
 		}
 	}
+
+	@Nested
+	@DisplayName(".join(String)")
+	class JoinTests {
+		@Test
+		@DisplayName("joins items into a string when sequence is not empty")
+		void joinsWhenNotEmpty() {
+			final var sequence = new TestSequence<>("B", "3", "A", "4", "n");
+			final var joined = sequence.join(", ");
+
+			assert "B, 3, A, 4, n"
+				.equals(joined);
+		}
+
+		@Test
+		@DisplayName("returns empty string when sequence is empty")
+		void doesNothingWhenEmpty() {
+			final var sequence = new TestSequence<>();
+			final var joined = sequence.join(", ");
+
+			assert ""
+				.equals(joined);
+		}
+	}
 }
 
 class TestSequence<T> implements Sequence<T> {

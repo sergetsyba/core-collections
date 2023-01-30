@@ -238,11 +238,8 @@ public interface Sequence<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Combines this collection into a {@link String} by joining its items with the
+	 * Combines this sequence into a {@link String} by joining its items with the
 	 * specified separator between them.
-	 *
-	 * @param separator
-	 * @return
 	 */
 	default String join(String separator) {
 		final var builder = new StringBuilder();
