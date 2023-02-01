@@ -126,6 +126,133 @@ public class IndexedCollectionTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".match(Predicate<T>)")
+	class MatchTests {
+		@Test
+		@DisplayName("returns matched item when item matches")
+		void returnsItemWhenAnyMatches() {
+			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
+			final var match = items.match((item) ->
+				item % 2 == 0);
+
+			assert Optional.of(8)
+				.equals(match);
+		}
+
+		@Test
+		@DisplayName("returns empty when no item matches")
+		void returnsEmptyWhenNoneMatches() {
+			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
+			final var match = items.match((item) ->
+				item % 2 == 0);
+
+			assert match.isEmpty();
+		}
+
+		@Test
+		@DisplayName("returns empty when collection is empty")
+		void returnsEmptyWhenEmpty() {
+			final var items = new TestCollection<Integer>();
+			final var match = items.match((item) ->
+				item % 2 == 0);
+
+			assert match.isEmpty();
+		}
+	}
+
+	@Nested
+	@DisplayName(".match(int, Predicate<T>)")
+	class MatchAfterIndexTests {
+		@Test
+		@DisplayName("returns matched item when item matches at index")
+		void returnsItemWhenPresentAtIndex() {
+			final var items = new TestCollection<>("G", "a", "B", "R", "q", "D");
+			final var match = items.match(2, (item2) ->
+				Character.isUpperCase(item2.charAt(0)));
+
+			assert Optional.of("B")
+				.equals(match);
+		}
+
+		@Test
+		@DisplayName("returns matched item when item matches after index")
+		void returnsItemWhenPresentAfterIndex() {
+			final var items = new TestCollection<>("G", "a", "b", "R", "q", "D");
+			final var match = items.match(2, (item2) ->
+				Character.isUpperCase(item2.charAt(0)));
+
+			assert Optional.of("R")
+				.equals(match);
+		}
+
+		@Test
+		@DisplayName("returns empty when no item matches at or after index")
+		void returnsEmptyWhenAbsentAtAfterIndex() {
+			final var items = new TestCollection<>("G", "a", "B", "r", "q", "d");
+			final var match = items.match(3, (item2) ->
+				Character.isUpperCase(item2.charAt(0)));
+
+			assert match.isEmpty();
+		}
+
+		@Test
+		@DisplayName("returns empty when no item matches")
+		void returnsEmptyWhenAbsent() {
+			final var items = new TestCollection<>("g", "a", "b", "r", "q", "d");
+			final var match = items.match(2, (item2) ->
+				Character.isUpperCase(item2.charAt(0)));
+
+			assert match.isEmpty();
+		}
+
+
+		@Test
+		@DisplayName("fails when start index is before valid range")
+		void failsWithIndexBeforeValidRange() {
+			try {
+				new TestCollection<>("7", "4", "3", "12", "9")
+					.match(-4, String::isEmpty);
+			} catch (IndexNotInRangeException exception) {
+				assert -4 == exception.index;
+				assert new IndexRange(0, 5)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("fails when start index is after valid range")
+		void failsWithIndexAfterValidRange() {
+			try {
+				new TestCollection<>("f", "T", "e", "Q")
+					.match(12, String::isEmpty);
+			} catch (IndexNotInRangeException exception) {
+				assert 12 == exception.index;
+				assert new IndexRange(0, 4)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("fails when collection is empty")
+		void failsWhenEmpty() {
+			try {
+				new TestCollection<String>()
+					.match(0, String::isEmpty);
+			} catch (IndexNotInRangeException exception) {
+				assert 0 == exception.index;
+				assert new IndexRange(0, 0)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+	}
+
 	static class TestCollection<T> implements IndexedCollection<T> {
 		private final Object[] items;
 
@@ -152,6 +279,11 @@ public class IndexedCollectionTests {
 		@Override
 		public <R> Collection<R> convert(Function<T, R> converter) {
 			return null;
+		}
+
+		@Override
+		public IndexRange getIndexRange() {
+			return new IndexRange(0, items.length);
 		}
 
 		@Override

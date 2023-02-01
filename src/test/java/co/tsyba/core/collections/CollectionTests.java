@@ -11,9 +11,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/**
- * @author by Serge Tsyba <tsyba@me.com>
- */
 public class CollectionTests {
 	@Nested
 	@DisplayName(".isEmpty()")
@@ -74,8 +71,7 @@ public class CollectionTests {
 			final var items = new TestCollection<Integer>();
 			final var minimum = items.getMinimum(Comparator.naturalOrder());
 
-			assert Optional.empty()
-				.equals(minimum);
+			assert minimum.isEmpty();
 		}
 	}
 
@@ -98,14 +94,13 @@ public class CollectionTests {
 			final var items = new TestCollection<Integer>();
 			final var maximum = items.getMaximum(Comparator.naturalOrder());
 
-			assert Optional.empty()
-				.equals(maximum);
+			assert maximum.isEmpty();
 		}
 	}
 
 	@Nested
 	@DisplayName(".contains(T)")
-	class ContainsItemTests {
+	class ContainsTests {
 		@Test
 		@DisplayName("returns true when item is present")
 		void returnsTrueWhenPresent() {
@@ -129,8 +124,8 @@ public class CollectionTests {
 	}
 
 	@Nested
-	@DisplayName(".contains(collection<T>)")
-	class ContainsItemsTests {
+	@DisplayName(".contains(Collection<T>)")
+	class ContainsCollectionTests {
 		@Test
 		@DisplayName("returns true when all items are present")
 		void returnsTrueWhenAllPresent() {
@@ -193,7 +188,8 @@ public class CollectionTests {
 		@DisplayName("returns matched item when item matches")
 		void returnsItemWhenAnyMatches() {
 			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
-			final var match = items.match(item -> item % 2 == 0);
+			final var match = items.match((item) ->
+				item % 2 == 0);
 
 			assert Optional.of(8)
 				.equals(match);
@@ -203,20 +199,20 @@ public class CollectionTests {
 		@DisplayName("returns empty when no item matches")
 		void returnsEmptyWhenNoneMatches() {
 			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
-			final var match = items.match(item -> item % 2 == 0);
+			final var match = items.match((item) ->
+				item % 2 == 0);
 
-			assert Optional.empty()
-				.equals(match);
+			assert match.isEmpty();
 		}
 
 		@Test
 		@DisplayName("returns empty when collection is empty")
 		void returnsEmptyWhenEmpty() {
-			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
-			final var match = items.match(item -> item % 2 == 0);
+			final var items = new TestCollection<Integer>();
+			final var match = items.match((item) ->
+				item % 2 == 0);
 
-			assert Optional.empty()
-				.equals(match);
+			assert match.isEmpty();
 		}
 	}
 
@@ -227,28 +223,32 @@ public class CollectionTests {
 		@DisplayName("returns true when no item matches")
 		void returnsTrueWhenNoneMatches() {
 			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert items.noneMatches(item -> item % 2 == 0);
+			assert items.noneMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when any item matches")
 		void returnsFalseWhenAnyMatches() {
 			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert !items.noneMatches(item -> item % 2 == 0);
+			assert !items.noneMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when each item matches")
 		void returnsFalseWhenEachMatches() {
 			final var items = new TestCollection<>(8, 6, 2, 4);
-			assert !items.noneMatches(item -> item % 2 == 0);
+			assert !items.noneMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns true when collection is empty")
 		void returnsTrueWhenEmpty() {
 			final var items = new TestCollection<Integer>();
-			assert items.noneMatches(item -> item % 2 == 0);
+			assert items.noneMatches((item) ->
+				item % 2 == 0);
 		}
 	}
 
@@ -259,28 +259,32 @@ public class CollectionTests {
 		@DisplayName("returns true when any item matches")
 		void returnsTrueWhenAnyMatches() {
 			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert items.anyMatches(item -> item % 2 == 0);
+			assert items.anyMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns true when each item matches")
 		void returnsTrueWhenEachMatches() {
 			final var items = new TestCollection<>(8, 6, 2, 4);
-			assert items.anyMatches(item -> item % 2 == 0);
+			assert items.anyMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when no item matches")
 		void returnsFalseWhenNoneMatches() {
 			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert !items.anyMatches(item -> item % 2 == 0);
+			assert !items.anyMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when collection is empty")
 		void returnsFalseWhenEmpty() {
 			final var items = new TestCollection<Integer>();
-			assert !items.anyMatches(item -> item % 2 == 0);
+			assert !items.anyMatches((item) ->
+				item % 2 == 0);
 		}
 	}
 
@@ -291,7 +295,8 @@ public class CollectionTests {
 		@DisplayName("returns true when each items matches")
 		void returnsTrueWhenEachMatches() {
 			final var items = new TestCollection<>(8, 6, 2, 4);
-			assert items.eachMatches(item -> item % 2 == 0);
+			assert items.eachMatches((item) ->
+				item % 2 == 0);
 		}
 
 
@@ -299,21 +304,24 @@ public class CollectionTests {
 		@DisplayName("returns false when any item matches")
 		void returnsFalseWhenAnyMatches() {
 			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert !items.eachMatches(item -> item % 2 == 0);
+			assert !items.eachMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns false when no item matches")
 		void returnsFalseWhenNoneMatches() {
 			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert !items.eachMatches(item -> item % 2 == 0);
+			assert !items.eachMatches((item) ->
+				item % 2 == 0);
 		}
 
 		@Test
 		@DisplayName("returns true when collection is empty")
 		void returnsTrueWhenEmpty() {
 			final var items = new TestCollection<Integer>();
-			assert items.eachMatches(item -> item % 2 == 0);
+			assert items.eachMatches((item) ->
+				item % 2 == 0);
 		}
 	}
 

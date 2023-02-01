@@ -20,6 +20,11 @@ import java.util.function.Predicate;
  */
 public interface IndexedCollection<T> extends Collection<T> {
 	/**
+	 * Returns valid index range of this collection.
+	 */
+	IndexRange getIndexRange();
+
+	/**
 	 * Returns the first item of this collection.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
@@ -59,20 +64,41 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns index of the first occurrence of an item, which satisfies the specified
-	 * {@link Predicate} in this collection.
+	 * Returns the first item in this collection, which satisfies the specified
+	 * {@link Predicate}.
 	 * <p>
 	 * When this collection is empty, or no item in this collection satisfies the
 	 * specified {@link Predicate}, returns an empty {@link Optional}.
 	 */
-	default Optional<Integer> matchFirst(Predicate<T> predicate) {
-		var index = 0;
-		for (var item : this) {
-			if (predicate.test(item)) {
-				return Optional.of(index);
-			}
+	default Optional<T> match(Predicate<T> predicate) {
+		return isEmpty()
+			? Optional.empty()
+			: match(0, predicate);
+	}
 
-			index += 1;
+	/**
+	 * Returns the first item in this collection, which satisfies the specified
+	 * {@link Predicate}, at or after the specified index.
+	 * <p>
+	 * When this collection is empty, or no item in this collection satisfies the
+	 * specified {@link Predicate} at or after the specified index, returns an empty
+	 * {@link Optional}.
+	 *
+	 * @throws IndexNotInRangeException when the specified start index is out of valid
+	 * index range of this collection
+	 */
+	default Optional<T> match(int startIndex, Predicate<T> predicate) {
+		final var range = getIndexRange();
+		if (!range.contains(startIndex)) {
+			throw new IndexNotInRangeException(startIndex, range);
+		}
+
+		final var iterator = iterator(startIndex);
+		while (iterator.hasNext()) {
+			final var item = iterator.next();
+			if (predicate.test(item)) {
+				return Optional.of(item);
+			}
 		}
 
 		return Optional.empty();
@@ -88,7 +114,8 @@ public interface IndexedCollection<T> extends Collection<T> {
 	 * @return
 	 */
 	default Optional<Integer> find(T item) {
-		return matchFirst(storedItem -> storedItem.equals(item));
+		return Optional.empty();
+//		return match(storedItem -> storedItem.equals(item));
 	}
 
 	/**
