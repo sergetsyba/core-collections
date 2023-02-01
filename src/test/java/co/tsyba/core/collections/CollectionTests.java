@@ -187,13 +187,13 @@ public class CollectionTests {
 	}
 
 	@Nested
-	@DisplayName(".matchFirst(Predicate<T>)")
-	class MatchFirstTests {
+	@DisplayName(".match(Predicate<T>)")
+	class MatchTests {
 		@Test
 		@DisplayName("returns matched item when item matches")
 		void returnsItemWhenAnyMatches() {
 			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
-			final var match = items.matchFirst(item -> item % 2 == 0);
+			final var match = items.match(item -> item % 2 == 0);
 
 			assert Optional.of(8)
 				.equals(match);
@@ -203,7 +203,7 @@ public class CollectionTests {
 		@DisplayName("returns empty when no item matches")
 		void returnsEmptyWhenNoneMatches() {
 			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
-			final var match = items.matchFirst(item -> item % 2 == 0);
+			final var match = items.match(item -> item % 2 == 0);
 
 			assert Optional.empty()
 				.equals(match);
@@ -213,7 +213,7 @@ public class CollectionTests {
 		@DisplayName("returns empty when collection is empty")
 		void returnsEmptyWhenEmpty() {
 			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
-			final var match = items.matchFirst(item -> item % 2 == 0);
+			final var match = items.match(item -> item % 2 == 0);
 
 			assert Optional.empty()
 				.equals(match);

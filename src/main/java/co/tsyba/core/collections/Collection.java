@@ -19,7 +19,8 @@ import java.util.function.Predicate;
  */
 public interface Collection<T> extends Iterable<T> {
 	/**
-	 * Returns {@code true} when this sequence is empty; returns {@code false} otherwise.
+	 * Returns {@code true} when this collection is empty; returns {@code false}
+	 * otherwise.
 	 */
 	default boolean isEmpty() {
 		final var iterator = iterator();
@@ -27,7 +28,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the number of items in this sequence.
+	 * Returns the number of items in this collection.
 	 */
 	default int getCount() {
 		var count = 0;
@@ -39,10 +40,10 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the smallest item in this sequence, according to the specified
+	 * Returns the smallest item in this collection, according to the specified
 	 * {@link Comparator}.
 	 * <p>
-	 * When this sequence is empty, returns an empty {@link Optional}.
+	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getMinimum(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -62,10 +63,10 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the largest item in this sequence, according to the specified
+	 * Returns the largest item in this collection, according to the specified
 	 * {@link Comparator}.
 	 * <p>
-	 * When this sequence is empty, returns an empty {@link Optional}.
+	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getMaximum(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -85,29 +86,30 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this sequence contains the specified item; returns
+	 * Returns {@code true} when this collection contains the specified item; returns
 	 * {@code false} otherwise.
 	 */
 	default boolean contains(T item) {
-		return matchFirst(sequenceItem -> sequenceItem.equals(item))
+		return match((storedItem) -> storedItem.equals(item))
 			.isPresent();
 	}
 
 	/**
-	 * Returns {@code true} when this sequence contains every item of the specified
-	 * sequence; returns {@code false} otherwise.
+	 * Returns {@code true} when this collection contains every item of the specified
+	 * collection; returns {@code false} otherwise.
 	 */
 	default boolean contains(Collection<T> items) {
 		return items.eachMatches(this::contains);
 	}
 
 	/**
-	 * Returns the first item in this sequence, which matches the specified
+	 * Returns any item in this collection, which satisfies the specified
 	 * {@link Predicate}.
 	 * <p>
-	 * When this sequence is empty, returns an empty {@link Optional}.
+	 * When this collection is empty or no item in satisfies the specified
+	 * {@link Predicate}, returns an empty {@link Optional}.
 	 */
-	default Optional<T> matchFirst(Predicate<T> condition) {
+	default Optional<T> match(Predicate<T> condition) {
 		for (var item : this) {
 			if (condition.test(item)) {
 				return Optional.of(item);
@@ -118,35 +120,35 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns {@code true} when no item in this sequence satisfies the specified
+	 * Returns {@code true} when no item in this collection satisfies the specified
 	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
-	 * When this sequence is empty, returns {@code true}.
+	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean noneMatches(Predicate<T> condition) {
-		return matchFirst(condition)
+		return match(condition)
 			.isEmpty();
 	}
 
 	/**
-	 * Returns {@code true} when at least one item in this sequence satisfies the
+	 * Returns {@code true} when at least one item in this collection satisfies the
 	 * specified {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
-	 * When this sequence is empty, returns {@code true}.
+	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
-		return matchFirst(condition)
+		return match(condition)
 			.isPresent();
 	}
 
 	/**
-	 * Returns {@code true} when each item of this sequence satisfies the specified
+	 * Returns {@code true} when each item of this collection satisfies the specified
 	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean eachMatches(Predicate<T> condition) {
-		return matchFirst(item -> !condition.test(item))
+		return match((item) -> !condition.test(item))
 			.isEmpty();
 	}
 
@@ -199,7 +201,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Combines this sequence into a {@link String} by joining its items with the
+	 * Combines this collection into a {@link String} by joining its items with the
 	 * specified separator between them.
 	 */
 	default String join(String separator) {

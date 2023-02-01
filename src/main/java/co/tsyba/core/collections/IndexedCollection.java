@@ -50,15 +50,32 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns {@code true} when the this collection contains the specified items,
-	 * accounting for their order; returns {@code false} otherwise.
-	 *
-	 * @param items
-	 * @return
+	 * Returns {@code true} when this collection contains the specified items, accounting
+	 * for their order; returns {@code false} otherwise.
 	 */
 	default boolean contains(IndexedCollection<T> items) {
 		return find(items)
 			.isPresent();
+	}
+
+	/**
+	 * Returns index of the first occurrence of an item, which satisfies the specified
+	 * {@link Predicate} in this collection.
+	 * <p>
+	 * When this collection is empty, or no item in this collection satisfies the
+	 * specified {@link Predicate}, returns an empty {@link Optional}.
+	 */
+	default Optional<Integer> matchFirst(Predicate<T> predicate) {
+		var index = 0;
+		for (var item : this) {
+			if (predicate.test(item)) {
+				return Optional.of(index);
+			}
+
+			index += 1;
+		}
+
+		return Optional.empty();
 	}
 
 	/**
@@ -71,7 +88,7 @@ public interface IndexedCollection<T> extends Collection<T> {
 	 * @return
 	 */
 	default Optional<Integer> find(T item) {
-		return match(storedItem -> storedItem.equals(item));
+		return matchFirst(storedItem -> storedItem.equals(item));
 	}
 
 	/**
@@ -101,9 +118,8 @@ public interface IndexedCollection<T> extends Collection<T> {
 				if (!item1.equals(item2)) {
 					// found different items
 					if (iterator1.hasNext()) {
-						// there are more items after the differnt one in
-						// this collection, restart search from the next
-						// index
+						// there are more items after the different one in this
+						// collection, restart search from the next index
 						iterator1 = iterator(++index);
 						continue indexSearch;
 					} else {
@@ -122,28 +138,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 		}
 	}
 
-	/**
-	 * Returns index of the first occurrence of an item in this collection, which
-	 * satisfies the specified {@link Predicate}.
-	 * <p>
-	 * Returns an empty {@link Optional} when no item in this collection satisfies the
-	 * specified {@link Predicate}.
-	 *
-	 * @param predicate
-	 * @return
-	 */
-	default Optional<Integer> match(Predicate<T> predicate) {
-		var index = 0;
-		for (var item : this) {
-			if (predicate.test(item)) {
-				return Optional.of(index);
-			}
-
-			index += 1;
-		}
-
-		return Optional.empty();
-	}
 
 	/**
 	 * Returns items of this collection in reverse order.

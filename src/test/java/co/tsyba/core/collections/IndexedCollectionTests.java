@@ -59,6 +59,73 @@ public class IndexedCollectionTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".contains(IndexedCollection<T>)")
+	class ContainsCollectionTests {
+		@Test
+		@DisplayName("returns true when all items are present in same order")
+		void returnsTrueWhenAllPresent() {
+			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
+			final var items2 = new TestCollection<>("D", "3");
+
+			assert items1.contains(items2);
+		}
+
+		@Test
+		@DisplayName("returns false when all items are present in different order")
+		void returnsFalseWhenAllPresentInDifferentOrder() {
+			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
+			final var items2 = new TestCollection<>("f", "D");
+
+			assert !items1.contains(items2);
+		}
+
+		@Test
+		@DisplayName("returns false when some items are absent")
+		void returnsFalseWhenSomeAbsent() {
+			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
+			final var items2 = new TestCollection<>("D", "5");
+
+			assert !items1.contains(items2);
+		}
+
+		@Test
+		@DisplayName("returns false when all items are absent")
+		void returnsFalseWhenAllAbsent() {
+			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
+			final var items2 = new TestCollection<>("H", "7", "e", "Q");
+
+			assert !items1.contains(items2);
+		}
+
+		@Test
+		@DisplayName("returns false when collection is empty")
+		void returnsFalseWhenEmpty() {
+			final var items1 = new TestCollection<String>();
+			final var items2 = new TestCollection<>("G", "p", "Q");
+
+			assert !items1.contains(items2);
+		}
+
+		@Test
+		@DisplayName("returns true when items are empty")
+		void returnsTrueWhenItemsEmpty() {
+			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
+			final var items2 = new TestCollection<String>();
+
+			assert items1.contains(items2);
+		}
+
+		@Test
+		@DisplayName("returns true when collection and items are empty")
+		void returnsTrueWhenBothEmpty() {
+			final var items1 = new TestCollection<String>();
+			final var items2 = new TestCollection<String>();
+
+			assert items1.contains(items2);
+		}
+	}
+
 	static class TestCollection<T> implements IndexedCollection<T> {
 		private final Object[] items;
 
@@ -99,12 +166,27 @@ public class IndexedCollectionTests {
 
 		@Override
 		public Iterator<T> iterator(int startIndex) {
-			return null;
+			return new Iterator<>() {
+				private int index = startIndex;
+
+				@Override
+				public boolean hasNext() {
+					return index < items.length;
+				}
+
+				@Override
+				public T next() {
+					@SuppressWarnings("unchecked")
+					final var item = (T) items[index];
+					++index;
+					return item;
+				}
+			};
 		}
 
 		@Override
 		public Iterator<T> reverseIterator() {
-			return new Iterator<T>() {
+			return new Iterator<>() {
 				private int index = items.length - 1;
 
 				@Override
@@ -124,7 +206,7 @@ public class IndexedCollectionTests {
 
 		@Override
 		public Iterator<T> iterator() {
-			return new Iterator<T>() {
+			return new Iterator<>() {
 				private int index = 0;
 
 				@Override
