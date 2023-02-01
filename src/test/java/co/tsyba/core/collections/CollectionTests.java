@@ -4,8 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -325,7 +327,7 @@ public class CollectionTests {
 			final var iterated = new LinkedList<Integer>();
 			items.iterate(iterated::add);
 
-			assert List.of(3, 7, 1, 2, 3, 0)
+			assert java.util.List.of(3, 7, 1, 2, 3, 0)
 				.equals(iterated);
 		}
 
@@ -336,7 +338,7 @@ public class CollectionTests {
 			final var iterated = new LinkedList<Integer>();
 			items.iterate(iterated::add);
 
-			assert List.of()
+			assert java.util.List.of()
 				.equals(iterated);
 		}
 	}
@@ -386,54 +388,54 @@ public class CollectionTests {
 				.equals(joined);
 		}
 	}
-}
 
-class TestCollection<T> implements Collection<T> {
-	private final Object[] items;
+	static class TestCollection<T> implements Collection<T> {
+		private final Object[] items;
 
-	@SafeVarargs
-	public TestCollection(T... items) {
-		this.items = items;
-	}
+		@SafeVarargs
+		public TestCollection(T... items) {
+			this.items = items;
+		}
 
-	@Override
-	public Collection<T> getDistinct() {
-		throw new UnsupportedOperationException();
-	}
+		@Override
+		public Collection<T> getDistinct() {
+			throw new UnsupportedOperationException();
+		}
 
-	@Override
-	public IndexedCollection<T> sort(Comparator<T> comparator) {
-		throw new UnsupportedOperationException();
-	}
+		@Override
+		public List<T> sort(Comparator<T> comparator) {
+			throw new UnsupportedOperationException();
+		}
 
-	@Override
-	public Collection<T> filter(Predicate<T> condition) {
-		throw new UnsupportedOperationException();
-	}
+		@Override
+		public Collection<T> filter(Predicate<T> condition) {
+			throw new UnsupportedOperationException();
+		}
 
-	@Override
-	public <R> Collection<R> convert(Function<T, R> converter) {
-		throw new UnsupportedOperationException();
-	}
+		@Override
+		public <R> Collection<R> convert(Function<T, R> converter) {
+			throw new UnsupportedOperationException();
+		}
 
-	@Override
-	public Iterator<T> iterator() {
-		return new Iterator<>() {
-			private int index = 0;
+		@Override
+		public Iterator<T> iterator() {
+			return new Iterator<>() {
+				private int index = 0;
 
-			@Override
-			public boolean hasNext() {
-				return index < items.length;
-			}
+				@Override
+				public boolean hasNext() {
+					return index < items.length;
+				}
 
-			@Override
-			public T next() {
-				@SuppressWarnings("unchecked")
-				var item = (T) items[index];
-				++index;
-				return item;
-			}
-		};
+				@Override
+				public T next() {
+					@SuppressWarnings("unchecked")
+					var item = (T) items[index];
+					++index;
+					return item;
+				}
+			};
+		}
 	}
 }
 

@@ -8,11 +8,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * A group of items, which can be iterated.
+ * A container, which allows iteration over its items.
  * <p>
- * This interface mainly serves as extension to the standard {@link Iterable}. It provides
- * operations, which can be based solely on iterability, but are missing from
- * {@link Iterable}.
+ * Unlike more general {@link Iterable}, {@link Collection} guarantees iteration will not
+ * destructively consume it. Therefore, it can be iterated any number of times. This
+ * requirement enables useful operations, which can be based solely on iterability.
+ * <p>
+ * Note, that {@link Collection} does not guarantee that relative item order stays the
+ * same in each iteration.
  */
 public interface Collection<T> extends Iterable<T> {
 	/**
@@ -156,7 +159,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	IndexedCollection<T> sort(Comparator<T> comparator);
+	List<T> sort(Comparator<T> comparator);
 
 	/**
 	 * Applies the specified {@link Consumer} to every item of this collection.
