@@ -65,6 +65,21 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
+	 * Returns {@code true} when this collection contains the specified item at or after
+	 * the specified index.
+	 * <p>
+	 * When this collection does not contain the specified item at or after the specified
+	 * index, returns an empty {@link Optional}.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid range of
+	 * this collection
+	 */
+	default boolean contains(int startIndex, T item) {
+		return find(startIndex, item)
+			.isPresent();
+	}
+
+	/**
 	 * Returns {@code true} when this collection contains the specified items, accounting
 	 * for their order; returns {@code false} otherwise.
 	 */
@@ -87,7 +102,7 @@ public interface IndexedCollection<T> extends Collection<T> {
 
 	/**
 	 * Returns index of the first occurrence of the specified item at or after the
-	 * specified index in this collection
+	 * specified index in this collection.
 	 * <p>
 	 * When the specified item does not occur at or after the specified index in this
 	 * collection, returns an empty {@link Optional}.

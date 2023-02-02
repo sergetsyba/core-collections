@@ -140,6 +140,83 @@ public class IndexedCollectionTests {
 	}
 
 	@Nested
+	@DisplayName(".contains(int, T)")
+	class ContainsAfterIndexTests {
+		@Test
+		@DisplayName("when item is present at start index, returns true")
+		void returnsTrueWhenPresentAtIndex() {
+			final var items = new TestCollection<>("G", "a", "B", "R", "q", "D");
+			assert items.contains(2, "B");
+		}
+
+		@Test
+		@DisplayName("when item is present after start index, returns true")
+		void returnsTrueWhenPresentAfterIndex() {
+			final var items = new TestCollection<>("G", "a", "b", "R", "q", "D");
+			assert items.contains(2, "R");
+		}
+
+		@Test
+		@DisplayName("when item is absent at or after index, returns false")
+		void returnsFalseWhenAbsentAtOrAfterIndex() {
+			final var items = new TestCollection<>("G", "a", "B", "r", "q", "d");
+			assert !items.contains(2, "G");
+		}
+
+		@Test
+		@DisplayName("when item is absent, returns false")
+		void returnsFalseWhenAbsent() {
+			final var items = new TestCollection<>("g", "a", "b", "r", "q", "d");
+			assert !items.contains(0, "R");
+		}
+
+		@Test
+		@DisplayName("when start index is before valid range, fails")
+		void failsWithIndexBeforeValidRange() {
+			try {
+				new TestCollection<>("7", "4", "3", "12", "9")
+					.contains(-4, "12");
+			} catch (IndexNotInRangeException exception) {
+				assert -4 == exception.index;
+				assert new IndexRange(0, 5)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("when start index is after valid range, fails")
+		void failsWithIndexAfterValidRange() {
+			try {
+				new TestCollection<>("f", "T", "e", "Q")
+					.contains(12, "Q");
+			} catch (IndexNotInRangeException exception) {
+				assert 12 == exception.index;
+				assert new IndexRange(0, 4)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("when collection is empty, fails")
+		void failsWhenEmpty() {
+			try {
+				new TestCollection<String>()
+					.contains(0, "A");
+			} catch (IndexNotInRangeException exception) {
+				assert 0 == exception.index;
+				assert new IndexRange(0, 0)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+	}
+
+	@Nested
 	@DisplayName(".contains(IndexedCollection<T>)")
 	class ContainsCollectionTests {
 		@Nested
