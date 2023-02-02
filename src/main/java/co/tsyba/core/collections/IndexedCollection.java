@@ -64,6 +64,53 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
+	 * Returns index of the first occurrence of the specified item in this collection.
+	 * <p>
+	 * When the specified item does not occur in this collection, returns an empty
+	 * {@link Optional}.
+	 */
+	default Optional<Integer> find(T item) {
+		return isEmpty()
+			? Optional.empty()
+			: findUnsafely(0, item);
+	}
+
+	/**
+	 * Returns index of the first occurrence of the specified item at or after the
+	 * specified index in this collection
+	 * <p>
+	 * When the specified item does not occur at or after the specified index in this
+	 * collection, returns an empty {@link Optional}.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this collection.
+	 */
+	default Optional<Integer> find(int startIndex, T item) {
+		final var range = getIndexRange();
+		if (!range.contains(startIndex)) {
+			throw new IndexNotInRangeException(startIndex, range);
+		}
+
+		return findUnsafely(startIndex, item);
+	}
+
+	private Optional<Integer> findUnsafely(int startIndex, T item) {
+		final var iterator = iterator(startIndex);
+		var index = startIndex;
+
+		while (iterator.hasNext()) {
+			final var next = iterator.next();
+			if (next.equals(item)) {
+				return Optional.of(index);
+			} else {
+				++index;
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
 	 * Returns the first item in this collection, which satisfies the specified
 	 * {@link Predicate}.
 	 * <p>
@@ -73,7 +120,7 @@ public interface IndexedCollection<T> extends Collection<T> {
 	default Optional<T> match(Predicate<T> predicate) {
 		return isEmpty()
 			? Optional.empty()
-			: match(0, predicate);
+			: matchUnsafely(0, predicate);
 	}
 
 	/**
@@ -93,6 +140,10 @@ public interface IndexedCollection<T> extends Collection<T> {
 			throw new IndexNotInRangeException(startIndex, range);
 		}
 
+		return matchUnsafely(startIndex, predicate);
+	}
+
+	private Optional<T> matchUnsafely(int startIndex, Predicate<T> predicate) {
 		final var iterator = iterator(startIndex);
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
@@ -102,20 +153,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 		}
 
 		return Optional.empty();
-	}
-
-	/**
-	 * Returns index of the first occurrence of the specified item in this collection.
-	 * <p>
-	 * Returns an empty {@link Optional} when the specified item is not in this
-	 * collection.
-	 *
-	 * @param item
-	 * @return
-	 */
-	default Optional<Integer> find(T item) {
-		return Optional.empty();
-//		return match(storedItem -> storedItem.equals(item));
 	}
 
 	/**

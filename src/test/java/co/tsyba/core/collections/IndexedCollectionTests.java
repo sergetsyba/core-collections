@@ -15,7 +15,7 @@ public class IndexedCollectionTests {
 	@DisplayName(".getFirst()")
 	class GetFirstTests {
 		@Test
-		@DisplayName("returns first item when collection is not empty")
+		@DisplayName("when collection is not empty, returns first item")
 		void returnsFirstWhenNotEmpty() {
 			final var items = new TestCollection<>("B", "V", "4");
 			final var first = items.getFirst();
@@ -123,6 +123,125 @@ public class IndexedCollectionTests {
 			final var items2 = new TestCollection<String>();
 
 			assert items1.contains(items2);
+		}
+	}
+
+	@Nested
+	@DisplayName(".find(T)")
+	class FindTests {
+		@Test
+		@DisplayName("returns item index when item is present")
+		void returnsIndexWhenPresent() {
+			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
+			final var index = items.find(8);
+
+			assert Optional.of(3)
+				.equals(index);
+		}
+
+		@Test
+		@DisplayName("returns empty when item is absent")
+		void returnsEmptyWhenAbsent() {
+			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
+			final var index = items.find(0);
+
+			assert index.isEmpty();
+		}
+
+		@Test
+		@DisplayName("returns empty when collection is empty")
+		void returnsEmptyWhenEmpty() {
+			final var items = new TestCollection<Integer>();
+			final var index = items.find(6);
+
+			assert index.isEmpty();
+		}
+	}
+
+	@Nested
+	@DisplayName(".find(int, T)")
+	class FindAfterIndexTests {
+		@Test
+		@DisplayName("when item is present at index, returns item index")
+		void returnsItemIndexWhenPresentAtIndex() {
+			final var items = new TestCollection<>("B", "a", "B", "R", "q", "B");
+			final var match = items.find(2, "B");
+
+			assert Optional.of(2)
+				.equals(match);
+		}
+
+		@Test
+		@DisplayName("when item is present after index, returns item index")
+		void returnsItemIndexWhenPresentAfterIndex() {
+			final var items = new TestCollection<>("B", "a", "B", "R", "q", "B");
+			final var match = items.find(3, "B");
+
+			assert Optional.of(5)
+				.equals(match);
+		}
+
+		@Test
+		@DisplayName("when item is absent at or after index, return empty")
+		void returnsEmptyWhenAbsentAtAfterIndex() {
+			final var items = new TestCollection<>("B", "a", "B", "r", "q", "d");
+			final var match = items.find(3, "B");
+
+			assert match.isEmpty();
+		}
+
+		@Test
+		@DisplayName("when item is absent, returns empty")
+		void returnsEmptyWhenAbsent() {
+			final var items = new TestCollection<>("g", "a", "b", "r", "q", "d");
+			final var match = items.find(0, "B");
+
+			assert match.isEmpty();
+		}
+
+		@Test
+		@DisplayName("when index is before valid range, fails")
+		void failsWhenIndexBeforeValidRange() {
+			try {
+				new TestCollection<>("7", "4", "3", "12", "9")
+					.find(-7, "4");
+			} catch (IndexNotInRangeException exception) {
+				assert -7 == exception.index;
+				assert new IndexRange(0, 5)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("when index is after valid range, fails")
+		void failsWhenIndexAfterValidRange() {
+			try {
+				new TestCollection<>("f", "T", "e", "Q")
+					.find(7, "T");
+			} catch (IndexNotInRangeException exception) {
+				assert 7 == exception.index;
+				assert new IndexRange(0, 4)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("when collection is empty, fails")
+		void failsWhenEmpty() {
+			try {
+				new TestCollection<String>()
+					.find(0, "A");
+			} catch (IndexNotInRangeException exception) {
+				assert 0 == exception.index;
+				assert new IndexRange(0, 0)
+					.equals(exception.indexRange);
+				return;
+			}
+			assert false;
 		}
 	}
 
