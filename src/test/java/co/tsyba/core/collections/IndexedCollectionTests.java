@@ -25,7 +25,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when collection is empty")
+		@DisplayName("when collection is empty, returns empty")
 		void returnsEmptyWhenEmpty() {
 			final var items = new TestCollection<String>();
 			final var first = items.getFirst();
@@ -39,7 +39,7 @@ public class IndexedCollectionTests {
 	@DisplayName(".getLast()")
 	class GetLastTests {
 		@Test
-		@DisplayName("returns last item when collection is not empty")
+		@DisplayName("when collection is not empty, returns last item")
 		void returnsLastWhenNotEmpty() {
 			final var items = new TestCollection<>("B", "V", "4");
 			final var last = items.getLast();
@@ -49,7 +49,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when collection is empty")
+		@DisplayName("when collection is empty, returns empty")
 		void returnsEmptyWhenEmpty() {
 			final var items = new TestCollection<String>();
 			final var last = items.getFirst();
@@ -62,26 +62,30 @@ public class IndexedCollectionTests {
 	@Nested
 	@DisplayName(".contains(IndexedCollection<T>)")
 	class ContainsCollectionTests {
-		@Test
-		@DisplayName("returns true when all items are present in same order")
-		void returnsTrueWhenAllPresent() {
-			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
-			final var items2 = new TestCollection<>("D", "3");
+		@Nested
+		@DisplayName("when all items are present")
+		class AllItemsPresentTests {
+			@Test
+			@DisplayName("when in same order, returns true")
+			void returnsTrueWhenAllPresentInSameOrder() {
+				final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
+				final var items2 = new TestCollection<>("D", "3");
 
-			assert items1.contains(items2);
+				assert items1.contains(items2);
+			}
+
+			@Test
+			@DisplayName("when in different order, returns false")
+			void returnsFalseWhenAllPresentInDifferentOrder() {
+				final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
+				final var items2 = new TestCollection<>("f", "D");
+
+				assert !items1.contains(items2);
+			}
 		}
 
 		@Test
-		@DisplayName("returns false when all items are present in different order")
-		void returnsFalseWhenAllPresentInDifferentOrder() {
-			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
-			final var items2 = new TestCollection<>("f", "D");
-
-			assert !items1.contains(items2);
-		}
-
-		@Test
-		@DisplayName("returns false when some items are absent")
+		@DisplayName("when some items are absent, returns false")
 		void returnsFalseWhenSomeAbsent() {
 			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
 			final var items2 = new TestCollection<>("D", "5");
@@ -90,7 +94,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns false when all items are absent")
+		@DisplayName("when all items are absent, returns false")
 		void returnsFalseWhenAllAbsent() {
 			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
 			final var items2 = new TestCollection<>("H", "7", "e", "Q");
@@ -99,16 +103,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns false when collection is empty")
-		void returnsFalseWhenEmpty() {
-			final var items1 = new TestCollection<String>();
-			final var items2 = new TestCollection<>("G", "p", "Q");
-
-			assert !items1.contains(items2);
-		}
-
-		@Test
-		@DisplayName("returns true when items are empty")
+		@DisplayName("when items are empty, returns true")
 		void returnsTrueWhenItemsEmpty() {
 			final var items1 = new TestCollection<>("f", "G", "D", "3", "a");
 			final var items2 = new TestCollection<String>();
@@ -116,13 +111,26 @@ public class IndexedCollectionTests {
 			assert items1.contains(items2);
 		}
 
-		@Test
-		@DisplayName("returns true when collection and items are empty")
-		void returnsTrueWhenBothEmpty() {
-			final var items1 = new TestCollection<String>();
-			final var items2 = new TestCollection<String>();
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			@Test
+			@DisplayName("when items is not empty, returns false")
+			void returnsFalseWhenEmpty() {
+				final var items1 = new TestCollection<String>();
+				final var items2 = new TestCollection<>("G", "p", "Q");
 
-			assert items1.contains(items2);
+				assert !items1.contains(items2);
+			}
+
+			@Test
+			@DisplayName("when items are empty, returns true")
+			void returnsTrueWhenEmptyAndItemsEmpty() {
+				final var items1 = new TestCollection<String>();
+				final var items2 = new TestCollection<String>();
+
+				assert items1.contains(items2);
+			}
 		}
 	}
 
@@ -130,7 +138,7 @@ public class IndexedCollectionTests {
 	@DisplayName(".find(T)")
 	class FindTests {
 		@Test
-		@DisplayName("returns item index when item is present")
+		@DisplayName("when item is present, returns item index")
 		void returnsIndexWhenPresent() {
 			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
 			final var index = items.find(8);
@@ -140,7 +148,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when item is absent")
+		@DisplayName("when item is absent, returns empty")
 		void returnsEmptyWhenAbsent() {
 			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
 			final var index = items.find(0);
@@ -149,7 +157,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when collection is empty")
+		@DisplayName("when collection is empty, returns empty")
 		void returnsEmptyWhenEmpty() {
 			final var items = new TestCollection<Integer>();
 			final var index = items.find(6);
@@ -183,7 +191,7 @@ public class IndexedCollectionTests {
 
 		@Test
 		@DisplayName("when item is absent at or after index, return empty")
-		void returnsEmptyWhenAbsentAtAfterIndex() {
+		void returnsEmptyWhenAbsentAtOrAfterIndex() {
 			final var items = new TestCollection<>("B", "a", "B", "r", "q", "d");
 			final var match = items.find(3, "B");
 
@@ -249,7 +257,7 @@ public class IndexedCollectionTests {
 	@DisplayName(".match(Predicate<T>)")
 	class MatchTests {
 		@Test
-		@DisplayName("returns matched item when item matches")
+		@DisplayName("when item matches, returns matched item")
 		void returnsItemWhenAnyMatches() {
 			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
 			final var match = items.match((item) ->
@@ -260,7 +268,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when no item matches")
+		@DisplayName("when no item matches, returns empty")
 		void returnsEmptyWhenNoneMatches() {
 			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
 			final var match = items.match((item) ->
@@ -270,7 +278,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when collection is empty")
+		@DisplayName("when collection is empty, returns empty")
 		void returnsEmptyWhenEmpty() {
 			final var items = new TestCollection<Integer>();
 			final var match = items.match((item) ->
@@ -284,7 +292,7 @@ public class IndexedCollectionTests {
 	@DisplayName(".match(int, Predicate<T>)")
 	class MatchAfterIndexTests {
 		@Test
-		@DisplayName("returns matched item when item matches at index")
+		@DisplayName("when item matches at index, returns matched item")
 		void returnsItemWhenPresentAtIndex() {
 			final var items = new TestCollection<>("G", "a", "B", "R", "q", "D");
 			final var match = items.match(2, (item2) ->
@@ -295,7 +303,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns matched item when item matches after index")
+		@DisplayName("when item matches after index, returns matched item")
 		void returnsItemWhenPresentAfterIndex() {
 			final var items = new TestCollection<>("G", "a", "b", "R", "q", "D");
 			final var match = items.match(2, (item2) ->
@@ -306,8 +314,8 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when no item matches at or after index")
-		void returnsEmptyWhenAbsentAtAfterIndex() {
+		@DisplayName("when no item matches at or after index, returns empty")
+		void returnsEmptyWhenAbsentAtOrAfterIndex() {
 			final var items = new TestCollection<>("G", "a", "B", "r", "q", "d");
 			final var match = items.match(3, (item2) ->
 				Character.isUpperCase(item2.charAt(0)));
@@ -316,7 +324,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("returns empty when no item matches")
+		@DisplayName("when no item matches, returns empty")
 		void returnsEmptyWhenAbsent() {
 			final var items = new TestCollection<>("g", "a", "b", "r", "q", "d");
 			final var match = items.match(2, (item2) ->
@@ -327,7 +335,7 @@ public class IndexedCollectionTests {
 
 
 		@Test
-		@DisplayName("fails when start index is before valid range")
+		@DisplayName("when start index is before valid range, fails")
 		void failsWithIndexBeforeValidRange() {
 			try {
 				new TestCollection<>("7", "4", "3", "12", "9")
@@ -342,7 +350,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("fails when start index is after valid range")
+		@DisplayName("when start index is after valid range, fails")
 		void failsWithIndexAfterValidRange() {
 			try {
 				new TestCollection<>("f", "T", "e", "Q")
@@ -357,7 +365,7 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("fails when collection is empty")
+		@DisplayName("when collection is empty, fails")
 		void failsWhenEmpty() {
 			try {
 				new TestCollection<String>()
