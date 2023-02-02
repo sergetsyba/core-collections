@@ -4,9 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -459,6 +457,35 @@ public class IndexedCollectionTests {
 				return;
 			}
 			assert false;
+		}
+	}
+
+	@Nested
+	@DisplayName(".enumerate(BiConsumer<T, Integer>)")
+	class EnumerateTests {
+		@Test
+		@DisplayName("enumerates items and their indexes")
+		void enumeratesItemsAndIndexes() {
+			final var items = new TestCollection<>(6, 3, 2, 1, 8);
+			final var enumerated = new int[5];
+			items.enumerate((item, index) ->
+				enumerated[index] = item);
+
+			assert Arrays.equals(enumerated,
+				new int[]{
+					6, 3, 2, 1, 8
+				});
+		}
+
+		@Test
+		@DisplayName("when collection is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var items = new TestCollection<Integer>();
+			final var enumerated = new LinkedList<Integer>();
+			items.enumerate((item, index) ->
+				enumerated.add(item));
+
+			assert enumerated.isEmpty();
 		}
 	}
 

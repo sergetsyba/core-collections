@@ -3,7 +3,6 @@ package co.tsyba.core.collections;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -161,19 +160,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 
 	/**
 	 * Returns the first item in this collection, which satisfies the specified
-	 * {@link Predicate}.
-	 * <p>
-	 * When this collection is empty, or no item in this collection satisfies the
-	 * specified {@link Predicate}, returns an empty {@link Optional}.
-	 */
-	default Optional<T> match(Predicate<T> predicate) {
-		return isEmpty()
-			? Optional.empty()
-			: match(0, predicate);
-	}
-
-	/**
-	 * Returns the first item in this collection, which satisfies the specified
 	 * {@link Predicate}, at or after the specified index.
 	 * <p>
 	 * When this collection is empty, or no item in this collection satisfies the
@@ -206,13 +192,10 @@ public interface IndexedCollection<T> extends Collection<T> {
 	IndexedCollection<T> shuffle();
 
 	/**
-	 * Applies the specified {@link Consumer} to every item and its index in this
+	 * Applies the specified {@link BiConsumer} to every item and its index in this
 	 * collection.
 	 * <p>
 	 * Returns itself.
-	 *
-	 * @param operation
-	 * @return
 	 */
 	default IndexedCollection<T> enumerate(BiConsumer<T, Integer> operation) {
 		var index = 0;
