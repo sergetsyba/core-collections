@@ -12,50 +12,26 @@ import java.util.function.Predicate;
 
 public class IndexedCollectionTests {
 	@Nested
-	@DisplayName(".getFirst()")
-	class GetFirstTests {
+	@DisplayName(".getIndexRange()")
+	class GetIndexRangeTests {
 		@Test
-		@DisplayName("when collection is not empty, returns first item")
-		void returnsFirstWhenNotEmpty() {
-			final var items = new TestCollection<>("B", "V", "4");
-			final var first = items.getFirst();
+		@DisplayName("returns index range")
+		void returnsIndexRange() {
+			final var items = new TestCollection<>(6, 3, 2, 1, 3, 0);
+			final var range = items.getIndexRange();
 
-			assert Optional.of("B")
-				.equals(first);
+			assert new IndexRange(0, 6)
+				.equals(range);
 		}
 
 		@Test
-		@DisplayName("when collection is empty, returns empty")
-		void returnsEmptyWhenEmpty() {
-			final var items = new TestCollection<String>();
-			final var first = items.getFirst();
+		@DisplayName("when collection is empty, returns empty index range")
+		void returnsEmptyIndexRangeWhenEmpty() {
+			final var items = new TestCollection<>();
+			final var range = items.getIndexRange();
 
-			assert Optional.empty()
-				.equals(first);
-		}
-	}
-
-	@Nested
-	@DisplayName(".getLast()")
-	class GetLastTests {
-		@Test
-		@DisplayName("when collection is not empty, returns last item")
-		void returnsLastWhenNotEmpty() {
-			final var items = new TestCollection<>("B", "V", "4");
-			final var last = items.getLast();
-
-			assert Optional.of("4")
-				.equals(last);
-		}
-
-		@Test
-		@DisplayName("when collection is empty, returns empty")
-		void returnsEmptyWhenEmpty() {
-			final var items = new TestCollection<String>();
-			final var last = items.getFirst();
-
-			assert Optional.empty()
-				.equals(last);
+			assert new IndexRange(0, 0)
+				.equals(range);
 		}
 	}
 
@@ -114,6 +90,54 @@ public class IndexedCollectionTests {
 				return;
 			}
 			assert false;
+		}
+	}
+
+	@Nested
+	@DisplayName(".getFirst()")
+	class GetFirstTests {
+		@Test
+		@DisplayName("when collection is not empty, returns first item")
+		void returnsFirstWhenNotEmpty() {
+			final var items = new TestCollection<>("B", "V", "4");
+			final var first = items.getFirst();
+
+			assert Optional.of("B")
+				.equals(first);
+		}
+
+		@Test
+		@DisplayName("when collection is empty, returns empty")
+		void returnsEmptyWhenEmpty() {
+			final var items = new TestCollection<String>();
+			final var first = items.getFirst();
+
+			assert Optional.empty()
+				.equals(first);
+		}
+	}
+
+	@Nested
+	@DisplayName(".getLast()")
+	class GetLastTests {
+		@Test
+		@DisplayName("when collection is not empty, returns last item")
+		void returnsLastWhenNotEmpty() {
+			final var items = new TestCollection<>("B", "V", "4");
+			final var last = items.getLast();
+
+			assert Optional.of("4")
+				.equals(last);
+		}
+
+		@Test
+		@DisplayName("when collection is empty, returns empty")
+		void returnsEmptyWhenEmpty() {
+			final var items = new TestCollection<String>();
+			final var last = items.getFirst();
+
+			assert Optional.empty()
+				.equals(last);
 		}
 	}
 

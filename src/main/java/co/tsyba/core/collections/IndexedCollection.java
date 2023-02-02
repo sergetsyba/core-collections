@@ -22,7 +22,18 @@ public interface IndexedCollection<T> extends Collection<T> {
 	/**
 	 * Returns valid index range of this collection.
 	 */
-	IndexRange getIndexRange();
+	default IndexRange getIndexRange() {
+		final var count = getCount();
+		return new IndexRange(0, count);
+	}
+
+	/**
+	 * Returns item at the specified index in this collection.
+	 */
+	default T get(int index) {
+		final var iterator = iterator(index);
+		return iterator.next();
+	}
 
 	/**
 	 * Returns the first item in this collection.
@@ -55,14 +66,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns item at the specified index in this collection.
-	 */
-	default T get(int index) {
-		final var iterator = iterator(index);
-		return iterator.next();
-	}
-
-	/**
 	 * Returns {@code true} when this collection contains the specified items, accounting
 	 * for their order; returns {@code false} otherwise.
 	 */
@@ -80,7 +83,7 @@ public interface IndexedCollection<T> extends Collection<T> {
 	default Optional<Integer> find(T item) {
 		return isEmpty()
 			? Optional.empty()
-			: findUnsafely(0, item);
+			: find(0, item);
 	}
 
 	/**
@@ -94,15 +97,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 	 * range of this collection.
 	 */
 	default Optional<Integer> find(int startIndex, T item) {
-		final var range = getIndexRange();
-		if (!range.contains(startIndex)) {
-			throw new IndexNotInRangeException(startIndex, range);
-		}
-
-		return findUnsafely(startIndex, item);
-	}
-
-	private Optional<Integer> findUnsafely(int startIndex, T item) {
 		final var iterator = iterator(startIndex);
 		var index = startIndex;
 
@@ -112,51 +106,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 				return Optional.of(index);
 			} else {
 				++index;
-			}
-		}
-
-		return Optional.empty();
-	}
-
-	/**
-	 * Returns the first item in this collection, which satisfies the specified
-	 * {@link Predicate}.
-	 * <p>
-	 * When this collection is empty, or no item in this collection satisfies the
-	 * specified {@link Predicate}, returns an empty {@link Optional}.
-	 */
-	default Optional<T> match(Predicate<T> predicate) {
-		return isEmpty()
-			? Optional.empty()
-			: matchUnsafely(0, predicate);
-	}
-
-	/**
-	 * Returns the first item in this collection, which satisfies the specified
-	 * {@link Predicate}, at or after the specified index.
-	 * <p>
-	 * When this collection is empty, or no item in this collection satisfies the
-	 * specified {@link Predicate} at or after the specified index, returns an empty
-	 * {@link Optional}.
-	 *
-	 * @throws IndexNotInRangeException when the specified start index is out of valid
-	 * index range of this collection
-	 */
-	default Optional<T> match(int startIndex, Predicate<T> predicate) {
-		final var range = getIndexRange();
-		if (!range.contains(startIndex)) {
-			throw new IndexNotInRangeException(startIndex, range);
-		}
-
-		return matchUnsafely(startIndex, predicate);
-	}
-
-	private Optional<T> matchUnsafely(int startIndex, Predicate<T> predicate) {
-		final var iterator = iterator(startIndex);
-		while (iterator.hasNext()) {
-			final var item = iterator.next();
-			if (predicate.test(item)) {
-				return Optional.of(item);
 			}
 		}
 
@@ -210,18 +159,49 @@ public interface IndexedCollection<T> extends Collection<T> {
 		}
 	}
 
+	/**
+	 * Returns the first item in this collection, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When this collection is empty, or no item in this collection satisfies the
+	 * specified {@link Predicate}, returns an empty {@link Optional}.
+	 */
+	default Optional<T> match(Predicate<T> predicate) {
+		return isEmpty()
+			? Optional.empty()
+			: match(0, predicate);
+	}
+
+	/**
+	 * Returns the first item in this collection, which satisfies the specified
+	 * {@link Predicate}, at or after the specified index.
+	 * <p>
+	 * When this collection is empty, or no item in this collection satisfies the
+	 * specified {@link Predicate} at or after the specified index, returns an empty
+	 * {@link Optional}.
+	 *
+	 * @throws IndexNotInRangeException when the specified start index is out of valid
+	 * index range of this collection
+	 */
+	default Optional<T> match(int startIndex, Predicate<T> predicate) {
+		final var iterator = iterator(startIndex);
+		while (iterator.hasNext()) {
+			final var item = iterator.next();
+			if (predicate.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
 
 	/**
 	 * Returns items of this collection in reverse order.
-	 *
-	 * @return
 	 */
 	IndexedCollection<T> reverse();
 
 	/**
 	 * Returns items of this collection in random order.
-	 *
-	 * @return
 	 */
 	IndexedCollection<T> shuffle();
 
@@ -270,8 +250,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 
 	/**
 	 * Returns iterator over items of this collection in reverse order.
-	 *
-	 * @return
 	 */
 	Iterator<T> reverseIterator();
 }
