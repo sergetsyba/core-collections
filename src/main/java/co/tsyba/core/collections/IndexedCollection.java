@@ -25,7 +25,7 @@ public interface IndexedCollection<T> extends Collection<T> {
 	IndexRange getIndexRange();
 
 	/**
-	 * Returns the first item of this collection.
+	 * Returns the first item in this collection.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
@@ -40,7 +40,7 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns the last item of this collection.
+	 * Returns the last item in this collection.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
@@ -52,6 +52,14 @@ public interface IndexedCollection<T> extends Collection<T> {
 
 		final var item = iterator.next();
 		return Optional.of(item);
+	}
+
+	/**
+	 * Returns item at the specified index in this collection.
+	 */
+	default T get(int index) {
+		final var iterator = iterator(index);
+		return iterator.next();
 	}
 
 	/**
@@ -237,12 +245,28 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns iterator over items of this collection, starting from the specified index.
+	 * Returns iterator over items of this collection, which starts from the specified
+	 * index.
 	 *
-	 * @param startIndex
-	 * @return
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this collection
 	 */
-	Iterator<T> iterator(int startIndex);
+	default Iterator<T> iterator(int startIndex) {
+		final var range = getIndexRange();
+		if (!range.contains(startIndex)) {
+			throw new IndexNotInRangeException(startIndex, range);
+		}
+
+		final var iterator = iterator();
+		var index = 0;
+
+		while (index < startIndex) {
+			iterator.next();
+			++index;
+		}
+
+		return iterator;
+	}
 
 	/**
 	 * Returns iterator over items of this collection in reverse order.

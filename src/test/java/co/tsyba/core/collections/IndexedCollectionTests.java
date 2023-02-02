@@ -60,6 +60,64 @@ public class IndexedCollectionTests {
 	}
 
 	@Nested
+	@DisplayName(".get(int)")
+	class GetTests {
+		@Test
+		@DisplayName("when index is within valid range, returns item")
+		void returnsItem() {
+			final var items = new TestCollection<>(4, 5, 2, 1, 0, 5, 7);
+			final var item = items.get(4);
+
+			assert 0 == item;
+		}
+
+		@Test
+		@DisplayName("when index is before valid range, fails")
+		void failsWhenIndexBeforeValidRange() {
+			try {
+				new TestCollection<>(4, 5, 2, 1, 0, 5, 7)
+					.get(-4);
+			} catch (IndexNotInRangeException exception) {
+				final var range = new IndexRange(0, 7);
+				assert range.equals(exception.indexRange);
+				assert -4 == exception.index;
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("when index is after valid range, fails")
+		void failsWhenIndexAfterValidRange() {
+			try {
+				new TestCollection<>(4, 5, 2, 1, 0, 5, 7)
+					.get(9);
+			} catch (IndexNotInRangeException exception) {
+				final var range = new IndexRange(0, 7);
+				assert range.equals(exception.indexRange);
+				assert 9 == exception.index;
+				return;
+			}
+			assert false;
+		}
+
+		@Test
+		@DisplayName("when collection is empty, fails")
+		void failsWhenEmpty() {
+			try {
+				new TestCollection<>()
+					.get(0);
+			} catch (IndexNotInRangeException exception) {
+				final var range = new IndexRange(0, 0);
+				assert range.equals(exception.indexRange);
+				assert 0 == exception.index;
+				return;
+			}
+			assert false;
+		}
+	}
+
+	@Nested
 	@DisplayName(".contains(IndexedCollection<T>)")
 	class ContainsCollectionTests {
 		@Nested
@@ -421,26 +479,6 @@ public class IndexedCollectionTests {
 		@Override
 		public IndexedCollection<T> shuffle() {
 			return null;
-		}
-
-		@Override
-		public Iterator<T> iterator(int startIndex) {
-			return new Iterator<>() {
-				private int index = startIndex;
-
-				@Override
-				public boolean hasNext() {
-					return index < items.length;
-				}
-
-				@Override
-				public T next() {
-					@SuppressWarnings("unchecked")
-					final var item = (T) items[index];
-					++index;
-					return item;
-				}
-			};
 		}
 
 		@Override
