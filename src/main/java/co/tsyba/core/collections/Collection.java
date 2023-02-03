@@ -106,7 +106,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns any item in this collection, which satisfies the specified
 	 * {@link Predicate}.
 	 * <p>
-	 * When this collection is empty or no item in satisfies the specified
+	 * When this collection is empty or no item in it satisfies the specified
 	 * {@link Predicate}, returns an empty {@link Optional}.
 	 */
 	default Optional<T> match(Predicate<T> condition) {
@@ -134,7 +134,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns {@code true} when at least one item in this collection satisfies the
 	 * specified {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
-	 * When this collection is empty, returns {@code true}.
+	 * When this collection is empty, returns {@code false}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
 		return match(condition)

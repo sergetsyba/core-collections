@@ -10,7 +10,7 @@ import java.util.function.BiConsumer;
  * <p>
  * Unlike a {@link Collection}, {@link IndexedCollection} guarantees the same relative
  * item order on each iteration. Therefore, each item has a non-negative positional index,
- * using which it can be retrieved from the collection.
+ * which can be used to retrieve items from the collection.
  * <p>
  * Note, that {@link IndexedCollection} does not guarantee an efficient way of retrieving
  * items by their index. In general, index-based retrieval has O(n) complexity, needing to
