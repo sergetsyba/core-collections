@@ -28,6 +28,9 @@ public interface IndexedCollection<T> extends Collection<T> {
 
 	/**
 	 * Returns item at the specified index in this collection.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out valid index range
+	 * of this collection
 	 */
 	default T get(int index) {
 		final var iterator = iterator(index);
@@ -62,6 +65,30 @@ public interface IndexedCollection<T> extends Collection<T> {
 
 		final var item = iterator.next();
 		return Optional.of(item);
+	}
+
+	/**
+	 * Returns items at the specified index range in this collection.
+	 *
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of the
+	 * valid index range of this collection
+	 */
+	IndexedCollection<T> get(IndexRange indexRange);
+
+	/**
+	 * Returns items up to the specified index in this collection.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this collection
+	 */
+	default IndexedCollection<T> getPrefix(int index) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
+		final var prefixRange = new IndexRange(0, index);
+		return get(prefixRange);
 	}
 
 	/**

@@ -140,6 +140,82 @@ public class IndexedCollectionTests {
 	}
 
 	@Nested
+	@DisplayName(".getPrefix(int)")
+	class GetPrefixTests {
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>(
+				"B", "d", "R", "f", "a", "Q");
+
+			@Test
+			@DisplayName("when index is in valid range, returns prefix")
+			void returnsPrefixWhenIndexInRange() {
+				final var prefix = (TestCollection<String>) items.getPrefix(4);
+				assert Arrays.equals(prefix.items,
+					new String[]{
+						"B", "d", "R", "f"
+					});
+			}
+
+			@Test
+			@DisplayName("when index is 0, returns empty collection")
+			void returnsEmptyWhenIndexZero() {
+				final var prefix = (TestCollection<String>) items.getPrefix(0);
+				assert 0 == prefix.items.length;
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				try {
+					items.getPrefix(-1);
+				} catch (IndexNotInRangeException exception) {
+					assert -1 == exception.index;
+					assert new IndexRange(0, 6)
+						.equals(exception.indexRange);
+					return;
+				}
+				assert false;
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				try {
+					items.getPrefix(9);
+				} catch (IndexNotInRangeException exception) {
+					assert 9 == exception.index;
+					assert new IndexRange(0, 6)
+						.equals(exception.indexRange);
+					return;
+				}
+				assert false;
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>();
+
+			@Test
+			@DisplayName("fails")
+			void fails() {
+				try {
+					items.getPrefix(0);
+				} catch (IndexNotInRangeException exception) {
+					assert 0 == exception.index;
+					assert new IndexRange(0, 0)
+						.equals(exception.indexRange);
+					return;
+				}
+				assert false;
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".contains(int, T)")
 	class ContainsAfterIndexTests {
 		@Test
@@ -597,6 +673,16 @@ public class IndexedCollectionTests {
 		@Override
 		public IndexRange getIndexRange() {
 			return new IndexRange(0, items.length);
+		}
+
+		@Override
+		public IndexedCollection<T> get(IndexRange indexRange) {
+			final var items2 = new Object[indexRange.length];
+			System.arraycopy(items, indexRange.start, items2, 0, indexRange.length);
+
+			@SuppressWarnings("unchecked")
+			final var sub = (IndexedCollection<T>) new TestCollection<>(items2);
+			return sub;
 		}
 
 		@Override
