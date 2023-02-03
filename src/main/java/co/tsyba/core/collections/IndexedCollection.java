@@ -3,7 +3,6 @@ package co.tsyba.core.collections;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 
 /**
  * A {@link Collection}, which provides access to its items, based on their positional
@@ -110,21 +109,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this collection contains the specified item at or after
-	 * the specified index.
-	 * <p>
-	 * When this collection does not contain the specified item at or after the specified
-	 * index, returns an empty {@link Optional}.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid range of
-	 * this collection
-	 */
-	default boolean contains(int startIndex, T item) {
-		return find(startIndex, item)
-			.isPresent();
-	}
-
-	/**
 	 * Returns {@code true} when this collection contains the specified items, accounting
 	 * for their order; returns {@code false} otherwise.
 	 */
@@ -140,28 +124,9 @@ public interface IndexedCollection<T> extends Collection<T> {
 	 * {@link Optional}.
 	 */
 	default Optional<Integer> find(T item) {
-		return isEmpty()
-			? Optional.empty()
-			: find(0, item);
-	}
-
-	/**
-	 * Returns index of the first occurrence of the specified item at or after the
-	 * specified index in this collection.
-	 * <p>
-	 * When the specified item does not occur at or after the specified index in this
-	 * collection, returns an empty {@link Optional}.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this collection.
-	 */
-	default Optional<Integer> find(int startIndex, T item) {
-		final var iterator = iterator(startIndex);
-		var index = startIndex;
-
-		while (iterator.hasNext()) {
-			final var next = iterator.next();
-			if (next.equals(item)) {
+		var index = 0;
+		for (var storedItem : this) {
+			if (storedItem.equals(item)) {
 				return Optional.of(index);
 			} else {
 				++index;
@@ -216,29 +181,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 			// with items in this collection
 			return Optional.of(index);
 		}
-	}
-
-	/**
-	 * Returns the first item in this collection, which satisfies the specified
-	 * {@link Predicate}, at or after the specified index.
-	 * <p>
-	 * When this collection is empty, or no item in this collection satisfies the
-	 * specified {@link Predicate} at or after the specified index, returns an empty
-	 * {@link Optional}.
-	 *
-	 * @throws IndexNotInRangeException when the specified start index is out of valid
-	 * index range of this collection
-	 */
-	default Optional<T> match(int startIndex, Predicate<T> predicate) {
-		final var iterator = iterator(startIndex);
-		while (iterator.hasNext()) {
-			final var item = iterator.next();
-			if (predicate.test(item)) {
-				return Optional.of(item);
-			}
-		}
-
-		return Optional.empty();
 	}
 
 	/**
