@@ -76,7 +76,8 @@ public interface IndexedCollection<T> extends Collection<T> {
 	IndexedCollection<T> get(IndexRange indexRange);
 
 	/**
-	 * Returns items up to the specified index in this collection.
+	 * Returns items from the first up to the one at the specified index in this
+	 * collection.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
 	 * range of this collection
@@ -88,6 +89,23 @@ public interface IndexedCollection<T> extends Collection<T> {
 		}
 
 		final var prefixRange = new IndexRange(0, index);
+		return get(prefixRange);
+	}
+
+	/**
+	 * Returns items from the one at the specified index up to the last in this
+	 * collection.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this collection
+	 */
+	default IndexedCollection<T> getSuffix(int index) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
+		final var prefixRange = new IndexRange(index, validRange.end);
 		return get(prefixRange);
 	}
 

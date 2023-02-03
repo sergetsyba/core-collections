@@ -216,6 +216,75 @@ public class IndexedCollectionTests {
 	}
 
 	@Nested
+	@DisplayName(".getSuffix(int)")
+	class GetSuffixTests {
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>(
+				"B", "d", "R", "f", "a", "Q");
+
+			@Test
+			@DisplayName("when index is in valid range, returns suffix")
+			void returnsPrefixWhenIndexInRange() {
+				final var suffix = (TestCollection<String>) items.getSuffix(3);
+				assert Arrays.equals(suffix.items,
+					new String[]{
+						"f", "a", "Q"
+					});
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				try {
+					items.getSuffix(-1);
+				} catch (IndexNotInRangeException exception) {
+					assert -1 == exception.index;
+					assert new IndexRange(0, 6)
+						.equals(exception.indexRange);
+					return;
+				}
+				assert false;
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				try {
+					items.getSuffix(6);
+				} catch (IndexNotInRangeException exception) {
+					assert 6 == exception.index;
+					assert new IndexRange(0, 6)
+						.equals(exception.indexRange);
+					return;
+				}
+				assert false;
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>();
+
+			@Test
+			@DisplayName("fails")
+			void fails() {
+				try {
+					items.getSuffix(0);
+				} catch (IndexNotInRangeException exception) {
+					assert 0 == exception.index;
+					assert new IndexRange(0, 0)
+						.equals(exception.indexRange);
+					return;
+				}
+				assert false;
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".contains(int, T)")
 	class ContainsAfterIndexTests {
 		@Test
