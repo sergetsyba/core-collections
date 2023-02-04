@@ -28,7 +28,7 @@ public class IndexedCollectionTests {
 			final var items = new TestCollection<>();
 			final var range = items.getIndexRange();
 
-			assert new IndexRange(0, 0)
+			assert new IndexRange()
 				.equals(range);
 		}
 	}
@@ -80,8 +80,8 @@ public class IndexedCollectionTests {
 		@Nested
 		@DisplayName("when collection is not empty")
 		class NotEmptyCollectionTests {
-			final IndexedCollection<Integer> items = new TestCollection<>(
-				4, 5, 2, 1, 0, 5, 7);
+			private final IndexedCollection<Integer> items = new TestCollection<>(4, 5, 2, 1, 0, 5, 7);
+			private final IndexRange validRange = new IndexRange(0, 7);
 
 			@Test
 			@DisplayName("when index is within valid range, returns item")
@@ -97,9 +97,7 @@ public class IndexedCollectionTests {
 					items.get(-4);
 				} catch (IndexNotInRangeException exception) {
 					assert -4 == exception.index;
-					assert new IndexRange(0, 7)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -112,9 +110,7 @@ public class IndexedCollectionTests {
 					items.get(9);
 				} catch (IndexNotInRangeException exception) {
 					assert 9 == exception.index;
-					assert new IndexRange(0, 7)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -125,6 +121,7 @@ public class IndexedCollectionTests {
 		@DisplayName("when collection is empty")
 		class EmptyCollectionTests {
 			private final IndexedCollection<Integer> items = new TestCollection<>();
+			private final IndexRange validRange = new IndexRange();
 
 			@Test
 			@DisplayName("fails")
@@ -133,9 +130,7 @@ public class IndexedCollectionTests {
 					items.get(0);
 				} catch (IndexNotInRangeException exception) {
 					assert 0 == exception.index;
-					assert new IndexRange(0, 0)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -197,8 +192,8 @@ public class IndexedCollectionTests {
 		@Nested
 		@DisplayName("when collection is not empty")
 		class NotEmptyCollectionTests {
-			private final IndexedCollection<String> items = new TestCollection<>(
-				"B", "d", "R", "f", "a", "Q");
+			private final IndexedCollection<String> items = new TestCollection<>("B", "d", "R", "f", "a", "Q");
+			private final IndexRange validRange = new IndexRange(0, 6);
 
 			@Test
 			@DisplayName("when index is in valid range, returns prefix")
@@ -224,9 +219,7 @@ public class IndexedCollectionTests {
 					items.getPrefix(-1);
 				} catch (IndexNotInRangeException exception) {
 					assert -1 == exception.index;
-					assert new IndexRange(0, 6)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -239,9 +232,7 @@ public class IndexedCollectionTests {
 					items.getPrefix(9);
 				} catch (IndexNotInRangeException exception) {
 					assert 9 == exception.index;
-					assert new IndexRange(0, 6)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -252,6 +243,7 @@ public class IndexedCollectionTests {
 		@DisplayName("when collection is empty")
 		class EmptyCollectionTests {
 			private final IndexedCollection<String> items = new TestCollection<>();
+			private final IndexRange validRange = new IndexRange();
 
 			@Test
 			@DisplayName("fails")
@@ -260,9 +252,7 @@ public class IndexedCollectionTests {
 					items.getPrefix(0);
 				} catch (IndexNotInRangeException exception) {
 					assert 0 == exception.index;
-					assert new IndexRange(0, 0)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -276,8 +266,8 @@ public class IndexedCollectionTests {
 		@Nested
 		@DisplayName("when collection is not empty")
 		class NotEmptyCollectionTests {
-			private final IndexedCollection<String> items = new TestCollection<>(
-				"B", "d", "R", "f", "a", "Q");
+			private final IndexedCollection<String> items = new TestCollection<>("B", "d", "R", "f", "a", "Q");
+			private final IndexRange validRange = new IndexRange(0, 6);
 
 			@Test
 			@DisplayName("when index is in valid range, returns suffix")
@@ -296,9 +286,7 @@ public class IndexedCollectionTests {
 					items.getSuffix(-1);
 				} catch (IndexNotInRangeException exception) {
 					assert -1 == exception.index;
-					assert new IndexRange(0, 6)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -311,9 +299,7 @@ public class IndexedCollectionTests {
 					items.getSuffix(6);
 				} catch (IndexNotInRangeException exception) {
 					assert 6 == exception.index;
-					assert new IndexRange(0, 6)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;
@@ -324,6 +310,7 @@ public class IndexedCollectionTests {
 		@DisplayName("when collection is empty")
 		class EmptyCollectionTests {
 			private final IndexedCollection<String> items = new TestCollection<>();
+			private final IndexRange validRange = new IndexRange();
 
 			@Test
 			@DisplayName("fails")
@@ -332,9 +319,7 @@ public class IndexedCollectionTests {
 					items.getSuffix(0);
 				} catch (IndexNotInRangeException exception) {
 					assert 0 == exception.index;
-					assert new IndexRange(0, 0)
-						.equals(exception.validRange);
-
+					assert validRange.equals(exception.validRange);
 					return;
 				}
 				assert false;

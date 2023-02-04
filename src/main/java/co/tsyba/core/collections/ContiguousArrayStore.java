@@ -80,7 +80,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	public T get(int index) {
 		if (itemCount == 0) {
 			throw new IndexNotInRangeException(
-				index, new IndexRange(0, 0));
+				index, new IndexRange());
 		}
 		if (!hasIndex(index)) {
 			throw new IndexNotInRangeException(index,
@@ -99,7 +99,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	public ContiguousArrayStore<T> get(IndexRange indexRange) {
 		if (itemCount == 0) {
 			throw new IndexRangeNotInRangeException(indexRange,
-				new IndexRange(0, 0));
+				new IndexRange());
 		}
 		if (!hasIndexRange(indexRange)) {
 			throw new IndexRangeNotInRangeException(indexRange,

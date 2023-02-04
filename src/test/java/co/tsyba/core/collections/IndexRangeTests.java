@@ -70,7 +70,7 @@ class IndexRangeTests {
 		@Test
 		@DisplayName("when index range is empty, returns true")
 		void returnsTrueWhenEmpty() {
-			final var range = new IndexRange(0, 0);
+			final var range = new IndexRange();
 			assert range.isEmpty();
 		}
 
@@ -213,7 +213,7 @@ class IndexRangeTests {
 		@Test
 		@DisplayName("when index range is empty, returns string")
 		void returnsStringWhenEmpty() {
-			final var range = new IndexRange(0, 0);
+			final var range = new IndexRange();
 			final var string = range.toString();
 
 			assert "[0, 0)"
