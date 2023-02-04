@@ -249,7 +249,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 */
 	@Override
 	public <R> Collection<R> collect(BiFunction<K, V, R> converter) {
-		final var items = new ContigousArrayStore<R>(store.entryCount);
+		final var items = new ContiguousArrayStore<R>(store.entryCount);
 		for (var entry : this) {
 			final var convertedItem = converter.apply(entry.key, entry.value);
 			items.append(convertedItem);
