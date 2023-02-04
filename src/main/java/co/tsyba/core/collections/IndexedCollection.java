@@ -32,7 +32,19 @@ public interface IndexedCollection<T> extends Collection<T> {
 	 * of this collection
 	 */
 	default T get(int index) {
-		final var iterator = iterator(index);
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
+		final var iterator = iterator();
+		var index2 = 0;
+
+		while (index2 < index) {
+			iterator.next();
+			++index2;
+		}
+
 		return iterator.next();
 	}
 
@@ -139,49 +151,10 @@ public interface IndexedCollection<T> extends Collection<T> {
 	/**
 	 * Returns index of the first occurrence of the specified items in this collection.
 	 * <p>
-	 * Returns an empty {@link Optional} when the specified items are not in this
-	 * collection.
-	 *
-	 * @param items
-	 * @return
+	 * Returns an empty {@link Optional} when the specified items do not occur in this
+	 * collection in this order.
 	 */
-	default Optional<Integer> find(IndexedCollection<T> items) {
-		var iterator1 = iterator();
-		if (!iterator1.hasNext()) {
-			// this collection is empty
-			return Optional.empty();
-		}
-
-		indexSearch:
-		for (var index = 0; ; ) {
-			final var iterator2 = items.iterator();
-
-			while (iterator2.hasNext()) {
-				final var item1 = iterator1.next();
-				final var item2 = iterator2.next();
-
-				if (!item1.equals(item2)) {
-					// found different items
-					if (iterator1.hasNext()) {
-						// there are more items after the different one in this
-						// collection, restart search from the next index
-						iterator1 = iterator(++index);
-						continue indexSearch;
-					} else {
-						// there are no more items after the different one
-						// in this collection, but more in the specified
-						// collection; i.e. the specified collection extends
-						// beyond this one, thus it is not contained
-						return Optional.empty();
-					}
-				}
-			}
-
-			// reached end of the specified collection mathcing all items
-			// with items in this collection
-			return Optional.of(index);
-		}
-	}
+	Optional<Integer> find(IndexedCollection<T> items);
 
 	/**
 	 * Returns items of this collection in reverse order.
@@ -207,30 +180,6 @@ public interface IndexedCollection<T> extends Collection<T> {
 		}
 
 		return this;
-	}
-
-	/**
-	 * Returns iterator over items of this collection, which starts from the specified
-	 * index.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this collection
-	 */
-	default Iterator<T> iterator(int startIndex) {
-		final var range = getIndexRange();
-		if (!range.contains(startIndex)) {
-			throw new IndexNotInRangeException(startIndex, range);
-		}
-
-		final var iterator = iterator();
-		var index = 0;
-
-		while (index < startIndex) {
-			iterator.next();
-			++index;
-		}
-
-		return iterator;
 	}
 
 	/**

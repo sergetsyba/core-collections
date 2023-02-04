@@ -107,7 +107,7 @@ public class IndexedCollectionTests {
 	class GetFirstTests {
 		@Test
 		@DisplayName("when collection is not empty, returns first item")
-		void returnsFirstWhenNotEmpty() {
+		void returnsFirstItemWhenNotEmpty() {
 			final var items = new TestCollection<>("B", "V", "4");
 			final var first = items.getFirst();
 
@@ -116,8 +116,8 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("when collection is empty, returns empty")
-		void returnsEmptyWhenEmpty() {
+		@DisplayName("when collection is empty, returns empty optional")
+		void returnsEmptyOptionalWhenEmpty() {
 			final var items = new TestCollection<String>();
 			final var first = items.getFirst();
 
@@ -131,7 +131,7 @@ public class IndexedCollectionTests {
 	class GetLastTests {
 		@Test
 		@DisplayName("when collection is not empty, returns last item")
-		void returnsLastWhenNotEmpty() {
+		void returnsLastItemWhenNotEmpty() {
 			final var items = new TestCollection<>("B", "V", "4");
 			final var last = items.getLast();
 
@@ -140,8 +140,8 @@ public class IndexedCollectionTests {
 		}
 
 		@Test
-		@DisplayName("when collection is empty, returns empty")
-		void returnsEmptyWhenEmpty() {
+		@DisplayName("when collection is empty, returns empty optional")
+		void returnsEmptyOptionalWhenEmpty() {
 			final var items = new TestCollection<String>();
 			final var last = items.getFirst();
 
@@ -171,7 +171,7 @@ public class IndexedCollectionTests {
 
 			@Test
 			@DisplayName("when index is 0, returns empty collection")
-			void returnsEmptyWhenIndexZero() {
+			void returnsEmptyCollectionWhenIndexZero() {
 				final var prefix = (TestCollection<String>) items.getPrefix(0);
 				assert 0 == prefix.items.length;
 			}
@@ -214,7 +214,7 @@ public class IndexedCollectionTests {
 
 			@Test
 			@DisplayName("fails")
-			void fails() {
+			void failsWhenEmpty() {
 				try {
 					items.getPrefix(0);
 				} catch (IndexNotInRangeException exception) {
@@ -286,7 +286,7 @@ public class IndexedCollectionTests {
 
 			@Test
 			@DisplayName("fails")
-			void fails() {
+			void failsWhenEmpty() {
 				try {
 					items.getSuffix(0);
 				} catch (IndexNotInRangeException exception) {
@@ -367,6 +367,7 @@ public class IndexedCollectionTests {
 		}
 	}
 
+
 	@Nested
 	@DisplayName(".find(T)")
 	class FindTests {
@@ -385,8 +386,8 @@ public class IndexedCollectionTests {
 			}
 
 			@Test
-			@DisplayName("when item is absent, returns empty")
-			void returnsEmptyWhenAbsent() {
+			@DisplayName("when item is absent, returns empty optional")
+			void returnsEmptyOptionalWhenAbsent() {
 				final var index = items.find(0);
 				assert index.isEmpty();
 			}
@@ -398,8 +399,8 @@ public class IndexedCollectionTests {
 			private final IndexedCollection<Integer> items = new TestCollection<>();
 
 			@Test
-			@DisplayName("returns empty")
-			void returnsEmptyWhenEmpty() {
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptionalWhenEmpty() {
 				final var index = items.find(6);
 				assert index.isEmpty();
 			}
@@ -426,8 +427,8 @@ public class IndexedCollectionTests {
 			}
 
 			@Test
-			@DisplayName("when no item matches, returns empty")
-			void returnsEmptyWhenNoneMatches() {
+			@DisplayName("when no item matches, returns empty optional")
+			void returnsEmptyOptionalWhenNoneMatches() {
 				final var match = items.match((item) ->
 					item % 20 == 0);
 
@@ -441,8 +442,8 @@ public class IndexedCollectionTests {
 			private final IndexedCollection<Integer> items = new TestCollection<>();
 
 			@Test
-			@DisplayName("returns empty")
-			void returnsEmptyWhenEmpty() {
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptionalWhenEmpty() {
 				final var match = items.match((item) ->
 					item % 2 == 0);
 
@@ -521,6 +522,31 @@ public class IndexedCollectionTests {
 			@SuppressWarnings("unchecked")
 			final var sub = (IndexedCollection<T>) new TestCollection<>(items2);
 			return sub;
+		}
+
+		@Override
+		public Optional<Integer> find(IndexedCollection<T> items) {
+			if (items.isEmpty()) {
+				return Optional.of(0);
+			}
+
+			searchLoop:
+			for (var index1 = 0; index1 < this.items.length; ++index1) {
+				var index2 = index1;
+
+				for (var item2 : items) {
+					final var item1 = this.items[index2];
+					if (item1.equals(item2)) {
+						++index2;
+					} else {
+						continue searchLoop;
+					}
+				}
+
+				return Optional.of(index1);
+			}
+
+			return Optional.empty();
 		}
 
 		@Override
