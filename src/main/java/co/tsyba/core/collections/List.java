@@ -11,6 +11,7 @@ import java.util.function.Predicate;
  */
 public class List<T> implements IndexedCollection<T> {
 	ContiguousArrayStore<T> store;
+	Object[] store2;
 
 	/**
 	 * Creates a list using the specified {@link ContiguousArrayStore} as its backing
@@ -59,19 +60,11 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns {@code true} when this list is empty; returns {@code false} otherwise.
-	 */
-	@Override
-	public boolean isEmpty() {
-		return store.itemCount == 0;
-	}
-
-	/**
 	 * Returns the number of items in this list.
 	 */
 	@Override
 	public int getCount() {
-		return store.itemCount;
+		return store2.length;
 	}
 
 	/**
@@ -117,27 +110,9 @@ public class List<T> implements IndexedCollection<T> {
 		return new List<>(items);
 	}
 
-	/**
-	 * Returns an {@link Optional} with the specified index when it is within the valid
-	 * index range of this list; returns an empty {@link Optional} otherwise.
-	 * <p>
-	 * This method safeguards any index-based operations on the list. It may serve as an
-	 * alternative to explicitly checking whether an index is within the valid index range
-	 * of this list.
-	 * <p>
-	 * For instance, to safely get an item at an index
-	 * <pre>{@code
-	 * 	final var list = new List<String>("a", "b", "c");
-	 * 	final var c = list.guard(2)
-	 * 		.map(list::get);
-	 * }</pre>
-	 */
-	public Optional<Integer> guard(int index) {
-		if (!store.hasIndex(index)) {
-			return Optional.empty();
-		}
-
-		return Optional.of(index);
+	@Override
+	public Optional<Integer> find(IndexedCollection<T> items) {
+		return Optional.empty();
 	}
 
 	/**
@@ -268,11 +243,6 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return store.iterator();
-	}
-
-	@Override
-	public Iterator<T> iterator(int startIndex) {
-		return store.iterator(startIndex);
 	}
 
 	@Override

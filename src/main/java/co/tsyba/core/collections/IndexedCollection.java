@@ -26,6 +26,29 @@ public interface IndexedCollection<T> extends Collection<T> {
 	}
 
 	/**
+	 * Returns an {@link Optional} with the specified index when it is within the valid
+	 * index range of this collection; returns an empty {@link Optional} otherwise.
+	 * <p>
+	 * This method safeguards any index-based operations on this collection. It may serve
+	 * as an alternative to explicitly checking whether an index is within the valid index
+	 * range.
+	 * <p>
+	 * For instance, to safely get an item at an index
+	 * <pre>{@code
+	 * 	final var list = new List<String>("a", "b", "c");
+	 * 	final var c = list.guard(2)
+	 * 		.map(list::get);
+	 * }</pre>
+	 */
+	default Optional<Integer> guard(int index) {
+		final var range = getIndexRange();
+
+		return range.contains(index)
+			? Optional.of(index)
+			: Optional.empty();
+	}
+
+	/**
 	 * Returns item at the specified index in this collection.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out valid index range
@@ -54,13 +77,8 @@ public interface IndexedCollection<T> extends Collection<T> {
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getFirst() {
-		final var iterator = iterator();
-		if (!iterator.hasNext()) {
-			return Optional.empty();
-		}
-
-		final var item = iterator.next();
-		return Optional.of(item);
+		return guard(0)
+			.map(this::get);
 	}
 
 	/**
@@ -69,13 +87,10 @@ public interface IndexedCollection<T> extends Collection<T> {
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getLast() {
-		final var iterator = reverseIterator();
-		if (!iterator.hasNext()) {
-			return Optional.empty();
-		}
+		final var itemCount = getCount();
 
-		final var item = iterator.next();
-		return Optional.of(item);
+		return guard(itemCount - 1)
+			.map(this::get);
 	}
 
 	/**

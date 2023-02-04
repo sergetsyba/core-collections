@@ -311,36 +311,6 @@ public class ListTests {
 	}
 
 	@Nested
-	@DisplayName(".guard(int)")
-	class GuardTests {
-		private final List<String> items = new List<>("e", "4", "6", "7");
-		// index range: [0, 3]
-
-		@Test
-		@DisplayName("returns index when in valid range")
-		void returnsIndexWhenInValidRange() {
-			final var index = items.guard(2);
-			assert index.isPresent();
-			assert index.get() == 2;
-		}
-
-		@Test
-		@DisplayName("returns empty when index is out of valid range")
-		void returnsEmptyWhenIndexIsOutOfValidRange() {
-			final var index = items.guard(7);
-			assert index.isEmpty();
-		}
-
-		@Test
-		@DisplayName("returns empty when list is empty")
-		void returnsEmptyWhenListIsEmpty() {
-			final var items = new List<>();
-			final var index = items.guard(2);
-			assert index.isEmpty();
-		}
-	}
-
-	@Nested
 	@DisplayName(".getDistinct()")
 	class GetDistinctTests {
 		@Test

@@ -34,6 +34,47 @@ public class IndexedCollectionTests {
 	}
 
 	@Nested
+	@DisplayName(".guard(int)")
+	class GuardTests {
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			// index range: [0, 3]
+			private final IndexedCollection<String> items = new TestCollection<>(
+				"e", "4", "6", "7");
+
+			@Test
+			@DisplayName("when is within valid range, return index")
+			void returnsIndexWhenWithinValidRange() {
+				final var index = items.guard(2);
+
+				assert Optional.of(2)
+					.equals(index);
+			}
+
+			@Test
+			@DisplayName("when index is out of valid range, returns empty optional")
+			void returnsEmptyOptionalWhenIndexIsOutOfValidRange() {
+				final var index = items.guard(7);
+				assert index.isEmpty();
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>();
+
+			@Test
+			@DisplayName("returns empty when list is empty")
+			void returnsEmptyWhenListIsEmpty() {
+				final var index = items.guard(2);
+				assert index.isEmpty();
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".get(int)")
 	class GetTests {
 		@Nested
