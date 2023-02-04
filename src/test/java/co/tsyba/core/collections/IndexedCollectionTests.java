@@ -98,7 +98,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert -4 == exception.index;
 					assert new IndexRange(0, 7)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -113,7 +113,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert 9 == exception.index;
 					assert new IndexRange(0, 7)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -134,7 +134,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert 0 == exception.index;
 					assert new IndexRange(0, 0)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -225,7 +225,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert -1 == exception.index;
 					assert new IndexRange(0, 6)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -240,7 +240,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert 9 == exception.index;
 					assert new IndexRange(0, 6)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -261,7 +261,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert 0 == exception.index;
 					assert new IndexRange(0, 0)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -297,7 +297,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert -1 == exception.index;
 					assert new IndexRange(0, 6)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -312,7 +312,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert 6 == exception.index;
 					assert new IndexRange(0, 6)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}
@@ -333,7 +333,7 @@ public class IndexedCollectionTests {
 				} catch (IndexNotInRangeException exception) {
 					assert 0 == exception.index;
 					assert new IndexRange(0, 0)
-						.equals(exception.indexRange);
+						.equals(exception.validRange);
 
 					return;
 				}

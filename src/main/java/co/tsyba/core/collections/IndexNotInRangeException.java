@@ -5,22 +5,17 @@ package co.tsyba.core.collections;
  */
 public class IndexNotInRangeException extends RuntimeException {
 	public final int index;
-	public final IndexRange indexRange;
+	public final IndexRange validRange;
 
-	public IndexNotInRangeException(int index, IndexRange indexRange) {
+	public IndexNotInRangeException(int index, IndexRange validRange) {
 		this.index = index;
-		this.indexRange = indexRange;
-	}
-
-	public IndexNotInRangeException(int index) {
-		this.index = index;
-		this.indexRange = null;
+		this.validRange = validRange;
 	}
 
 	@Override
 	public String getMessage() {
-		return indexRange == null
+		return validRange.isEmpty()
 			? "Index " + index + " is out of empty range."
-			: "Index " + index + " is out of valid range " + indexRange + ".";
+			: "Index " + index + " is out of valid range " + validRange + ".";
 	}
 }
