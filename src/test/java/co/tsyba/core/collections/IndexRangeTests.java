@@ -11,7 +11,7 @@ class IndexRangeTests {
 	@DisplayName("IndexRange(int, int)")
 	class ConstructorWithBoundsTests {
 		@Test
-		@DisplayName("creates range")
+		@DisplayName("creates index range")
 		void createsRange() {
 			final var range = new IndexRange(5, 8);
 			assert 5 == range.start;
@@ -20,7 +20,7 @@ class IndexRangeTests {
 		}
 
 		@Test
-		@DisplayName("creates empty range when end is at start")
+		@DisplayName("when end is at start, creates empty range")
 		void createsEmptyRangeWhenEndAtStart() {
 			final var range = new IndexRange(5, 5);
 			assert 5 == range.start;
@@ -29,7 +29,7 @@ class IndexRangeTests {
 		}
 
 		@Test
-		@DisplayName("fails when start is negative")
+		@DisplayName("when start is negative, fails")
 		void failsWhenStartNegative() {
 			try {
 				new IndexRange(-4, 12);
@@ -40,7 +40,7 @@ class IndexRangeTests {
 		}
 
 		@Test
-		@DisplayName("fails when end is before start")
+		@DisplayName("when end is before start, fails")
 		void failsWhenEndBeforeStart() {
 			try {
 				new IndexRange(5, 2);
@@ -88,31 +88,31 @@ class IndexRangeTests {
 		private final IndexRange range = new IndexRange(3, 12);
 
 		@Test
-		@DisplayName("returns true when index is within range")
+		@DisplayName("when index is within range, returns true")
 		void returnsTrueWhenIndexWithinRange() {
 			assert range.contains(6);
 		}
 
 		@Test
-		@DisplayName("returns false when index is before start")
+		@DisplayName("when index is before start, returns false")
 		void returnsFalseWhenIndexBeforeStart() {
 			assert !range.contains(1);
 		}
 
 		@Test
-		@DisplayName("returns true when index is at start")
+		@DisplayName("when index is at start, returns true")
 		void returnsTrueWhenIndexAtStart() {
 			assert range.contains(3);
 		}
 
 		@Test
-		@DisplayName("returns false when index is after end")
+		@DisplayName("when index is after end, returns false")
 		void returnsFalseWhenIndexAfterEnd() {
 			assert !range.contains(15);
 		}
 
 		@Test
-		@DisplayName("returns false when index is at end")
+		@DisplayName("when index is at end, returns false")
 		void returnsFalseWhenIndexAtEnd() {
 			assert !range.contains(12);
 		}
@@ -124,42 +124,42 @@ class IndexRangeTests {
 		private final IndexRange range = new IndexRange(5, 18);
 
 		@Test
-		@DisplayName("returns true when range is within range")
+		@DisplayName("when range is within range, returns true")
 		void returnsTrueWhenRangeWithinRange() {
 			final var range2 = new IndexRange(7, 12);
 			assert range.contains(range2);
 		}
 
 		@Test
-		@DisplayName("returns false when range is outside range")
+		@DisplayName("when range is outside range, returns false")
 		void returnsFalseWhenRangeOutsideRange() {
 			final var range2 = new IndexRange(2, 22);
 			assert !range.contains(range2);
 		}
 
 		@Test
-		@DisplayName("returns false when range starts before start")
+		@DisplayName("when range starts before start, returns false")
 		void returnsFalseWhenRangeStartsBeforeStarts() {
 			final var range2 = new IndexRange(3, 12);
 			assert !range.contains(range2);
 		}
 
 		@Test
-		@DisplayName("returns true when range starts at start")
+		@DisplayName("when range starts at start, returns true")
 		void returnsTrueWhenRangeStartsAtStart() {
 			final var range2 = new IndexRange(5, 12);
 			assert range.contains(range2);
 		}
 
 		@Test
-		@DisplayName("returns false when range ends after end")
+		@DisplayName("when range ends after end, returns false")
 		void returnsFalseWhenRangeEndsAfterEnd() {
 			final var range2 = new IndexRange(7, 22);
 			assert !range.contains(range2);
 		}
 
 		@Test
-		@DisplayName("returns true when range ends at end")
+		@DisplayName("when range ends at end, returns true")
 		void returnsTrueWhenRangeEndsAtEnd() {
 			final var range2 = new IndexRange(7, 18);
 			assert range.contains(range2);
@@ -170,7 +170,7 @@ class IndexRangeTests {
 	@DisplayName(".equals(Object)")
 	class EqualsTests {
 		@Test
-		@DisplayName("returns true when range equals")
+		@DisplayName("when range equals, returns true")
 		void returnsTrueWhenEqual() {
 			final var range1 = new IndexRange(4, 9);
 			final var range2 = new IndexRange(4, 9);
@@ -179,7 +179,7 @@ class IndexRangeTests {
 		}
 
 		@Test
-		@DisplayName("returns false when range start differs")
+		@DisplayName("when range start differs, returns false")
 		void returnsFalseWhenRangeStartDiffers() {
 			final var range1 = new IndexRange(4, 9);
 			final var range2 = new IndexRange(7, 9);
@@ -188,7 +188,7 @@ class IndexRangeTests {
 		}
 
 		@Test
-		@DisplayName("returns false when range end differs")
+		@DisplayName("when range end differs, returns false")
 		void returnsFalseWhenRangeEndDiffers() {
 			final var range1 = new IndexRange(4, 9);
 			final var range2 = new IndexRange(4, 6);
@@ -242,7 +242,7 @@ class IndexRangeTests {
 		}
 
 		@Test
-		@DisplayName("returns empty iterator when range is empty")
+		@DisplayName("when range is empty, returns empty iterator")
 		void returnsEmptyIteratorWhenRangeEmpty() {
 			final var range = new IndexRange(2, 2);
 			final var indexes = new int[range.length];
