@@ -8,8 +8,8 @@ import java.util.Arrays;
 
 class IndexRangeTests {
 	@Nested
-	@DisplayName("new IndexRange(int, int)")
-	class IndexRangeConstructorTests {
+	@DisplayName("IndexRange(int, int)")
+	class ConstructorWithBoundsTests {
 		@Test
 		@DisplayName("creates range")
 		void createsRange() {
@@ -48,6 +48,19 @@ class IndexRangeTests {
 				return;
 			}
 			assert false;
+		}
+	}
+
+	@Nested
+	@DisplayName("IndexRange()")
+	class ConstructorTests {
+		@Test
+		@DisplayName("creates empty index range")
+		void createsEmptyRange() {
+			final var range = new IndexRange();
+			assert 0 == range.start;
+			assert 0 == range.end;
+			assert 0 == range.length;
 		}
 	}
 
