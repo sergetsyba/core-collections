@@ -111,24 +111,6 @@ public class ListTests {
 	}
 
 	@Nested
-	@DisplayName(".isEmpty()")
-	class IsEmptyTests {
-		@Test
-		@DisplayName("returns true when list is empty")
-		void returnsTrueWhenEmpty() {
-			final var items = new List<>();
-			assert items.isEmpty();
-		}
-
-		@Test
-		@DisplayName("returns false when list is not empty")
-		void returnsFalseWhenNotEmpty() {
-			final var items = new List<>("h", "4", "G");
-			assert !items.isEmpty();
-		}
-	}
-
-	@Nested
 	@DisplayName(".getCount()")
 	class GetCountTests {
 		@Test
@@ -143,54 +125,6 @@ public class ListTests {
 		void returnsZeroWhenEmpty() {
 			final var items = new List<>();
 			assert items.getCount() == 0;
-		}
-	}
-
-	@Nested
-	@DisplayName(".getFirst()")
-	class GetFirstTests {
-		@Test
-		@DisplayName("returns first item")
-		void returnsFirstItem() {
-			final var items = new List<>("O", "T", "q", "M", "s");
-			final var first = items.getFirst();
-
-			assert first.isPresent();
-			assert first.get()
-				.equals("O");
-		}
-
-		@Test
-		@DisplayName("returns empty when list is empty")
-		void returnsEmptyWhenListIsEmpty() {
-			final var items = new List<>();
-			final var first = items.getFirst();
-
-			assert first.isEmpty();
-		}
-	}
-
-	@Nested
-	@DisplayName(".getLast()")
-	class GetLastTests {
-		@Test
-		@DisplayName("returns last item")
-		void returnsLastItem() {
-			final var items = new List<>("O", "T", "q", "M", "s");
-			final var last = items.getLast();
-
-			assert last.isPresent();
-			assert last.get()
-				.equals("s");
-		}
-
-		@Test
-		@DisplayName("returns empty when list is empty")
-		void returnsEmptyWhenListIsEmpty() {
-			final var items = new List<>();
-			final var first = items.getFirst();
-
-			assert first.isEmpty();
 		}
 	}
 

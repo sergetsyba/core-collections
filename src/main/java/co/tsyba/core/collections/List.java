@@ -42,6 +42,19 @@ public class List<T> implements IndexedCollection<T> {
 
 		store.removeExcessCapacity();
 		this.store = new ContiguousArrayStore<>(store.items);
+
+		final var store2 = new Object[items.length];
+		var index = 0;
+		for (var item : items) {
+			if (item != null) {
+				store2[index] = item;
+				++index;
+			}
+		}
+
+		this.store2 = (index == items.length)
+			? store2
+			: Arrays.copyOf(store2, index);
 	}
 
 	/**
@@ -68,35 +81,15 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Returns the first item of this list.
-	 * <p>
-	 * Returns an empty {@link Optional} when this list is empty.
-	 */
-	@Override
-	public Optional<T> getFirst() {
-		return guard(0)
-			.map(this::get);
-	}
-
-	/**
-	 * Returns the last item of this list.
-	 * <p>
-	 * Returns an empty {@link Optional} when this list is empty.
-	 */
-	@Override
-	public Optional<T> getLast() {
-		return guard(store.itemCount - 1)
-			.map(this::get);
-	}
-
-	/**
 	 * Returns item at the specified index in this list.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
 	 * range of this list
 	 */
 	public T get(int index) {
-		return store.get(index);
+		@SuppressWarnings("unchecked")
+		final var item = (T) store2[index];
+		return item;
 	}
 
 	/**
