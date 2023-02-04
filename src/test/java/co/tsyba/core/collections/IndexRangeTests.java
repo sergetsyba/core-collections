@@ -52,6 +52,24 @@ class IndexRangeTests {
 	}
 
 	@Nested
+	@DisplayName(".isEmpty()")
+	class IsEmptyTests {
+		@Test
+		@DisplayName("when index range is empty, returns true")
+		void returnsTrueWhenEmpty() {
+			final var range = new IndexRange(0, 0);
+			assert range.isEmpty();
+		}
+
+		@Test
+		@DisplayName("when index range is note empty, returns false")
+		void returnsFalseWhenNotEmpty() {
+			final var range = new IndexRange(0, 10);
+			assert !range.isEmpty();
+		}
+	}
+
+	@Nested
 	@DisplayName(".contains(int)")
 	class ContainsIndexTests {
 		private final IndexRange range = new IndexRange(3, 12);

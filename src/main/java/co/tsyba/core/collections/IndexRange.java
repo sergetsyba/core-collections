@@ -44,6 +44,14 @@ public class IndexRange implements Iterable<Integer> {
 	}
 
 	/**
+	 * Returns {@code true} when this index range is empty; returns {@code false}
+	 * otherwise.
+	 */
+	public boolean isEmpty() {
+		return start == end;
+	}
+
+	/**
 	 * Returns {@code true} when the specified index is within this index range; returns
 	 * {@code false} otherwise.
 	 */
