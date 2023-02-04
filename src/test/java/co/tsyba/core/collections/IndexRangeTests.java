@@ -185,6 +185,30 @@ class IndexRangeTests {
 	}
 
 	@Nested
+	@DisplayName(".toString()")
+	class ToStringTests {
+		@Test
+		@DisplayName("when index range is not empty, returns string")
+		void returnsStringWhenNotEmpty() {
+			final var range = new IndexRange(5, 17);
+			final var string = range.toString();
+
+			assert "[5, 17)"
+				.equals(string);
+		}
+
+		@Test
+		@DisplayName("when index range is empty, returns string")
+		void returnsStringWhenEmpty() {
+			final var range = new IndexRange(0, 0);
+			final var string = range.toString();
+
+			assert "[0, 0)"
+				.equals(string);
+		}
+	}
+
+	@Nested
 	@DisplayName(".iterator()")
 	class IteratorTests {
 		@Test

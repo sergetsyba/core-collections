@@ -89,6 +89,11 @@ public class IndexRange implements Iterable<Integer> {
 	}
 
 	@Override
+	public String toString() {
+		return "[" + start + ", " + end + ")";
+	}
+
+	@Override
 	public Iterator<Integer> iterator() {
 		return new Iterator<>() {
 			private int index = start;
