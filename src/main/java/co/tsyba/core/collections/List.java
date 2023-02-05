@@ -1,314 +1,287 @@
 package co.tsyba.core.collections;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on May 26, 2019.
+/**
+ * An immutable, sequential {@link Collection}, which provides efficient, randomized
+ * access to its items.
  */
 public class List<T> implements IndexedCollection<T> {
-	ContigousArrayStore<T> store;
-
-	/**
-	 * Creates a new list using the specified {@link ContigousArrayStore} as its backing
-	 * store.
-	 *
-	 * @param store
-	 */
-	List(ContigousArrayStore<T> store) {
-		this.store = store;
-	}
+	// todo: remove
+	ContiguousArrayStore<T> store = null;
+	Object[] store2;
 
 	/**
 	 * Creates a copy of the specified items.
-	 *
-	 * @param items
 	 */
 	public List(List<T> items) {
-		if (items.isEmpty()) {
-			this.store = new ContigousArrayStore<>(0);
-		}
-		else {
-			final var indexRange = new IndexRange(0, items.store.itemCount - 1);
-			this.store = new ContigousArrayStore<>(items.store, indexRange);
-		}
+		this.store = items.store;
+		this.store2 = Arrays.copyOf(items.store2, items.store2.length);
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the
-	 * items.
-	 *
-	 * @param items
+	 * Creates a list with the specified items.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
 	 */
+	@SafeVarargs
 	public List(T... items) {
-		this.store = new ContigousArrayStore<>(items.length);
-		this.store.append(items);
-		this.store.removeExcessCapacity();
-	}
+		final var store = new Object[items.length];
+		var count = 0;
 
-	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the
-	 * items.
-	 *
-	 * @param items
-	 */
-	public List(Iterable<T> items) {
-		this.store = new ContigousArrayStore<>(64);
 		for (var item : items) {
-			this.store.append(item);
-		}
-
-		this.store.removeExcessCapacity();
-	}
-
-	/**
-	 * Returns {@code true} when this list is empty; returns {@code false} otherwise.
-	 *
-	 * @return
-	 */
-	@Override
-	public boolean isEmpty() {
-		return store.itemCount == 0;
-	}
-
-	/**
-	 * Returns the number of items in this list.
-	 *
-	 * @return
-	 */
-	@Override
-	public int getCount() {
-		return store.itemCount;
-	}
-
-	/**
-	 * Returns the first item of this list. Returns an empty {@link Optional} when this
-	 * list is empty.
-	 *
-	 * @return
-	 */
-	@Override
-	public Optional<T> getFirst() {
-		return guard(0);
-	}
-
-	/**
-	 * Returns the last item of this list. Returns an empty {@link Optional} when this
-	 * list is empty.
-	 *
-	 * @return
-	 */
-	@Override
-	public Optional<T> getLast() {
-		return guard(store.itemCount - 1);
-	}
-
-	/**
-	 * Returns item at the specified index in this list.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this list
-	 *
-	 * @param index
-	 * @return
-	 */
-	public T get(int index) {
-		return store.storage[index];
-	}
-
-	/**
-	 * Returns items at the specified index range in this list.
-	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this list
-	 *
-	 * @param indexRange
-	 * @return
-	 */
-	public List<T> get(IndexRange indexRange) {
-		final var items = store.get(indexRange);
-		return new List<>(items);
-	}
-
-	/**
-	 * Returns item at the specified index when the index is within the valid index range
-	 * of this list. Returns an empty {@link Optional} otherwise.
-	 *
-	 * @param index
-	 * @return
-	 */
-	public Optional<T> guard(int index) {
-		if (!store.hasIndex(index)) {
-			return Optional.empty();
-		}
-
-		final var item = store.storage[index];
-		return Optional.of(item);
-	}
-
-	/**
-	 * Returns distinct items of this list.
-	 *
-	 * @return
-	 */
-	@Override
-	public List<T> getDistinct() {
-		final var distinctItems = new List<T>(
-				new ContigousArrayStore<>(store.itemCount));
-
-		for (var item : this) {
-			if (!distinctItems.contains(item)) {
-				distinctItems.store.append(item);
+			if (item != null) {
+				store[count] = item;
+				++count;
 			}
 		}
 
-		distinctItems.store.removeExcessCapacity();
-		return distinctItems;
+		// trim excess capacity, if necessary
+		this.store2 = (count == store.length)
+			? store
+			: Arrays.copyOf(store, count);
 	}
 
 	/**
-	 * Returns items of this list in reverse order.
-	 *
-	 * @return
+	 * Creates a list with the specified items.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
 	 */
+	public List(Iterable<T> items) {
+		var store = new Object[64];
+		var count = 0;
+
+		for (var item : items) {
+			// double capacity when it runs out
+			if (count == store.length) {
+				store = Arrays.copyOf(store, 2 * store.length);
+			}
+
+			if (item != null) {
+				store[count] = item;
+				++count;
+			}
+		}
+
+		// trim excess capacity, if necessary
+		this.store2 = (count == store.length)
+			? store
+			: Arrays.copyOf(store, count);
+	}
+
+	@Override
+	public int getCount() {
+		return store2.length;
+	}
+
+	public T get(int index) {
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
+		@SuppressWarnings("unchecked")
+		final var item = (T) store2[index];
+		return item;
+	}
+
+	public List<T> get(IndexRange indexRange) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(indexRange)) {
+			throw new IndexRangeNotInRangeException(indexRange, validRange);
+		}
+
+		// todo: replace copy with List with preset index range
+		final var subStore = Arrays.copyOfRange(store2, indexRange.start, indexRange.end);
+		@SuppressWarnings("unchecked")
+		final var items = (List<T>) new List<>(subStore);
+		return items;
+	}
+
+	@Override
+	public Optional<Integer> find(IndexedCollection<T> items) {
+		return Optional.empty();
+	}
+
+	@Override
+	public List<T> getDistinct() {
+		@SuppressWarnings("unchecked")
+		final var distinct = (T[]) new Object[store2.length];
+		var count = 0;
+
+		for (var item : this) {
+			if (!contains(distinct, count, item)) {
+				distinct[count] = item;
+				++count;
+			}
+		}
+
+		return new List<>(distinct);
+	}
+
+	private static <T> boolean contains(T[] items, int count, T item) {
+		for (var index = 0; index < count; ++index) {
+			if (items[index].equals(item)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	@Override
 	public List<T> reverse() {
-		final var reversedItems = store.reverse();
-		return new List<>(reversedItems);
+		@SuppressWarnings("unchecked")
+		final var reversed = (T[]) new Object[store2.length];
+		var index = store2.length - 1;
+
+		for (var item : this) {
+			reversed[index] = item;
+			--index;
+		}
+
+		return new List<>(reversed);
 	}
 
-	/**
-	 * Returns items of this list, ordered according to the specified {@link Comparator}.
-	 *
-	 * @param comparator
-	 * @return
-	 */
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
-		final var sortedItems = store.sort(comparator);
-		return new List<>(sortedItems);
+		@SuppressWarnings("unchecked")
+		final var sorted = (T[]) Arrays.copyOf(store2, store2.length);
+		Arrays.sort(sorted, 0, sorted.length, comparator);
+
+		return new List<>(sorted);
 	}
 
-	/**
-	 * Returns items of this list in random order.
-	 *
-	 * @return
-	 */
+	// Implements in-place version of Fisher-Yates shuffle algorithm.
+	//
+	// Sources:
+	//	1. R. Durstenfeld. "Algorithm 235: Random permutation".
+	//		Communications of the ACM, vol. 7, July 1964, p. 420.
+	//	2. D. Knuth. "The Art of Computer Programming" vol. 2.
+	//		Addison–Wesley, 1969, pp. 139–140, algorithm P.
 	@Override
 	public List<T> shuffle() {
-		final var random = new Random();
-		final var shuffledItems = store.shuffle(random);
+		@SuppressWarnings("unchecked")
+		final var shuffled = (T[]) Arrays.copyOf(store2, store2.length);
 
-		return new List<>(shuffledItems);
+		final var time = System.currentTimeMillis();
+		final var random = new Random(time);
+
+		// it's more convenient to iterate items backwards for simpler random index
+		// generation
+		for (var index = store2.length - 1; index >= 0; --index) {
+			final var randomIndex = random.nextInt(index + 1);
+
+			// swap items at iterated and randomly generated indices
+			final var item = shuffled[index];
+			shuffled[index] = shuffled[randomIndex];
+			shuffled[randomIndex] = item;
+		}
+
+		return new List<>(shuffled);
 	}
 
-	/**
-	 * Applies the specified {@link Consumer} to every item of this list.
-	 *
-	 * The specified {@link Consumer} is applied consecutively to every item from first to
-	 * last. Returns itself.
-	 *
-	 * @param operation
-	 * @return
-	 */
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
 		return (List<T>) IndexedCollection.super.iterate(operation);
 	}
 
-	/**
-	 * Applies the specified {@link Consumer} to every item and its index in this list.
-	 *
-	 * The specified {@link Consumer} is applied consecutively to every item from first to
-	 * last and to every index from starting to ending. Returns itself.
-	 *
-	 * @param operation
-	 * @return
-	 */
 	@Override
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
 		return (List<T>) IndexedCollection.super.enumerate(operation);
 	}
 
-	/**
-	 * Returns items of this list, which match the specified {@link Predicate}.
-	 *
-	 * This operation preserves relative item order - the filtered items will appear in
-	 * the same relative order in the returned list as they appear in this list
-	 * (accounting for items removed by filtering).
-	 *
-	 * @param condition
-	 * @return
-	 */
 	@Override
 	public List<T> filter(Predicate<T> condition) {
-		final var filteredItems = new ContigousArrayStore<T>(store.itemCount);
+		@SuppressWarnings("unchecked")
+		final var filtered = (T[]) new Object[store2.length];
+		var index = 0;
+
 		for (var item : this) {
 			if (condition.test(item)) {
-				filteredItems.append(item);
+				filtered[index] = item;
+				++index;
 			}
 		}
 
-		filteredItems.removeExcessCapacity();
-		return new List<>(filteredItems);
+		return new List<>(filtered);
 	}
 
-	/**
-	 * Returns items of this list, converted using the specified {@link Function}.
-	 *
-	 * This operation preserves relative item order - the converted items will appear in
-	 * the same relative order in the returned list as their originals in this list.
-	 *
-	 * Any {@code null} value returned by the specified {@link Function} will be ignored.
-	 * This can be used to perform both item filtering and conversion in a single
-	 * operation.
-	 *
-	 * @param <R>
-	 * @param converter
-	 * @return
-	 */
 	@Override
 	public <R> List<R> convert(Function<T, R> converter) {
-		final var convertedItems = new ContigousArrayStore<R>(store.itemCount);
+		@SuppressWarnings("unchecked")
+		final var converted = (R[]) new Object[store2.length];
+		var index = 0;
+
 		for (var item : this) {
-			final var convertedItem = converter.apply(item);
-			convertedItems.append(convertedItem);
+			final var item2 = converter.apply(item);
+			if (item2 != null) {
+				converted[index] = item2;
+				++index;
+			}
 		}
 
-		convertedItems.removeExcessCapacity();
-		return new List<>(convertedItems);
+		return new List<>(converted);
 	}
 
 	/**
-	 * Converts this list into an instance of {@link java.util.List}.
-	 *
-	 * @return
+	 * Returns items of this list as a {@link java.util.List}.
 	 */
 	public java.util.List<T> bridge() {
-		final var items = Arrays.copyOf(store.storage, store.itemCount);
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) Arrays.copyOf(store2, store2.length);
 		return Arrays.asList(items);
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return store.iterator();
+		return new Iterator<>() {
+			private int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < store2.length;
+			}
+
+			@Override
+			public T next() {
+				@SuppressWarnings("unchecked")
+				final var item = (T) store2[index];
+				++index;
+
+				return item;
+			}
+		};
 	}
 
 	@Override
-	public Iterator<T> iterator(int startIndex) {
-		return store.iterator(startIndex);
+	public Iterator<T> reverseIterator() {
+		return new Iterator<>() {
+			private int index = store2.length - 1;
+
+			@Override
+			public boolean hasNext() {
+				return index > -1;
+			}
+
+			@Override
+			public T next() {
+				@SuppressWarnings("unchecked")
+				final var item = (T) store2[index];
+				--index;
+
+				return item;
+			}
+		};
 	}
 
 	@Override
 	public int hashCode() {
-		return store.hashCode();
+		return Arrays.hashCode(store2);
 	}
 
 	@Override
@@ -320,8 +293,9 @@ public class List<T> implements IndexedCollection<T> {
 			return false;
 		}
 
-		final var items = (List) object;
-		return store.equals(items.store);
+		@SuppressWarnings("unchecked")
+		final var items = (List<T>) object;
+		return Arrays.equals(store2, items.store2);
 	}
 
 	@Override
@@ -329,3 +303,5 @@ public class List<T> implements IndexedCollection<T> {
 		return "[" + join(", ") + "]";
 	}
 }
+
+// created on May 26, 2019

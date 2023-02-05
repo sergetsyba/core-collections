@@ -1,120 +1,630 @@
 package co.tsyba.core.collections;
 
-import co.tsyba.core.collections.data.ListCollection;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Jul 15, 2019.
- */
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 public class IndexedCollectionTests {
-	@Test
-	public void returnsFirstItem() {
-		final var items = collect("U", "n", "B", "C", "V");
-		final var firstItem = items.getFirst()
-				.get();
+	@Nested
+	@DisplayName(".getIndexRange()")
+	class GetIndexRangeTests {
+		@Test
+		@DisplayName("when collection is not empty, returns index range")
+		void returnsIndexRangeWhenNotEmpty() {
+			final var items = new TestCollection<>(6, 3, 2, 1, 3, 0);
+			final var range = items.getIndexRange();
 
-		assert firstItem.equals("U");
+			assert new IndexRange(0, 6)
+				.equals(range);
+		}
+
+		@Test
+		@DisplayName("when collection is empty, returns empty index range")
+		void returnsEmptyIndexRangeWhenEmpty() {
+			final var items = new TestCollection<>();
+			final var range = items.getIndexRange();
+
+			assert new IndexRange()
+				.equals(range);
+		}
 	}
 
-	@Test
-	public void returnsLastItem() {
-		final var items = collect("U", "n", "B", "C", "V");
-		final var lastItem = items.getLast()
-				.get();
+	@Nested
+	@DisplayName(".guard(int)")
+	class GuardTests {
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			// index range: [0, 3]
+			private final IndexedCollection<String> items = new TestCollection<>(
+				"e", "4", "6", "7");
 
-		assert lastItem.equals("V");
+			@Test
+			@DisplayName("when is within valid range, return index")
+			void returnsIndexWhenWithinValidRange() {
+				final var index = items.guard(2);
+
+				assert Optional.of(2)
+					.equals(index);
+			}
+
+			@Test
+			@DisplayName("when index is out of valid range, returns empty optional")
+			void returnsEmptyOptionalWhenIndexIsOutOfValidRange() {
+				final var index = items.guard(7);
+				assert index.isEmpty();
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>();
+
+			@Test
+			@DisplayName("returns empty when list is empty")
+			void returnsEmptyWhenListIsEmpty() {
+				final var index = items.guard(2);
+				assert index.isEmpty();
+			}
+		}
 	}
 
-	@Test
-	public void containsItems() {
-		final var items = collect("t", "x", "O", "p", "s");
+	@Nested
+	@DisplayName(".get(int)")
+	class GetTests {
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			private final IndexedCollection<Integer> items = new TestCollection<>(4, 5, 2, 1, 0, 5, 7);
+			private final IndexRange validRange = new IndexRange(0, 7);
 
-		// contains items
-		final var items1 = collect("O", "p", "s");
-		assert items.contains(items1);
+			@Test
+			@DisplayName("when index is within valid range, returns item")
+			void returnsItemWhenIndexWithinValidRange() {
+				final var item = items.get(4);
+				assert 0 == item;
+			}
 
-		// does not contain items
-		final var items2 = collect("O", "p", "S");
-		assert items.contains(items2) == false;
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				try {
+					items.get(-4);
+				} catch (IndexNotInRangeException exception) {
+					assert -4 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
 
-		// contains itslef
-		assert items.contains(items);
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				try {
+					items.get(9);
+				} catch (IndexNotInRangeException exception) {
+					assert 9 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+		}
 
-		// contains empty items
-		final var items4 = IndexedCollectionTests.<String>collect();
-		assert items.contains(items4);
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<Integer> items = new TestCollection<>();
+			private final IndexRange validRange = new IndexRange();
+
+			@Test
+			@DisplayName("fails")
+			void failsWhenEmpty() {
+				try {
+					items.get(0);
+				} catch (IndexNotInRangeException exception) {
+					assert 0 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+		}
 	}
 
-	@Test
-	public void findsItem() {
-		final var items = collect("j", "q", "z", "k", "e");
+	@Nested
+	@DisplayName(".getFirst()")
+	class GetFirstTests {
+		@Test
+		@DisplayName("when collection is not empty, returns first item")
+		void returnsFirstItemWhenNotEmpty() {
+			final var items = new TestCollection<>("B", "V", "4");
+			final var first = items.getFirst();
 
-		// item is present
-		final var index1 = items.find("k");
-		assert index1.get() == 3;
+			assert Optional.of("B")
+				.equals(first);
+		}
 
-		// item is absent
-		final var index2 = items.find("K");
-		assert index2.isEmpty();
+		@Test
+		@DisplayName("when collection is empty, returns empty optional")
+		void returnsEmptyOptionalWhenEmpty() {
+			final var items = new TestCollection<String>();
+			final var first = items.getFirst();
+
+			assert Optional.empty()
+				.equals(first);
+		}
 	}
 
-	@Test
-	public void findsItems() {
-		final var items = collect("u", "a", "g", "Z", "R");
+	@Nested
+	@DisplayName(".getLast()")
+	class GetLastTests {
+		@Test
+		@DisplayName("when collection is not empty, returns last item")
+		void returnsLastItemWhenNotEmpty() {
+			final var items = new TestCollection<>("B", "V", "4");
+			final var last = items.getLast();
 
-		// items are present
-		final var items1 = collect("a", "g", "Z", "R");
-		final var index1 = items.find(items1);
-		assert index1.get() == 1;
+			assert Optional.of("4")
+				.equals(last);
+		}
 
-		// items are absent
-		final var items2 = collect("a", "g", "Z", "r");
-		final var index2 = items.find(items2);
-		assert index2.isEmpty();
+		@Test
+		@DisplayName("when collection is empty, returns empty optional")
+		void returnsEmptyOptionalWhenEmpty() {
+			final var items = new TestCollection<String>();
+			final var last = items.getFirst();
 
-		// finds itself
-		final var index3 = items.find(items);
-		assert index3.get() == 0;
-
-		// finds empty items
-		final var emptyItems = IndexedCollectionTests.<String>collect();
-		final var index4 = items.find(emptyItems);
-		assert index4.get() == 0;
+			assert Optional.empty()
+				.equals(last);
+		}
 	}
 
-	@Test
-	public void matchesItem() {
-		final var items = collect("f", "b", "e", "E", "e");
+	@Nested
+	@DisplayName(".getPrefix(int)")
+	class GetPrefixTests {
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>("B", "d", "R", "f", "a", "Q");
+			private final IndexRange validRange = new IndexRange(0, 6);
 
-		// matches E
-		final var index1 = items.match(item -> item.toUpperCase().equals(item));
-		assert index1.get() == 3;
+			@Test
+			@DisplayName("when index is in valid range, returns prefix")
+			void returnsPrefixWhenIndexInRange() {
+				final var prefix = (TestCollection<String>) items.getPrefix(4);
+				assert Arrays.equals(prefix.items,
+					new String[]{
+						"B", "d", "R", "f"
+					});
+			}
 
-		// does not match Z
-		final var index2 = items.match(item -> item.equals("Z"));
-		assert index2.isEmpty();
+			@Test
+			@DisplayName("when index is 0, returns empty collection")
+			void returnsEmptyCollectionWhenIndexZero() {
+				final var prefix = (TestCollection<String>) items.getPrefix(0);
+				assert 0 == prefix.items.length;
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				try {
+					items.getPrefix(-1);
+				} catch (IndexNotInRangeException exception) {
+					assert -1 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				try {
+					items.getPrefix(9);
+				} catch (IndexNotInRangeException exception) {
+					assert 9 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>();
+			private final IndexRange validRange = new IndexRange();
+
+			@Test
+			@DisplayName("fails")
+			void failsWhenEmpty() {
+				try {
+					items.getPrefix(0);
+				} catch (IndexNotInRangeException exception) {
+					assert 0 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+		}
 	}
 
-	@Test
-	public void enumeratesItems() {
-		final var items = collect("t", "Q", "x", "z", "U");
-		final var enumeratedItems = new ArrayList<String>();
-		final var enumeratedIndexes = new ArrayList<Integer>();
+	@Nested
+	@DisplayName(".getSuffix(int)")
+	class GetSuffixTests {
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>("B", "d", "R", "f", "a", "Q");
+			private final IndexRange validRange = new IndexRange(0, 6);
 
-		items.enumerate((item, index) -> {
-			enumeratedItems.add(item);
-			enumeratedIndexes.add(index);
-		});
+			@Test
+			@DisplayName("when index is in valid range, returns suffix")
+			void returnsPrefixWhenIndexInRange() {
+				final var suffix = (TestCollection<String>) items.getSuffix(3);
+				assert Arrays.equals(suffix.items,
+					new String[]{
+						"f", "a", "Q"
+					});
+			}
 
-		assert enumeratedItems.equals(
-				List.of("t", "Q", "x", "z", "U"));
-		assert enumeratedIndexes.equals(
-				List.of(0, 1, 2, 3, 4));
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				try {
+					items.getSuffix(-1);
+				} catch (IndexNotInRangeException exception) {
+					assert -1 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				try {
+					items.getSuffix(6);
+				} catch (IndexNotInRangeException exception) {
+					assert 6 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>();
+			private final IndexRange validRange = new IndexRange();
+
+			@Test
+			@DisplayName("fails")
+			void failsWhenEmpty() {
+				try {
+					items.getSuffix(0);
+				} catch (IndexNotInRangeException exception) {
+					assert 0 == exception.index;
+					assert validRange.equals(exception.validRange);
+					return;
+				}
+				assert false;
+			}
+		}
 	}
 
-	private static <T> IndexedCollection<T> collect(T... items) {
-		return new ListCollection<>(items);
+	@Nested
+	@DisplayName(".contains(IndexedCollection<T>)")
+	class ContainsCollectionTests {
+		private final IndexedCollection<String> items = new TestCollection<>(
+			"f", "G", "D", "3", "a");
+
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			@Test
+			@DisplayName("when all items are present in same order, returns true")
+			void returnsTrueWhenAllPresentInSameOrder() {
+				final var items2 = new TestCollection<>("D", "3");
+				assert items.contains(items2);
+			}
+
+			@Test
+			@DisplayName("when all items are present in different order, returns false")
+			void returnsFalseWhenAllPresentInDifferentOrder() {
+				final var items2 = new TestCollection<>("f", "D");
+				assert !items.contains(items2);
+			}
+
+			@Test
+			@DisplayName("when some items are absent, returns false")
+			void returnsFalseWhenSomeAbsent() {
+				final var items2 = new TestCollection<>("D", "5");
+				assert !items.contains(items2);
+			}
+
+			@Test
+			@DisplayName("when all items are absent, returns false")
+			void returnsFalseWhenAllAbsent() {
+				final var items2 = new TestCollection<>("H", "7", "e", "Q");
+				assert !items.contains(items2);
+			}
+
+			@Test
+			@DisplayName("when items are empty, returns true")
+			void returnsTrueWhenItemsEmpty() {
+				final var items2 = new TestCollection<String>();
+				assert items.contains(items2);
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<String> items = new TestCollection<>();
+
+			@Test
+			@DisplayName("when items are not empty, returns false")
+			void returnsFalseWhenEmpty() {
+				final var items2 = new TestCollection<>("G", "p", "Q");
+				assert !items.contains(items2);
+			}
+
+			@Test
+			@DisplayName("when items are empty, returns true")
+			void returnsTrueWhenEmptyAndItemsEmpty() {
+				final var items2 = new TestCollection<String>();
+				assert items.contains(items2);
+			}
+		}
+	}
+
+
+	@Nested
+	@DisplayName(".find(T)")
+	class FindTests {
+		private final IndexedCollection<Integer> items = new TestCollection<>(
+			9, 3, 7, 8, 5, 2);
+
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			@Test
+			@DisplayName("when item is present, returns item index")
+			void returnsIndexWhenPresent() {
+				final var index = items.find(8);
+				assert Optional.of(3)
+					.equals(index);
+			}
+
+			@Test
+			@DisplayName("when item is absent, returns empty optional")
+			void returnsEmptyOptionalWhenAbsent() {
+				final var index = items.find(0);
+				assert index.isEmpty();
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<Integer> items = new TestCollection<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptionalWhenEmpty() {
+				final var index = items.find(6);
+				assert index.isEmpty();
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".match(Predicate<T>)")
+	class MatchTests {
+		private final IndexedCollection<Integer> items = new TestCollection<>(
+			9, 3, 7, 8, 5, 2);
+
+		@Nested
+		@DisplayName("when collection is not empty")
+		class NotEmptyCollectionTests {
+			@Test
+			@DisplayName("when item matches, returns matched item")
+			void returnsItemWhenAnyMatches() {
+				final var match = items.match((item) ->
+					item % 2 == 0);
+
+				assert Optional.of(8)
+					.equals(match);
+			}
+
+			@Test
+			@DisplayName("when no item matches, returns empty optional")
+			void returnsEmptyOptionalWhenNoneMatches() {
+				final var match = items.match((item) ->
+					item % 20 == 0);
+
+				assert match.isEmpty();
+			}
+		}
+
+		@Nested
+		@DisplayName("when collection is empty")
+		class EmptyCollectionTests {
+			private final IndexedCollection<Integer> items = new TestCollection<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptionalWhenEmpty() {
+				final var match = items.match((item) ->
+					item % 2 == 0);
+
+				assert match.isEmpty();
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".enumerate(BiConsumer<T, Integer>)")
+	class EnumerateTests {
+		@Test
+		@DisplayName("when collection is not empty, enumerates items and their indexes")
+		void enumeratesItemsAndIndexes() {
+			final var items = new TestCollection<>(6, 3, 2, 1, 8);
+			final var enumerated = new int[5];
+			items.enumerate((item, index) ->
+				enumerated[index] = item);
+
+			assert Arrays.equals(enumerated,
+				new int[]{
+					6, 3, 2, 1, 8
+				});
+		}
+
+		@Test
+		@DisplayName("when collection is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var items = new TestCollection<Integer>();
+			final var enumerated = new LinkedList<Integer>();
+			items.enumerate((item, index) ->
+				enumerated.add(item));
+
+			assert enumerated.isEmpty();
+		}
+	}
+
+	static class TestCollection<T> implements IndexedCollection<T> {
+		private final Object[] items;
+
+		@SafeVarargs
+		public TestCollection(T... items) {
+			this.items = items;
+		}
+
+		@Override
+		public Collection<T> getDistinct() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<T> sort(Comparator<T> comparator) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Collection<T> filter(Predicate<T> condition) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <R> Collection<R> convert(Function<T, R> converter) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public IndexRange getIndexRange() {
+			return new IndexRange(0, items.length);
+		}
+
+		@Override
+		public IndexedCollection<T> get(IndexRange indexRange) {
+			final var items2 = new Object[indexRange.length];
+			System.arraycopy(items, indexRange.start, items2, 0, indexRange.length);
+
+			@SuppressWarnings("unchecked")
+			final var sub = (IndexedCollection<T>) new TestCollection<>(items2);
+			return sub;
+		}
+
+		@Override
+		public Optional<Integer> find(IndexedCollection<T> items) {
+			if (items.isEmpty()) {
+				return Optional.of(0);
+			}
+
+			searchLoop:
+			for (var index1 = 0; index1 < this.items.length; ++index1) {
+				var index2 = index1;
+
+				for (var item2 : items) {
+					final var item1 = this.items[index2];
+					if (item1.equals(item2)) {
+						++index2;
+					} else {
+						continue searchLoop;
+					}
+				}
+
+				return Optional.of(index1);
+			}
+
+			return Optional.empty();
+		}
+
+		@Override
+		public IndexedCollection<T> reverse() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public IndexedCollection<T> shuffle() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Iterator<T> reverseIterator() {
+			return new Iterator<>() {
+				private int index = items.length - 1;
+
+				@Override
+				public boolean hasNext() {
+					return index >= 0;
+				}
+
+				@Override
+				public T next() {
+					@SuppressWarnings("unchecked")
+					final var item = (T) items[index];
+					--index;
+					return item;
+				}
+			};
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return new Iterator<>() {
+				private int index = 0;
+
+				@Override
+				public boolean hasNext() {
+					return index < items.length;
+				}
+
+				@Override
+				public T next() {
+					@SuppressWarnings("unchecked")
+					final var item = (T) items[index];
+					++index;
+					return item;
+				}
+			};
+		}
 	}
 }
+
+// created on Jul 15, 2019

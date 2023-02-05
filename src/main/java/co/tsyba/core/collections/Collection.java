@@ -7,118 +7,45 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/*
- * Created by Serge Tsyba (tsyba@me.com) on May 12, 2019.
+/**
+ * A container, which allows iteration over its items.
+ * <p>
+ * Unlike more general {@link Iterable}, {@link Collection} guarantees iteration will not
+ * destructively consume it. Therefore, it can be iterated any number of times. This
+ * requirement enables useful operations, which can be based solely on iterability.
+ * <p>
+ * Note, that {@link Collection} does not guarantee that relative item order stays the
+ * same in each iteration.
  */
 public interface Collection<T> extends Iterable<T> {
 	/**
-	 * Returns {@code true} when this collection has no items; returns
-	 * {@code false} otherwise.
-	 *
-	 * @return
+	 * Returns {@code true} when this collection is empty; returns {@code false}
+	 * otherwise.
 	 */
-	public default boolean isEmpty() {
-		return iterator()
-				.hasNext() == false;
+	default boolean isEmpty() {
+		final var itemCount = getCount();
+		return itemCount == 0;
 	}
 
 	/**
 	 * Returns the number of items in this collection.
-	 *
-	 * @return
 	 */
-	public default int getCount() {
-		var itemCount = 0;
-		for (var item : this) {
-			itemCount += 1;
+	default int getCount() {
+		var count = 0;
+		for (var ignored : this) {
+			count += 1;
 		}
 
-		return itemCount;
+		return count;
 	}
 
 	/**
-	 * Returns {@code true} when this collection contains the specified item;
-	 * returns {@code false} otherwise.
-	 *
-	 * @param item
-	 * @return
+	 * Returns the smallest item in this collection, according to the specified
+	 * {@link Comparator}.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
-	public default boolean contains(T item) {
-		return anyMatches(storedItem -> storedItem.equals(item));
-	}
-
-	/**
-	 * Returns {@code true} when this collection contains every item of the
-	 * specified collection; returns {@code false} otherwise.
-	 *
-	 * @param items
-	 * @return
-	 */
-	public default boolean contains(Collection<T> items) {
-		return items.eachMatches(this::contains);
-	}
-
-	/**
-	 * Returns {@code true} when every item in this collection does not satisfy
-	 * the specified {@link Predicate}; return {@code false} otherwise.
-	 *
-	 * @param condition
-	 * @return
-	 */
-	public default boolean noneMatches(Predicate<T> condition) {
-		for (var item : this) {
-			if (condition.test(item)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Returns {@code true} when at least one item in this collection satisfies
-	 * the specified {@link Predicate}; returns {@code false} otherwise.
-	 *
-	 * @param condition
-	 * @return
-	 */
-	public default boolean anyMatches(Predicate<T> condition) {
-		for (var item : this) {
-			if (condition.test(item)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns {@code true} when every item of this collection satisfies the
-	 * specified {@link Predicate}; returns {@code false} otherwise.
-	 *
-	 * @param condition
-	 * @return
-	 */
-	public default boolean eachMatches(Predicate<T> condition) {
-		for (var item : this) {
-			if (!condition.test(item)) {
-				return false;
-			}
-		}
-
-		// empty collection matches no item
-		return !isEmpty();
-	}
-
-	/**
-	 * Returns the smallest item of this collection, according to the specified
-	 * {@link Comparator}. Returns an empty {@link Optional} when this
-	 * collection is empty.
-	 *
-	 * @param comparator
-	 * @return
-	 */
-	public default Optional<T> getMinimum(Comparator<T> comparator) {
+	default Optional<T> getMinimum(Comparator<T> comparator) {
 		final var iterator = iterator();
 		if (!iterator.hasNext()) {
 			return Optional.empty();
@@ -136,14 +63,12 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the largest item of this collection, according to the specified
-	 * {@link Comparator}. Returns an empty {@link Optional} when this
-	 * collection is empty.
-	 *
-	 * @param comparator
-	 * @return
+	 * Returns the largest item in this collection, according to the specified
+	 * {@link Comparator}.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
-	public default Optional<T> getMaximum(Comparator<T> comparator) {
+	default Optional<T> getMaximum(Comparator<T> comparator) {
 		final var iterator = iterator();
 		if (!iterator.hasNext()) {
 			return Optional.empty();
@@ -161,30 +86,89 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns distinct items of this collection.
-	 *
-	 * @return
+	 * Returns {@code true} when this collection contains the specified item; returns
+	 * {@code false} otherwise.
 	 */
-	public Collection<T> getDistinct();
+	default boolean contains(T item) {
+		return match((storedItem) -> storedItem.equals(item))
+			.isPresent();
+	}
+
+	/**
+	 * Returns {@code true} when this collection contains every item of the specified
+	 * collection; returns {@code false} otherwise.
+	 */
+	default boolean contains(Collection<T> items) {
+		return items.eachMatches(this::contains);
+	}
+
+	/**
+	 * Returns any item in this collection, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When this collection is empty or no item in it satisfies the specified
+	 * {@link Predicate}, returns an empty {@link Optional}.
+	 */
+	default Optional<T> match(Predicate<T> condition) {
+		for (var item : this) {
+			if (condition.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns {@code true} when no item in this collection satisfies the specified
+	 * {@link Predicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this collection is empty, returns {@code true}.
+	 */
+	default boolean noneMatches(Predicate<T> condition) {
+		return match(condition)
+			.isEmpty();
+	}
+
+	/**
+	 * Returns {@code true} when at least one item in this collection satisfies the
+	 * specified {@link Predicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this collection is empty, returns {@code false}.
+	 */
+	default boolean anyMatches(Predicate<T> condition) {
+		return match(condition)
+			.isPresent();
+	}
+
+	/**
+	 * Returns {@code true} when each item of this collection satisfies the specified
+	 * {@link Predicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this collection is empty, returns {@code true}.
+	 */
+	default boolean eachMatches(Predicate<T> condition) {
+		return match((item) -> !condition.test(item))
+			.isEmpty();
+	}
+
+	/**
+	 * Returns distinct items in this collection.
+	 */
+	Collection<T> getDistinct();
 
 	/**
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
-	 *
-	 * @param comparator
-	 * @return
 	 */
-	public IndexedCollection<T> sort(Comparator<T> comparator);
+	List<T> sort(Comparator<T> comparator);
 
 	/**
 	 * Applies the specified {@link Consumer} to every item of this collection.
 	 *
-	 * Returns itself.
-	 *
-	 * @param operation
-	 * @return
+	 * @return itself
 	 */
-	public default Collection<T> iterate(Consumer<T> operation) {
+	default Collection<T> iterate(Consumer<T> operation) {
 		for (var item : this) {
 			operation.accept(item);
 		}
@@ -193,35 +177,25 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this collection which satisfy the specified
-	 * {@link Predicate}.
-	 *
-	 * @param condition
-	 * @return
+	 * Returns items of this collection, which satisfy the specified {@link Predicate}.
 	 */
-	public Collection<T> filter(Predicate<T> condition);
+	Collection<T> filter(Predicate<T> condition);
 
 	/**
-	 * Returns items of this collection, converted by the specified
-	 * {@link Function}.
-	 *
-	 * @param <R>
-	 * @param converter
-	 * @return
+	 * Returns items of this collection, converted by the specified {@link Function}.
+	 * <p>
+	 * When the specified {@link Function} returns {@code null}, the converted value will
+	 * be ignored. Therefore, this method can be used to perform both filter and convert
+	 * this collection in a single operation.
 	 */
-	public <R> Collection<R> convert(Function<T, R> converter);
+	<R> Collection<R> convert(Function<T, R> converter);
 
 	/**
 	 * Combines this collection into a single value by applying the specified
-	 * {@link BiFunction} to every item and an intermediate combination,
-	 * starting from the specified initial value.
-	 *
-	 * @param <R>
-	 * @param initial
-	 * @param combiner
-	 * @return
+	 * {@link BiFunction} to every item and an intermediate combination, using the
+	 * specified value as a starting point.
 	 */
-	public default <R> R combine(R initial, BiFunction<R, T, R> combiner) {
+	default <R> R combine(R initial, BiFunction<R, T, R> combiner) {
 		var combination = initial;
 		for (var item : this) {
 			combination = combiner.apply(combination, item);
@@ -231,13 +205,10 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Combines this collection into a {@link String} by joining its items with
-	 * the specified separator between them.
-	 *
-	 * @param separator
-	 * @return
+	 * Combines this collection into a {@link String} by joining its items with the
+	 * specified separator between them.
 	 */
-	public default String join(String separator) {
+	default String join(String separator) {
 		final var builder = new StringBuilder();
 		final var iterator = iterator();
 
@@ -249,9 +220,11 @@ public interface Collection<T> extends Iterable<T> {
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
 			builder.append(separator)
-					.append(item);
+				.append(item);
 		}
 
 		return builder.toString();
 	}
 }
+
+// created on May 12, 2019

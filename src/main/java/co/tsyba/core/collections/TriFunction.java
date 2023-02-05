@@ -5,5 +5,13 @@ package co.tsyba.core.collections;
  */
 @FunctionalInterface
 public interface TriFunction<T, U, V, R> {
-	public R apply(T t, U u, V v);
+    /**
+     * Applies this function to the specified arguments.
+     *
+     * @param t
+     * @param u
+     * @param v
+     * @return
+     */
+    R apply(T t, U u, V v);
 }
