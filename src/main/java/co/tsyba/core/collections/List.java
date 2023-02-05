@@ -6,6 +6,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * An immutable, sequential {@link Collection}, which provides efficient, randomized
+ * access to its items.
+ */
 public class List<T> implements IndexedCollection<T> {
 	// todo: remove
 	ContiguousArrayStore<T> store = null;
