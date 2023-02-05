@@ -13,6 +13,7 @@ public class CollectionTests {
 	public void verifiesNotEmpty() {
 		final var items = collect("g", "r", "b", "q", "E");
 		assert items.isEmpty() == false;
+		assert false;
 	}
 
 	@Test
