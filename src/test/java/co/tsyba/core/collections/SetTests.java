@@ -24,4 +24,30 @@ public class SetTests {
 			assert 0 == count;
 		}
 	}
+
+	@Nested
+	@DisplayName(".filter(Predicate<T>)")
+	class FilterTests {
+		@Test
+		@DisplayName("when set is not empty, returns filtered items")
+		void returnsFilteredItemsWhenNotEmpty() {
+			final var items = new Set<>(2, 4, 3, 2, 1, 9);
+			final var odds = items.filter((item) ->
+				item % 2 == 1);
+
+			assert new Set<>(3, 1, 9)
+				.equals(odds);
+		}
+
+		@Test
+		@DisplayName("when list is empty, returns empty list")
+		void returnsEmptyListWhenEmpty() {
+			final var items = new Set<Integer>();
+			final var evens = items.filter((item) ->
+				item % 2 == 0);
+
+			assert new Set<Integer>()
+				.equals(evens);
+		}
+	}
 }
