@@ -37,8 +37,8 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 	@Override
 	public Set<T> filter(Predicate<T> condition) {
-		final var count = getCount();
-		final var filtered = new Set<T>(count);
+		final var itemCount = getCount();
+		final var filtered = new Set<T>(itemCount);
 
 		for (var item : this) {
 			if (condition.test(item)) {
@@ -46,14 +46,14 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 			}
 		}
 
-		// todo: remove excess capacity
+		removeExcessCapacity();
 		return filtered;
 	}
 
 	@Override
 	public <R> Set<R> convert(Function<T, R> converter) {
-		final var count = getCount();
-		final var converted = new Set<R>(count);
+		final var itemCount = getCount();
+		final var converted = new Set<R>(itemCount);
 
 		for (var item : this) {
 			final var item2 = converter.apply(item);
@@ -62,7 +62,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 			}
 		}
 
-		// todo: remove excess capacity
+		removeExcessCapacity();
 		return converted;
 	}
 }

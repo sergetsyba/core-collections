@@ -229,6 +229,10 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		return true;
 	}
 
+	void removeExcessCapacity() {
+		// todo:
+	}
+
 	boolean storageIs(E... items) {
 		return storageMatches((item1, item2) -> item1 == item2, items);
 	}
