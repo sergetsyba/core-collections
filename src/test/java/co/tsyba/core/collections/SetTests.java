@@ -4,9 +4,37 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class SetTests {
+	@Nested
+	@DisplayName("Set(T...)")
+	class NewWithVarargsTests {
+		@Test
+		@DisplayName("creates set")
+		void createsSet() {
+			final var items = new Set<>(2, 7, 5, 4, 9);
+
+			final var store = items.getStorage();
+			Arrays.sort(store);
+
+			assert Arrays.equals(store,
+				new Integer[]{
+					2, 4, 5, 7, 9
+				});
+		}
+
+		@Test
+		@DisplayName("creates empty set")
+		void createsEmptySet() {
+			final var items = new Set<Integer>();
+
+			final var store = items.getStorage();
+			assert 0 == store.length;
+		}
+	}
+
 	@Nested
 	@DisplayName(".getCount()")
 	class GetCountTests {
