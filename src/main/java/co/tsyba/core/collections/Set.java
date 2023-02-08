@@ -76,4 +76,9 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 		removeExcessCapacity();
 		return converted;
 	}
+
+	@Override
+	public String toString() {
+		return "[" + join(", ") + "]";
+	}
 }

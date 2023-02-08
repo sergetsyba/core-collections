@@ -156,4 +156,28 @@ public class SetTests {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName(".toString()")
+	class ToStringTests {
+		@Test
+		@DisplayName("when set is not empty, converts to string")
+		void returnsStringWhenNotEmpty() {
+			final var items = new List<>("g", "H", "6", "c", "E");
+			final var string = items.toString();
+
+			assert "[g, H, 6, c, E]"
+				.equals(string);
+		}
+
+		@Test
+		@DisplayName("when set is empty, returns []")
+		void returnsStringWhenEmpty() {
+			final var items = new List<>();
+			final var string = items.toString();
+
+			assert "[]"
+				.equals(string);
+		}
+	}
 }
