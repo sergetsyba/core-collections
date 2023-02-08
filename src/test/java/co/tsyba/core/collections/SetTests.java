@@ -50,4 +50,51 @@ public class SetTests {
 				.equals(evens);
 		}
 	}
+
+	@Nested
+	@DisplayName(".convert(Function<T, R>)")
+	class ConvertTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			@Test
+			@DisplayName("converts items")
+			void returnsConvertedItems() {
+				final var items = new Set<>(3, 6, 1, 2);
+				final var converted = items.convert((item) ->
+					Integer.toString(item));
+
+				assert new Set<>("3", "6", "1", "2")
+					.equals(converted);
+			}
+
+			@Test
+			@DisplayName("ignores items converted to null")
+			void ignoresItemsConvertedToNull() {
+				final var items = new Set<>(4, 6, 2, 1, 7, 8, 5);
+				final var converted = items.convert((item) ->
+					item % 2 == 0
+						? Integer.toString(item)
+						: null);
+
+				assert new Set<>("4", "6", "2", "8")
+					.equals(converted);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("returns empty set")
+			void returnsEmptyList() {
+				final var items = new Set<Integer>();
+				final var converted = items.convert((item) ->
+					item * 2);
+
+				assert new Set<Integer>()
+					.equals(converted);
+			}
+		}
+	}
 }
