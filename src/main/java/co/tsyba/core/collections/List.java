@@ -16,11 +16,11 @@ public class List<T> implements IndexedCollection<T> {
 	Object[] store2;
 
 	/**
-	 * Creates a copy of the specified items.
+	 * Creates a copy of the specified {@link Collection}.
 	 */
-	public List(List<T> items) {
-		this.store = items.store;
-		this.store2 = Arrays.copyOf(items.store2, items.store2.length);
+	public List(Collection<T> items) {
+		this.store = null;
+		this.store2 = items.toArray();
 	}
 
 	/**

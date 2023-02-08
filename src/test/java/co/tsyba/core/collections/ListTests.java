@@ -13,17 +13,18 @@ import java.util.LinkedList;
  */
 public class ListTests {
 	@Nested
-	@DisplayName("List(List<T>)")
-	class NewWithListTests {
+	@DisplayName("List(Collection<T>)")
+	class NewWithCollectionTests {
 		@Test
 		@DisplayName("creates list")
 		void createsList() {
 			final var items = new List<>(
-				new List<>("v", "4", "G", "5"));
+				new Set<>("v", "4", "G", "5"));
 
+			Arrays.sort(items.store2);
 			assert Arrays.equals(items.store2,
 				new String[]{
-					"v", "4", "G", "5"
+					"4", "5", "G", "v"
 				});
 		}
 
@@ -31,7 +32,7 @@ public class ListTests {
 		@DisplayName("creates empty list")
 		void createsEmptyList() {
 			final var items = new List<>(
-				new List<String>());
+				new Set<String>());
 
 			assert Arrays.equals(items.store2,
 				new String[]{});
