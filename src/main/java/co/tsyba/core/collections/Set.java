@@ -1,5 +1,6 @@
 package co.tsyba.core.collections;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -32,7 +33,17 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
-		return null;
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) new Object[entryCount];
+		var index = 0;
+
+		for (var item : this) {
+			items[index] = item;
+			++index;
+		}
+
+		Arrays.sort(items, comparator);
+		return new List<>(items);
 	}
 
 	@Override

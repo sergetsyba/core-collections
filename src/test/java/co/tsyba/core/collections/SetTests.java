@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Comparator;
+
 public class SetTests {
 	@Nested
 	@DisplayName(".getCount()")
@@ -55,6 +57,30 @@ public class SetTests {
 				final var items = new Set<Integer>();
 				assert !items.contains(0);
 			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".sort(Comparator<T>)")
+	class SortTests {
+		@Test
+		@DisplayName("when set is not empty, returns sorted items")
+		void returnsSortedItemsWhenNotEmpty() {
+			final var items = new Set<>("g", "G", "k", "q", "0", "P");
+			final var sorted = items.sort(Comparator.naturalOrder());
+
+			assert new List<>("0", "G", "P", "g", "k", "q")
+				.equals(sorted);
+		}
+
+		@Test
+		@DisplayName("when set is empty, returns empty list")
+		void returnsEmptyListWhenEmpty() {
+			final var items = new Set<String>();
+			final var sorted = items.sort(Comparator.naturalOrder());
+
+			assert new List<String>()
+				.equals(sorted);
 		}
 	}
 
