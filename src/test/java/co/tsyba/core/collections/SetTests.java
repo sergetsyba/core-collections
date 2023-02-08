@@ -16,7 +16,7 @@ public class SetTests {
 		void createsSet() {
 			final var items = new Set<>(2, 7, 5, 4, 9);
 
-			final var store = items.getStorage();
+			final var store = items.toArray();
 			Arrays.sort(store);
 
 			assert Arrays.equals(store,
@@ -30,7 +30,7 @@ public class SetTests {
 		void createsEmptySet() {
 			final var items = new Set<Integer>();
 
-			final var store = items.getStorage();
+			final var store = items.toArray();
 			assert 0 == store.length;
 		}
 	}
