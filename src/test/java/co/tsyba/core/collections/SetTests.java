@@ -9,6 +9,35 @@ import java.util.Comparator;
 
 public class SetTests {
 	@Nested
+	@DisplayName("Set(Collection<T>)")
+	class NewWithCollectionTests {
+		@Test
+		@DisplayName("creates set")
+		void createsSet() {
+			final var items = new Set<>(
+				new List<>("v", "4", "G", "v", "5"));
+
+			final var store = items.toArray();
+			Arrays.sort(store);
+
+			assert Arrays.equals(store,
+				new String[]{
+					"4", "5", "G", "v"
+				});
+		}
+
+		@Test
+		@DisplayName("creates empty set")
+		void createsEmptySet() {
+			final var items = new Set<>(
+				new List<String>());
+
+			final var store = items.toArray();
+			assert 0 == store.length;
+		}
+	}
+
+	@Nested
 	@DisplayName("Set(T...)")
 	class NewWithVarargsTests {
 		@Test
@@ -22,6 +51,20 @@ public class SetTests {
 			assert Arrays.equals(store,
 				new Integer[]{
 					2, 4, 5, 7, 9
+				});
+		}
+
+		@Test
+		@DisplayName("ignores null values")
+		void ignoresNulls() {
+			final var items = new Set<>("h", "5", null, "R", null, null);
+
+			final var store = items.toArray();
+			Arrays.sort(store);
+
+			assert Arrays.equals(store,
+				new Object[]{
+					"5", "R", "h"
 				});
 		}
 

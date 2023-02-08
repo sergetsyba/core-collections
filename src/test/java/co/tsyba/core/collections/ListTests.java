@@ -13,7 +13,7 @@ import java.util.LinkedList;
  */
 public class ListTests {
 	@Nested
-	@DisplayName("List(List)")
+	@DisplayName("List(List<T>)")
 	class NewWithListTests {
 		@Test
 		@DisplayName("creates list")

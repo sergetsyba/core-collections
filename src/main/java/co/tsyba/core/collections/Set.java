@@ -6,6 +6,21 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
+	/**
+	 * Creates a copy of the specified {@link Collection}.
+	 */
+	public Set(Collection<T> items) {
+		super(items.getCount());
+		for (var item : items) {
+			insert(item);
+		}
+	}
+
+	/**
+	 * Create a set with the specified items.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
+	 */
 	@SafeVarargs
 	public Set(T... items) {
 		super(items.length);
@@ -15,8 +30,6 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 			}
 		}
 	}
-
-
 
 	private Set(int capacity) {
 		super(capacity);
