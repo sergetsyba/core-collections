@@ -26,6 +26,39 @@ public class SetTests {
 	}
 
 	@Nested
+	@DisplayName(".contains(T)")
+	class ContainsTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			@Test
+			@DisplayName("when item is present, returns true")
+			void returnsTrueWhenPresent() {
+				final var items = new Set<>(6, 4, 2, 0, 9, 7);
+				assert items.contains(0);
+			}
+
+			@Test
+			@DisplayName("when item is absent, returns false")
+			void returnsFalseWhenAbsent() {
+				final var items = new Set<>(6, 4, 2, 0, 9, 7);
+				assert !items.contains(5);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptySetTests {
+			@Test
+			@DisplayName("returns false")
+			void returnsFalseWhenEmpty() {
+				final var items = new Set<Integer>();
+				assert !items.contains(0);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".filter(Predicate<T>)")
 	class FilterTests {
 		@Test

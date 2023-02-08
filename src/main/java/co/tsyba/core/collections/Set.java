@@ -25,6 +25,12 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	@Override
+	public boolean contains(T item) {
+		final var index = find(item);
+		return index > -1;
+	}
+
+	@Override
 	public List<T> sort(Comparator<T> comparator) {
 		return null;
 	}
