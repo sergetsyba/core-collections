@@ -234,18 +234,6 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		return storageMatches((item1, item2) -> item1.equals(item2), items);
 	}
 
-	Object[] toArray() {
-		final var items = new Object[entryCount];
-		var index = 0;
-
-		for (var item : this) {
-			items[index] = item;
-			++index;
-		}
-
-		return items;
-	}
-
 	@Override
 	public Iterator<E> iterator() {
 		return new Iterator<E>() {
