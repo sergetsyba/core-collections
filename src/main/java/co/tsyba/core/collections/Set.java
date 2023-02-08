@@ -17,13 +17,27 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	/**
-	 * Create a set with the specified items.
+	 * Creates a set with the specified items.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
 	 */
 	@SafeVarargs
 	public Set(T... items) {
 		super(items.length);
+		for (var item : items) {
+			if (item != null) {
+				insert(item);
+			}
+		}
+	}
+
+	/**
+	 * Creates a set with the specified items.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
+	 */
+	public Set(Iterable<T> items) {
+		super(64);
 		for (var item : items) {
 			if (item != null) {
 				insert(item);

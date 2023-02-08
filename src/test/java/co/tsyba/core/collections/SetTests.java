@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
 
 public class SetTests {
 	@Nested
@@ -72,6 +73,50 @@ public class SetTests {
 		@DisplayName("creates empty set")
 		void createsEmptySet() {
 			final var items = new Set<Integer>();
+
+			final var store = items.toArray();
+			assert 0 == store.length;
+		}
+	}
+
+	@Nested
+	@DisplayName("Set(Iterable<T>)")
+	class NewWithIterableTests {
+		@Test
+		@DisplayName("creates set")
+		void createsSet() {
+			final var items = new Set<>(
+				Arrays.asList("b", "Y", "u", "3"));
+
+			final var store = items.toArray();
+			Arrays.sort(store);
+
+			assert Arrays.equals(store,
+				new String[]{
+					"3", "Y", "b", "u"
+				});
+		}
+
+		@Test
+		@DisplayName("ignores null values")
+		void ignoresNulls() {
+			final var items = new Set<>(
+				Arrays.asList(null, "y", "5", null, "4", "5"));
+
+			final var store = items.toArray();
+			Arrays.sort(store);
+
+			assert Arrays.equals(store,
+				new Object[]{
+					"4", "5", "y"
+				});
+		}
+
+		@Test
+		@DisplayName("creates empty set")
+		void createsEmptySet() {
+			final var items = new Set<Integer>(
+				new LinkedList<>());
 
 			final var store = items.toArray();
 			assert 0 == store.length;
