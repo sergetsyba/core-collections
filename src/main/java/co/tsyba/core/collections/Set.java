@@ -25,11 +25,6 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	@Override
-	public Collection<T> getDistinct() {
-		return this;
-	}
-
-	@Override
 	public List<T> sort(Comparator<T> comparator) {
 		return null;
 	}

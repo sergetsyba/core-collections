@@ -107,7 +107,19 @@ public class List<T> implements IndexedCollection<T> {
 		return Optional.empty();
 	}
 
-	@Override
+	private static <T> boolean contains(T[] items, int count, T item) {
+		for (var index = 0; index < count; ++index) {
+			if (items[index].equals(item)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns distinct items in this list.
+	 */
 	public List<T> getDistinct() {
 		@SuppressWarnings("unchecked")
 		final var distinct = (T[]) new Object[store2.length];
@@ -121,16 +133,6 @@ public class List<T> implements IndexedCollection<T> {
 		}
 
 		return new List<>(distinct);
-	}
-
-	private static <T> boolean contains(T[] items, int count, T item) {
-		for (var index = 0; index < count; ++index) {
-			if (items[index].equals(item)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override

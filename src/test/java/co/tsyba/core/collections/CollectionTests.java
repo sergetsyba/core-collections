@@ -406,11 +406,6 @@ public class CollectionTests {
 		}
 
 		@Override
-		public Collection<T> getDistinct() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
 		public List<T> sort(Comparator<T> comparator) {
 			throw new UnsupportedOperationException();
 		}

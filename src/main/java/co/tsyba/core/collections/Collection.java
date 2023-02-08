@@ -153,11 +153,6 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns distinct items in this collection.
-	 */
-	Collection<T> getDistinct();
-
-	/**
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
 	 */
