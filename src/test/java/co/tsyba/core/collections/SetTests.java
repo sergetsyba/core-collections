@@ -178,8 +178,8 @@ public class SetTests {
 	}
 
 	@Nested
-	@DisplayName(".union(Set<T>)")
-	class UnionTests {
+	@DisplayName(".unite(Set<T>)")
+	class UniteTests {
 		@Nested
 		@DisplayName("when set is not empty")
 		class NotEmptySetTests {
@@ -189,7 +189,7 @@ public class SetTests {
 			@DisplayName("when other set is not empty, returns union")
 			void returnsUnionWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
-				final var union = set1.union(set2);
+				final var union = set1.unite(set2);
 
 				assert new Set<>(0, 2, 3, 5, 4, 7, 8)
 					.equals(union);
@@ -199,7 +199,7 @@ public class SetTests {
 			@DisplayName("when other set is empty, returns items from set")
 			void returnsUnionWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
-				final var union = set1.union(set2);
+				final var union = set1.unite(set2);
 
 				assert new Set<>(5, 4, 7, 8, 0)
 					.equals(union);
@@ -215,7 +215,7 @@ public class SetTests {
 			@DisplayName("when other set is not empty, returns items from other set")
 			void returnsUnionWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
-				final var union = set1.union(set2);
+				final var union = set1.unite(set2);
 
 				assert new Set<>(5, 0, 2, 3)
 					.equals(union);
@@ -225,7 +225,7 @@ public class SetTests {
 			@DisplayName("when other set is empty, returns empty set")
 			void returnsUnionWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
-				final var union = set1.union(set2);
+				final var union = set1.unite(set2);
 
 				assert new Set<>()
 					.equals(union);

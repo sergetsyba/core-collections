@@ -66,7 +66,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Returns union (A∪B) of this set and the specified one.
 	 */
-	public Set<T> union(Set<T> set) {
+	public Set<T> unite(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
 		final var union = new Set<T>(capacity);
 
