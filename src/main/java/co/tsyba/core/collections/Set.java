@@ -64,14 +64,12 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns union of this set and the specified one.
+	 * Returns union (A∪B) of this set and the specified one.
 	 */
 	public Set<T> union(Set<T> set) {
-		final var itemCount1 = getCount();
-		final var itemCount2 = set.getCount();
-		final var capacity = itemCount1 + itemCount2;
-
+		final var capacity = getCount() + set.getCount();
 		final var union = new Set<T>(capacity);
+
 		for (var item : this) {
 			union.insert(item);
 		}
@@ -81,6 +79,23 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 		union.removeExcessCapacity();
 		return union;
+	}
+
+	/**
+	 * Returns intersection (A∩B) of this set and the specified one.
+	 */
+	public Set<T> intersect(Set<T> set) {
+		final var capacity = getCount() + set.getCount();
+		final var intersection = new Set<T>(capacity);
+
+		for (var item : this) {
+			if (set.contains(item)) {
+				intersection.insert(item);
+			}
+		}
+
+		intersection.removeExcessCapacity();
+		return intersection;
 	}
 
 	@Override

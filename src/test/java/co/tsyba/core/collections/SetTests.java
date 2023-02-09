@@ -149,17 +149,17 @@ public class SetTests {
 		@Nested
 		@DisplayName("when set is not empty")
 		class NotEmptySetTests {
+			private final Set<Integer> items = new Set<>(6, 4, 2, 0, 9, 7);
+
 			@Test
 			@DisplayName("when item is present, returns true")
 			void returnsTrueWhenItemPresent() {
-				final var items = new Set<>(6, 4, 2, 0, 9, 7);
 				assert items.contains(0);
 			}
 
 			@Test
 			@DisplayName("when item is absent, returns false")
 			void returnsFalseWhenItemAbsent() {
-				final var items = new Set<>(6, 4, 2, 0, 9, 7);
 				assert !items.contains(5);
 			}
 		}
@@ -167,10 +167,11 @@ public class SetTests {
 		@Nested
 		@DisplayName("when set is empty")
 		class EmptySetTests {
+			private final Set<Integer> items = new Set<>();
+
 			@Test
 			@DisplayName("returns false")
 			void returnsFalseWhenEmpty() {
-				final var items = new Set<Integer>();
 				assert !items.contains(0);
 			}
 		}
@@ -195,7 +196,7 @@ public class SetTests {
 			}
 
 			@Test
-			@DisplayName("when other set is empty, returns union")
+			@DisplayName("when other set is empty, returns items from set")
 			void returnsUnionWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var union = set1.union(set2);
@@ -211,7 +212,7 @@ public class SetTests {
 			private final Set<Integer> set1 = new Set<>();
 
 			@Test
-			@DisplayName("when other set is not empty, returns union")
+			@DisplayName("when other set is not empty, returns items from other set")
 			void returnsUnionWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
 				final var union = set1.union(set2);
@@ -221,13 +222,69 @@ public class SetTests {
 			}
 
 			@Test
-			@DisplayName("when other set is empty, returns union")
+			@DisplayName("when other set is empty, returns empty set")
 			void returnsUnionWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var union = set1.union(set2);
 
 				assert new Set<>()
 					.equals(union);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".intersect(Set<T>)")
+	class IntersectTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			private final Set<Integer> set1 = new Set<>(5, 4, 7, 8, 0);
+
+			@Test
+			@DisplayName("when other set is not empty, returns intersection")
+			void returnsUnionWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var intersection = set1.intersect(set2);
+
+				assert new Set<>(0, 5)
+					.equals(intersection);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns empty set")
+			void returnsUnionWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var intersection = set1.intersect(set2);
+
+				assert new Set<>()
+					.equals(intersection);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptySetTests {
+			private final Set<Integer> set1 = new Set<>();
+
+			@Test
+			@DisplayName("when other set is not empty, returns empty set")
+			void returnsUnionWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var intersection = set1.intersect(set2);
+
+				assert new Set<>()
+					.equals(intersection);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns empty set")
+			void returnsUnionWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var intersection = set1.intersect(set2);
+
+				assert new Set<>()
+					.equals(intersection);
 			}
 		}
 	}
