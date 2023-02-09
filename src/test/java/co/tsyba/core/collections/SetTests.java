@@ -290,6 +290,62 @@ public class SetTests {
 	}
 
 	@Nested
+	@DisplayName(".subtract(Set<T>)")
+	class SubtractTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			private final Set<Integer> set1 = new Set<>(5, 4, 7, 8, 0);
+
+			@Test
+			@DisplayName("when other set is not empty, returns difference")
+			void returnsUnionWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var difference = set1.subtract(set2);
+
+				assert new Set<>(4, 7, 8)
+					.equals(difference);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns set")
+			void returnsUnionWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var difference = set1.subtract(set2);
+
+				assert new Set<>(5, 4, 7, 8, 0)
+					.equals(difference);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptySetTests {
+			private final Set<Integer> set1 = new Set<>();
+
+			@Test
+			@DisplayName("when other set is not empty, returns empty set")
+			void returnsUnionWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var difference = set1.subtract(set2);
+
+				assert new Set<>()
+					.equals(difference);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns empty set")
+			void returnsUnionWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var difference = set1.subtract(set2);
+
+				assert new Set<>()
+					.equals(difference);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".sort(Comparator<T>)")
 	class SortTests {
 		@Test

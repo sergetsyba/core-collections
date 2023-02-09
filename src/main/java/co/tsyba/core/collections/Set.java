@@ -98,6 +98,23 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 		return intersection;
 	}
 
+	/**
+	 * Returns difference (A-B) of this set and the specified one.
+	 */
+	public Set<T> subtract(Set<T> set) {
+		final var capacity = getCount() + set.getCount();
+		final var difference = new Set<T>(capacity);
+
+		for (var item : this) {
+			if (!set.contains(item)) {
+				difference.insert(item);
+			}
+		}
+
+		difference.removeExcessCapacity();
+		return difference;
+	}
+
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
 		@SuppressWarnings("unchecked")
