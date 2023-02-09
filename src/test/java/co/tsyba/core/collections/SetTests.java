@@ -151,14 +151,14 @@ public class SetTests {
 		class NotEmptySetTests {
 			@Test
 			@DisplayName("when item is present, returns true")
-			void returnsTrueWhenPresent() {
+			void returnsTrueWhenItemPresent() {
 				final var items = new Set<>(6, 4, 2, 0, 9, 7);
 				assert items.contains(0);
 			}
 
 			@Test
 			@DisplayName("when item is absent, returns false")
-			void returnsFalseWhenAbsent() {
+			void returnsFalseWhenItemAbsent() {
 				final var items = new Set<>(6, 4, 2, 0, 9, 7);
 				assert !items.contains(5);
 			}
@@ -172,6 +172,62 @@ public class SetTests {
 			void returnsFalseWhenEmpty() {
 				final var items = new Set<Integer>();
 				assert !items.contains(0);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".union(Set<T>)")
+	class UnionTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			private final Set<Integer> set1 = new Set<>(5, 4, 7, 8, 0);
+
+			@Test
+			@DisplayName("when other set is not empty, returns union")
+			void returnsUnionWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var union = set1.union(set2);
+
+				assert new Set<>(0, 2, 3, 5, 4, 7, 8)
+					.equals(union);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns union")
+			void returnsUnionWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var union = set1.union(set2);
+
+				assert new Set<>(5, 4, 7, 8, 0)
+					.equals(union);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptySetTests {
+			private final Set<Integer> set1 = new Set<>();
+
+			@Test
+			@DisplayName("when other set is not empty, returns union")
+			void returnsUnionWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var union = set1.union(set2);
+
+				assert new Set<>(5, 0, 2, 3)
+					.equals(union);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns union")
+			void returnsUnionWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var union = set1.union(set2);
+
+				assert new Set<>()
+					.equals(union);
 			}
 		}
 	}

@@ -45,6 +45,9 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 		}
 	}
 
+	/**
+	 * Creates a set with the specified item capacity.
+	 */
 	private Set(int capacity) {
 		super(capacity);
 	}
@@ -58,6 +61,26 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	public boolean contains(T item) {
 		final var index = find(item);
 		return index > -1;
+	}
+
+	/**
+	 * Returns union of this set and the specified one.
+	 */
+	public Set<T> union(Set<T> set) {
+		final var itemCount1 = getCount();
+		final var itemCount2 = set.getCount();
+		final var capacity = itemCount1 + itemCount2;
+
+		final var union = new Set<T>(capacity);
+		for (var item : this) {
+			union.insert(item);
+		}
+		for (var item : set) {
+			union.insert(item);
+		}
+
+		union.removeExcessCapacity();
+		return union;
 	}
 
 	@Override
