@@ -282,6 +282,11 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	@Override
+	public Object[] toArray() {
+		return Arrays.copyOf(store2, store2.length);
+	}
+
+	@Override
 	public int hashCode() {
 		return Arrays.hashCode(store2);
 	}

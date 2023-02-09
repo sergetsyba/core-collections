@@ -462,6 +462,32 @@ public class ListTests {
 	}
 
 	@Nested
+	@DisplayName(".toArray()")
+	class ToArrayTests {
+		@Test
+		@DisplayName("when list is not empty, returns items in array")
+		void returnsArrayWhenNotEmpty() {
+			final var items = new List<>(5, 3, 2, 0, 0, 3, 4);
+			final var array = items.toArray();
+
+			assert Arrays.equals(array,
+				new Integer[]{
+					5, 3, 2, 0, 0, 3, 4
+				});
+		}
+
+		@Test
+		@DisplayName("when list is empty, returns empty array")
+		void returnsEmptyArrayWhenEmpty() {
+			final var items = new List<>();
+			final var array = items.toArray();
+
+			assert Arrays.equals(array,
+				new Integer[]{});
+		}
+	}
+
+	@Nested
 	@DisplayName(".bridge()")
 	class BridgeTests {
 		@Test
