@@ -86,8 +86,8 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Returns intersection (A∩B) of this set and the specified one.
 	 * <p>
-	 * The returned set contains items, which are present only in both this set and the
-	 * specified one.
+	 * The returned set contains items, which are only present in both this and the
+	 * specified sets.
 	 */
 	public Set<T> intersect(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -104,10 +104,10 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns difference (A\B) of this set and the specified one.
+	 * Returns difference (A\B) of this set from the specified one.
 	 * <p>
-	 * The returned set contains items, which are present in this set, except those, which
-	 * are present in the specified one.
+	 * The returned set contains items from this set, which are not present in the
+	 * specified one.
 	 */
 	public Set<T> subtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -124,11 +124,11 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) of this set and the specified
+	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) between this set and the specified
 	 * one.
 	 * <p>
 	 * The returned set contains items from this set, which are not present in the
-	 * specified one, plus items which are present in the specified set, but not this
+	 * specified one, plus items, which are present in the specified set, but not this
 	 * one.
 	 */
 	public Set<T> disjoint(Set<T> set) {
@@ -153,8 +153,8 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Returns cartesian product (A×B) of this set and the specified one.
 	 * <p>
-	 * The returned set contains all ordered pairs of items from this and the specified
-	 * sets.
+	 * The returned set contains all ordered pairs, where first item of a pair is from
+	 * this set, and the second one is from the specified set.
 	 */
 	public <R> Set<Pair<T, R>> multiply(Set<R> set) {
 		final var capacity = getCount() + set.getCount();

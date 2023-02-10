@@ -196,8 +196,8 @@ public class SetTests {
 			}
 
 			@Test
-			@DisplayName("when other set is empty, returns items from set")
-			void returnsUnionWhenOtherSetEmpty() {
+			@DisplayName("when other set is empty, returns set")
+			void returnsSetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var union = set1.unite(set2);
 
@@ -222,8 +222,8 @@ public class SetTests {
 			private final Set<Integer> set1 = new Set<>();
 
 			@Test
-			@DisplayName("when other set is not empty, returns items from other set")
-			void returnsUnionWhenOtherSetNotEmpty() {
+			@DisplayName("when other set is not empty, returns other set")
+			void returnsOtherSetWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
 				final var union = set1.unite(set2);
 
@@ -233,7 +233,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is empty, returns empty set")
-			void returnsUnionWhenOtherSetEmpty() {
+			void returnsEmptySetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var union = set1.unite(set2);
 
@@ -253,7 +253,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is not empty, returns intersection")
-			void returnsUnionWhenOtherSetNotEmpty() {
+			void returnsIntersectionWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
 				final var intersection = set1.intersect(set2);
 
@@ -263,7 +263,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is empty, returns empty set")
-			void returnsUnionWhenOtherSetEmpty() {
+			void returnsEmptySetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var intersection = set1.intersect(set2);
 
@@ -273,7 +273,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when sets are equal, returns intersection")
-			void returnsUnionWhenSetsEqual() {
+			void returnsIntersectionWhenSetsEqual() {
 				final var set2 = new Set<>(set1);
 				final var intersection = set1.intersect(set2);
 
@@ -289,7 +289,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is not empty, returns empty set")
-			void returnsUnionWhenOtherSetNotEmpty() {
+			void returnsEmptySetWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
 				final var intersection = set1.intersect(set2);
 
@@ -299,7 +299,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is empty, returns empty set")
-			void returnsUnionWhenOtherSetEmpty() {
+			void returnsEmptySetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var intersection = set1.intersect(set2);
 
@@ -319,7 +319,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is not empty, returns difference")
-			void returnsUnionWhenOtherSetNotEmpty() {
+			void returnsDifferenceWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
 				final var difference = set1.subtract(set2);
 
@@ -329,7 +329,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is empty, returns set")
-			void returnsUnionWhenOtherSetEmpty() {
+			void returnsSetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var difference = set1.subtract(set2);
 
@@ -355,7 +355,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is not empty, returns empty set")
-			void returnsUnionWhenOtherSetNotEmpty() {
+			void returnsEmptySetWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
 				final var difference = set1.subtract(set2);
 
@@ -365,7 +365,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is empty, returns empty set")
-			void returnsUnionWhenOtherSetEmpty() {
+			void returnsEmptySetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var difference = set1.subtract(set2);
 
@@ -395,7 +395,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when other set is empty, returns set")
-			void returnsDifferenceWhenOtherSetEmpty() {
+			void returnsSetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var difference = set1.disjoint(set2);
 
@@ -515,8 +515,8 @@ public class SetTests {
 		}
 
 		@Test
-		@DisplayName("when set is empty, returns empty list")
-		void returnsEmptyListWhenEmpty() {
+		@DisplayName("when set is empty, returns empty set")
+		void returnsEmptySetWhenEmpty() {
 			final var items = new Set<String>();
 			final var sorted = items.sort(Comparator.naturalOrder());
 
@@ -541,7 +541,7 @@ public class SetTests {
 
 		@Test
 		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenEmpty() {
+		void returnsEmptySetWhenEmpty() {
 			final var items = new Set<Integer>();
 			final var evens = items.filter((item) ->
 				item % 2 == 0);
@@ -587,7 +587,7 @@ public class SetTests {
 		class EmptyListTests {
 			@Test
 			@DisplayName("returns empty set")
-			void returnsEmptyList() {
+			void returnsEmptySetWhenEmpty() {
 				final var items = new Set<Integer>();
 				final var converted = items.convert((item) ->
 					item * 2);
