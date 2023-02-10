@@ -442,6 +442,66 @@ public class SetTests {
 	}
 
 	@Nested
+	@DisplayName(".multiply(Set<T>)")
+	class MultiplyTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			private final Set<Integer> set1 = new Set<>(5, 8, 0);
+
+			@Test
+			@DisplayName("when other set is not empty, returns cartesian product")
+			void returnsProductWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>("0", "2");
+				final var product = set1.multiply(set2);
+
+				final var expected = new Set<>(
+					new Pair<>(5, "0"), new Pair<>(5, "2"),
+					new Pair<>(8, "0"), new Pair<>(8, "2"),
+					new Pair<>(0, "0"), new Pair<>(0, "2"));
+
+				assert expected.equals(product);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns empty set")
+			void returnsEmptySetWhenOtherSetEmpty() {
+				final var set2 = new Set<String>();
+				final var product = set1.multiply(set2);
+
+				assert new Set<Pair<Integer, String>>()
+					.equals(product);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptySetTests {
+			private final Set<Integer> set1 = new Set<>();
+
+			@Test
+			@DisplayName("when other set is not empty, returns empty set")
+			void returnsEmptySetWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>("0", "2");
+				final var product = set1.multiply(set2);
+
+				assert new Set<Pair<Integer, String>>()
+					.equals(product);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns empty set")
+			void returnsEmptySetWhenOtherSetEmpty() {
+				final var set2 = new Set<String>();
+				final var product = set1.multiply(set2);
+
+				assert new Set<Pair<Integer, String>>()
+					.equals(product);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".sort(Comparator<T>)")
 	class SortTests {
 		@Test

@@ -150,6 +150,26 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 		return difference;
 	}
 
+	/**
+	 * Returns cartesian product (A×B) of this set and the specified one.
+	 * <p>
+	 * The returned set contains all ordered pairs of items from this and the specified
+	 * sets.
+	 */
+	public <R> Set<Pair<T, R>> multiply(Set<R> set) {
+		final var capacity = getCount() + set.getCount();
+		final var product = new Set<Pair<T, R>>(capacity);
+
+		for (var item1 : this) {
+			for (var item2 : set) {
+				final var pair = new Pair<>(item1, item2);
+				product.insert(pair);
+			}
+		}
+
+		return product;
+	}
+
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
 		@SuppressWarnings("unchecked")
