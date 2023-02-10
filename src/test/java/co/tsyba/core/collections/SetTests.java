@@ -204,6 +204,16 @@ public class SetTests {
 				assert new Set<>(5, 4, 7, 8, 0)
 					.equals(union);
 			}
+
+			@Test
+			@DisplayName("when sets are equal, returns union")
+			void returnsUnionWhenSetsEqual() {
+				final var set2 = new Set<>(set1);
+				final var intersection = set1.intersect(set2);
+
+				assert new Set<>(5, 4, 7, 8, 0)
+					.equals(intersection);
+			}
 		}
 
 		@Nested
@@ -258,6 +268,16 @@ public class SetTests {
 				final var intersection = set1.intersect(set2);
 
 				assert new Set<>()
+					.equals(intersection);
+			}
+
+			@Test
+			@DisplayName("when sets are equal, returns intersection")
+			void returnsUnionWhenSetsEqual() {
+				final var set2 = new Set<>(set1);
+				final var intersection = set1.intersect(set2);
+
+				assert new Set<>(5, 4, 7, 8, 0)
 					.equals(intersection);
 			}
 		}
@@ -316,6 +336,16 @@ public class SetTests {
 				assert new Set<>(5, 4, 7, 8, 0)
 					.equals(difference);
 			}
+
+			@Test
+			@DisplayName("when sets are equal, returns empty set")
+			void returnsEmptySetWhenSetsEqual() {
+				final var set2 = new Set<>(set1);
+				final var difference = set1.subtract(set2);
+
+				assert new Set<>()
+					.equals(difference);
+			}
 		}
 
 		@Nested
@@ -338,6 +368,72 @@ public class SetTests {
 			void returnsUnionWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
 				final var difference = set1.subtract(set2);
+
+				assert new Set<>()
+					.equals(difference);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".disjoint(Set<T>)")
+	class DisjointTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			private final Set<Integer> set1 = new Set<>(5, 4, 7, 8, 0);
+
+			@Test
+			@DisplayName("when other set is not empty, returns symmetric difference")
+			void returnsDifferenceWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var difference = set1.disjoint(set2);
+
+				assert new Set<>(4, 7, 8, 2, 3)
+					.equals(difference);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns set")
+			void returnsDifferenceWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var difference = set1.disjoint(set2);
+
+				assert new Set<>(5, 4, 7, 8, 0)
+					.equals(difference);
+			}
+
+			@Test
+			@DisplayName("when sets are equal, returns empty set")
+			void returnsEmptySetWhenSetsEqual() {
+				final var set2 = new Set<>(set1);
+				final var difference = set1.disjoint(set2);
+
+				assert new Set<>()
+					.equals(difference);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptySetTests {
+			private final Set<Integer> set1 = new Set<>();
+
+			@Test
+			@DisplayName("when other set is not empty, returns other set")
+			void returnsOtherSetWhenOtherSetNotEmpty() {
+				final var set2 = new Set<>(5, 0, 2, 3);
+				final var difference = set1.disjoint(set2);
+
+				assert new Set<>(5, 0, 2, 3)
+					.equals(difference);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns empty set")
+			void returnsEmptySetWhenOtherSetEmpty() {
+				final var set2 = new Set<Integer>();
+				final var difference = set1.disjoint(set2);
 
 				assert new Set<>()
 					.equals(difference);

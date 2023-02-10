@@ -65,6 +65,8 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 	/**
 	 * Returns union (A∪B) of this set and the specified one.
+	 * <p>
+	 * The returned set contains all items from this and the specified sets.
 	 */
 	public Set<T> unite(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -83,6 +85,9 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 	/**
 	 * Returns intersection (A∩B) of this set and the specified one.
+	 * <p>
+	 * The returned set contains items, which are present only in both this set and the
+	 * specified one.
 	 */
 	public Set<T> intersect(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -99,7 +104,10 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns difference (A-B) of this set and the specified one.
+	 * Returns difference (A\B) of this set and the specified one.
+	 * <p>
+	 * The returned set contains items, which are present in this set, except those, which
+	 * are present in the specified one.
 	 */
 	public Set<T> subtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -107,6 +115,33 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 		for (var item : this) {
 			if (!set.contains(item)) {
+				difference.insert(item);
+			}
+		}
+
+		difference.removeExcessCapacity();
+		return difference;
+	}
+
+	/**
+	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) of this set and the specified
+	 * one.
+	 * <p>
+	 * The returned set contains items from this set, which are not present in the
+	 * specified one, plus items which are present in the specified set, but not this
+	 * one.
+	 */
+	public Set<T> disjoint(Set<T> set) {
+		final var capacity = getCount() + set.getCount();
+		final var difference = new Set<T>(capacity);
+
+		for (var item : this) {
+			if (!set.contains(item)) {
+				difference.insert(item);
+			}
+		}
+		for (var item : set) {
+			if (!contains(item)) {
 				difference.insert(item);
 			}
 		}
