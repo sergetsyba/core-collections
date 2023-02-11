@@ -208,6 +208,11 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		}
 	}
 
+	void deleteAll() {
+		storage = new Entry[capacity + probeDistanceLimit + 1];
+		entryCount = 0;
+	}
+
 	private void shiftEntriesLeft(int index) {
 		final var entryIndex = index;
 		for (; storage[index] != null; index += 1) {

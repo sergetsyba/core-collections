@@ -85,18 +85,7 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	/**
-	 * Removes the specified items from this, if present. Returns itself.
-	 */
-	public MutableSet<T> remove(Collection<T> items) {
-		for (var item : items) {
-			delete(item);
-		}
-
-		return this;
-	}
-
-	/**
-	 * Removes the specified items from this, if present. Returns itself.
+	 * Removes the specified items from this set, if present. Returns itself.
 	 */
 	public MutableSet<T> remove(T... items) {
 		for (var item : items) {
@@ -109,7 +98,18 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	/**
-	 * Removes the specified items from this, if present. Returns itself.
+	 * Removes the specified items from this set, if present. Returns itself.
+	 */
+	public MutableSet<T> remove(Collection<T> items) {
+		for (var item : items) {
+			delete(item);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Removes the specified items from this set, if present. Returns itself.
 	 */
 	public MutableSet<T> remove(Iterable<T> items) {
 		for (var item : items) {
@@ -118,6 +118,14 @@ public class MutableSet<T> extends Set<T> {
 			}
 		}
 
+		return this;
+	}
+
+	/**
+	 * Removes all items from this set. Returns itself.
+	 */
+	public MutableSet<T> removeAll() {
+		deleteAll();
 		return this;
 	}
 }

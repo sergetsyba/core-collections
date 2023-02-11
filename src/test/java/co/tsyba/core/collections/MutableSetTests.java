@@ -291,70 +291,6 @@ public class MutableSetTests {
 	}
 
 	@Nested
-	@DisplayName(".remove(Collection<T>)")
-	class RemoveCollectionTests {
-		@Test
-		@DisplayName("when some items are present, removes present items")
-		void removesItemsWhenSomePresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>("h", "q", "1", "B"));
-
-			assert returned == items;
-			assert new Set<>("Q", "2")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when all items are present, removes all items")
-		void removesItemsWhenAllPresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>("B", "Q", "1", "2", "h"));
-
-			assert returned == items;
-			assert new Set<>()
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when all items are absent, does nothing")
-		void doesNothingWhenAllAbsent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>("7", "4", "G", "b"));
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNothingWhenItemsEmpty() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>());
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when set is empty, does nothing")
-		void doesNothingWhenEmpty() {
-			final var items = new MutableSet<String>();
-			final var returned = items.remove(
-				new List<>("B", "Q", "1", "2", "h"));
-
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
-	}
-
-	@Nested
 	@DisplayName(".remove(T...)")
 	class RemoveVarargsTests {
 		@Test
@@ -417,6 +353,70 @@ public class MutableSetTests {
 		void doesNothingWhenEmpty() {
 			final var items = new MutableSet<String>();
 			final var returned = items.remove("B", "Q", "1", "2", "h");
+
+			assert returned == items;
+			assert new Set<String>()
+				.equals(items);
+		}
+	}
+
+	@Nested
+	@DisplayName(".remove(Collection<T>)")
+	class RemoveCollectionTests {
+		@Test
+		@DisplayName("when some items are present, removes present items")
+		void removesItemsWhenSomePresent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				new List<>("h", "q", "1", "B"));
+
+			assert returned == items;
+			assert new Set<>("Q", "2")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when all items are present, removes all items")
+		void removesItemsWhenAllPresent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				new List<>("B", "Q", "1", "2", "h"));
+
+			assert returned == items;
+			assert new Set<>()
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when all items are absent, does nothing")
+		void doesNothingWhenAllAbsent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				new List<>("7", "4", "G", "b"));
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when items are empty, does nothing")
+		void doesNothingWhenItemsEmpty() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				new List<>());
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when set is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var items = new MutableSet<String>();
+			final var returned = items.remove(
+				new List<>("B", "Q", "1", "2", "h"));
 
 			assert returned == items;
 			assert new Set<String>()
@@ -493,6 +493,32 @@ public class MutableSetTests {
 			final var items = new MutableSet<String>();
 			final var returned = items.remove(
 				Arrays.asList("B", "Q", "1", "2", "h"));
+
+			assert returned == items;
+			assert new Set<String>()
+				.equals(items);
+		}
+	}
+
+	@Nested
+	@DisplayName(".removeAll()")
+	class RemoveAllTests {
+		@Test
+		@DisplayName("when set is not empty, removes all items")
+		void removesAllItemsWhenNotEmpty() {
+			final var items = new MutableSet<>("h", "b", "n", "m");
+			final var returned = items.removeAll();
+
+			assert returned == items;
+			assert new Set<String>()
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when set is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var items = new MutableSet<String>();
+			final var returned = items.removeAll();
 
 			assert returned == items;
 			assert new Set<String>()
