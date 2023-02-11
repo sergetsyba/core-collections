@@ -525,4 +525,30 @@ public class MutableSetTests {
 				.equals(items);
 		}
 	}
+
+	@Nested
+	@DisplayName(".toImmutable()")
+	class ToImmutableTests {
+		@Test
+		@DisplayName("when set is not empty, returns immutable set")
+		void removesAllItemsWhenNotEmpty() {
+			final var items1 = new MutableSet<>("h", "b", "n", "m");
+			final var items2 = items1.toImmutable();
+
+			assert Set.class == items2.getClass();
+			assert new Set<>("h", "b", "n", "m")
+				.equals(items2);
+		}
+
+		@Test
+		@DisplayName("when set is empty, returns empty immutable set")
+		void doesNothingWhenEmpty() {
+			final var items1 = new MutableSet<>();
+			final var items2 = items1.toImmutable();
+
+			assert Set.class == items2.getClass();
+			assert new Set<>()
+				.equals(items2);
+		}
+	}
 }

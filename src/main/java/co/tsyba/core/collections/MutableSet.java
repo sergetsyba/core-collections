@@ -128,4 +128,11 @@ public class MutableSet<T> extends Set<T> {
 		deleteAll();
 		return this;
 	}
+
+	/**
+	 * Returns an immutable copy of this set.
+	 */
+	public Set<T> toImmutable() {
+		return new Set<T>(this);
+	}
 }
