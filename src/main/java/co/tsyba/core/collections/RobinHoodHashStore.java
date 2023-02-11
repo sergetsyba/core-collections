@@ -33,6 +33,10 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			throw new IllegalArgumentException("Cannot create hash store with load factor limit "
 				+ maximumLoadFactor + ": value must be in range (0.0, 1.0).");
 		}
+		if (capacity == 0) {
+			// todo:
+			capacity = 64;
+		}
 
 		this.probeDistanceLimit = estimateProbeDistance(maximumLoadFactor);
 		this.storage = new Entry[capacity + probeDistanceLimit + 1];
