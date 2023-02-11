@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MutableSetTests {
@@ -329,6 +330,18 @@ public class MutableSetTests {
 		}
 
 		@Test
+		@DisplayName("when items are empty, does nothing")
+		void doesNothingWhenItemsEmpty() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				new List<>());
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
 		@DisplayName("when set is empty, does nothing")
 		void doesNothingWhenEmpty() {
 			final var items = new MutableSet<String>();
@@ -389,10 +402,97 @@ public class MutableSetTests {
 		}
 
 		@Test
+		@DisplayName("when items are empty, does nothing")
+		void doesNothingWhenItemsEmpty() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove();
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
 		@DisplayName("when set is empty, does nothing")
 		void doesNothingWhenEmpty() {
 			final var items = new MutableSet<String>();
 			final var returned = items.remove("B", "Q", "1", "2", "h");
+
+			assert returned == items;
+			assert new Set<String>()
+				.equals(items);
+		}
+	}
+
+	@Nested
+	@DisplayName(".remove(Iterable<T>)")
+	class RemoveIterableTests {
+		@Test
+		@DisplayName("when some items are present, removes present items")
+		void removesItemsWhenSomePresent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				Arrays.asList("h", "q", "1", "B"));
+
+			assert returned == items;
+			assert new Set<>("Q", "2")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when all items are present, removes all items")
+		void removesItemsWhenAllPresent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				Arrays.asList("B", "Q", "1", "2", "h"));
+
+			assert returned == items;
+			assert new Set<>()
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when all items are absent, does nothing")
+		void doesNothingWhenAllAbsent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				Arrays.asList("7", "4", "G", "b"));
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when some items are null, removes non-null items")
+		void ignoresNullItems() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				Arrays.asList(null, "Q", null, "2"));
+
+			assert returned == items;
+			assert new Set<>("B", "1", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when items are empty, does nothing")
+		void doesNothingWhenItemsEmpty() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove(
+				new ArrayList<>());
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when set is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var items = new MutableSet<String>();
+			final var returned = items.remove(
+				Arrays.asList("B", "Q", "1", "2", "h"));
 
 			assert returned == items;
 			assert new Set<String>()
