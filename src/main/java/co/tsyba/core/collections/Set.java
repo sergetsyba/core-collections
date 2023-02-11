@@ -131,7 +131,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 * specified one, plus items, which are present in the specified set, but not this
 	 * one.
 	 */
-	public Set<T> disjoint(Set<T> set) {
+	public Set<T> symmetricSubtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
 		final var difference = new Set<T>(capacity);
 
@@ -157,7 +157,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 * this set, and the second one is from the specified set.
 	 */
 	public <R> Set<Pair<T, R>> multiply(Set<R> set) {
-		final var capacity = getCount() + set.getCount();
+		final var capacity = getCount() * set.getCount();
 		final var product = new Set<Pair<T, R>>(capacity);
 
 		for (var item1 : this) {
@@ -167,6 +167,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 			}
 		}
 
+		product.removeExcessCapacity();
 		return product;
 	}
 

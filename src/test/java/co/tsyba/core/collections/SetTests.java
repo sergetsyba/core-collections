@@ -376,8 +376,8 @@ public class SetTests {
 	}
 
 	@Nested
-	@DisplayName(".disjoint(Set<T>)")
-	class DisjointTests {
+	@DisplayName(".symmetricSubtract(Set<T>)")
+	class SymmetricSubtractTests {
 		@Nested
 		@DisplayName("when set is not empty")
 		class NotEmptySetTests {
@@ -387,7 +387,7 @@ public class SetTests {
 			@DisplayName("when other set is not empty, returns symmetric difference")
 			void returnsDifferenceWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
-				final var difference = set1.disjoint(set2);
+				final var difference = set1.symmetricSubtract(set2);
 
 				assert new Set<>(4, 7, 8, 2, 3)
 					.equals(difference);
@@ -397,7 +397,7 @@ public class SetTests {
 			@DisplayName("when other set is empty, returns set")
 			void returnsSetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
-				final var difference = set1.disjoint(set2);
+				final var difference = set1.symmetricSubtract(set2);
 
 				assert new Set<>(5, 4, 7, 8, 0)
 					.equals(difference);
@@ -407,7 +407,7 @@ public class SetTests {
 			@DisplayName("when sets are equal, returns empty set")
 			void returnsEmptySetWhenSetsEqual() {
 				final var set2 = new Set<>(set1);
-				final var difference = set1.disjoint(set2);
+				final var difference = set1.symmetricSubtract(set2);
 
 				assert new Set<>()
 					.equals(difference);
@@ -423,7 +423,7 @@ public class SetTests {
 			@DisplayName("when other set is not empty, returns other set")
 			void returnsOtherSetWhenOtherSetNotEmpty() {
 				final var set2 = new Set<>(5, 0, 2, 3);
-				final var difference = set1.disjoint(set2);
+				final var difference = set1.symmetricSubtract(set2);
 
 				assert new Set<>(5, 0, 2, 3)
 					.equals(difference);
@@ -433,7 +433,7 @@ public class SetTests {
 			@DisplayName("when other set is empty, returns empty set")
 			void returnsEmptySetWhenOtherSetEmpty() {
 				final var set2 = new Set<Integer>();
-				final var difference = set1.disjoint(set2);
+				final var difference = set1.symmetricSubtract(set2);
 
 				assert new Set<>()
 					.equals(difference);
