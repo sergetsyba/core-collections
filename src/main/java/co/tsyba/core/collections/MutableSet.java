@@ -85,11 +85,24 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	/**
-	 * Removes the specified items from this, if present.
+	 * Removes the specified items from this, if present. Returns itself.
 	 */
 	public MutableSet<T> remove(Collection<T> items) {
 		for (var item : items) {
 			delete(item);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Removes the specified items from this, if present. Returns itself.
+	 */
+	public MutableSet<T> remove(T... items) {
+		for (var item : items) {
+			if (item != null) {
+				delete(item);
+			}
 		}
 
 		return this;

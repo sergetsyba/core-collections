@@ -192,9 +192,12 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			// todo:
 			++index;
 
-			for (; storage[index] != null; ++index) {
-				if (estimateIndex(storage[index]) < index) {
+			while (storage[index] != null) {
+				if (estimateIndex(storage[index]) >= index) {
+					break;
+				} else {
 					storage[index - 1] = storage[index];
+					++index;
 				}
 			}
 
