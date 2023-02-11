@@ -190,19 +190,17 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			return false;
 		} else {
 			// todo:
-			for (;;) {
-				storage[index] = null;
-				final var nextItem = storage[index + 1];
-				if (nextItem == null) {
-					break;
+			++index;
+
+			for (; storage[index] != null; ++index) {
+				if (estimateIndex(storage[index]) < index) {
+					storage[index - 1] = storage[index];
 				}
-				if (estimateIndex(nextItem) == index + 1) {
-					break;
-				}
-				storage[index] = nextItem;
 			}
 
+			storage[index - 1] = null;
 			entryCount -= 1;
+
 			return true;
 		}
 	}

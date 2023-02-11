@@ -72,12 +72,23 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	/**
-	 * Removed the specified item from this set, if present. Returns itself.
+	 * Removes the specified item from this set, if present. Returns itself.
 	 * <p>
 	 * When the specified item is {@code null}, does nothing.
 	 */
 	public MutableSet<T> remove(T item) {
 		if (item != null) {
+			delete(item);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Removes the specified items from this, if present.
+	 */
+	public MutableSet<T> remove(Collection<T> items) {
+		for (var item : items) {
 			delete(item);
 		}
 
