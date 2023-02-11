@@ -64,6 +64,20 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	/**
+	 * Returns {@code true} when this set is disjoint from the specified one; returns
+	 * {@code false} otherwise.
+	 * <p>
+	 * This set is disjoint from the specified one (or vice versa) when they don't have
+	 * any common items.
+	 * <p>
+	 * When this or the specified set is empty, this method returns {@code false}, since
+	 * an empty set is disjoint from all other sets, including itself.
+	 */
+	public boolean isDisjoint(Set<T> set) {
+		return noneMatches(set::contains);
+	}
+
+	/**
 	 * Returns union (A∪B) of this set and the specified one.
 	 * <p>
 	 * The returned set contains all items from this and the specified sets.
@@ -87,7 +101,11 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 * Returns {@code true} when this set intersects the specified one; returns
 	 * {@code false} otherwise.
 	 * <p>
-	 * This set intersects the specified one when they both have any common items.
+	 * This set intersects the specified one (or vice versa) when they have some common
+	 * items.
+	 * <p>
+	 * When this or the specified set is empty, returns {@code false}, since an empty set
+	 * never intersects another set, including itself.
 	 */
 	public boolean intersects(Set<T> set) {
 		return anyMatches(set::contains);
