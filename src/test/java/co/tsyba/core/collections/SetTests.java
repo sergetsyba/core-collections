@@ -187,14 +187,14 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when sets are disjoint, returns true")
-			void returnsTrueWhenIntersects() {
+			void returnsTrueWhenDisjoint() {
 				final var set2 = new Set<>("e", "g", "7", "T");
 				assert set1.isDisjoint(set2);
 			}
 
 			@Test
 			@DisplayName("when sets intersect, returns false")
-			void returnsFalseWhenDoesNotIntersect() {
+			void returnsFalseWhenIntersects() {
 				final var set2 = new Set<>("P", "z", "E", "q");
 				assert !set1.isDisjoint(set2);
 			}
@@ -311,7 +311,7 @@ public class SetTests {
 
 			@Test
 			@DisplayName("when sets do not intersect, returns false")
-			void returnsFalseWhenDoesNotIntersect() {
+			void returnsFalseWhenDisjoint() {
 				final var set2 = new Set<>("P", "z", "e", "Q");
 				assert !set1.intersects(set2);
 			}
@@ -705,7 +705,7 @@ public class SetTests {
 	class BridgeTests {
 		@Test
 		@DisplayName("when set is not empty, returns items in java.util.Set")
-		void returnsStringWhenNotEmpty() {
+		void returnsSetWhenNotEmpty() {
 			final var items = new Set<>("g", "H", "6", "c", "E");
 			final var set = items.bridge();
 
@@ -715,7 +715,7 @@ public class SetTests {
 
 		@Test
 		@DisplayName("when set is empty, returns empty java.util.Set")
-		void returnsStringWhenEmpty() {
+		void returnsSetWhenEmpty() {
 			final var items = new Set<>();
 			final var set = items.bridge();
 
