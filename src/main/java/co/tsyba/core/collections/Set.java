@@ -2,6 +2,7 @@ package co.tsyba.core.collections;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -243,6 +244,18 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 		removeExcessCapacity();
 		return converted;
+	}
+
+	/**
+	 * Returns items of this set as a {@link java.util.Set}.
+	 */
+	public java.util.Set<T> bridge() {
+		final var set = new HashSet<T>();
+		for (var item : this) {
+			set.add(item);
+		}
+
+		return set;
 	}
 
 	@Override

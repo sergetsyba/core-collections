@@ -702,6 +702,30 @@ public class SetTests {
 
 	@Nested
 	@DisplayName(".toString()")
+	class BridgeTests {
+		@Test
+		@DisplayName("when set is not empty, returns items in java.util.Set")
+		void returnsStringWhenNotEmpty() {
+			final var items = new Set<>("g", "H", "6", "c", "E");
+			final var set = items.bridge();
+
+			assert java.util.Set.of("g", "H", "6", "c", "E")
+				.equals(set);
+		}
+
+		@Test
+		@DisplayName("when set is empty, returns empty java.util.Set")
+		void returnsStringWhenEmpty() {
+			final var items = new Set<>();
+			final var set = items.bridge();
+
+			assert java.util.Set.of()
+				.equals(set);
+		}
+	}
+
+	@Nested
+	@DisplayName(".toString()")
 	class ToStringTests {
 		@Test
 		@DisplayName("when set is not empty, converts to string")
