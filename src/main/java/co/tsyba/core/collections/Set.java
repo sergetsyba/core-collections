@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * An immutable, unordered {@link Collection} of unique items.
+ */
 public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Creates a copy of the specified {@link Collection}.
