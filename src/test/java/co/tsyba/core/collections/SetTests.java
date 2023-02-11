@@ -244,6 +244,57 @@ public class SetTests {
 	}
 
 	@Nested
+	@DisplayName(".intersects(Set<T>)")
+	class IntersectsTests {
+		@Nested
+		@DisplayName("when set is not empty")
+		class NotEmptySetTests {
+			private final Set<String> set1 = new Set<>("t", "E", "q", "v", "b", "0");
+
+			@Test
+			@DisplayName("when intersects, returns true")
+			void returnsTrueWhenIntersects() {
+				final var set2 = new Set<>("E", "g", "7", "t");
+				assert set1.intersects(set2);
+			}
+
+			@Test
+			@DisplayName("when does not intersect, returns false")
+			void returnsFalseWhenDoesNotIntersect() {
+				final var set2 = new Set<>("P", "z", "e", "Q");
+				assert !set1.intersects(set2);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns false")
+			void returnsFalseWhenOtherSetEmpty() {
+				final var set2 = new Set<String>();
+				assert !set1.intersects(set2);
+			}
+		}
+
+		@Nested
+		@DisplayName("when set is empty")
+		class EmptySetTests {
+			private final Set<String> set1 = new Set<>();
+
+			@Test
+			@DisplayName("when other set is not empty, returns false")
+			void returnsFalseWhenOtherSetIsNotEmpty() {
+				final var set2 = new Set<>("P", "z", "e", "Q");
+				assert !set1.intersects(set2);
+			}
+
+			@Test
+			@DisplayName("when other set is empty, returns false")
+			void returnsFalseWhenOtherSetIsEmpty() {
+				final var set2 = new Set<String>();
+				assert !set1.intersects(set2);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".intersect(Set<T>)")
 	class IntersectTests {
 		@Nested

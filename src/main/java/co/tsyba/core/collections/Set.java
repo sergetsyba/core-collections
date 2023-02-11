@@ -84,6 +84,16 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	/**
+	 * Returns {@code true} when this set intersects the specified one; returns
+	 * {@code false} otherwise.
+	 * <p>
+	 * This set intersects the specified one when they both have any common items.
+	 */
+	public boolean intersects(Set<T> set) {
+		return anyMatches(set::contains);
+	}
+
+	/**
 	 * Returns intersection (A∩B) of this set and the specified one.
 	 * <p>
 	 * The returned set contains items, which are only present in both this and the
