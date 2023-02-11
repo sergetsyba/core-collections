@@ -29,4 +29,19 @@ public class MutableSet<T> extends Set<T> {
 
 		return this;
 	}
+
+	/**
+	 * Adds the specified items to this set. Returns itself.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
+	 */
+	public MutableSet<T> add(T... items) {
+		for (var item : items) {
+			if (item != null) {
+				insert(item);
+			}
+		}
+
+		return this;
+	}
 }
