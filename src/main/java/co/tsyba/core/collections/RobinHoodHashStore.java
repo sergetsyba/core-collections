@@ -184,21 +184,35 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		}
 	}
 
-	public boolean remove(Object entry) {
-		var entryIndex = find(entry);
-		if (entryIndex < 0) {
+	public boolean delete(Object entry) {
+		var index = find(entry);
+		if (index < 0) {
 			return false;
 		} else {
-			// shift the remainder of the entry cluster one position to the left
-			shiftEntriesLeft(entryIndex);
-			entryCount -= 1;
+			// todo:
+			for (;;) {
+				storage[index] = null;
+				final var nextItem = storage[index + 1];
+				if (nextItem == null) {
+					break;
+				}
+				if (estimateIndex(nextItem) == index + 1) {
+					break;
+				}
+				storage[index] = nextItem;
+			}
 
+			entryCount -= 1;
 			return true;
 		}
 	}
 
 	private void shiftEntriesLeft(int index) {
+		final var entryIndex = index;
 		for (; storage[index] != null; index += 1) {
+			final var index2 = Math.floorMod(storage[index].hashCode, storage.length);
+
+
 			storage[index] = storage[index + 1];
 		}
 	}

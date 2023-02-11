@@ -56,58 +56,6 @@ public class MutableSetTests {
 	}
 
 	@Nested
-	@DisplayName(".add(Collection<T>)")
-	class AddCollectionTests {
-		@Test
-		@DisplayName("adds items")
-		void addsItems() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				new List<>("m", "Q", "k"));
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "m", "Q", "k")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("does not add duplicates")
-		void doesNotAddDuplicates() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				new List<>("K", "Q", "b"));
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "Q")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("adds first items")
-		void addsFirstItems() {
-			final var items = new MutableSet<String>();
-			final var returned = items.add(
-				new List<>("m", "Q", "K"));
-
-			assert returned == items;
-			assert new Set<>("m", "Q", "K")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNotAddEmptyItems() {
-			final var items = new MutableSet<>("m", "Q", "K");
-			final var returned = items.add(
-				new List<>());
-
-			assert returned == items;
-			assert new Set<>("m", "Q", "K")
-				.equals(items);
-		}
-	}
-
-	@Nested
 	@DisplayName(".add(T...)")
 	class AddVarargsTests {
 		@Test
@@ -159,6 +107,58 @@ public class MutableSetTests {
 		void doesNotAddEmptyItems() {
 			final var items = new MutableSet<>("m", "Q", "K");
 			final var returned = items.add();
+
+			assert returned == items;
+			assert new Set<>("m", "Q", "K")
+				.equals(items);
+		}
+	}
+
+	@Nested
+	@DisplayName(".add(Collection<T>)")
+	class AddCollectionTests {
+		@Test
+		@DisplayName("adds items")
+		void addsItems() {
+			final var items = new MutableSet<>("g", "b", "K");
+			final var returned = items.add(
+				new List<>("m", "Q", "k"));
+
+			assert returned == items;
+			assert new Set<>("g", "b", "K", "m", "Q", "k")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("does not add duplicates")
+		void doesNotAddDuplicates() {
+			final var items = new MutableSet<>("g", "b", "K");
+			final var returned = items.add(
+				new List<>("K", "Q", "b"));
+
+			assert returned == items;
+			assert new Set<>("g", "b", "K", "Q")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("adds first items")
+		void addsFirstItems() {
+			final var items = new MutableSet<String>();
+			final var returned = items.add(
+				new List<>("m", "Q", "K"));
+
+			assert returned == items;
+			assert new Set<>("m", "Q", "K")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when items are empty, does nothing")
+		void doesNotAddEmptyItems() {
+			final var items = new MutableSet<>("m", "Q", "K");
+			final var returned = items.add(
+				new List<>());
 
 			assert returned == items;
 			assert new Set<>("m", "Q", "K")
@@ -226,6 +226,54 @@ public class MutableSetTests {
 
 			assert returned == items;
 			assert new Set<>("g", "b", "K")
+				.equals(items);
+		}
+	}
+
+	@Nested
+	@DisplayName(".remove(T)")
+	class RemoveTests {
+		@Test
+		@DisplayName("when item is present, removes item")
+		void removesItemWhenItemPresent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove("2");
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when item is absent, does nothing")
+		void doesNothingWhenItemAbsent() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove("7");
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when item is absent, does nothing")
+		void doesNothingWhenItemNull() {
+			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
+			final var returned = items.remove("7");
+
+			assert returned == items;
+			assert new Set<>("B", "Q", "1", "2", "h")
+				.equals(items);
+		}
+
+		@Test
+		@DisplayName("when set is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var items = new MutableSet<String>();
+			final var returned = items.remove("7");
+
+			assert returned == items;
+			assert new Set<String>()
 				.equals(items);
 		}
 	}

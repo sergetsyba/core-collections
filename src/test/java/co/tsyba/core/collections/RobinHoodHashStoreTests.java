@@ -219,7 +219,7 @@ public class RobinHoodHashStoreTests {
 		store.insert(12);
 		store.insert(0);
 
-		assert store.remove(4);
+		assert store.delete(4);
 		assert store.storageEquals(0, null, 12, null, null);
 	}
 
@@ -230,7 +230,7 @@ public class RobinHoodHashStoreTests {
 		store.insert(32);
 		store.insert(37);
 
-		assert store.remove(37);
+		assert store.delete(37);
 		assert store.storageEquals(null, null, 7, 32, null);
 	}
 
@@ -243,7 +243,7 @@ public class RobinHoodHashStoreTests {
 
 		store.insert(12);
 
-		assert store.remove(12);
+		assert store.delete(12);
 		assert store.storageEquals(null, 1, 21, 16, null);
 	}
 
@@ -256,7 +256,7 @@ public class RobinHoodHashStoreTests {
 
 		store.insert(5);
 
-		assert store.remove(5);
+		assert store.delete(5);
 		assert store.storageEquals(0, 1, 6, null, null);
 	}
 
@@ -267,7 +267,7 @@ public class RobinHoodHashStoreTests {
 		store.insert(-3);
 		store.insert(2);
 
-		assert store.remove(-3);
+		assert store.delete(-3);
 		assert store.storageEquals(null, 6, 2, null, null);
 	}
 
@@ -278,7 +278,7 @@ public class RobinHoodHashStoreTests {
 		store.insert(-3);
 		store.insert(2);
 
-		assert store.remove(2);
+		assert store.delete(2);
 		assert store.storageEquals(null, null, -13, -3, null);
 	}
 
@@ -289,7 +289,7 @@ public class RobinHoodHashStoreTests {
 		store.insert(7);
 		store.insert(14);
 
-		assert store.remove(12) == false;
+		assert store.delete(12) == false;
 		assert store.storageEquals(0, null, 7, null, 14);
 	}
 
