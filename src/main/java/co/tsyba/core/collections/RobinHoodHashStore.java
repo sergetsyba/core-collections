@@ -27,11 +27,15 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 	public RobinHoodHashStore(int capacity, double maximumLoadFactor) {
 		if (capacity < 0) {
 			throw new IllegalArgumentException("Cannot create hash store with negative capacity "
-					+ capacity + ".");
+				+ capacity + ".");
 		}
 		if (maximumLoadFactor <= 0.0 || maximumLoadFactor >= 1.0) {
 			throw new IllegalArgumentException("Cannot create hash store with load factor limit "
-					+ maximumLoadFactor + ": value must be in range (0.0, 1.0).");
+				+ maximumLoadFactor + ": value must be in range (0.0, 1.0).");
+		}
+		if (capacity == 0) {
+			// todo:
+			capacity = 64;
 		}
 
 		this.probeDistanceLimit = estimateProbeDistance(maximumLoadFactor);
@@ -42,13 +46,13 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 	/**
 	 * <pre>
 	 * Sources:
-	 *	1. P. Celis. "Robin Hood Hashing". University of Waterloo, 1986.
-	 *	Chapter 2, Theorem 2.1.
+	 * 	1. P. Celis. "Robin Hood Hashing". University of Waterloo, 1986.
+	 * 	Chapter 2, Theorem 2.1.
 	 * </pre>
 	 */
 	private static int estimateProbeDistance(double maximumLoadFactor) {
 		final var probeDistance = Math.log(1.0 - maximumLoadFactor)
-				/ -maximumLoadFactor;
+			/ -maximumLoadFactor;
 
 		return (int) Math.round(probeDistance);
 	}
@@ -73,12 +77,10 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 			if (storedEntry == null) {
 				// probed an empty slot; place the new entry in it
 				return probeIndex;
-			}
-			else if (storedEntry.item.equals(entry.item)) {
+			} else if (storedEntry.item.equals(entry.item)) {
 				// probed an equal entry; replace it with the new entry
 				return probeIndex;
-			}
-			else {
+			} else {
 				final var storedEntryIndex = estimateIndex(storedEntry);
 				if (storedEntryIndex > entryIndex) {
 					// probed an entry with bucket index higher than that of the
@@ -146,8 +148,7 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 					// re-insert all entries into expanded store
 					resizeStorage(capacity * 2);
 					return;
-				}
-				else {
+				} else {
 					resizedStore.storage[entryIndex] = storedEntry;
 				}
 			}
@@ -163,18 +164,16 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		}
 
 		final var entryIndex = estimateIndex(entry);
-		for (var probeIndex = entryIndex;; probeIndex += 1) {
+		for (var probeIndex = entryIndex; ; probeIndex += 1) {
 			final var storedEntry = storage[probeIndex];
 
 			if (storedEntry == null) {
 				// probed an empty slot, store contains no such item
 				return -1;
-			}
-			else if (storedEntry.item.equals(entry)) {
+			} else if (storedEntry.item.equals(entry)) {
 				// found the equal item
 				return probeIndex;
-			}
-			else {
+			} else {
 				final var storedEntryIndex = estimateIndex(entry);
 				if (storedEntryIndex > entryIndex) {
 					// probed an entry with bucket index higher than that
@@ -185,22 +184,41 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		}
 	}
 
-	public boolean remove(Object entry) {
-		var entryIndex = find(entry);
-		if (entryIndex < 0) {
+	public boolean delete(Object entry) {
+		var index = find(entry);
+		if (index < 0) {
 			return false;
-		}
-		else {
-			// shift the remainder of the entry cluster one position to the left
-			shiftEntriesLeft(entryIndex);
+		} else {
+			// todo:
+			++index;
+
+			while (storage[index] != null) {
+				if (estimateIndex(storage[index]) >= index) {
+					break;
+				} else {
+					storage[index - 1] = storage[index];
+					++index;
+				}
+			}
+
+			storage[index - 1] = null;
 			entryCount -= 1;
 
 			return true;
 		}
 	}
 
+	void deleteAll() {
+		storage = new Entry[capacity + probeDistanceLimit + 1];
+		entryCount = 0;
+	}
+
 	private void shiftEntriesLeft(int index) {
+		final var entryIndex = index;
 		for (; storage[index] != null; index += 1) {
+			final var index2 = Math.floorMod(storage[index].hashCode, storage.length);
+
+
 			storage[index] = storage[index + 1];
 		}
 	}
@@ -218,8 +236,7 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 				if (item != null) {
 					return false;
 				}
-			}
-			else {
+			} else {
 				if (!predicate.test(storedEntry.item, item)) {
 					return false;
 				}
@@ -227,6 +244,10 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		}
 
 		return true;
+	}
+
+	void removeExcessCapacity() {
+		// todo:
 	}
 
 	boolean storageIs(E... items) {

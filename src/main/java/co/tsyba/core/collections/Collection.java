@@ -153,11 +153,6 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns distinct items in this collection.
-	 */
-	Collection<T> getDistinct();
-
-	/**
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
 	 */
@@ -224,6 +219,22 @@ public interface Collection<T> extends Iterable<T> {
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * Returns items of this {@link Collection} in an array.
+	 */
+	default Object[] toArray() {
+		final var count = getCount();
+		final var items = new Object[count];
+		var index = 0;
+
+		for (var item : this) {
+			items[index] = item;
+			++index;
+		}
+
+		return items;
 	}
 }
 

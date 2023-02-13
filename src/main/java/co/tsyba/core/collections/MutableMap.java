@@ -173,7 +173,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 			return this;
 		}
 
-		store.remove(key);
+		store.delete(key);
 		return this;
 	}
 

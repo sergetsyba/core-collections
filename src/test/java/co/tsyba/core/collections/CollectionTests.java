@@ -4,10 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -397,17 +394,38 @@ public class CollectionTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".toArray()")
+	class ToArrayTests {
+		@Test
+		@DisplayName("when collection is not empty, returns items in array")
+		void returnsArrayWhenNotEmpty() {
+			final var items = new TestCollection<>("T", "b", "4", "0", "O");
+			final var array = items.toArray();
+
+			assert Arrays.equals(array,
+				new String[]{
+					"T", "b", "4", "0", "O"
+				});
+		}
+
+		@Test
+		@DisplayName("when collection is empty, returns empty array")
+		void returnsEmptyArrayWhenEmpty() {
+			final var items = new TestCollection<>();
+			final var array = items.toArray();
+
+			assert Arrays.equals(array,
+				new String[]{});
+		}
+	}
+
 	static class TestCollection<T> implements Collection<T> {
 		private final Object[] items;
 
 		@SafeVarargs
 		public TestCollection(T... items) {
 			this.items = items;
-		}
-
-		@Override
-		public Collection<T> getDistinct() {
-			throw new UnsupportedOperationException();
 		}
 
 		@Override

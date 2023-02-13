@@ -13,17 +13,18 @@ import java.util.LinkedList;
  */
 public class ListTests {
 	@Nested
-	@DisplayName("List(List)")
-	class NewWithListTests {
+	@DisplayName("List(Collection<T>)")
+	class NewWithCollectionTests {
 		@Test
 		@DisplayName("creates list")
 		void createsList() {
 			final var items = new List<>(
-				new List<>("v", "4", "G", "5"));
+				new Set<>("v", "4", "G", "5"));
 
+			Arrays.sort(items.store2);
 			assert Arrays.equals(items.store2,
 				new String[]{
-					"v", "4", "G", "5"
+					"4", "5", "G", "v"
 				});
 		}
 
@@ -31,7 +32,7 @@ public class ListTests {
 		@DisplayName("creates empty list")
 		void createsEmptyList() {
 			final var items = new List<>(
-				new List<String>());
+				new Set<String>());
 
 			assert Arrays.equals(items.store2,
 				new String[]{});
@@ -457,6 +458,32 @@ public class ListTests {
 				assert Arrays.equals(converted.store2,
 					new Integer[]{});
 			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".toArray()")
+	class ToArrayTests {
+		@Test
+		@DisplayName("when list is not empty, returns items in array")
+		void returnsArrayWhenNotEmpty() {
+			final var items = new List<>(5, 3, 2, 0, 0, 3, 4);
+			final var array = items.toArray();
+
+			assert Arrays.equals(array,
+				new Integer[]{
+					5, 3, 2, 0, 0, 3, 4
+				});
+		}
+
+		@Test
+		@DisplayName("when list is empty, returns empty array")
+		void returnsEmptyArrayWhenEmpty() {
+			final var items = new List<>();
+			final var array = items.toArray();
+
+			assert Arrays.equals(array,
+				new Integer[]{});
 		}
 	}
 
