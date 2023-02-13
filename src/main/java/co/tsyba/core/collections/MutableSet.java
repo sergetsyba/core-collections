@@ -35,7 +35,8 @@ public class MutableSet<T> extends Set<T> {
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
 	 */
-	public MutableSet<T> add(T... items) {
+	@SafeVarargs
+	public final MutableSet<T> add(T... items) {
 		for (var item : items) {
 			if (item != null) {
 				insert(item);
@@ -87,7 +88,8 @@ public class MutableSet<T> extends Set<T> {
 	/**
 	 * Removes the specified items from this set, if present. Returns itself.
 	 */
-	public MutableSet<T> remove(T... items) {
+	@SafeVarargs
+	public final MutableSet<T> remove(T... items) {
 		for (var item : items) {
 			if (item != null) {
 				delete(item);
@@ -133,6 +135,6 @@ public class MutableSet<T> extends Set<T> {
 	 * Returns an immutable copy of this set.
 	 */
 	public Set<T> toImmutable() {
-		return new Set<T>(this);
+		return new Set<>(this);
 	}
 }
