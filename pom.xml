@@ -7,7 +7,7 @@
 
 	<groupId>com.tsyba.core</groupId>
 	<artifactId>collections</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 
 	<name>Core Collections</name>
 	<description>Collection data types with modern APIs.</description>
