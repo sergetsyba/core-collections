@@ -11,7 +11,7 @@ class MapTests {
 		@Test
 		@DisplayName("when map is not empty, returns false")
 		void returnsFalseWhenNotEmpty() {
-			final var entries = new MutableMap<>()
+			final var entries = new MutableMap<Integer, String>()
 				.set(4, "a")
 				.set(5, "g")
 				.set(9, "F")
@@ -27,8 +27,34 @@ class MapTests {
 			assert entries.isEmpty();
 		}
 	}
-}
 
+	@Nested
+	@DisplayName(".getCount()")
+	class GetCountTests {
+		@Test
+		@DisplayName("when map is not empty, returns entry count")
+		void returnsEntryCountWhenNotEmpty() {
+			final var entries = new MutableMap<Integer, String>()
+				.set(4, "a")
+				.set(5, "g")
+				.set(9, "F")
+				.set(0, "Q")
+				.toImmutable();
+
+			final var count = entries.getCount();
+			assert 4 == count;
+		}
+
+		@Test
+		@DisplayName("when map is empty, returns 0")
+		void returnsZeroWhenEmpty() {
+			final var entries = new Map<Integer, String>();
+			final var count = entries.getCount();
+
+			assert 0 == count;
+		}
+	}
+}
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Aug 4, 2019.

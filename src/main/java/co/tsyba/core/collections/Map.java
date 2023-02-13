@@ -86,8 +86,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 
 	/**
 	 * Returns the number of entries in this map.
-	 *
-	 * @return
 	 */
 	@Override
 	public int getCount() {
