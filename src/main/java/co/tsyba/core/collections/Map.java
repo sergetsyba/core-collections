@@ -93,11 +93,27 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
+	 * Returns {@code true} when this map contains and entry with the specified key and
+	 * value; returns {@code false} otherwise.
+	 */
+	@Override
+	public boolean contains(K key, V value) {
+		if (key == null) {
+			return false;
+		}
+
+		final var index = store.find(key);
+		if (index < 0) {
+			return false;
+		} else {
+			final var entry = store.storage[index];
+			return entry.item.value.equals(value);
+		}
+	}
+
+	/**
 	 * Returns {@code true} when this map contains an entry with the specified key;
 	 * returns {@code false} otherwise.
-	 *
-	 * @param key
-	 * @return
 	 */
 	@Override
 	public boolean contains(K key) {
@@ -106,23 +122,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		}
 
 		return store.find(key) >= 0;
-	}
-
-	/**
-	 * Returns {@code true} when this map contains an entry with the specified key and
-	 * value; returns {@code false} otherwise.
-	 *
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	@Override
-	public boolean contains(K key, V value) {
-		final var storedValue = get(key);
-
-		return storedValue.isPresent()
-			&& storedValue.get()
-			.equals(value);
 	}
 
 	/**

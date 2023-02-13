@@ -54,6 +54,55 @@ class MapTests {
 			assert 0 == count;
 		}
 	}
+
+	@Nested
+	@DisplayName(".contains(K, V)")
+	class ContainsTests {
+		private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+			.set("g", 5)
+			.set("n", 2)
+			.set("L", 0)
+			.set("Q", 9)
+			.set("t", 5)
+			.toImmutable();
+
+		@Test
+		@DisplayName("when entry is present, returns true")
+		void returnsTrueWhenPresent() {
+			assert entries.contains("Q", 9);
+		}
+
+		@Test
+		@DisplayName("when key is absent, returns false")
+		void returnsFalseWhenKeyAbsent() {
+			assert !entries.contains("N", 2);
+		}
+
+		@Test
+		@DisplayName("when key is present but value is different, returns false")
+		void returnsFalseWhenValueDifferent() {
+			assert !entries.contains("t", 9);
+		}
+
+		@Test
+		@DisplayName("when key is null, returns false")
+		void returnsFalseWhenKeyNull() {
+			assert !entries.contains(null, 9);
+		}
+
+		@Test
+		@DisplayName("when value is null, returns false")
+		void returnsFalseWhenValueNull() {
+			assert !entries.contains("Q", null);
+		}
+
+		@Test
+		@DisplayName("when map is empty, returns false")
+		void returnsFalseWhenEmpty() {
+			final var entries = new Map<String, Integer>();
+			assert !entries.contains("Q", 9);
+		}
+	}
 }
 
 /*
