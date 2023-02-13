@@ -26,24 +26,22 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Creates a map by matching keys with values at corresponding indexes in
-	 * the specified lists.
-	 *
-	 * When the specified lists differ in item count, the created map will
-	 * contain at most the number of entries of the shorter of the specified
-	 * lists.
-	 *
-	 * When the specified keys contain repeated items, only the last occurrence
-	 * of the key (as well as the value at the corresponding index) will end up
-	 * in the map.
+	 * Creates a map by matching keys with values at corresponding indexes in the
+	 * specified lists.
+	 * <p>
+	 * When the specified lists differ in item count, the created map will contain at most
+	 * the number of entries of the shorter of the specified lists.
+	 * <p>
+	 * When the specified keys contain repeated items, only the last occurrence of the key
+	 * (as well as the value at the corresponding index) will end up in the map.
 	 *
 	 * @param keys
 	 * @param values
 	 */
 	public Map(List<K> keys, List<V> values) {
 		final var entryCount = Math.min(
-				keys.getCount(),
-				values.getCount());
+			keys.getCount(),
+			values.getCount());
 
 		this.store = new RobinHoodHashStore<>(entryCount);
 		Lists.iterate(keys, values, (key, value) -> {
@@ -60,8 +58,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores
-	 * any entries with {@code null} key or value.
+	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores any
+	 * entries with {@code null} key or value.
 	 *
 	 * @param entries
 	 */
@@ -80,8 +78,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	/**
 	 * Returns {@code true} when this map has no entries; returns {@code false}
 	 * otherwise.
-	 *
-	 * @return
 	 */
 	@Override
 	public boolean isEmpty() {
@@ -99,8 +95,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns {@code true} when this map contains an entry with the specified
-	 * key; returns {@code false} otherwise.
+	 * Returns {@code true} when this map contains an entry with the specified key;
+	 * returns {@code false} otherwise.
 	 *
 	 * @param key
 	 * @return
@@ -115,8 +111,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns {@code true} when this map contains an entry with the specified
-	 * key and value; returns {@code false} otherwise.
+	 * Returns {@code true} when this map contains an entry with the specified key and
+	 * value; returns {@code false} otherwise.
 	 *
 	 * @param key
 	 * @param value
@@ -127,13 +123,13 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		final var storedValue = get(key);
 
 		return storedValue.isPresent()
-				&& storedValue.get()
-						.equals(value);
+			&& storedValue.get()
+			.equals(value);
 	}
 
 	/**
-	 * Returns {@code true} when this map contains all entries of the specified
-	 * map; returns {@code false} otherwise.
+	 * Returns {@code true} when this map contains all entries of the specified map;
+	 * returns {@code false} otherwise.
 	 *
 	 * @param entries
 	 * @return
@@ -143,9 +139,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns value of an entry with the specified key in this map. Returns an
-	 * empty {@link Optional} when this map does not contain an entry with the
-	 * specified key.
+	 * Returns value of an entry with the specified key in this map. Returns an empty
+	 * {@link Optional} when this map does not contain an entry with the specified key.
 	 *
 	 * @param key
 	 * @return
@@ -188,8 +183,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns entries with the specified in from the map. Ignores any
-	 * {@code null}s among the specified keys.
+	 * Returns entries with the specified in from the map. Ignores any {@code null}s among
+	 * the specified keys.
 	 *
 	 * <p>
 	 * Does nothing when the specified variadic array is {@code null}.
@@ -236,12 +231,12 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns entries of this map with their key and value combined by the
-	 * specified {@link BiFunction}.
-	 *
-	 * Any {@code null} value returned by the specified {@link BiFunction} will
-	 * be ignored. This can be used to perform both item filtering and key-value
-	 * combination in a single operation.
+	 * Returns entries of this map with their key and value combined by the specified
+	 * {@link BiFunction}.
+	 * <p>
+	 * Any {@code null} value returned by the specified {@link BiFunction} will be
+	 * ignored. This can be used to perform both item filtering and key-value combination
+	 * in a single operation.
 	 *
 	 * @param <R>
 	 * @param converter
@@ -260,12 +255,12 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns entries of this map with their key and value converted by the
-	 * specified {@link BiFunction}.
-	 *
-	 * Any {@code null} key or value returned by the specified
-	 * {@link BiFunction} will be ignored. This can be used to perform both
-	 * entry filtering and conversion in a single operation.
+	 * Returns entries of this map with their key and value converted by the specified
+	 * {@link BiFunction}.
+	 * <p>
+	 * Any {@code null} key or value returned by the specified {@link BiFunction} will be
+	 * ignored. This can be used to perform both entry filtering and conversion in a
+	 * single operation.
 	 */
 	@Override
 	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
@@ -273,8 +268,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		for (var entry : this) {
 			final var convertedEntry = converter.apply(entry.key, entry.value);
 			if (convertedEntry != null
-					&& convertedEntry.key != null
-					&& convertedEntry.value != null) {
+				&& convertedEntry.key != null
+				&& convertedEntry.value != null) {
 
 				convertEntries.insert(convertedEntry);
 			}
