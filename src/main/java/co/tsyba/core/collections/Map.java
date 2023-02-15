@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 29, 2019.
@@ -112,8 +113,20 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
+	 * Returns {@code true} when this map contains an entry, whose key and value satisfy
+	 * the specified {@link Predicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this {@link Map} is empty, returns {@code false}
+	 */
+	public boolean contains(BiPredicate<K, V> condition) {
+		return anyMatches(condition);
+	}
+
+	/**
 	 * Returns {@code true} when this map contains all entries of the specified map;
 	 * returns {@code false} otherwise.
+	 * <p>
+	 * When the specified {@link Map} is empty, returns {@code true}.
 	 */
 	public boolean contains(Map<K, V> entries) {
 		return entries.eachMatches(this::contains);
