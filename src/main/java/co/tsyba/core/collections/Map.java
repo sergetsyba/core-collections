@@ -144,34 +144,25 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 
 	/**
 	 * Returns entries with the specified keys in this map.
-	 *
-	 * @param keys
-	 * @return
-	 */
-	public Map<K, V> get(Collection<K> keys) {
-		if (keys == null) {
-			// return nothing when the keys is null
-			return new Map<>();
-		}
-
-		final var returnedStore = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
-		for (var key : keys) {
-			get(key).ifPresent(value -> {
-				final var entry = new Entry<>(key, value);
-				returnedStore.insert(entry);
-			});
-		}
-
-		return new Map<>(returnedStore);
-	}
-
-	/**
-	 * Returns entries with the specified keys in this map.
 	 * <p>
 	 * Ignores any {@code null} values among the specified keys.
 	 */
 	@SafeVarargs
 	public final Map<K, V> get(K... keys) {
+		final var entries = new MutableMap<K, V>();
+		for (var key : keys) {
+			get(key)
+				.ifPresent((value) ->
+					entries.set(key, value));
+		}
+
+		return entries.toImmutable();
+	}
+
+	/**
+	 * Returns entries with the specified keys in this map.
+	 */
+	public Map<K, V> get(Collection<K> keys) {
 		final var entries = new MutableMap<K, V>();
 		for (var key : keys) {
 			get(key)
