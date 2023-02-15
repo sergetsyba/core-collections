@@ -262,6 +262,109 @@ class MapTests {
 			assert value.isEmpty();
 		}
 	}
+
+	@Nested
+	@DisplayName(".get(K...)")
+	class GetVarargsTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries1 = new MutableMap<String, Integer>()
+				.set("B", 5)
+				.set("N", 2)
+				.set("O", 5)
+				.set("a", 0)
+				.toImmutable();
+
+			@Test
+			@DisplayName("when all keys are present, returns present entries")
+			void returnsPresentWhenAllKeysPresent() {
+				final var entries2 = entries1.get("a", "B", "N");
+				final var expected = new MutableMap<String, Integer>()
+					.set("a", 0)
+					.set("B", 5)
+					.set("N", 2)
+					.toImmutable();
+
+				assert expected.equals(entries2);
+			}
+
+			@Test
+			@DisplayName("when some keys are present, returns present entries")
+			void returnsPresentWhenSomeKeysPresent() {
+				final var entries2 = entries1.get("b", "O", "q", "U", "a");
+				final var expected = new MutableMap<String, Integer>()
+					.set("O", 5)
+					.set("a", 0)
+					.toImmutable();
+
+				assert expected.equals(entries2);
+			}
+
+			@Test
+			@DisplayName("when some keys are null, returns present values")
+			void returnsPresentWhenSomeKeysNull() {
+				final var entries2 = entries1.get(null, "O", null, null, "N", null);
+				final var expected = new MutableMap<String, Integer>()
+					.set("O", 5)
+					.set("N", 2)
+					.toImmutable();
+
+				assert expected.equals(entries2);
+			}
+
+			@Test
+			@DisplayName("when all keys are absent, returns empty map")
+			void returnsEmptyWhenAllKeysAbsent() {
+				final var entries2 = entries1.get("L", "M", "d", "I");
+
+				final var expected = new Map<String, Integer>();
+				assert expected.equals(entries2);
+			}
+
+			@Test
+			@DisplayName("when keys is empty, returns empty map")
+			void returnsEmptyWhenKeysEmpty() {
+				final var entries2 = entries1.get();
+
+				final var expected = new Map<String, Integer>();
+				assert expected.equals(entries2);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries1 = new Map<>();
+
+			@Test
+			@DisplayName("when keys are not empty, returns empty map")
+			void returnsEmptyWhenKeysNotEmpty() {
+				final var entries2 = entries1.get("a", "B", "N");
+
+				assert new Map<String, Integer>()
+					.equals(entries2);
+			}
+
+			@Test
+			@DisplayName("when some keys are null, returns empty map")
+			void returnsEmptyWhenSomeKeysNull() {
+				final var entries2 = entries1.get(null, "B", null, "N");
+
+				assert new Map<String, Integer>()
+					.equals(entries2);
+			}
+
+			@Test
+			@DisplayName("when keys are empty, returns empty map")
+			void returnsEmptyWhenKeysEmpty() {
+				final var entries2 = entries1.get();
+
+				assert new Map<String, Integer>()
+					.equals(entries2);
+			}
+		}
+	}
 }
 
 /*
