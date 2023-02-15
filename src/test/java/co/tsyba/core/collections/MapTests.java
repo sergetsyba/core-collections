@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 class MapTests {
 	@Nested
 	@DisplayName(".isEmpty()")
@@ -108,8 +110,6 @@ class MapTests {
 	@DisplayName(".contains(Predicate<K, V>)")
 	class ContainsPredicateTests {
 		private final Map<String, Integer> entries = new MutableMap<String, Integer>()
-			.set("g", 5)
-			.set("n", 2)
 			.set("L", 0)
 			.set("Q", 9)
 			.set("t", 5)
@@ -218,6 +218,48 @@ class MapTests {
 
 				assert !entries1.contains(entries2);
 			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".get(K)")
+	class GetTests {
+		private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+			.set("B", 5)
+			.set("N", 2)
+			.set("a", 0)
+			.toImmutable();
+
+		@Test
+		@DisplayName("when key is present, returns value")
+		void returnsValueWhenPresent() {
+			final var value = entries.get("a");
+
+			assert Optional.of(0)
+				.equals(value);
+		}
+
+		@Test
+		@DisplayName("when key is absent, returns empty optional")
+		void returnsEmptyWhenAbsent() {
+			final var value = entries.get("A");
+			assert value.isEmpty();
+		}
+
+		@Test
+		@DisplayName("when key is null, returns empty optional")
+		void returnsEmptyWhenNull() {
+			final var value = entries.get((String) null);
+			assert value.isEmpty();
+		}
+
+		@Test
+		@DisplayName("when map is empty, returns empty optional")
+		void returnsEmptyWhenEmpty() {
+			final var entries = new Map<String, Integer>();
+			final var value = entries.get((String) null);
+
+			assert value.isEmpty();
 		}
 	}
 }
