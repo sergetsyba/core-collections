@@ -120,7 +120,7 @@ public interface KeyedCollection<K, V> extends Iterable<Map.Entry<K, V>> {
         }
 
         // empty collection matches no entry
-        return !isEmpty();
+        return true;
     }
 
     /**

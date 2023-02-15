@@ -112,27 +112,11 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns {@code true} when this map contains an entry with the specified key;
-	 * returns {@code false} otherwise.
-	 */
-	@Override
-	public boolean contains(K key) {
-		if (key == null) {
-			return false;
-		}
-
-		return store.find(key) >= 0;
-	}
-
-	/**
 	 * Returns {@code true} when this map contains all entries of the specified map;
 	 * returns {@code false} otherwise.
-	 *
-	 * @param entries
-	 * @return
 	 */
 	public boolean contains(Map<K, V> entries) {
-		return LameKeyedCollection.super.contains(entries);
+		return entries.eachMatches(this::contains);
 	}
 
 	/**

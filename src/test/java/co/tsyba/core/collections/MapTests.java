@@ -103,6 +103,89 @@ class MapTests {
 			assert !entries.contains("Q", 9);
 		}
 	}
+
+	@Nested
+	@DisplayName(".contains(Map<K, V>)")
+	class ContainsMapTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyTests {
+			private final Map<Integer, String> entries1 = new MutableMap<Integer, String>()
+				.set(4, "O")
+				.set(6, "b")
+				.set(9, "Q")
+				.toImmutable();
+
+			@Test
+			@DisplayName("when all entries are present, returns true")
+			void returnsTrueWhenAllPresent() {
+				final var entries2 = new MutableMap<Integer, String>()
+					.set(9, "Q")
+					.set(6, "b")
+					.toImmutable();
+
+				assert entries1.contains(entries2);
+			}
+
+			@Test
+			@DisplayName("when some entries are absent, returns false")
+			void returnsFalseWhenSomeAbsent() {
+				final var entries2 = new MutableMap<Integer, String>()
+					.set(8, "M")
+					.set(6, "b")
+					.set(1, "G")
+					.toImmutable();
+
+				assert !entries1.contains(entries2);
+			}
+
+			@Test
+			@DisplayName("when all entries are absent, returns false")
+			void returnsFalseWhenAllAbsent() {
+				final var entries2 = new MutableMap<Integer, String>()
+					.set(3, "P")
+					.set(9, "q")
+					.toImmutable();
+
+				assert !entries1.contains(entries2);
+			}
+
+			@Test
+			@DisplayName("when searched map is empty, returns true")
+			void returnsTrueWhenOtherEmpty() {
+				final var entries2 = new Map<Integer, String>();
+				assert entries1.contains(entries2);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyTests {
+			private final Map<Integer, String> entries1 = new Map<>();
+
+			@Test
+			@DisplayName("when searched map is not empty, return false")
+			void returnsFalseWhenOtherNotEmpty() {
+				final var entries2 = new MutableMap<Integer, String>()
+					.set(9, "Q")
+					.set(6, "b")
+					.toImmutable();
+
+				assert !entries1.contains(entries2);
+			}
+
+			@Test
+			@DisplayName("when searched map is empty, return true")
+			void returnsTrueWhenOtherEmpty() {
+				final var entries2 = new MutableMap<Integer, String>()
+					.set(9, "Q")
+					.set(6, "b")
+					.toImmutable();
+
+				assert !entries1.contains(entries2);
+			}
+		}
+	}
 }
 
 /*
