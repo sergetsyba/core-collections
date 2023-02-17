@@ -174,19 +174,38 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns entries of this map, whose keys and values satisfy the specified
-	 * {@link BiPredicate}.
+	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
 	 */
 	@Override
 	public Map<K, V> filter(BiPredicate<K, V> condition) {
-		final var filtered = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
+		final var entries = new MutableMap<K, V>();
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
-				filtered.insert(entry);
+				entries.set(entry.key, entry.value);
 			}
 		}
 
-		return new Map<>(filtered);
+		return entries.toImmutable();
+	}
+
+	/**
+	 * Returns entries of this map, converted by the specified {@link BiFunction}.
+	 * <p>
+	 * When the specified {@link BiFunction} returns a {@code null} or an {@link Entry}
+	 * with a {@code null} key or value, the converted entry will be ignored. Therefore,
+	 * this method can be used to both filter and convert this map in a single operation.
+	 */
+	@Override
+	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
+		final var entries = new MutableMap<L, W>();
+		for (var entry : this) {
+			final var converted = converter.apply(entry.key, entry.value);
+			if (converted != null) {
+				entries.set(converted.key, converted.value);
+			}
+		}
+
+		return entries.toImmutable();
 	}
 
 	/**
@@ -213,29 +232,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		return new List<>(items);
 	}
 
-	/**
-	 * Returns entries of this map with their key and value converted by the specified
-	 * {@link BiFunction}.
-	 * <p>
-	 * Any {@code null} key or value returned by the specified {@link BiFunction} will be
-	 * ignored. This can be used to perform both entry filtering and conversion in a
-	 * single operation.
-	 */
-	@Override
-	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
-		final var convertEntries = new RobinHoodHashStore<Entry<L, W>>(store.entryCount);
-		for (var entry : this) {
-			final var convertedEntry = converter.apply(entry.key, entry.value);
-			if (convertedEntry != null
-				&& convertedEntry.key != null
-				&& convertedEntry.value != null) {
-
-				convertEntries.insert(convertedEntry);
-			}
-		}
-
-		return new Map<>(convertEntries);
-	}
 
 	/**
 	 * Converts this map into an instance of {@link java.util.Map}.

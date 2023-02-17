@@ -511,6 +511,112 @@ class MapTests {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName(".convert(BiFunction<K, V, Entry<L, W>>)")
+	class ConvertTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("B", 4)
+				.set("V", 2)
+				.set("n", 9)
+				.set("X", 0)
+				.toImmutable();
+
+			@Test
+			@DisplayName("returns converted entries")
+			void returnsConvertedEntries() {
+				final var converted = entries.convert((key, value) ->
+					new Map.Entry<>(key, value / 2));
+
+				final var expected = new MutableMap<String, Integer>()
+					.set("B", 2)
+					.set("V", 1)
+					.set("n", 4)
+					.set("X", 0)
+					.toImmutable();
+
+				assert expected.equals(converted);
+			}
+
+			@Test
+			@DisplayName("when entry converted to null, ignores entry")
+			void ignoresEntriesConvertedToNull() {
+				final var converted = entries.convert((key, value) ->
+					value % 2 == 0
+						? new Map.Entry<>(key, value / 2)
+						: null);
+
+				final var expected = new MutableMap<String, Integer>()
+					.set("B", 2)
+					.set("V", 1)
+					.set("X", 0)
+					.toImmutable();
+
+				assert expected.equals(converted);
+			}
+
+			@Test
+			@DisplayName("when key converted to null, ignores entry")
+			void ignoresKeysConvertedToNull() {
+				final var converted = entries.convert((key, value) ->
+					value % 2 == 0
+						? new Map.Entry<>(null, 0)
+						: new Map.Entry<>(key + "1", value));
+
+				final var expected = new MutableMap<String, Integer>()
+					.set("n1", 9)
+					.toImmutable();
+
+				assert expected.equals(converted);
+			}
+
+			@Test
+			@DisplayName("when value converted to null, ignores entry")
+			void ignoresValuesConvertedToNull() {
+				final var converted = entries.convert((key, value) ->
+					value % 3 == 0
+						? new Map.Entry<>(key, value - 1)
+						: new Map.Entry<>(key, null));
+
+				final var expected = new MutableMap<String, Integer>()
+					.set("n", 8)
+					.set("X", -1)
+					.toImmutable();
+
+				assert expected.equals(converted);
+			}
+
+			@Test
+			@DisplayName("when all entries converted to null, returns empty map")
+			void returnsEmptyMapWhenAllEntriesConvertedToNull() {
+				final var converted = entries.convert((key, value) -> null);
+
+				assert new Map<String, Integer>()
+					.equals(converted);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns empty map")
+			void returnsEmptyMap() {
+				final var converted = entries.convert((key, value) ->
+					new Map.Entry<>(key + "1", value + 1));
+
+				assert new Map<String, Integer>()
+					.equals(converted);
+			}
+		}
+	}
+
+
 }
 
 /*
