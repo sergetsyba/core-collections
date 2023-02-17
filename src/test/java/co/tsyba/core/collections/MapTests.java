@@ -455,6 +455,62 @@ class MapTests {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName(".filter(BiPredicate<K, V>)")
+	class FilterTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("t", 5)
+				.set("G", 0)
+				.set("B", 9)
+				.set("q", 1)
+				.set("L", 8)
+				.toImmutable();
+
+			@Test
+			@DisplayName("returns filtered entries")
+			void returnsFilteredEntries() {
+				final var filtered = entries.filter((key, value)
+					-> value > 5);
+
+				final var expected = new MutableMap<String, Integer>()
+					.set("B", 9)
+					.set("L", 8)
+					.toImmutable();
+
+				assert expected.equals(filtered);
+			}
+
+			@Test
+			@DisplayName("when filtering all entries, returns empty map")
+			void returnsEmptyMapWhenFiltersAll() {
+				final var filtered = entries.filter((key, value)
+					-> value > 10);
+
+				final var expected = new Map<String, Integer>();
+				assert expected.equals(filtered);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns empty map")
+			void returnsEmptyMap() {
+				final var filtered = entries.filter((key, value)
+					-> value > 5);
+
+				final var expected = new Map<String, Integer>();
+				assert expected.equals(filtered);
+			}
+		}
+	}
 }
 
 /*

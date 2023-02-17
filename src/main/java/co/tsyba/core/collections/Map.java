@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 29, 2019.
@@ -105,7 +104,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 
 	/**
 	 * Returns {@code true} when this map contains an entry, whose key and value satisfy
-	 * the specified {@link Predicate}; returns {@code false} otherwise.
+	 * the specified {@link BiPredicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this {@link Map} is empty, returns {@code false}
 	 */
@@ -126,7 +125,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	/**
 	 * Returns value for the specified key in this map.
 	 * <p>
-	 * When this has no value for the specified key, returns an empty {@link Optional}.
+	 * When this map has no value for the specified key, returns an empty
+	 * {@link Optional}.
 	 */
 	public Optional<V> get(K key) {
 		if (key == null) {
@@ -174,22 +174,19 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns entries of this map, whose key and value satisfy the specified
+	 * Returns entries of this map, whose keys and values satisfy the specified
 	 * {@link BiPredicate}.
-	 *
-	 * @param condition
-	 * @return
 	 */
 	@Override
 	public Map<K, V> filter(BiPredicate<K, V> condition) {
-		final var filteredEntries = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
+		final var filtered = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
-				filteredEntries.insert(entry);
+				filtered.insert(entry);
 			}
 		}
 
-		return new Map<>(filteredEntries);
+		return new Map<>(filtered);
 	}
 
 	/**
