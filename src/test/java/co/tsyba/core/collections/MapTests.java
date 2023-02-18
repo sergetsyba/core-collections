@@ -69,7 +69,7 @@ class MapTests {
 			.toImmutable();
 
 		@Test
-		@DisplayName("when entry is present, returns true")
+		@DisplayName("when key and value are present, returns true")
 		void returnsTrueWhenPresent() {
 			assert entries.contains("Q", 9);
 		}
@@ -81,7 +81,7 @@ class MapTests {
 		}
 
 		@Test
-		@DisplayName("when key is present but value is different, returns false")
+		@DisplayName("when key is present but value is absent, returns false")
 		void returnsFalseWhenValueDifferent() {
 			assert !entries.contains("t", 9);
 		}
@@ -452,6 +452,48 @@ class MapTests {
 
 				assert new Map<String, Integer>()
 					.equals(entries2);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".anyMatches(BiPredicate<K, V>)")
+	class AnyMatchesTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("B", 3)
+				.set("V", 9)
+				.set("e", 1)
+				.set("N", 0)
+				.toImmutable();
+
+			@Test
+			@DisplayName("when an entry matches, returns true")
+			void returnsTrueWhenMatches() {
+				assert entries.anyMatches((key, value) ->
+					value > 5);
+			}
+
+			@Test
+			@DisplayName("when no entry matches, returns false")
+			void returnsWhenWhenDoesNotMatch() {
+				assert !entries.anyMatches((key, value) ->
+					value > 10);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns false")
+			void returnsFalse() {
+				assert !entries.anyMatches((key, value) ->
+					value > 5);
 			}
 		}
 	}
