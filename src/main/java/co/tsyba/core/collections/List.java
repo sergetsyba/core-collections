@@ -73,6 +73,11 @@ public class List<T> implements IndexedCollection<T> {
 			: Arrays.copyOf(store, count);
 	}
 
+	protected List(ContiguousArrayStore<T> store) {
+		this.store = store;
+		this.store2 = Arrays.copyOf(store.items, store.itemCount);
+	}
+
 	@Override
 	public int getCount() {
 		return store2.length;

@@ -144,6 +144,19 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
+	 * Returns values of all entries in this map.
+	 */
+	@Override
+	public Collection<V> getValues() {
+		final var values = new MutableList<V>();
+		for (var entry : this) {
+			values.append(entry.value);
+		}
+
+		return values.toImmutable();
+	}
+
+	/**
 	 * Returns value for the specified key in this map.
 	 * <p>
 	 * When this map has no value for the specified key, returns an empty

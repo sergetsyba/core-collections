@@ -1,5 +1,6 @@
 package co.tsyba.core.collections;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -225,7 +226,7 @@ class MapTests {
 	@DisplayName(".getKeys()")
 	class GetKeysTests {
 		@Test
-		@DisplayName("when map is not empty, returns keys")
+		@DisplayName("when map is not empty, returns all keys")
 		void returnsKeysWhenNotEmpty() {
 			final var entries = new MutableMap<String, Integer>()
 				.set("T", 4)
@@ -246,6 +247,35 @@ class MapTests {
 
 			assert new Set<>()
 				.equals(keys);
+		}
+	}
+
+	@Nested
+	@DisplayName(".getValues()")
+	class GetValuesTests {
+		@Disabled // todo: re-enable
+		@Test
+		@DisplayName("when map is not empty, returns all values")
+		void returnsKeysWhenNotEmpty() {
+			final var entries = new MutableMap<String, Integer>()
+				.set("T", 4)
+				.set("L", 3)
+				.set("m", 0)
+				.set("X", 2);
+
+			final var values = entries.getValues();
+			assert new List<>(4, 3, 0, 2)
+				.equals(values);
+		}
+
+		@Test
+		@DisplayName("when map is empty, returns empty collection")
+		void returnsEmptySetWhenEmpty() {
+			final var entries = new Map<String, Integer>();
+			final var values = entries.getValues();
+
+			assert new List<>()
+				.equals(values);
 		}
 	}
 
