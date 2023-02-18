@@ -541,6 +541,48 @@ class MapTests {
 	}
 
 	@Nested
+	@DisplayName(".noneMatches(BiPredicate<K, V>)")
+	class NoneMatchesTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("B", 3)
+				.set("V", 9)
+				.set("e", 1)
+				.set("N", 0)
+				.toImmutable();
+
+			@Test
+			@DisplayName("when all entries do not match, returns true")
+			void returnsTrueWhenAllDoNotMatch() {
+				assert entries.noneMatches((key, value) ->
+					value > 10);
+			}
+
+			@Test
+			@DisplayName("when any entry matches, returns false")
+			void returnsFalseWhenAnyMatches() {
+				assert !entries.noneMatches((key, value) ->
+					value > 5);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns true")
+			void returnsTrue() {
+				assert entries.noneMatches((key, value) ->
+					value > 10);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".filter(BiPredicate<K, V>)")
 	class FilterTests {
 		@Nested

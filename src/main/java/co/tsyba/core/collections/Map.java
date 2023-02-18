@@ -211,7 +211,24 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 				return false;
 			}
 		}
-		
+
+		return true;
+	}
+
+	/**
+	 * Returns {@code true} when no entries in this map satisfy the specified
+	 * {@link BiPredicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this map is empty, returns {@code true};
+	 */
+	@Override
+	public boolean noneMatches(BiPredicate<K, V> condition) {
+		for (var entry : this) {
+			if (condition.test(entry.key, entry.value)) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 
