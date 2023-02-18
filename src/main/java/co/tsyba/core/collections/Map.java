@@ -98,8 +98,17 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 */
 	@Override
 	public boolean contains(K key, V value) {
-		return get(key)
-			.isPresent();
+		if (key == null) {
+			return false;
+		}
+
+		final var index = store.find(key);
+		if (index < 0) {
+			return false;
+		}
+
+		final var entry = store.storage[index].item;
+		return entry.value.equals(value);
 	}
 
 	/**
@@ -220,7 +229,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * @param converter
 	 * @return
 	 */
-	@Override
 	public <R> Collection<R> collect(BiFunction<K, V, R> converter) {
 		final var items = new ContiguousArrayStore<R>(store.entryCount);
 		for (var entry : this) {
