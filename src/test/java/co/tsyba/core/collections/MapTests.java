@@ -471,14 +471,14 @@ class MapTests {
 
 			@Test
 			@DisplayName("when an entry matches, returns true")
-			void returnsTrueWhenMatches() {
+			void returnsTrueWhenAnyMatches() {
 				assert entries.anyMatches((key, value) ->
 					value > 5);
 			}
 
 			@Test
 			@DisplayName("when no entry matches, returns false")
-			void returnsWhenWhenDoesNotMatch() {
+			void returnsFalseWhenNoneMatches() {
 				assert !entries.anyMatches((key, value) ->
 					value > 10);
 			}
@@ -494,6 +494,48 @@ class MapTests {
 			void returnsFalse() {
 				assert !entries.anyMatches((key, value) ->
 					value > 5);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".allMatch(BiPredicate<K, V>)")
+	class AllMatchTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("B", 3)
+				.set("V", 9)
+				.set("e", 1)
+				.set("N", 0)
+				.toImmutable();
+
+			@Test
+			@DisplayName("when all entries match, returns true")
+			void returnsTrueWhenAllMatch() {
+				assert entries.allMatch((key, value) ->
+					value < 10);
+			}
+
+			@Test
+			@DisplayName("when any entry does not match, returns false")
+			void returnsFalseWhenAnyDoesNotMatch() {
+				assert !entries.allMatch((key, value) ->
+					value > 5);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns true")
+			void returnsTrue() {
+				assert entries.allMatch((key, value) ->
+					value < 10);
 			}
 		}
 	}
