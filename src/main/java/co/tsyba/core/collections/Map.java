@@ -200,22 +200,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns {@code true} when all entries in this map satisfy the specified
-	 * {@link BiPredicate}; returns {@code false} otherwise.
-	 * <p>
-	 * When this map is empty, returns {@code true}.
-	 */
-	public boolean allMatch(BiPredicate<K, V> condition) {
-		for (var entry : this) {
-			if (!condition.test(entry.key, entry.value)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Returns {@code true} when no entries in this map satisfy the specified
 	 * {@link BiPredicate}; returns {@code false} otherwise.
 	 * <p>
@@ -225,6 +209,22 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	public boolean noneMatches(BiPredicate<K, V> condition) {
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns {@code true} when all entries in this map satisfy the specified
+	 * {@link BiPredicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this map is empty, returns {@code true}.
+	 */
+	public boolean matches(BiPredicate<K, V> condition) {
+		for (var entry : this) {
+			if (!condition.test(entry.key, entry.value)) {
 				return false;
 			}
 		}

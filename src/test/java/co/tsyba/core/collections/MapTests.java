@@ -499,48 +499,6 @@ class MapTests {
 	}
 
 	@Nested
-	@DisplayName(".allMatch(BiPredicate<K, V>)")
-	class AllMatchTests {
-		@Nested
-		@DisplayName("when map is not empty")
-		class NotEmptyMapTests {
-			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
-				.set("B", 3)
-				.set("V", 9)
-				.set("e", 1)
-				.set("N", 0)
-				.toImmutable();
-
-			@Test
-			@DisplayName("when all entries match, returns true")
-			void returnsTrueWhenAllMatch() {
-				assert entries.allMatch((key, value) ->
-					value < 10);
-			}
-
-			@Test
-			@DisplayName("when any entry does not match, returns false")
-			void returnsFalseWhenAnyDoesNotMatch() {
-				assert !entries.allMatch((key, value) ->
-					value > 5);
-			}
-		}
-
-		@Nested
-		@DisplayName("when map is empty")
-		class EmptyMapTests {
-			private final Map<String, Integer> entries = new Map<>();
-
-			@Test
-			@DisplayName("returns true")
-			void returnsTrue() {
-				assert entries.allMatch((key, value) ->
-					value < 10);
-			}
-		}
-	}
-
-	@Nested
 	@DisplayName(".noneMatches(BiPredicate<K, V>)")
 	class NoneMatchesTests {
 		@Nested
@@ -578,6 +536,48 @@ class MapTests {
 			void returnsTrue() {
 				assert entries.noneMatches((key, value) ->
 					value > 10);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".matches(BiPredicate<K, V>)")
+	class MatchesTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("B", 3)
+				.set("V", 9)
+				.set("e", 1)
+				.set("N", 0)
+				.toImmutable();
+
+			@Test
+			@DisplayName("when all entries match, returns true")
+			void returnsTrueWhenAllMatch() {
+				assert entries.matches((key, value) ->
+					value < 10);
+			}
+
+			@Test
+			@DisplayName("when any entry does not match, returns false")
+			void returnsFalseWhenAnyDoesNotMatch() {
+				assert !entries.matches((key, value) ->
+					value > 5);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns true")
+			void returnsTrue() {
+				assert entries.matches((key, value) ->
+					value < 10);
 			}
 		}
 	}
