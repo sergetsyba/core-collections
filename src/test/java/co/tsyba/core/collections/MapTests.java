@@ -583,6 +583,64 @@ class MapTests {
 	}
 
 	@Nested
+	@DisplayName(".match(BiPredicate<K, V>)")
+	class MatchTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("G", 0)
+				.set("V", 2)
+				.set("v", 3)
+				.set("O", 0)
+				.set("q", 1)
+				.set("e", 2)
+				.toImmutable();
+
+			@Test
+			@DisplayName("when entries match, returns matched entries")
+			void returnsMatchedEntriesWhenMatch() {
+				final var matched = entries.match((key, value) ->
+					value < 2);
+
+				final var expected = new MutableMap<String, Integer>()
+					.set("G", 0)
+					.set("O", 0)
+					.set("q", 1)
+					.toImmutable();
+
+				assert expected.equals(matched);
+			}
+
+			@Test
+			@DisplayName("when no entries match, returns empty map")
+			void returnsEmptyMapWhenNoneMatches() {
+				final var matched = entries.match((key, value) ->
+					value > 5);
+
+				assert new Map<String, Integer>()
+					.equals(matched);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns empty map")
+			void returnsEmptyMap() {
+				final var matched = entries.match((key, value) ->
+					value < 2);
+
+				assert new Map<String, Integer>()
+					.equals(matched);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".filter(BiPredicate<K, V>)")
 	class FilterTests {
 		@Nested

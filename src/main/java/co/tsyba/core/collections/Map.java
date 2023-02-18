@@ -233,6 +233,23 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
+	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}..
+	 * <p>
+	 * When no entry satisfies the specified {@link BiPredicate} in this map, or when this
+	 * map is empty, returns an empty {@link Map}.
+	 */
+	public Map<K, V> match(BiPredicate<K, V> condition) {
+		final var entries = new MutableMap<K, V>();
+		for (var entry : this) {
+			if (condition.test(entry.key, entry.value)) {
+				entries.set(entry.key, entry.value);
+			}
+		}
+
+		return entries.toImmutable();
+	}
+
+	/**
 	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
 	 */
 	@Override
