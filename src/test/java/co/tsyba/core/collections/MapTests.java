@@ -583,6 +583,56 @@ class MapTests {
 	}
 
 	@Nested
+	@DisplayName(".matchAny(BiPredicate<K, V>)")
+	class MatchAnyTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
+				.set("G", 0)
+				.set("V", 2)
+				.set("v", 3)
+				.toImmutable();
+
+			@Test
+			@DisplayName("when some entry match, returns value of matched entry")
+			void returnsMatchedEntryWhenMatch() {
+				final var matched = entries.matchAny((key, value) ->
+					value < 2);
+
+				assert Optional.of(0)
+					.equals(matched);
+			}
+
+			@Test
+			@DisplayName("when no entries match, returns empty optional")
+			void returnsEmptyOptionalWhenNoneMatches() {
+				final var matched = entries.matchAny((key, value) ->
+					value > 5);
+
+				assert Optional.empty()
+					.equals(matched);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Map<String, Integer> entries = new Map<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var matched = entries.matchAny((key, value) ->
+					value < 2);
+
+				assert Optional.empty()
+					.equals(matched);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".match(BiPredicate<K, V>)")
 	class MatchTests {
 		@Nested

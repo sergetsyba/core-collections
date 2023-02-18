@@ -233,9 +233,26 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}..
+	 * Returns value of some entry in this map, which satisfies the specified
+	 * {@link BiPredicate}.
 	 * <p>
-	 * When no entry satisfies the specified {@link BiPredicate} in this map, or when this
+	 * When no entry in this map satisfies the specified {@link BiPredicate}, or when this
+	 * map is empty, returns an empty {@link Optional}.
+	 */
+	public Optional<V> matchAny(BiPredicate<K, V> condition) {
+		for (var entry : this) {
+			if (condition.test(entry.key, entry.value)) {
+				return Optional.of(entry.value);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
+	 * <p>
+	 * When no entry in this map satisfies the specified {@link BiPredicate}, or when this
 	 * map is empty, returns an empty {@link Map}.
 	 */
 	public Map<K, V> match(BiPredicate<K, V> condition) {
