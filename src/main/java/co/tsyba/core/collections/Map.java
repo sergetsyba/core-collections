@@ -3,6 +3,7 @@ package co.tsyba.core.collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
@@ -289,6 +290,20 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		}
 
 		return entries.toImmutable();
+	}
+
+	/**
+	 * Applies the specified {@link BiConsumer} to each entry in this map.
+	 *
+	 * @return itself
+	 */
+	@Override
+	public Map<K, V> iterate(BiConsumer<K, V> operation) {
+		for (var entry : this) {
+			operation.accept(entry.key, entry.value);
+		}
+		
+		return this;
 	}
 
 	/**

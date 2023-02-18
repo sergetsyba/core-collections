@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 class MapTests {
@@ -745,6 +746,46 @@ class MapTests {
 				assert new Map<String, Integer>()
 					.equals(matched);
 			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".iterate(BiConsumer<K, V>)")
+	class IterateTests {
+		@Test
+		@DisplayName("when map is not empty, iterates entries")
+		void iteratesEntriesWhenNotEmpty() {
+			final var entries = new MutableMap<String, Integer>()
+				.set("n", 0)
+				.set("B", 1)
+				.set("P", 2)
+				.set("L", 9)
+				.toImmutable();
+
+			final var iterated = new HashMap<String, Integer>();
+			final var returned = entries.iterate(iterated::put);
+
+			final var expected = java.util.Map.of(
+				"n", 0,
+				"B", 1,
+				"P", 2,
+				"L", 9);
+
+			assert expected.equals(iterated);
+			assert returned == entries;
+		}
+
+		@Test
+		@DisplayName("when map is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var entries = new Map<String, Integer>();
+
+			final var iterated = new HashMap<String, Integer>();
+			final var returned = entries.iterate(iterated::put);
+
+			final var expected = java.util.Map.of();
+			assert expected.equals(iterated);
+			assert returned == entries;
 		}
 	}
 
