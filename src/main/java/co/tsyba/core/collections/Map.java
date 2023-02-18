@@ -132,6 +132,18 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
+	 * Returns keys of all entries in this map.
+	 */
+	public Set<K> getKeys() {
+		final var keys = new MutableSet<K>();
+		for (var entry : this) {
+			keys.add(entry.key);
+		}
+
+		return keys.toImmutable();
+	}
+
+	/**
 	 * Returns value for the specified key in this map.
 	 * <p>
 	 * When this map has no value for the specified key, returns an empty
@@ -256,21 +268,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * map is empty, returns an empty {@link Map}.
 	 */
 	public Map<K, V> match(BiPredicate<K, V> condition) {
-		final var entries = new MutableMap<K, V>();
-		for (var entry : this) {
-			if (condition.test(entry.key, entry.value)) {
-				entries.set(entry.key, entry.value);
-			}
-		}
-
-		return entries.toImmutable();
-	}
-
-	/**
-	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
-	 */
-	@Override
-	public Map<K, V> filter(BiPredicate<K, V> condition) {
 		final var entries = new MutableMap<K, V>();
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
@@ -409,5 +406,11 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 			final var entry = (Entry) object;
 			return key.equals(entry.key);
 		}
+	}
+
+	// todo: remove
+	@Override
+	public KeyedCollection<K, V> filter(BiPredicate<K, V> condition) {
+		throw new UnsupportedOperationException();
 	}
 }
