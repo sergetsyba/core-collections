@@ -10,6 +10,33 @@ import java.util.Optional;
 
 class MapTests {
 	@Nested
+	@DisplayName("Map(Map<K, V>)")
+	class ConstructorMapTests {
+		@Test
+		@DisplayName("creates map")
+		void createsMap() {
+			final var entries1 = new MutableMap<String, Integer>()
+				.set("B", 2)
+				.set("b", 1)
+				.set("O", 0)
+				.set("o", 1)
+				.toImmutable();
+
+			final var entries2 = new Map<>(entries1);
+			assert entries2.equals(entries1);
+		}
+
+		@Test
+		@DisplayName("when specified map is empty, creates empty map")
+		void createsEmptyMapWhenMapEmpty() {
+			final var entries1 = new Map<String, Integer>();
+			final var entries2 = new Map<>(entries1);
+
+			assert entries2.equals(entries1);
+		}
+	}
+
+	@Nested
 	@DisplayName(".isEmpty()")
 	class IsEmptyTests {
 		@Test

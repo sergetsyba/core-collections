@@ -19,8 +19,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 
 	/**
 	 * Creates a copy of the specified entries.
-	 *
-	 * @param entries
 	 */
 	public Map(Map<K, V> entries) {
 		this(entries.store);
@@ -292,7 +290,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		for (var entry : this) {
 			operation.accept(entry.key, entry.value);
 		}
-		
+
 		return this;
 	}
 
