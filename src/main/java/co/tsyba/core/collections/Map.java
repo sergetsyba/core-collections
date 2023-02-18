@@ -113,16 +113,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Returns {@code true} when this map contains an entry, whose key and value satisfy
-	 * the specified {@link BiPredicate}; returns {@code false} otherwise.
-	 * <p>
-	 * When this {@link Map} is empty, returns {@code false}
-	 */
-	public boolean contains(BiPredicate<K, V> condition) {
-		return anyMatches(condition);
-	}
-
-	/**
 	 * Returns {@code true} when this map contains all entries of the specified map;
 	 * returns {@code false} otherwise.
 	 * <p>

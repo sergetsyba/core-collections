@@ -109,38 +109,6 @@ class MapTests {
 	}
 
 	@Nested
-	@DisplayName(".contains(Predicate<K, V>)")
-	class ContainsPredicateTests {
-		private final Map<String, Integer> entries = new MutableMap<String, Integer>()
-			.set("L", 0)
-			.set("Q", 9)
-			.set("t", 5)
-			.toImmutable();
-
-		@Test
-		@DisplayName("when entry is present, returns true")
-		void returnsTrueWhenPresent() {
-			assert entries.contains((key, value) ->
-				value > 5);
-		}
-
-		@Test
-		@DisplayName("when entry is absent, returns false")
-		void returnsFalseWhenAbsent() {
-			assert !entries.contains((key, value) ->
-				value > 10);
-		}
-
-		@Test
-		@DisplayName("when map is empty, returns false")
-		void returnsFalseWhenEmpty() {
-			final var entries = new Map<String, Integer>();
-			assert !entries.contains((key, value) ->
-				value > 5);
-		}
-	}
-
-	@Nested
 	@DisplayName(".contains(Map<K, V>)")
 	class ContainsMapTests {
 		@Nested
