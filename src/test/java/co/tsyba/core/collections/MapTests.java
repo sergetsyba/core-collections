@@ -10,29 +10,171 @@ import java.util.Optional;
 
 class MapTests {
 	@Nested
+	@DisplayName("Map(Entry<K, V>...)")
+	class ConstructorVarargsTests {
+		@Test
+		@DisplayName("creates map")
+		void createsMap() {
+			final var entries = new Map<>(
+				new Map.Entry<>("R", 2),
+				new Map.Entry<>("J", 3),
+				new Map.Entry<>("b", 7));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("R", 2),
+				new Map.Entry<>("J", 3),
+				new Map.Entry<>("b", 7));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("creates empty map")
+		void createsEmptyMap() {
+			final var entries = new Map<>();
+
+			final var expected = new Set<>();
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+	}
+
+	@Nested
 	@DisplayName("Map(Map<K, V>)")
 	class ConstructorMapTests {
 		@Test
 		@DisplayName("creates map")
 		void createsMap() {
-			final var entries1 = new MutableMap<String, Integer>()
-				.set("B", 2)
-				.set("b", 1)
-				.set("O", 0)
-				.set("o", 1)
-				.toImmutable();
+			final var entries = new Map<>(
+				new MutableMap<String, Integer>()
+					.set("B", 2)
+					.set("b", 1)
+					.set("O", 0)
+					.set("o", 1));
 
-			final var entries2 = new Map<>(entries1);
-			assert entries2.equals(entries1);
+			final var expected = new Set<>(
+				new Map.Entry<>("B", 2),
+				new Map.Entry<>("b", 1),
+				new Map.Entry<>("O", 0),
+				new Map.Entry<>("o", 1));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
 		}
 
 		@Test
-		@DisplayName("when specified map is empty, creates empty map")
+		@DisplayName("creates empty map")
 		void createsEmptyMapWhenMapEmpty() {
-			final var entries1 = new Map<String, Integer>();
-			final var entries2 = new Map<>(entries1);
+			final var entries = new Map<String, Integer>();
 
-			assert entries2.equals(entries1);
+			final var expected = new Set<>();
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+	}
+
+	@Nested
+	@DisplayName("Map(List<K>, List<V>)")
+	class ConstructorListsTests {
+		@Test
+		@DisplayName("creates map")
+		void createsMap() {
+			final var entries = new Map<>(
+				new List<>("G", "b", "Q", "f"),
+				new List<>(4, 5, 2, 1));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 4),
+				new Map.Entry<>("b", 5),
+				new Map.Entry<>("Q", 2),
+				new Map.Entry<>("f", 1));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when keys list is shorter, ignores extra values")
+		void createsMapWhenKeysShorterThanValues() {
+			final var entries = new Map<>(
+				new List<>("G", "b"),
+				new List<>(4, 5, 2, 1));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 4),
+				new Map.Entry<>("b", 5));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when keys list is empty, creates empty map")
+		void createsEmptyMapWhenKeysEmpty() {
+			final var entries = new Map<>(
+				new List<>(),
+				new List<>(2, 7, 3, 2, 4));
+
+			final var expected = new Set<>();
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when values list is shorter, ignores extra keys")
+		void createsMapWhenValuesShorterThanKeys() {
+			final var entries = new Map<>(
+				new List<>("V", "s"),
+				new List<>(2, 7, 3, 2, 4));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("V", 2),
+				new Map.Entry<>("s", 7));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when values list is empty, creates empty map")
+		void createsEmptyMapWhenValuesEmpty() {
+			final var entries = new Map<>(
+				new List<>("V", "s"),
+				new List<>());
+
+			final var expected = new Set<>();
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("creates empty map")
+		void createsEmptyMap() {
+			final var entries = new Map<>(
+				new List<>(),
+				new List<>());
+
+			final var expected = new Set<>();
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when keys contain repeated items, uses last occurrence")
+		void keepsLastOccurrenceWhenKeysRepeat() {
+			final var entries = new Map<>(
+				new List<>("V", "a", "s", "V", "b"),
+				new List<>(2, 3, 4, 5, 6));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("V", 5),
+				new Map.Entry<>("a", 3),
+				new Map.Entry<>("s", 4),
+				new Map.Entry<>("b", 6));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
 		}
 	}
 

@@ -18,42 +18,48 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Creates a copy of the specified entries.
+	 * Creates a map with the specified entries.
+	 */
+	@SafeVarargs
+	public Map(Entry<K, V>... entries) {
+		final var store = new RobinHoodHashStore<Entry<K, V>>(entries.length);
+		for (var entry : entries) {
+			store.insert(entry);
+		}
+
+		this.store = store;
+	}
+
+	/**
+	 * Creates a copy of the specified {@link Map}.
 	 */
 	public Map(Map<K, V> entries) {
 		this(entries.store);
 	}
 
 	/**
-	 * Creates a map by matching keys with values at corresponding indexes in the
-	 * specified lists.
+	 * Creates a map with the specified keys and values, matching them by indexes in their
+	 * lists.
 	 * <p>
-	 * When the specified lists differ in item count, the created map will contain at most
-	 * the number of entries of the shorter of the specified lists.
+	 * When the specified lists differ in item count, extra items in the longer list are
+	 * ignored.
 	 * <p>
-	 * When the specified keys contain repeated items, only the last occurrence of the key
-	 * (as well as the value at the corresponding index) will end up in the map.
-	 *
-	 * @param keys
-	 * @param values
+	 * When the specified list of keys contains repeated items, only the last occurrence
+	 * of the key, as well as its matching value, ends up in the map.
 	 */
 	public Map(List<K> keys, List<V> values) {
-		final var entryCount = Math.min(
-			keys.getCount(),
-			values.getCount());
+		final var iterator1 = keys.iterator();
+		final var iterator2 = values.iterator();
 
-		this.store = new RobinHoodHashStore<>(entryCount);
-		Lists.iterate(keys, values, (key, value) -> {
-			final var entry = new Entry<>(key, value);
-			this.store.insert(entry);
-		});
-	}
+		final var store = new RobinHoodHashStore<Entry<K, V>>(64);
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			store.insert(
+				new Entry<>(
+					iterator1.next(),
+					iterator2.next()));
+		}
 
-	/**
-	 * Creates an empty map.
-	 */
-	public Map() {
-		this.store = new RobinHoodHashStore<>(0);
+		this.store = store;
 	}
 
 	/**
