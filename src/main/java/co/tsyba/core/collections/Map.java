@@ -10,7 +10,7 @@ import java.util.function.BiPredicate;
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 29, 2019.
  */
-public class Map<K, V> implements LameKeyedCollection<K, V> {
+public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	RobinHoodHashStore<Entry<K, V>> store;
 
 	Map(RobinHoodHashStore<Entry<K, V>> store) {
@@ -62,11 +62,11 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		this.store = store;
 	}
 
+	// todo:
+
 	/**
 	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores any
 	 * entries with {@code null} key or value.
-	 *
-	 * @param entries
 	 */
 	public Map(java.util.Map<K, V> entries) {
 		final var entryCount = entries.size();
@@ -84,7 +84,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * Returns {@code true} when this map has no entries; returns {@code false}
 	 * otherwise.
 	 */
-	@Override
 	public boolean isEmpty() {
 		return store.entryCount == 0;
 	}
@@ -92,7 +91,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	/**
 	 * Returns the number of entries in this map.
 	 */
-	@Override
 	public int getCount() {
 		return store.entryCount;
 	}
@@ -101,7 +99,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * Returns {@code true} when this map contains and entry with the specified key and
 	 * value; returns {@code false} otherwise.
 	 */
-	@Override
 	public boolean contains(K key, V value) {
 		if (key == null) {
 			return false;
@@ -123,7 +120,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * When the specified {@link Map} is empty, returns {@code true}.
 	 */
 	public boolean contains(Map<K, V> entries) {
-		return entries.eachMatches(this::contains);
+		return entries.matches(this::contains);
 	}
 
 	/**
@@ -141,7 +138,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	/**
 	 * Returns values of all entries in this map.
 	 */
-	@Override
 	public Collection<V> getValues() {
 		final var values = new MutableList<V>();
 		for (var entry : this) {
@@ -208,7 +204,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * <p>
 	 * When this map is empty, returns {@code false}.
 	 */
-	@Override
 	public boolean anyMatches(BiPredicate<K, V> condition) {
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
@@ -225,7 +220,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * <p>
 	 * When this map is empty, returns {@code true};
 	 */
-	@Override
 	public boolean noneMatches(BiPredicate<K, V> condition) {
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
@@ -291,7 +285,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 *
 	 * @return itself
 	 */
-	@Override
 	public Map<K, V> iterate(BiConsumer<K, V> operation) {
 		for (var entry : this) {
 			operation.accept(entry.key, entry.value);
@@ -307,7 +300,6 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	 * with a {@code null} key or value, the converted entry will be ignored. Therefore,
 	 * this method can be used to both filter and convert this map in a single operation.
 	 */
-	@Override
 	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
 		final var entries = new MutableMap<L, W>();
 		for (var entry : this) {
@@ -343,6 +335,31 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		return new List<>(items);
 	}
 
+	/**
+	 * Combines this map into a {@link String} by joining key and value of each entry with
+	 * the specified value separator, then joining entries with the specified entry
+	 * separator between them.
+	 */
+	public String join(String valueSeparator, String entrySeparator) {
+		final var iterator = iterator();
+		final var builder = new StringBuilder();
+
+		if (iterator.hasNext()) {
+			final var entry = iterator.next();
+			builder.append(entry.key)
+				.append(valueSeparator)
+				.append(entry.value);
+		}
+		while (iterator.hasNext()) {
+			final var entry = iterator.next();
+			builder.append(entrySeparator)
+				.append(entry.key)
+				.append(valueSeparator)
+				.append(entry.value);
+		}
+
+		return builder.toString();
+	}
 
 	/**
 	 * Converts this map into an instance of {@link java.util.Map}.
@@ -358,19 +375,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 
 	@Override
 	public Iterator<Entry<K, V>> iterator() {
-		return new Iterator<Entry<K, V>>() {
-			final Iterator<Entry<K, V>> iterator = store.iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public Entry<K, V> next() {
-				return iterator.next();
-			}
-		};
+		return store.iterator();
 	}
 
 	@Override
@@ -387,7 +392,8 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 			return false;
 		}
 
-		final Map map = (Map) object;
+		@SuppressWarnings("unchecked")
+		final var map = (Map<K, V>) object;
 		return store.equals(map.store);
 	}
 
@@ -428,11 +434,5 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 			final var entry = (Entry) object;
 			return key.equals(entry.key);
 		}
-	}
-
-	// todo: remove
-	@Override
-	public KeyedCollection<K, V> filter(BiPredicate<K, V> condition) {
-		throw new UnsupportedOperationException();
 	}
 }
