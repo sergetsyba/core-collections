@@ -1029,4 +1029,32 @@ class MapTests {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName(".join(String, String)")
+	class JoinTests {
+		@Test
+		@DisplayName("when map is not empty, returns joined entries")
+		void returnsJoinedEntries() {
+			final var entries = new MutableMap<String, Integer>()
+				.set("B", 2)
+				.set("V", 1)
+				.set("X", 0)
+				.toImmutable();
+
+			final var joined = entries.join(":", ", ");
+			assert "B:2, V:1, X:0"
+				.equals(joined);
+		}
+
+		@Test
+		@DisplayName("when map is empty, returns empty string")
+		void returnsEmptyStringWhenMapEmpty() {
+			final var entries = new Map<String, Integer>();
+			final var joined = entries.join(":", ", ");
+
+			assert ""
+				.equals(joined);
+		}
+	}
 }

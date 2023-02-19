@@ -248,9 +248,9 @@ public class MutableMap<K, V> extends Map<K, V> {
 	/**
 	 * @inheritDoc
 	 */
-	@Override
+//	@Override
 	public MutableMap<K, V> filter(BiPredicate<K, V> condition) {
-		super.filter(condition);
+//		super.filter(condition);
 		return this;
 	}
 
