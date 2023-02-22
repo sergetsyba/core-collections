@@ -41,40 +41,6 @@ class MapTests {
 	}
 
 	@Nested
-	@DisplayName("Map(Map<K, V>)")
-	class ConstructorMapTests {
-		@Test
-		@DisplayName("creates map")
-		void createsMap() {
-			final var entries = new Map<>(
-				new Map<>(
-					new Map.Entry<>("B", 2),
-					new Map.Entry<>("b", 1),
-					new Map.Entry<>("O", 0),
-					new Map.Entry<>("o", 1)));
-
-			final var expected = new Set<>(
-				new Map.Entry<>("B", 2),
-				new Map.Entry<>("b", 1),
-				new Map.Entry<>("O", 0),
-				new Map.Entry<>("o", 1));
-
-			assert new Set<>(entries.store)
-				.equals(expected);
-		}
-
-		@Test
-		@DisplayName("creates empty map")
-		void createsEmptyMapWhenMapEmpty() {
-			final var entries = new Map<String, Integer>();
-
-			final var expected = new Set<>();
-			assert new Set<>(entries.store)
-				.equals(expected);
-		}
-	}
-
-	@Nested
 	@DisplayName("Map(List<K>, List<V>)")
 	class ConstructorListsTests {
 		@Test
@@ -173,6 +139,40 @@ class MapTests {
 				new Map.Entry<>("s", 4),
 				new Map.Entry<>("b", 6));
 
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+	}
+
+	@Nested
+	@DisplayName("Map(Map<K, V>)")
+	class ConstructorMapTests {
+		@Test
+		@DisplayName("creates map")
+		void createsMap() {
+			final var entries = new Map<>(
+				new Map<>(
+					new Map.Entry<>("B", 2),
+					new Map.Entry<>("b", 1),
+					new Map.Entry<>("O", 0),
+					new Map.Entry<>("o", 1)));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("B", 2),
+				new Map.Entry<>("b", 1),
+				new Map.Entry<>("O", 0),
+				new Map.Entry<>("o", 1));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("creates empty map")
+		void createsEmptyMapWhenMapEmpty() {
+			final var entries = new Map<String, Integer>();
+
+			final var expected = new Set<>();
 			assert new Set<>(entries.store)
 				.equals(expected);
 		}
@@ -737,8 +737,8 @@ class MapTests {
 	}
 
 	@Nested
-	@DisplayName(".matches(BiPredicate<K, V>)")
-	class MatchesTests {
+	@DisplayName(".allMatch(BiPredicate<K, V>)")
+	class AllMatchTests {
 		@Nested
 		@DisplayName("when map is not empty")
 		class NotEmptyMapTests {
@@ -752,14 +752,14 @@ class MapTests {
 			@Test
 			@DisplayName("when all entries match, returns true")
 			void returnsTrueWhenAllMatch() {
-				assert entries.matches((key, value) ->
+				assert entries.allMatch((key, value) ->
 					value < 10);
 			}
 
 			@Test
 			@DisplayName("when any entry does not match, returns false")
 			void returnsFalseWhenAnyDoesNotMatch() {
-				assert !entries.matches((key, value) ->
+				assert !entries.allMatch((key, value) ->
 					value > 5);
 			}
 		}
@@ -772,7 +772,7 @@ class MapTests {
 			@Test
 			@DisplayName("returns true")
 			void returnsTrue() {
-				assert entries.matches((key, value) ->
+				assert entries.allMatch((key, value) ->
 					value < 10);
 			}
 		}

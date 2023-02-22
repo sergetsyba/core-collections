@@ -31,13 +31,6 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Creates a copy of the specified {@link Map}.
-	 */
-	public Map(Map<K, V> entries) {
-		this(entries.store);
-	}
-
-	/**
 	 * Creates a map with the specified keys and values, matching them by indexes in their
 	 * lists.
 	 * <p>
@@ -60,6 +53,13 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		}
 
 		this.store = store;
+	}
+
+	/**
+	 * Creates a copy of the specified {@link Map}.
+	 */
+	public Map(Map<K, V> entries) {
+		this(entries.store);
 	}
 
 	// todo:
@@ -120,7 +120,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	 * When the specified {@link Map} is empty, returns {@code true}.
 	 */
 	public boolean contains(Map<K, V> entries) {
-		return entries.matches(this::contains);
+		return entries.allMatch(this::contains);
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	/**
 	 * Returns values of all entries in this map.
 	 */
-	public Collection<V> getValues() {
+	public List<V> getValues() {
 		final var values = new MutableList<V>();
 		for (var entry : this) {
 			values.append(entry.value);
@@ -236,7 +236,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	 * <p>
 	 * When this map is empty, returns {@code true}.
 	 */
-	public boolean matches(BiPredicate<K, V> condition) {
+	public boolean allMatch(BiPredicate<K, V> condition) {
 		for (var entry : this) {
 			if (!condition.test(entry.key, entry.value)) {
 				return false;
