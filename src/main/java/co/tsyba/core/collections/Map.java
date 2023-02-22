@@ -264,23 +264,6 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
-	 * <p>
-	 * When no entry in this map satisfies the specified {@link BiPredicate}, or when this
-	 * map is empty, returns an empty {@link Map}.
-	 */
-	public Map<K, V> match(BiPredicate<K, V> condition) {
-		final var entries = new MutableMap<K, V>();
-		for (var entry : this) {
-			if (condition.test(entry.key, entry.value)) {
-				entries.set(entry.key, entry.value);
-			}
-		}
-
-		return entries.toImmutable();
-	}
-
-	/**
 	 * Applies the specified {@link BiConsumer} to each entry in this map.
 	 *
 	 * @return itself
@@ -291,6 +274,23 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		}
 
 		return this;
+	}
+
+	/**
+	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
+	 * <p>
+	 * When no entry in this map satisfies the specified {@link BiPredicate}, or when this
+	 * map is empty, returns an empty {@link Map}.
+	 */
+	public Map<K, V> filter(BiPredicate<K, V> condition) {
+		final var entries = new MutableMap<K, V>();
+		for (var entry : this) {
+			if (condition.test(entry.key, entry.value)) {
+				entries.set(entry.key, entry.value);
+			}
+		}
+
+		return entries.toImmutable();
 	}
 
 	/**
