@@ -43,7 +43,7 @@ public class List<T> implements IndexedCollection<T> {
 		// trim excess capacity, if necessary
 		this.store2 = (count == store.length)
 			? store
-			: Arrays.copyOf(store, count);
+			: Arrays.copyOf(store2, count);
 	}
 
 	/**

@@ -297,8 +297,8 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	 * Returns entries of this map, converted by the specified {@link BiFunction}.
 	 * <p>
 	 * When the specified {@link BiFunction} returns a {@code null} or an {@link Entry}
-	 * with a {@code null} key or value, the converted entry will be ignored. Therefore,
-	 * this method can be used to both filter and convert this map in a single operation.
+	 * with a {@code null} key or value, the converted entry is ignored. Therefore, this
+	 * method can be used to both filter and convert this map in a single operation.
 	 */
 	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
 		final var entries = new MutableMap<L, W>();
@@ -313,26 +313,17 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Returns entries of this map with their key and value combined by the specified
-	 * {@link BiFunction}.
-	 * <p>
-	 * Any {@code null} value returned by the specified {@link BiFunction} will be
-	 * ignored. This can be used to perform both item filtering and key-value combination
-	 * in a single operation.
-	 *
-	 * @param <R>
-	 * @param converter
-	 * @return
+	 * Combines this map into a single value by applying the specified {@link TriFunction}
+	 * to each entry and an intermediate combination, using the specified initial value as
+	 * a starting point.
 	 */
-	public <R> Collection<R> collect(BiFunction<K, V, R> converter) {
-		final var items = new ContiguousArrayStore<R>(store.entryCount);
+	public <R> R combine(R initial, TriFunction<R, K, V, R> combiner) {
+		var combined = initial;
 		for (var entry : this) {
-			final var convertedItem = converter.apply(entry.key, entry.value);
-			items.append(convertedItem);
+			combined = combiner.apply(combined, entry.key, entry.value);
 		}
 
-		items.removeExcessCapacity();
-		return new List<>(items);
+		return combined;
 	}
 
 	/**
@@ -399,7 +390,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 
 	@Override
 	public String toString() {
-		return "{" + join(": ", ", ") + "}";
+		return "{" + join(":", ", ") + "}";
 	}
 
 	public static class Entry<K, V> {

@@ -59,13 +59,13 @@ public class EmptyMapTests {
 
 	@Test
 	public void collectsEntries() {
-		// joins keys with values
-		final var items1 = emptyEntries.collect((key, value) -> key + value);
-		assert items1.equals(new List<>());
-
-		// removes all values
-		final var items2 = emptyEntries.collect((key, value) -> null);
-		assert items2.equals(new List<>());
+//		// joins keys with values
+//		final var items1 = emptyEntries.collect((key, value) -> key + value);
+//		assert items1.equals(new List<>());
+//
+//		// removes all values
+//		final var items2 = emptyEntries.collect((key, value) -> null);
+//		assert items2.equals(new List<>());
 	}
 
 	@Test

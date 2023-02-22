@@ -1031,6 +1031,38 @@ class MapTests {
 	}
 
 	@Nested
+	@DisplayName(".combine(TriFunction<R, K, V, R>)")
+	class CombineTests {
+		@Test
+		@DisplayName("when map is not empty, returns combined entries")
+		void returnsCombinedWhenNotEmpty() {
+			final var entries = new MutableMap<String, Integer>()
+				.set("V", 9)
+				.set("c", 0)
+				.set("W", 7)
+				.set("x", 4)
+				.toImmutable();
+
+			final var combined = entries.combine("Map", (current, key, value) ->
+				String.format("%s %s:%d", current, key, value));
+
+			assert "Map V:9 W:7 c:0 x:4"
+				.equals(combined);
+		}
+
+		@Test
+		@DisplayName("when map is empty, returns initial value")
+		void returnsInitialWhenEmpty() {
+			final var entries = new Map<String, Integer>();
+			final var combined = entries.combine("Empty Map", (current, key, value) ->
+				String.format("%s %s:%d", current, key, value));
+
+			assert "Empty Map"
+				.equals(combined);
+		}
+	}
+
+	@Nested
 	@DisplayName(".join(String, String)")
 	class JoinTests {
 		@Test
