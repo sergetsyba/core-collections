@@ -2,6 +2,7 @@ package co.tsyba.core.collections;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -398,10 +399,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		public final V value;
 
 		/**
-		 * Creates a new entry with the specified key and value.
-		 *
-		 * @param key
-		 * @param value
+		 * Creates an entry with the specified key and value.
 		 */
 		public Entry(K key, V value) {
 			this.key = key;
@@ -410,20 +408,26 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 
 		@Override
 		public int hashCode() {
-			return key.hashCode();
+			return Objects.hashCode(key);
 		}
 
 		@Override
 		public boolean equals(Object object) {
-			if (object.equals(key)) {
+			if (object == this) {
 				return true;
 			}
 			if (!(object instanceof Entry)) {
 				return false;
 			}
 
-			final var entry = (Entry) object;
+			@SuppressWarnings("unchecked")
+			final var entry = (Entry<K, V>) object;
 			return key.equals(entry.key);
+		}
+
+		@Override
+		public String toString() {
+			return key + ":" + value;
 		}
 	}
 }
