@@ -30,6 +30,62 @@ class MapTests {
 		}
 
 		@Test
+		@DisplayName("ignores null entries")
+		void ignoresNullEntries() {
+			final var entries = new Map<>(
+				null,
+				new Map.Entry<>("F", 3),
+				null,
+				new Map.Entry<>("N", 7),
+				null,
+				null);
+
+			final var expected = new Set<>(
+				new Map.Entry<>("F", 3),
+				new Map.Entry<>("N", 7));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("ignores entries with null keys")
+		void ignoresEntriesWithNullKeys() {
+			final var entries = new Map<>(
+				null,
+				new Map.Entry<>(null, 3),
+				new Map.Entry<>("G", 0),
+				new Map.Entry<>("N", 2),
+				new Map.Entry<>(null, 8),
+				new Map.Entry<>(null, 0));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 0),
+				new Map.Entry<>("N", 2));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("ignores entries with null values")
+		void ignoresEntriesWithNullValues() {
+			final var entries = new Map<>(
+				null,
+				new Map.Entry<>("q", 3),
+				new Map.Entry<>("v", null),
+				new Map.Entry<>("N", null),
+				new Map.Entry<>("a", 8));
+
+			final var expected = new Set<>(
+				new Map.Entry<>("q", 3),
+				new Map.Entry<>("a", 8));
+
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
 		@DisplayName("creates empty map")
 		void createsEmptyMap() {
 			final var entries = new Map<>();
@@ -246,15 +302,15 @@ class MapTests {
 		}
 
 		@Test
-		@DisplayName("when key is absent, returns false")
-		void returnsFalseWhenKeyAbsent() {
-			assert !entries.contains("N", 2);
-		}
-
-		@Test
 		@DisplayName("when key is present but value is absent, returns false")
 		void returnsFalseWhenValueDifferent() {
 			assert !entries.contains("t", 9);
+		}
+
+		@Test
+		@DisplayName("when key is absent, returns false")
+		void returnsFalseWhenKeyAbsent() {
+			assert !entries.contains("N", 2);
 		}
 
 		@Test

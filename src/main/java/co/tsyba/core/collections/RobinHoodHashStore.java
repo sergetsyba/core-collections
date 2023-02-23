@@ -327,7 +327,7 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 		return true;
 	}
 
-	class Entry<T> {
+	static class Entry<T> {
 		public final T item;
 		public final int hashCode;
 
@@ -347,7 +347,8 @@ class RobinHoodHashStore<E> implements Iterable<E> {
 				return false;
 			}
 
-			final var entry = (Entry) object;
+			@SuppressWarnings("unchecked")
+			final var entry = (Entry<T>) object;
 			return item.equals(entry.item);
 		}
 	}

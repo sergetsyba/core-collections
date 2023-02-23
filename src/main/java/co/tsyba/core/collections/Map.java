@@ -20,12 +20,20 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 
 	/**
 	 * Creates a map with the specified entries.
+	 * <p>
+	 * Ignores any {@code null} values among the specified entries, as well as entries
+	 * with {@code} null keys or values.
+	 * <p>
+	 * When the specified entries contain repeated keys, only the last entry with such key
+	 * ends up in the map.
 	 */
 	@SafeVarargs
 	public Map(Entry<K, V>... entries) {
 		final var store = new RobinHoodHashStore<Entry<K, V>>(entries.length);
 		for (var entry : entries) {
-			store.insert(entry);
+			if (entry != null && entry.key != null && entry.value != null) {
+				store.insert(entry);
+			}
 		}
 
 		this.store = store;
@@ -416,13 +424,18 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 			if (object == this) {
 				return true;
 			}
+			if (object == key) {
+				return true;
+			}
 			if (!(object instanceof Entry)) {
 				return false;
 			}
 
 			@SuppressWarnings("unchecked")
 			final var entry = (Entry<K, V>) object;
-			return key.equals(entry.key);
+
+			return key.equals(entry.key)
+				&& value.equals(entry.value);
 		}
 
 		@Override
