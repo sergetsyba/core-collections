@@ -31,6 +31,7 @@ public class MutableList<T> extends List<T> {
 	 *
 	 * @param items
 	 */
+	@SafeVarargs
 	public MutableList(T... items) {
 		this(Math.min(items.length, minimumCapacity));
 		this.store.append(items);

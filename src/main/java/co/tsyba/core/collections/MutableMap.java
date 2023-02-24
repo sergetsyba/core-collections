@@ -35,16 +35,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores any
-	 * entries with {@code null} key or value.
-	 *
-	 * @param entries
-	 */
-	public MutableMap(java.util.Map<K, V> entries) {
-		super(entries);
-	}
-
-	/**
 	 * Returns value of an entry with the specified key in this map, keeping the specified
 	 * value as a backup.
 	 *

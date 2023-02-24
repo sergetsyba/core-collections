@@ -1,6 +1,5 @@
 package co.tsyba.core.collections;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
@@ -8,9 +7,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Jul 29, 2019.
- */
 public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	RobinHoodHashStore<Entry<K, V>> store;
 
@@ -46,8 +42,8 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	 * When the specified lists differ in item count, extra items in the longer list are
 	 * ignored.
 	 * <p>
-	 * When the specified list of keys contains repeated items, only the last occurrence
-	 * of the key, as well as its matching value, ends up in the map.
+	 * When the specified keys contain repeated items, only the last occurrence of such
+	 * key, as well as its matching value, ends up in the map.
 	 */
 	public Map(List<K> keys, List<V> values) {
 		final var iterator1 = keys.iterator();
@@ -71,24 +67,6 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		this(entries.store);
 	}
 
-	// todo:
-
-	/**
-	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores any
-	 * entries with {@code null} key or value.
-	 */
-	public Map(java.util.Map<K, V> entries) {
-		final var entryCount = entries.size();
-		this.store = new RobinHoodHashStore<>(entryCount);
-
-		entries.forEach((key, value) -> {
-			if (key != null && value != null) {
-				final var entry = new Entry<>(key, value);
-				this.store.insert(entry);
-			}
-		});
-	}
-
 	/**
 	 * Returns {@code true} when this map has no entries; returns {@code false}
 	 * otherwise.
@@ -105,7 +83,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Returns {@code true} when this map contains and entry with the specified key and
+	 * Returns {@code true} when this map contains an entry with the specified key and
 	 * value; returns {@code false} otherwise.
 	 */
 	public boolean contains(K key, V value) {
@@ -159,7 +137,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	/**
 	 * Returns value for the specified key in this map.
 	 * <p>
-	 * When this map has no value for the specified key, returns an empty
+	 * When this map contains no entry with the specified key, returns an empty
 	 * {@link Optional}.
 	 */
 	public Optional<V> get(K key) {
@@ -259,8 +237,8 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	 * Returns value of some entry in this map, which satisfies the specified
 	 * {@link BiPredicate}.
 	 * <p>
-	 * When no entry in this map satisfies the specified {@link BiPredicate}, or when this
-	 * map is empty, returns an empty {@link Optional}.
+	 * When no entry in this map satisfies the specified {@link BiPredicate}, returns an
+	 * empty {@link Optional}.
 	 */
 	public Optional<V> matchAny(BiPredicate<K, V> condition) {
 		for (var entry : this) {
@@ -288,8 +266,8 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	/**
 	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
 	 * <p>
-	 * When no entry in this map satisfies the specified {@link BiPredicate}, or when this
-	 * map is empty, returns an empty {@link Map}.
+	 * When no entry in this map satisfies the specified {@link BiPredicate}, returns an
+	 * empty {@link Map}.
 	 */
 	public Map<K, V> filter(BiPredicate<K, V> condition) {
 		final var entries = new MutableMap<K, V>();
@@ -306,8 +284,8 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	 * Returns entries of this map, converted by the specified {@link BiFunction}.
 	 * <p>
 	 * When the specified {@link BiFunction} returns a {@code null} or an {@link Entry}
-	 * with a {@code null} key or value, the converted entry is ignored. Therefore, this
-	 * method can be used to both filter and convert this map in a single operation.
+	 * with a {@code null} key or value, the converted entry is ignored. So, this method
+	 * can be used to both filter and convert this map in a single operation.
 	 */
 	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
 		final var entries = new MutableMap<L, W>();
@@ -336,9 +314,9 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Combines this map into a {@link String} by joining key and value of each entry with
-	 * the specified value separator, then joining entries with the specified entry
-	 * separator between them.
+	 * Combines this map into a {@link String} by joining {@link String} representations
+	 * of key and value of each entry with the specified value separator, then joining
+	 * them with the specified entry separator between them.
 	 */
 	public String join(String valueSeparator, String entrySeparator) {
 		final var iterator = iterator();
@@ -359,18 +337,6 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		}
 
 		return builder.toString();
-	}
-
-	/**
-	 * Converts this map into an instance of {@link java.util.Map}.
-	 *
-	 * @return
-	 */
-	public java.util.Map<K, V> bridge() {
-		final var entries = new HashMap<K, V>();
-		iterate(entries::put);
-
-		return entries;
 	}
 
 	@Override
@@ -433,9 +399,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 
 			@SuppressWarnings("unchecked")
 			final var entry = (Entry<K, V>) object;
-
-			return key.equals(entry.key)
-				&& value.equals(entry.value);
+			return key.equals(entry.key);
 		}
 
 		@Override
@@ -444,3 +408,5 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		}
 	}
 }
+
+// created on Jul 29, 2019.
