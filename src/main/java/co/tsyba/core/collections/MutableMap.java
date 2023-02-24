@@ -35,30 +35,20 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores
-	 * any entries with {@code null} key or value.
-	 *
-	 * @param entries
-	 */
-	public MutableMap(java.util.Map<K, V> entries) {
-		super(entries);
-	}
-
-	/**
-	 * Returns value of an entry with the specified key in this map, keeping the
-	 * specified value as a backup.
+	 * Returns value of an entry with the specified key in this map, keeping the specified
+	 * value as a backup.
 	 *
 	 * <p>
-	 * When this map contains an entry with the specified key, returns its
-	 * value, just like {@link #get(java.lang.Object)}.
+	 * When this map contains an entry with the specified key, returns its value, just
+	 * like {@link #get(java.lang.Object)}.
 	 * <p>
 	 * When this map does not contain an entry with the specified key,
 	 * <em>inserts a new entry</em> with the specified key and backup value into
 	 * this map and returns the specified backup value.
 	 * <p>
-	 * Does nothing when the specified key {@code null}. Similarly, does nothing
-	 * when this map does not contain an entry with the specified key and the
-	 * specified backup value is {@code null}.
+	 * Does nothing when the specified key {@code null}. Similarly, does nothing when this
+	 * map does not contain an entry with the specified key and the specified backup value
+	 * is {@code null}.
 	 *
 	 * @param key
 	 * @param backupValue
@@ -66,16 +56,16 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 */
 	public V get(K key, V backupValue) {
 		return get(key)
-				.orElseGet(() -> {
-					set(key, backupValue);
-					return backupValue;
-				});
+			.orElseGet(() -> {
+				set(key, backupValue);
+				return backupValue;
+			});
 	}
 
 	/**
-	 * Inserts an entry with the specified key and value into this map. When
-	 * this map contains an entry with the specified key, replaces its value
-	 * with the specified one.
+	 * Inserts an entry with the specified key and value into this map. When this map
+	 * contains an entry with the specified key, replaces its value with the specified
+	 * one.
 	 *
 	 * <p>
 	 * Does nothing when either key or value is {@code null}.
@@ -99,22 +89,22 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Inserts an entry with the specified key and value into this map, using
-	 * the specified {@link BiFunction} to resolve value for an existing entry
-	 * with the specified key.
+	 * Inserts an entry with the specified key and value into this map, using the
+	 * specified {@link BiFunction} to resolve value for an existing entry with the
+	 * specified key.
 	 *
 	 * <p>
-	 * When this map does not contain an entry with the specified key, inserts a
-	 * new entry with the specified key and value, just like {@link #set(java.lang.Object, java.lang.Object)
-	 * }.
+	 * When this map does not contain an entry with the specified key, inserts a new entry
+	 * with the specified key and value, just like
+	 * {@link #set(java.lang.Object, java.lang.Object) }.
 	 * <p>
-	 * When this map contains an entry with the specified key, calls the
-	 * specified {@link BiFunction} with value of the existing entry and the
-	 * specified value. Then, replaces value of the existing entry with the
-	 * returned value of the {@link BiFunction}.
+	 * When this map contains an entry with the specified key, calls the specified
+	 * {@link BiFunction} with value of the existing entry and the specified value. Then,
+	 * replaces value of the existing entry with the returned value of the
+	 * {@link BiFunction}.
 	 * <p>
-	 * Does nothing when the specified key, the specified value, or the value
-	 * returned by the specified {@link BiFunction} is {@code null}.
+	 * Does nothing when the specified key, the specified value, or the value returned by
+	 * the specified {@link BiFunction} is {@code null}.
 	 * <p>
 	 * Returns itself.
 	 *
@@ -125,17 +115,17 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 */
 	public MutableMap<K, V> set(K key, V value, BiFunction<V, V, V> merger) {
 		final var setValue = get(key)
-				.map(storedValue -> merger.apply(storedValue, value))
-				.orElse(value);
+			.map(storedValue -> merger.apply(storedValue, value))
+			.orElse(value);
 
 		set(key, setValue);
 		return this;
 	}
 
 	/**
-	 * Inserts the specified entries into this map. When this map contains
-	 * entries with keys from the specified entries, replaces their values with
-	 * corresponding values from the specified ones.
+	 * Inserts the specified entries into this map. When this map contains entries with
+	 * keys from the specified entries, replaces their values with corresponding values
+	 * from the specified ones.
 	 *
 	 * <p>
 	 * Does nothing when the specified {@link MutableMap} is {@code null}.
@@ -156,8 +146,8 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Removes entry with the specified key from this map. Does nothing when
-	 * this map does not contain an entry with the specified key.
+	 * Removes entry with the specified key from this map. Does nothing when this map does
+	 * not contain an entry with the specified key.
 	 *
 	 * <p>
 	 * Does nothing when the specified key is {@code null}.
@@ -199,8 +189,8 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Removes entries with the specified keys from the map. Ignores any
-	 * {@code null}s among the specified keys.
+	 * Removes entries with the specified keys from the map. Ignores any {@code null}s
+	 * among the specified keys.
 	 *
 	 * <p>
 	 * Does nothing when the specified variadic array is {@code null}.
@@ -248,9 +238,9 @@ public class MutableMap<K, V> extends Map<K, V> {
 	/**
 	 * @inheritDoc
 	 */
-	@Override
+//	@Override
 	public MutableMap<K, V> filter(BiPredicate<K, V> condition) {
-		super.filter(condition);
+//		super.filter(condition);
 		return this;
 	}
 
@@ -263,13 +253,18 @@ public class MutableMap<K, V> extends Map<K, V> {
 		for (var entry : this) {
 			final var convertedEntry = converter.apply(entry.key, entry.value);
 			if (convertedEntry != null
-					&& convertedEntry.key != null
-					&& convertedEntry.value != null) {
+				&& convertedEntry.key != null
+				&& convertedEntry.value != null) {
 
 				convertEntries.insert(convertedEntry);
 			}
 		}
 
 		return new MutableMap<>(convertEntries);
+	}
+
+	public Map<K, V> toImmutable() {
+		final var store2 = new RobinHoodHashStore<>(store);
+		return new Map<>(store2);
 	}
 }

@@ -180,8 +180,8 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection, converted by the specified {@link Function}.
 	 * <p>
 	 * When the specified {@link Function} returns {@code null}, the converted value will
-	 * be ignored. Therefore, this method can be used to perform both filter and convert
-	 * this collection in a single operation.
+	 * be ignored. Therefore, this method can be used to both filter and convert this
+	 * collection in a single operation.
 	 */
 	<R> Collection<R> convert(Function<T, R> converter);
 

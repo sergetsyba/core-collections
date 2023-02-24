@@ -1,15 +1,13 @@
 package co.tsyba.core.collections;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Jul 29, 2019.
- */
-public class Map<K, V> implements LameKeyedCollection<K, V> {
+public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	RobinHoodHashStore<Entry<K, V>> store;
 
 	Map(RobinHoodHashStore<Entry<K, V>> store) {
@@ -17,138 +15,130 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 	}
 
 	/**
-	 * Creates a copy of the specified entries.
-	 *
-	 * @param entries
+	 * Creates a map with the specified entries.
+	 * <p>
+	 * Ignores any {@code null} values among the specified entries, as well as entries
+	 * with {@code} null keys or values.
+	 * <p>
+	 * When the specified entries contain repeated keys, only the last entry with such key
+	 * ends up in the map.
+	 */
+	@SafeVarargs
+	public Map(Entry<K, V>... entries) {
+		final var store = new RobinHoodHashStore<Entry<K, V>>(entries.length);
+		for (var entry : entries) {
+			if (entry != null && entry.key != null && entry.value != null) {
+				store.insert(entry);
+			}
+		}
+
+		this.store = store;
+	}
+
+	/**
+	 * Creates a map with the specified keys and values, matching them by indexes in their
+	 * lists.
+	 * <p>
+	 * When the specified lists differ in item count, extra items in the longer list are
+	 * ignored.
+	 * <p>
+	 * When the specified keys contain repeated items, only the last occurrence of such
+	 * key, as well as its matching value, ends up in the map.
+	 */
+	public Map(List<K> keys, List<V> values) {
+		final var iterator1 = keys.iterator();
+		final var iterator2 = values.iterator();
+
+		final var store = new RobinHoodHashStore<Entry<K, V>>(64);
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			store.insert(
+				new Entry<>(
+					iterator1.next(),
+					iterator2.next()));
+		}
+
+		this.store = store;
+	}
+
+	/**
+	 * Creates a copy of the specified {@link Map}.
 	 */
 	public Map(Map<K, V> entries) {
 		this(entries.store);
 	}
 
 	/**
-	 * Creates a map by matching keys with values at corresponding indexes in
-	 * the specified lists.
-	 *
-	 * When the specified lists differ in item count, the created map will
-	 * contain at most the number of entries of the shorter of the specified
-	 * lists.
-	 *
-	 * When the specified keys contain repeated items, only the last occurrence
-	 * of the key (as well as the value at the corresponding index) will end up
-	 * in the map.
-	 *
-	 * @param keys
-	 * @param values
-	 */
-	public Map(List<K> keys, List<V> values) {
-		final var entryCount = Math.min(
-				keys.getCount(),
-				values.getCount());
-
-		this.store = new RobinHoodHashStore<>(entryCount);
-		Lists.iterate(keys, values, (key, value) -> {
-			final var entry = new Entry<>(key, value);
-			this.store.insert(entry);
-		});
-	}
-
-	/**
-	 * Creates an empty map.
-	 */
-	public Map() {
-		this.store = new RobinHoodHashStore<>(0);
-	}
-
-	/**
-	 * Creates a copy of the specified entries of {@link java.util.Map}. Ignores
-	 * any entries with {@code null} key or value.
-	 *
-	 * @param entries
-	 */
-	public Map(java.util.Map<K, V> entries) {
-		final var entryCount = entries.size();
-		this.store = new RobinHoodHashStore<>(entryCount);
-
-		entries.forEach((key, value) -> {
-			if (key != null && value != null) {
-				final var entry = new Entry<>(key, value);
-				this.store.insert(entry);
-			}
-		});
-	}
-
-	/**
 	 * Returns {@code true} when this map has no entries; returns {@code false}
 	 * otherwise.
-	 *
-	 * @return
 	 */
-	@Override
 	public boolean isEmpty() {
 		return store.entryCount == 0;
 	}
 
 	/**
 	 * Returns the number of entries in this map.
-	 *
-	 * @return
 	 */
-	@Override
 	public int getCount() {
 		return store.entryCount;
 	}
 
 	/**
-	 * Returns {@code true} when this map contains an entry with the specified
-	 * key; returns {@code false} otherwise.
-	 *
-	 * @param key
-	 * @return
+	 * Returns {@code true} when this map contains an entry with the specified key and
+	 * value; returns {@code false} otherwise.
 	 */
-	@Override
-	public boolean contains(K key) {
+	public boolean contains(K key, V value) {
 		if (key == null) {
 			return false;
 		}
 
-		return store.find(key) >= 0;
+		final var index = store.find(key);
+		if (index < 0) {
+			return false;
+		}
+
+		final var entry = store.storage[index].item;
+		return entry.value.equals(value);
 	}
 
 	/**
-	 * Returns {@code true} when this map contains an entry with the specified
-	 * key and value; returns {@code false} otherwise.
-	 *
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	@Override
-	public boolean contains(K key, V value) {
-		final var storedValue = get(key);
-
-		return storedValue.isPresent()
-				&& storedValue.get()
-						.equals(value);
-	}
-
-	/**
-	 * Returns {@code true} when this map contains all entries of the specified
-	 * map; returns {@code false} otherwise.
-	 *
-	 * @param entries
-	 * @return
+	 * Returns {@code true} when this map contains all entries of the specified map;
+	 * returns {@code false} otherwise.
+	 * <p>
+	 * When the specified {@link Map} is empty, returns {@code true}.
 	 */
 	public boolean contains(Map<K, V> entries) {
-		return LameKeyedCollection.super.contains(entries);
+		return entries.allMatch(this::contains);
 	}
 
 	/**
-	 * Returns value of an entry with the specified key in this map. Returns an
-	 * empty {@link Optional} when this map does not contain an entry with the
-	 * specified key.
-	 *
-	 * @param key
-	 * @return
+	 * Returns keys of all entries in this map.
+	 */
+	public Set<K> getKeys() {
+		final var keys = new MutableSet<K>();
+		for (var entry : this) {
+			keys.add(entry.key);
+		}
+
+		return keys.toImmutable();
+	}
+
+	/**
+	 * Returns values of all entries in this map.
+	 */
+	public List<V> getValues() {
+		final var values = new MutableList<V>();
+		for (var entry : this) {
+			values.append(entry.value);
+		}
+
+		return values.toImmutable();
+	}
+
+	/**
+	 * Returns value for the specified key in this map.
+	 * <p>
+	 * When this map contains no entry with the specified key, returns an empty
+	 * {@link Optional}.
 	 */
 	public Optional<V> get(K key) {
 		if (key == null) {
@@ -166,150 +156,192 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 
 	/**
 	 * Returns entries with the specified keys in this map.
-	 *
-	 * @param keys
-	 * @return
+	 * <p>
+	 * Ignores any {@code null} values among the specified keys.
+	 */
+	@SafeVarargs
+	public final Map<K, V> get(K... keys) {
+		final var entries = new MutableMap<K, V>();
+		for (var key : keys) {
+			get(key)
+				.ifPresent((value) ->
+					entries.set(key, value));
+		}
+
+		return entries.toImmutable();
+	}
+
+	/**
+	 * Returns entries with the specified keys in this map.
 	 */
 	public Map<K, V> get(Collection<K> keys) {
-		if (keys == null) {
-			// return nothing when the keys is null
-			return new Map<>();
-		}
-
-		final var returnedStore = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
+		final var entries = new MutableMap<K, V>();
 		for (var key : keys) {
-			get(key).ifPresent(value -> {
-				final var entry = new Entry<>(key, value);
-				returnedStore.insert(entry);
-			});
+			get(key)
+				.ifPresent((value) ->
+					entries.set(key, value));
 		}
 
-		return new Map<>(returnedStore);
+		return entries.toImmutable();
 	}
 
 	/**
-	 * Returns entries with the specified in from the map. Ignores any
-	 * {@code null}s among the specified keys.
-	 *
+	 * Returns {@code true} when any entry in this map satisfies the specified
+	 * {@link BiPredicate}; returns {@code false} otherwise.
 	 * <p>
-	 * Does nothing when the specified variadic array is {@code null}.
-	 * <p>
-	 * Returns itself.
-	 *
-	 * @param keys
-	 * @return
+	 * When this map is empty, returns {@code false}.
 	 */
-	public Map<K, V> get(K... keys) {
-		if (keys == null) {
-			// return nothing when the keys is null
-			return new Map<>();
-		}
-
-		final var returnedStore = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
-		for (var key : keys) {
-			get(key).ifPresent(value -> {
-				final var entry = new Entry<>(key, value);
-				returnedStore.insert(entry);
-			});
-		}
-
-		return new Map<>(returnedStore);
-	}
-
-	/**
-	 * Returns entries of this map, whose key and value satisfy the specified
-	 * {@link BiPredicate}.
-	 *
-	 * @param condition
-	 * @return
-	 */
-	@Override
-	public Map<K, V> filter(BiPredicate<K, V> condition) {
-		final var filteredEntries = new RobinHoodHashStore<Entry<K, V>>(store.entryCount);
+	public boolean anyMatches(BiPredicate<K, V> condition) {
 		for (var entry : this) {
 			if (condition.test(entry.key, entry.value)) {
-				filteredEntries.insert(entry);
+				return true;
 			}
 		}
 
-		return new Map<>(filteredEntries);
+		return false;
 	}
 
 	/**
-	 * Returns entries of this map with their key and value combined by the
-	 * specified {@link BiFunction}.
-	 *
-	 * Any {@code null} value returned by the specified {@link BiFunction} will
-	 * be ignored. This can be used to perform both item filtering and key-value
-	 * combination in a single operation.
-	 *
-	 * @param <R>
-	 * @param converter
-	 * @return
+	 * Returns {@code true} when no entries in this map satisfy the specified
+	 * {@link BiPredicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this map is empty, returns {@code true};
 	 */
-	@Override
-	public <R> Collection<R> collect(BiFunction<K, V, R> converter) {
-		final var items = new ContiguousArrayStore<R>(store.entryCount);
+	public boolean noneMatches(BiPredicate<K, V> condition) {
 		for (var entry : this) {
-			final var convertedItem = converter.apply(entry.key, entry.value);
-			items.append(convertedItem);
+			if (condition.test(entry.key, entry.value)) {
+				return false;
+			}
 		}
 
-		items.removeExcessCapacity();
-		return new List<>(items);
+		return true;
 	}
 
 	/**
-	 * Returns entries of this map with their key and value converted by the
-	 * specified {@link BiFunction}.
-	 *
-	 * Any {@code null} key or value returned by the specified
-	 * {@link BiFunction} will be ignored. This can be used to perform both
-	 * entry filtering and conversion in a single operation.
+	 * Returns {@code true} when all entries in this map satisfy the specified
+	 * {@link BiPredicate}; returns {@code false} otherwise.
+	 * <p>
+	 * When this map is empty, returns {@code true}.
 	 */
-	@Override
+	public boolean allMatch(BiPredicate<K, V> condition) {
+		for (var entry : this) {
+			if (!condition.test(entry.key, entry.value)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns value of some entry in this map, which satisfies the specified
+	 * {@link BiPredicate}.
+	 * <p>
+	 * When no entry in this map satisfies the specified {@link BiPredicate}, returns an
+	 * empty {@link Optional}.
+	 */
+	public Optional<V> matchAny(BiPredicate<K, V> condition) {
+		for (var entry : this) {
+			if (condition.test(entry.key, entry.value)) {
+				return Optional.of(entry.value);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Applies the specified {@link BiConsumer} to each entry in this map.
+	 *
+	 * @return itself
+	 */
+	public Map<K, V> iterate(BiConsumer<K, V> operation) {
+		for (var entry : this) {
+			operation.accept(entry.key, entry.value);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
+	 * <p>
+	 * When no entry in this map satisfies the specified {@link BiPredicate}, returns an
+	 * empty {@link Map}.
+	 */
+	public Map<K, V> filter(BiPredicate<K, V> condition) {
+		final var entries = new MutableMap<K, V>();
+		for (var entry : this) {
+			if (condition.test(entry.key, entry.value)) {
+				entries.set(entry.key, entry.value);
+			}
+		}
+
+		return entries.toImmutable();
+	}
+
+	/**
+	 * Returns entries of this map, converted by the specified {@link BiFunction}.
+	 * <p>
+	 * When the specified {@link BiFunction} returns a {@code null} or an {@link Entry}
+	 * with a {@code null} key or value, the converted entry is ignored. So, this method
+	 * can be used to both filter and convert this map in a single operation.
+	 */
 	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
-		final var convertEntries = new RobinHoodHashStore<Entry<L, W>>(store.entryCount);
+		final var entries = new MutableMap<L, W>();
 		for (var entry : this) {
-			final var convertedEntry = converter.apply(entry.key, entry.value);
-			if (convertedEntry != null
-					&& convertedEntry.key != null
-					&& convertedEntry.value != null) {
-
-				convertEntries.insert(convertedEntry);
+			final var converted = converter.apply(entry.key, entry.value);
+			if (converted != null) {
+				entries.set(converted.key, converted.value);
 			}
 		}
 
-		return new Map<>(convertEntries);
+		return entries.toImmutable();
 	}
 
 	/**
-	 * Converts this map into an instance of {@link java.util.Map}.
-	 *
-	 * @return
+	 * Combines this map into a single value by applying the specified {@link TriFunction}
+	 * to each entry and an intermediate combination, using the specified initial value as
+	 * a starting point.
 	 */
-	public java.util.Map<K, V> bridge() {
-		final var entries = new HashMap<K, V>();
-		iterate(entries::put);
+	public <R> R combine(R initial, TriFunction<R, K, V, R> combiner) {
+		var combined = initial;
+		for (var entry : this) {
+			combined = combiner.apply(combined, entry.key, entry.value);
+		}
 
-		return entries;
+		return combined;
+	}
+
+	/**
+	 * Combines this map into a {@link String} by joining {@link String} representations
+	 * of key and value of each entry with the specified value separator, then joining
+	 * them with the specified entry separator between them.
+	 */
+	public String join(String valueSeparator, String entrySeparator) {
+		final var iterator = iterator();
+		final var builder = new StringBuilder();
+
+		if (iterator.hasNext()) {
+			final var entry = iterator.next();
+			builder.append(entry.key)
+				.append(valueSeparator)
+				.append(entry.value);
+		}
+		while (iterator.hasNext()) {
+			final var entry = iterator.next();
+			builder.append(entrySeparator)
+				.append(entry.key)
+				.append(valueSeparator)
+				.append(entry.value);
+		}
+
+		return builder.toString();
 	}
 
 	@Override
 	public Iterator<Entry<K, V>> iterator() {
-		return new Iterator<Entry<K, V>>() {
-			final Iterator<Entry<K, V>> iterator = store.iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public Entry<K, V> next() {
-				return iterator.next();
-			}
-		};
+		return store.iterator();
 	}
 
 	@Override
@@ -326,13 +358,14 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 			return false;
 		}
 
-		final Map map = (Map) object;
+		@SuppressWarnings("unchecked")
+		final var map = (Map<K, V>) object;
 		return store.equals(map.store);
 	}
 
 	@Override
 	public String toString() {
-		return "{" + join(": ", ", ") + "}";
+		return "{" + join(":", ", ") + "}";
 	}
 
 	public static class Entry<K, V> {
@@ -340,10 +373,7 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 		public final V value;
 
 		/**
-		 * Creates a new entry with the specified key and value.
-		 *
-		 * @param key
-		 * @param value
+		 * Creates an entry with the specified key and value.
 		 */
 		public Entry(K key, V value) {
 			this.key = key;
@@ -352,20 +382,31 @@ public class Map<K, V> implements LameKeyedCollection<K, V> {
 
 		@Override
 		public int hashCode() {
-			return key.hashCode();
+			return Objects.hashCode(key);
 		}
 
 		@Override
 		public boolean equals(Object object) {
-			if (object.equals(key)) {
+			if (object == this) {
+				return true;
+			}
+			if (object == key) {
 				return true;
 			}
 			if (!(object instanceof Entry)) {
 				return false;
 			}
 
-			final var entry = (Entry) object;
+			@SuppressWarnings("unchecked")
+			final var entry = (Entry<K, V>) object;
 			return key.equals(entry.key);
+		}
+
+		@Override
+		public String toString() {
+			return key + ":" + value;
 		}
 	}
 }
+
+// created on Jul 29, 2019.
