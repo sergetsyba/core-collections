@@ -152,6 +152,24 @@ public class MutableMap<K, V> extends Map<K, V> {
 
 	/**
 	 * Removes entries with the specified keys from the map.
+	 * <p>
+	 * Ignores any {@code null}s among the specified keys.
+	 *
+	 * @return itself
+	 */
+	@SafeVarargs
+	public final MutableMap<K, V> remove(K... keys) {
+		for (K key : keys) {
+			if (key != null) {
+				remove(key);
+			}
+		}
+
+		return this;
+	}
+
+	/**
+	 * Removes entries with the specified keys from the map.
 	 *
 	 * <p>
 	 * Does nothing when the specified {@link Collection} is {@code null}.
@@ -171,30 +189,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 		return this;
 	}
 
-	/**
-	 * Removes entries with the specified keys from the map. Ignores any {@code null}s
-	 * among the specified keys.
-	 *
-	 * <p>
-	 * Does nothing when the specified variadic array is {@code null}.
-	 * <p>
-	 * Returns itself.
-	 *
-	 * @param keys
-	 * @return
-	 */
-	public MutableMap<K, V> remove(K... keys) {
-		if (keys == null) {
-			// do nothing when the keys is null
-			return this;
-		}
-
-		for (K key : keys) {
-			remove(key);
-		}
-
-		return this;
-	}
 
 	/**
 	 * Removes all entries from this map.

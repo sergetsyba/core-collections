@@ -287,9 +287,121 @@ class MutableMapTests {
 
 			@Test
 			@DisplayName("when key is null, does nothing")
-			void doesNothingWhenKeyIsNull() {
+			void doesNothingWhenKeyNull() {
 				final var entries = new MutableMap<String, Integer>();
 				final var returned = entries.remove((String) null);
+
+				final var expected = new Set<Map.Entry<String, Integer>>();
+
+				assert returned == entries;
+				assert new Set<>(entries.store)
+					.equals(expected);
+			}
+		}
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	@Nested
+	@DisplayName(".remove(K...)")
+	class RemoveVarargsTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			@Test
+			@DisplayName("when all keys are present, removes entries")
+			void removesEntriesWhenAllKeysPresent() {
+				final var entries = new MutableMap<>(
+					new List<>("P", "l", "M", "F"),
+					new List<>(5, 4, 3, 5));
+
+				final var returned = entries.remove("M", "P", "F");
+
+				final var expected = new Set<>(
+					new Map.Entry<>("l", 4));
+
+				assert returned == entries;
+				assert new Set<>(entries.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when some keys are present, removes present entries")
+			void removesPresentEntriesWhenSomeKeysPresent() {
+				final var entries = new MutableMap<>(
+					new List<>("P", "l", "M", "F"),
+					new List<>(5, 4, 3, 5));
+
+				final var returned = entries.remove("M", "p", "F", "L");
+
+				final var expected = new Set<>(
+					new Map.Entry<>("P", 5),
+					new Map.Entry<>("l", 4));
+
+				assert returned == entries;
+				assert new Set<>(entries.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when no keys are present, does nothing")
+			void doesNothingWhenNoKeysPresent() {
+				final var entries = new MutableMap<>(
+					new List<>("P", "l", "M", "F"),
+					new List<>(5, 4, 3, 5));
+
+				final var returned = entries.remove("V", "b", "L", "w");
+
+				final var expected = new Set<>(
+					new Map.Entry<>("P", 5),
+					new Map.Entry<>("l", 4),
+					new Map.Entry<>("M", 3),
+					new Map.Entry<>("F", 5));
+
+				assert returned == entries;
+				assert new Set<>(entries.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when some keys are null, ignores them")
+			void ignoresNullKeys() {
+				final var entries = new MutableMap<>(
+					new List<>("P", "l", "M", "F"),
+					new List<>(5, 4, 3, 5));
+
+				final var returned = entries.remove("m", null, "P", null, null, "F");
+
+				final var expected = new Set<>(
+					new Map.Entry<>("l", 4),
+					new Map.Entry<>("M", 3));
+
+				assert returned == entries;
+				assert new Set<>(entries.store)
+					.equals(expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			@Test
+			@DisplayName("does nothing")
+			void doesNothing() {
+				final var entries = new MutableMap<String, Integer>();
+				final var returned = entries.remove("b", "F", "w");
+
+				final var expected = new Set<Map.Entry<String, Integer>>();
+
+				assert returned == entries;
+				assert new Set<>(entries.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when some keys are null, does nothing")
+			void doesNothingWhenSomeKeysNull() {
+				final var entries = new MutableMap<String, Integer>();
+				final var returned = entries.remove(null, "V", null, null, "Q");
 
 				final var expected = new Set<Map.Entry<String, Integer>>();
 
