@@ -4,9 +4,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Sep 1, 2019.
- */
 public class MutableMap<K, V> extends Map<K, V> {
 	private static final int minimumCapacity = 64;
 
@@ -15,16 +12,38 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Creates a copy of the specified entries.
-	 *
-	 * @param entries
+	 * Creates a map with the specified entries.
+	 * <p>
+	 * Ignores any {@code null} values among the specified entries, as well as entries
+	 * with {@code} null keys or values.
+	 * <p>
+	 * When the specified entries contain repeated keys, only the last entry with such key
+	 * ends up in the map.
 	 */
-	public MutableMap(Map<K, V> entries) {
+	@SafeVarargs
+	public MutableMap(Entry<K, V>... entries) {
 		super(entries);
 	}
 
+	/**
+	 * Creates a map with the specified keys and values, matching them by indexes in their
+	 * lists.
+	 * <p>
+	 * When the specified lists differ in item count, extra items in the longer list are
+	 * ignored.
+	 * <p>
+	 * When the specified keys contain repeated items, only the last occurrence of such
+	 * key, as well as its matching value, ends up in the map.
+	 */
 	public MutableMap(List<K> keys, List<V> values) {
 		super(keys, values);
+	}
+
+	/**
+	 * Creates a copy of the specified entries.
+	 */
+	public MutableMap(Map<K, V> entries) {
+		super(entries);
 	}
 
 	/**
@@ -35,30 +54,18 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Returns value of an entry with the specified key in this map, keeping the specified
-	 * value as a backup.
-	 *
+	 * Returns value for the specified key in this map. When this map contains no entry
+	 * with the specified key, <em>sets the specified backup value for the key<em/> and
+	 * returns the backup value.
 	 * <p>
-	 * When this map contains an entry with the specified key, returns its value, just
-	 * like {@link #get(java.lang.Object)}.
-	 * <p>
-	 * When this map does not contain an entry with the specified key,
-	 * <em>inserts a new entry</em> with the specified key and backup value into
-	 * this map and returns the specified backup value.
-	 * <p>
-	 * Does nothing when the specified key {@code null}. Similarly, does nothing when this
-	 * map does not contain an entry with the specified key and the specified backup value
-	 * is {@code null}.
-	 *
-	 * @param key
-	 * @param backupValue
-	 * @return
+	 * When the specified key is {@code null}, returns the specified backup value, even
+	 * when the backup value is {@code null} as well.
 	 */
-	public V get(K key, V backupValue) {
+	public V get(K key, V backup) {
 		return get(key)
 			.orElseGet(() -> {
-				set(key, backupValue);
-				return backupValue;
+				set(key, backup);
+				return backup;
 			});
 	}
 
@@ -268,3 +275,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 		return new Map<>(store2);
 	}
 }
+
+
+// created on Sep 1, 2019.
