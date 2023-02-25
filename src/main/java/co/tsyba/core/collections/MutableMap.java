@@ -47,13 +47,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Creates an empty map.
-	 */
-	public MutableMap() {
-		super(new RobinHoodHashStore<>(minimumCapacity));
-	}
-
-	/**
 	 * Returns value for the specified key in this map. When this map contains no entry
 	 * with the specified key, <em>inserts the specified backup value for the key<em/> and
 	 * returns the backup value.
