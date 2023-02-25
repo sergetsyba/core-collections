@@ -182,10 +182,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	/**
 	 * Removes all entries from this map.
 	 *
-	 * <p>
-	 * Returns itself.
-	 *
-	 * @return
+	 * @return itself
 	 */
 	public MutableMap<K, V> clear() {
 		this.store = new RobinHoodHashStore<>(minimumCapacity);

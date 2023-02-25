@@ -496,6 +496,35 @@ class MutableMapTests {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName(".clear()")
+	class ClearTests {
+		@Test
+		@DisplayName("when map is not empty, removes all entries")
+		void removesAllEntriesWhenNotEmpty() {
+			final var entries = new MutableMap<>(
+				new List<>("v", "E", "w", "W"),
+				new List<>(5, 4, 2, 7));
+
+			final var returned = entries.clear();
+
+			assert returned == entries;
+			assert new Set<>(entries.store)
+				.isEmpty();
+		}
+
+		@Test
+		@DisplayName("when map is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var entries = new MutableMap<>();
+			final var returned = entries.clear();
+
+			assert returned == entries;
+			assert new Set<>(entries.store)
+				.isEmpty();
+		}
+	}
 }
 
 
