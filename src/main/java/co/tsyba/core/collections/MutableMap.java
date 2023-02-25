@@ -80,12 +80,10 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 * @return itself
 	 */
 	public MutableMap<K, V> set(K key, V value) {
-		if (key == null || value == null) {
-			return this;
+		if (key != null || value != null) {
+			final var entry = new Entry<>(key, value);
+			store.insert(entry);
 		}
-
-		final var entry = new Entry<>(key, value);
-		store.insert(entry);
 
 		return this;
 	}
@@ -120,8 +118,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 			.map(storedValue -> merger.apply(storedValue, value))
 			.orElse(value);
 
-		set(key, setValue);
-		return this;
+		return set(key, setValue);
 	}
 
 	/**
@@ -138,20 +135,14 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Removes entry with the specified key from this map. Does nothing when this map does
-	 * not contain an entry with the specified key.
-	 *
+	 * Removes an entry with the specified key from this map.
 	 * <p>
-	 * Does nothing when the specified key is {@code null}.
-	 * <p>
-	 * Returns itself.
+	 * Does nothing when this map contains no entry with the specified key.
 	 *
-	 * @param key
-	 * @return
+	 * @return itself
 	 */
 	public MutableMap<K, V> remove(K key) {
 		if (key == null) {
-			// do nothing when the key is null
 			return this;
 		}
 
