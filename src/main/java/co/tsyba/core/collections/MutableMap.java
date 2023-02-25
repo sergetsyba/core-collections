@@ -55,7 +55,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 
 	/**
 	 * Returns value for the specified key in this map. When this map contains no entry
-	 * with the specified key, <em>sets the specified backup value for the key<em/> and
+	 * with the specified key, <em>inserts the specified backup value for the key<em/> and
 	 * returns the backup value.
 	 * <p>
 	 * When the specified key is {@code null}, returns the specified backup value, even
@@ -70,26 +70,21 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Inserts an entry with the specified key and value into this map. When this map
-	 * contains an entry with the specified key, replaces its value with the specified
-	 * one.
-	 *
+	 * Inserts the specified value for the specified key into this map.
 	 * <p>
-	 * Does nothing when either key or value is {@code null}.
+	 * When this map already contains an entry with the specified key, replaces its value
+	 * with the specified one.
 	 * <p>
-	 * Returns itself.
+	 * Does nothing when either the specified key or value is {@code null}.
 	 *
-	 * @param key
-	 * @param value
-	 * @return
+	 * @return itself
 	 */
 	public MutableMap<K, V> set(K key, V value) {
 		if (key == null || value == null) {
-			// do nothing when either key or value is null
 			return this;
 		}
 
-		final var entry = new Entry<K, V>(key, value);
+		final var entry = new Entry<>(key, value);
 		store.insert(entry);
 
 		return this;

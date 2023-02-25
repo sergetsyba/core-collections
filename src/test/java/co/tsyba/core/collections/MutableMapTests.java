@@ -67,6 +67,83 @@ class MutableMapTests {
 			}
 		}
 	}
+
+	@Nested
+	@DisplayName(".set(K, V)")
+	class SetTests {
+		@Test
+		@DisplayName("when key is absent, inserts an entry")
+		void insertsEntryWhenKeyAbsent() {
+			final var entries = new MutableMap<>(
+				new List<>("G", "x"),
+				new List<>(7, 0));
+
+			final var returned = entries.set("B", 4);
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 7),
+				new Map.Entry<>("x", 0),
+				new Map.Entry<>("B", 4));
+
+			assert entries == returned;
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when key already present, replaces its value")
+		void replacesValueWhenKeyPresent() {
+			final var entries = new MutableMap<>(
+				new List<>("G", "x"),
+				new List<>(7, 0));
+
+			final var returned = entries.set("x", 4);
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 7),
+				new Map.Entry<>("x", 4));
+
+			assert entries == returned;
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when key is null, does nothing")
+		void doesNothingWhenKeyNull() {
+			final var entries = new MutableMap<>(
+				new List<>("G", "x"),
+				new List<>(7, 0));
+
+			final var returned = entries.set(null, 4);
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 7),
+				new Map.Entry<>("x", 0));
+
+			assert entries == returned;
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when value is null, does nothing")
+		void doesNothingWhenValueNull() {
+			final var entries = new MutableMap<>(
+				new List<>("G", "x"),
+				new List<>(7, 0));
+
+			final var returned = entries.set("H", null);
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 7),
+				new Map.Entry<>("x", 0));
+
+			assert entries == returned;
+			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+	}
 }
 
 
