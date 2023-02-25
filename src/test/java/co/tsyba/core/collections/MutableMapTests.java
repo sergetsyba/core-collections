@@ -72,7 +72,7 @@ class MutableMapTests {
 	@DisplayName(".set(K, V)")
 	class SetTests {
 		@Test
-		@DisplayName("when key is absent, inserts an entry")
+		@DisplayName("when key is absent, inserts new entry")
 		void insertsEntryWhenKeyAbsent() {
 			final var entries = new MutableMap<>(
 				new List<>("G", "x"),
@@ -141,6 +141,58 @@ class MutableMapTests {
 
 			assert entries == returned;
 			assert new Set<>(entries.store)
+				.equals(expected);
+		}
+	}
+
+	@Nested
+	@DisplayName(".set(Map<K, V>)")
+	class SetMapTests {
+		@Test
+		@DisplayName("when all keys are absent, inserts new entries")
+		void insertsEntriesWhenAllKeysAbsent() {
+			final var entries1 = new MutableMap<>(
+				new List<>("G", "x"),
+				new List<>(7, 0));
+
+			final var entries2 = new MutableMap<>(
+				new List<>("B", "p"),
+				new List<>(7, 3));
+
+			final var returned = entries1.set(entries2);
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 7),
+				new Map.Entry<>("x", 0),
+				new Map.Entry<>("B", 7),
+				new Map.Entry<>("p", 3));
+
+			assert entries1 == returned;
+			assert new Set<>(entries1.store)
+				.equals(expected);
+		}
+
+		@Test
+		@DisplayName("when some keys already present, replaces their values")
+		void replacesValuesWhenSomeKeysPresent() {
+			final var entries1 = new MutableMap<>(
+				new List<>("G", "x", "K"),
+				new List<>(7, 0, 1));
+
+			final var entries2 = new MutableMap<>(
+				new List<>("x", "p", "G"),
+				new List<>(7, 3, 8));
+
+			final var returned = entries1.set(entries2);
+
+			final var expected = new Set<>(
+				new Map.Entry<>("G", 8),
+				new Map.Entry<>("x", 7),
+				new Map.Entry<>("K", 1),
+				new Map.Entry<>("p", 3));
+
+			assert entries1 == returned;
+			assert new Set<>(entries1.store)
 				.equals(expected);
 		}
 	}

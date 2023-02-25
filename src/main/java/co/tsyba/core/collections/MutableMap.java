@@ -70,7 +70,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Inserts the specified value for the specified key into this map.
+	 * Inserts an entry with the specified key and value into this map.
 	 * <p>
 	 * When this map already contains an entry with the specified key, replaces its value
 	 * with the specified one.
@@ -125,24 +125,14 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Inserts the specified entries into this map. When this map contains entries with
-	 * keys from the specified entries, replaces their values with corresponding values
-	 * from the specified ones.
-	 *
+	 * Inserts all entries from the specified map into this one.
 	 * <p>
-	 * Does nothing when the specified {@link MutableMap} is {@code null}.
-	 * <p>
-	 * Returns itself.
+	 * When this map already contains entries with some keys from the specified map,
+	 * replaces their values with corresponding values from the specified map.
 	 *
-	 * @param entries
-	 * @return
+	 * @return itself
 	 */
 	public MutableMap<K, V> set(Map<K, V> entries) {
-		if (entries == null) {
-			// do nothing when the entries is null
-			return this;
-		}
-
 		entries.iterate(this::set);
 		return this;
 	}
