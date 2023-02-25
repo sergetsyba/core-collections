@@ -151,7 +151,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Removes entries with the specified keys from the map.
+	 * Removes entries with the specified keys from this map.
 	 * <p>
 	 * Ignores any {@code null}s among the specified keys.
 	 *
@@ -169,22 +169,11 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Removes entries with the specified keys from the map.
+	 * Removes entries with the specified keys from this map.
 	 *
-	 * <p>
-	 * Does nothing when the specified {@link Collection} is {@code null}.
-	 * <p>
-	 * Returns itself.
-	 *
-	 * @param keys
-	 * @return
+	 * @return itself
 	 */
 	public MutableMap<K, V> remove(Collection<K> keys) {
-		if (keys == null) {
-			// do nothing when the keys is null
-			return this;
-		}
-
 		keys.iterate(this::remove);
 		return this;
 	}
