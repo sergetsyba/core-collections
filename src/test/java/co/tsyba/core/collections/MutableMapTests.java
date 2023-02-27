@@ -201,6 +201,112 @@ class MutableMapTests {
 	}
 
 	@Nested
+	@DisplayName(".add(Map<K, V>)")
+	class AddTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Set<Map.Entry<String, Integer>> proto = new Set<>(
+				new Map.Entry<>("B", 0),
+				new Map.Entry<>("J", 9),
+				new Map.Entry<>("s", 4));
+
+			@Test
+			@DisplayName("when all entries are absent, inserts entries")
+			void insertsEntriesWhenAllAbsent() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<>(
+					new Map.Entry<>("N", 9),
+					new Map.Entry<>("p", 1));
+
+				final var returned = entries1.add(entries2);
+
+				final var expected = new Set<>(
+					new Map.Entry<>("B", 0),
+					new Map.Entry<>("J", 9),
+					new Map.Entry<>("s", 4),
+					new Map.Entry<>("N", 9),
+					new Map.Entry<>("p", 1));
+
+				assert returned == entries1;
+				assert new Set<>(entries1.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when some entries are present, replaces their values")
+			void updatesValuesWhenSomeEntriesPresent() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<>(
+					new Map.Entry<>("B", 9),
+					new Map.Entry<>("s", 1));
+
+				final var returned = entries1.add(entries2);
+
+				final var expected = new Set<>(
+					new Map.Entry<>("B", 9),
+					new Map.Entry<>("J", 9),
+					new Map.Entry<>("s", 1));
+
+				assert returned == entries1;
+				assert new Set<>(entries1.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when argument map is empty, does nothing")
+			void doesNothingWhenArgMapEmpty() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<String, Integer>();
+
+				final var returned = entries1.add(entries2);
+
+				assert returned == entries1;
+				assert new Set<>(entries1.store)
+					.equals(proto);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Set<Map.Entry<String, Integer>> proto = new Set<>();
+
+			@Test
+			@DisplayName("inserts entries")
+			void insertsEntries() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<>(
+					new Map.Entry<>("K", 9),
+					new Map.Entry<>("m", 8));
+
+				final var returned = entries1.add(entries2);
+
+				final var expected = new Set<>(
+					new Map.Entry<>("K", 9),
+					new Map.Entry<>("m", 8));
+
+				assert returned == entries1;
+				assert new Set<>(entries1.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when argument map is empty, does nothing")
+			void doesNothingWhenArgMapEmpty() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<String, Integer>();
+
+				final var returned = entries1.add(entries2);
+
+				assert returned == entries1;
+				assert new Set<>(entries1.store)
+					.isEmpty();
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".remove(K)")
 	class RemoveTests {
 		@Nested

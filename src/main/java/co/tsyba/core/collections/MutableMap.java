@@ -82,6 +82,22 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
+	 * Inserts all entries of the specified map into this one.
+	 * <p>
+	 * When this map contains any entries with keys from the specified map, replaces their
+	 * values with values from the specified map.
+	 *
+	 * @return itself
+	 */
+	public MutableMap<K, V> add(Map<K, V> entries) {
+		for (var entry : entries) {
+			store.insert(entry);
+		}
+		
+		return this;
+	}
+
+	/**
 	 * Removes an entry with the specified key from this map.
 	 * <p>
 	 * Does nothing when this map contains no entry with the specified key.
