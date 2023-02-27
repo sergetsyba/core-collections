@@ -48,11 +48,11 @@ public class MutableMap<K, V> extends Map<K, V> {
 
 	/**
 	 * Returns value for the specified key in this map. When this map contains no entry
-	 * with the specified key, <em>inserts the specified backup value for the key<em/> and
-	 * returns the backup value.
+	 * with the specified key, <em>inserts an entry with the specified key and backup
+	 * value into this map</em> and returns the backup value.
 	 * <p>
-	 * When the specified key is {@code null}, returns the specified backup value, even
-	 * when the backup value is {@code null} as well.
+	 * When the specified key is {@code null} does not insert an entry, but returns the
+	 * specified backup value, even when the backup value is {@code null} as well.
 	 */
 	public V get(K key, V backup) {
 		return get(key)
@@ -73,57 +73,11 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 * @return itself
 	 */
 	public MutableMap<K, V> set(K key, V value) {
-		if (key != null || value != null) {
+		if (key != null && value != null) {
 			final var entry = new Entry<>(key, value);
 			store.insert(entry);
 		}
 
-		return this;
-	}
-
-	/**
-	 * Inserts an entry with the specified key and value into this map, using the
-	 * specified {@link BiFunction} to resolve value for an existing entry with the
-	 * specified key.
-	 *
-	 * <p>
-	 * When this map does not contain an entry with the specified key, inserts a new entry
-	 * with the specified key and value, just like
-	 * {@link #set(java.lang.Object, java.lang.Object) }.
-	 * <p>
-	 * When this map contains an entry with the specified key, calls the specified
-	 * {@link BiFunction} with value of the existing entry and the specified value. Then,
-	 * replaces value of the existing entry with the returned value of the
-	 * {@link BiFunction}.
-	 * <p>
-	 * Does nothing when the specified key, the specified value, or the value returned by
-	 * the specified {@link BiFunction} is {@code null}.
-	 * <p>
-	 * Returns itself.
-	 *
-	 * @param key
-	 * @param value
-	 * @param merger
-	 * @return
-	 */
-	public MutableMap<K, V> set(K key, V value, BiFunction<V, V, V> merger) {
-		final var setValue = get(key)
-			.map(storedValue -> merger.apply(storedValue, value))
-			.orElse(value);
-
-		return set(key, setValue);
-	}
-
-	/**
-	 * Inserts all entries from the specified map into this one.
-	 * <p>
-	 * When this map already contains entries with some keys from the specified map,
-	 * replaces their values with corresponding values from the specified map.
-	 *
-	 * @return itself
-	 */
-	public MutableMap<K, V> set(Map<K, V> entries) {
-		entries.iterate(this::set);
 		return this;
 	}
 
@@ -153,9 +107,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	@SafeVarargs
 	public final MutableMap<K, V> remove(K... keys) {
 		for (K key : keys) {
-			if (key != null) {
-				remove(key);
-			}
+			remove(key);
 		}
 
 		return this;
@@ -167,7 +119,10 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 * @return itself
 	 */
 	public MutableMap<K, V> remove(Collection<K> keys) {
-		keys.iterate(this::remove);
+		for (var key : keys) {
+			store.delete(key);
+		}
+
 		return this;
 	}
 
