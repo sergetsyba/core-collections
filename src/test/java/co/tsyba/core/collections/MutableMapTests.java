@@ -483,6 +483,37 @@ class MutableMapTests {
 				.isEmpty();
 		}
 	}
+
+	@Nested
+	@DisplayName(".toImmutable()")
+	class ToImmutableTests {
+		@Test
+		@DisplayName("when map is not empty, returns immutable copy")
+		void returnsImmutableMapWhenNotEmpty() {
+			final var proto = new Set<>(
+				new Map.Entry<>("G", 0),
+				new Map.Entry<>("x", 3),
+				new Map.Entry<>("q", 1));
+
+			final var entries1 = new MutableMap<>(proto);
+			final var entries2 = entries1.toImmutable();
+
+			assert Map.class == entries2.getClass();
+			assert new Set<>(entries2.store)
+				.equals(proto);
+		}
+
+		@Test
+		@DisplayName("when map is empty, returns empty immutable map")
+		void returnsEmptyImmutableMapWhenEmpty() {
+			final var entries1 = new MutableMap<String, Integer>();
+			final var entries2 = entries1.toImmutable();
+
+			assert Map.class == entries2.getClass();
+			assert new Set<>(entries2.store)
+				.isEmpty();
+		}
+	}
 }
 
 // created on Sep 1, 2019

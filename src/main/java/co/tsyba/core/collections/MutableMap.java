@@ -174,11 +174,13 @@ public class MutableMap<K, V> extends Map<K, V> {
 		return new MutableMap<>(convertEntries);
 	}
 
+	/**
+	 * Returns an immutable copy of this map.
+	 */
 	public Map<K, V> toImmutable() {
 		final var store2 = new RobinHoodHashStore<>(store);
 		return new Map<>(store2);
 	}
 }
-
 
 // created on Sep 1, 2019.
