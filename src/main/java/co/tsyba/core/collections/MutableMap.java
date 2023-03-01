@@ -1,9 +1,5 @@
 package co.tsyba.core.collections;
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-
 public class MutableMap<K, V> extends Map<K, V> {
 	private static final int minimumCapacity = 64;
 
@@ -117,10 +113,11 @@ public class MutableMap<K, V> extends Map<K, V> {
 		for (var entry : entries) {
 			final var index = store.find(entry.key);
 			if (index > -1) {
-				final var value = store.storage[index].item.value;
-				final var resolved = resolver.apply(entry.key, value, entry.value);
-				if (resolved != null) {
-					entry = new Entry<>(entry.key, resolved);
+				var value = store.storage[index].item.value;
+				value = resolver.apply(entry.key, value, entry.value);
+
+				if (value != null) {
+					entry = new Entry<>(entry.key, value);
 					store.insert(entry);
 				}
 			} else {
@@ -185,43 +182,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 	public MutableMap<K, V> clear() {
 		this.store = new RobinHoodHashStore<>(minimumCapacity);
 		return this;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	public MutableMap<K, V> iterate(BiConsumer<K, V> operation) {
-		super.iterate(operation);
-		return this;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-//	@Override
-	public MutableMap<K, V> filter(BiPredicate<K, V> condition) {
-//		super.filter(condition);
-		return this;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	public <L, W> MutableMap<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
-		final var convertEntries = new RobinHoodHashStore<Entry<L, W>>(store.entryCount);
-		for (var entry : this) {
-			final var convertedEntry = converter.apply(entry.key, entry.value);
-			if (convertedEntry != null
-				&& convertedEntry.key != null
-				&& convertedEntry.value != null) {
-
-				convertEntries.insert(convertedEntry);
-			}
-		}
-
-		return new MutableMap<>(convertEntries);
 	}
 
 	/**
