@@ -202,7 +202,7 @@ class MutableMapTests {
 
 	@Nested
 	@DisplayName(".add(Map<K, V>)")
-	class AddTests {
+	class AddMapTests {
 		@Nested
 		@DisplayName("when map is not empty")
 		class NotEmptyMapTests {
@@ -212,8 +212,8 @@ class MutableMapTests {
 				new Map.Entry<>("s", 4));
 
 			@Test
-			@DisplayName("when all entries are absent, inserts entries")
-			void insertsEntriesWhenAllAbsent() {
+			@DisplayName("when all keys are absent, adds entries")
+			void addsEntriesWhenAllKeysAbsent() {
 				final var entries1 = new MutableMap<>(proto);
 				final var entries2 = new Map<>(
 					new Map.Entry<>("N", 9),
@@ -234,8 +234,8 @@ class MutableMapTests {
 			}
 
 			@Test
-			@DisplayName("when some entries are present, replaces their values")
-			void updatesValuesWhenSomeEntriesPresent() {
+			@DisplayName("when some keys are present, replaces their values")
+			void updatesValuesWhenSomeKeysPresent() {
 				final var entries1 = new MutableMap<>(proto);
 				final var entries2 = new Map<>(
 					new Map.Entry<>("B", 9),
@@ -273,8 +273,8 @@ class MutableMapTests {
 			private final Set<Map.Entry<String, Integer>> proto = new Set<>();
 
 			@Test
-			@DisplayName("inserts entries")
-			void insertsEntries() {
+			@DisplayName("adds entries")
+			void addsEntries() {
 				final var entries1 = new MutableMap<>(proto);
 				final var entries2 = new Map<>(
 					new Map.Entry<>("K", 9),
@@ -302,6 +302,185 @@ class MutableMapTests {
 				assert returned == entries1;
 				assert new Set<>(entries1.store)
 					.isEmpty();
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".add(Map<K, V>, BiFunction<V, V, V>)")
+	class AddMapBiFunctionTests {
+		@Nested
+		@DisplayName("when map is not empty")
+		class NotEmptyMapTests {
+			private final Set<Map.Entry<String, Integer>> proto = new Set<>(
+				new Map.Entry<>("V", 2),
+				new Map.Entry<>("G", 1),
+				new Map.Entry<>("e", 9),
+				new Map.Entry<>("I", 7));
+
+			@Test
+			@DisplayName("when all keys are absent, adds entries")
+			void addsEntriesWhenAllKeysAbsent() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<>(
+					new Map.Entry<>("g", 3),
+					new Map.Entry<>("K", 4));
+
+				final var keys = new MutableSet<String>();
+				final var returned = entries1.add(entries2,
+					(key, value1, value2) -> {
+						keys.add(key);
+						return value2;
+					});
+
+				final var expected = new Set<>(
+					new Map.Entry<>("V", 2),
+					new Map.Entry<>("G", 1),
+					new Map.Entry<>("e", 9),
+					new Map.Entry<>("I", 7),
+					new Map.Entry<>("g", 3),
+					new Map.Entry<>("K", 4));
+
+				assert returned == entries1;
+				assert keys.isEmpty();
+
+				assert new Set<>(entries1.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when some keys are present, resolves their values")
+			void resolvesValuesWhenSomeKeysPresent() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<>(
+					new Map.Entry<>("G", 3),
+					new Map.Entry<>("K", 4),
+					new Map.Entry<>("I", 4));
+
+				final var keys = new MutableSet<String>();
+				final var returned = entries1.add(entries2,
+					(key, value1, value2) -> {
+						keys.add(key);
+						return value2 + 2;
+					});
+
+				final var expected = new Set<>(
+					new Map.Entry<>("V", 2),
+					new Map.Entry<>("G", 5),
+					new Map.Entry<>("e", 9),
+					new Map.Entry<>("I", 6),
+					new Map.Entry<>("K", 4));
+
+				assert returned == entries1;
+				assert new Set<>("G", "I")
+					.equals(keys);
+
+				assert new Set<>(entries1.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when resolver returns null, preserves stored value")
+			void preservesValueWhenResolverReturnsNull() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<>(
+					new Map.Entry<>("G", 3),
+					new Map.Entry<>("K", 4),
+					new Map.Entry<>("I", 4),
+					new Map.Entry<>("e", 7));
+
+				final var keys = new MutableSet<String>();
+				final var returned = entries1.add(entries2,
+					(key, value1, value2) -> {
+						keys.add(key);
+						return value2 > 3 ? null : value2;
+					});
+
+				final var expected = new Set<>(
+					new Map.Entry<>("V", 2),
+					new Map.Entry<>("G", 3),
+					new Map.Entry<>("e", 9),
+					new Map.Entry<>("I", 7),
+					new Map.Entry<>("K", 4));
+
+				assert returned == entries1;
+				assert new Set<>("G", "I", "e")
+					.equals(keys);
+
+				assert new Set<>(entries1.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when argument map is empty, does nothing")
+			void doesNothingWhenArgMapEmpty() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<String, Integer>();
+
+				final var keys = new MutableSet<String>();
+				final var returned = entries1.add(entries2,
+					(key, value1, value2) -> {
+						keys.add(key);
+						return value2;
+					});
+
+				assert returned == entries1;
+				assert keys.isEmpty();
+
+				assert new Set<>(entries1.store)
+					.equals(proto);
+			}
+		}
+
+		@Nested
+		@DisplayName("when map is empty")
+		class EmptyMapTests {
+			private final Set<Map.Entry<String, Integer>> proto = new Set<>();
+
+			@Test
+			@DisplayName("adds all entries")
+			void addsAllEntries() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<>(
+					new Map.Entry<>("G", 3),
+					new Map.Entry<>("e", 7));
+
+				final var keys = new MutableSet<String>();
+				final var returned = entries1.add(entries2,
+					(key, value1, value2) -> {
+						keys.add(key);
+						return value2;
+					});
+
+				final var expected = new Set<>(
+					new Map.Entry<>("G", 3),
+					new Map.Entry<>("e", 7));
+
+				assert returned == entries1;
+				assert keys.isEmpty();
+
+				assert new Set<>(entries1.store)
+					.equals(expected);
+			}
+
+			@Test
+			@DisplayName("when argument map is empty, does nothing")
+			void doesNothingWhenArgMapEmpty() {
+				final var entries1 = new MutableMap<>(proto);
+				final var entries2 = new Map<String, Integer>();
+
+				final var keys = new MutableSet<String>();
+				final var returned = entries1.add(entries2,
+					(key, value1, value2) -> {
+						keys.add(key);
+						return value2;
+					});
+
+				assert returned == entries1;
+				assert keys.isEmpty();
+
+				assert new Set<>(entries1.store)
+					.equals(proto);
 			}
 		}
 	}

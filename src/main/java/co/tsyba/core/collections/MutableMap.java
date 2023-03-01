@@ -47,12 +47,15 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Returns value for the specified key in this map. When this map contains no entry
-	 * with the specified key, <em>inserts an entry with the specified key and backup
-	 * value into this map</em> and returns the backup value.
+	 * Returns value for the specified key in this map.
 	 * <p>
-	 * When the specified key is {@code null} does not insert an entry, but returns the
-	 * specified backup value, even when the backup value is {@code null} as well.
+	 * When this map contains no entry with the specified key, <em>inserts an entry with
+	 * the specified key and value into this map</em> and returns the specified value.
+	 * <p>
+	 * When the specified key is {@code null} does not insert any entry, but returns the
+	 * specified value, even when it's {@code null}. When the specified value is
+	 * {@code null} and this map contains no entry with the specified key, does not insert
+	 * any entry and returns {@code null}.
 	 */
 	public V get(K key, V backup) {
 		return get(key)
@@ -63,10 +66,10 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Inserts an entry with the specified key and value into this map.
+	 * Sets the specified value for the specified key in this map.
 	 * <p>
-	 * When this map already contains an entry with the specified key, replaces its value
-	 * with the specified one.
+	 * When this map contains an entry with the specified key, replaces its value with the
+	 * specified one.
 	 * <p>
 	 * Does nothing when either the specified key or value is {@code null}.
 	 *
@@ -82,10 +85,10 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Inserts all entries of the specified map into this one.
+	 * Adds all entries of the specified map into this one.
 	 * <p>
-	 * When this map contains any entries with keys from the specified map, replaces their
-	 * values with values from the specified map.
+	 * When this and the specified maps contain entries with the same key, replaces values
+	 * of each such entry in this map with a corresponding value from the specified map.
 	 *
 	 * @return itself
 	 */
@@ -93,7 +96,38 @@ public class MutableMap<K, V> extends Map<K, V> {
 		for (var entry : entries) {
 			store.insert(entry);
 		}
-		
+
+		return this;
+	}
+
+	/**
+	 * Adds all entries of the specified map to this one.
+	 * <p>
+	 * When this and the specified maps contain entries with the same key, calls the
+	 * specified {@link TriFunction} for each such entry, and replaces its value in this
+	 * map with a value returned from the specified {@link TriFunction}. The function is
+	 * called with the key, a value from this, and a value from the specified maps.
+	 * <p>
+	 * When the specified {@link TriFunction} returns {@code null}, ignores the returned
+	 * value and preserves the original value of an entry in this map.
+	 *
+	 * @return itself
+	 */
+	public MutableMap<K, V> add(Map<K, V> entries, TriFunction<K, V, V, V> resolver) {
+		for (var entry : entries) {
+			final var index = store.find(entry.key);
+			if (index > -1) {
+				final var value = store.storage[index].item.value;
+				final var resolved = resolver.apply(entry.key, value, entry.value);
+				if (resolved != null) {
+					entry = new Entry<>(entry.key, resolved);
+					store.insert(entry);
+				}
+			} else {
+				store.insert(entry);
+			}
+		}
+
 		return this;
 	}
 
