@@ -66,7 +66,7 @@ class MutableMapTests {
 
 			@Test
 			@DisplayName("when key is null, does not store but returns argument value")
-			void returnsArgumentValueWhenKeyNull() {
+			void returnsArgValueWhenKeyNull() {
 				final var entries = new MutableMap<>(proto);
 				final var value = entries.get(null, 9);
 
@@ -235,7 +235,7 @@ class MutableMapTests {
 
 			@Test
 			@DisplayName("when some keys are present, replaces their values")
-			void updatesValuesWhenSomeKeysPresent() {
+			void replacesValuesWhenSomeKeysPresent() {
 				final var entries1 = new MutableMap<>(proto);
 				final var entries2 = new Map<>(
 					new Map.Entry<>("B", 9),
@@ -774,7 +774,7 @@ class MutableMapTests {
 	class ToImmutableTests {
 		@Test
 		@DisplayName("when map is not empty, returns immutable copy")
-		void returnsImmutableMapWhenNotEmpty() {
+		void returnsMapWhenNotEmpty() {
 			final var proto = new Set<>(
 				new Map.Entry<>("G", 0),
 				new Map.Entry<>("x", 3),
@@ -789,8 +789,8 @@ class MutableMapTests {
 		}
 
 		@Test
-		@DisplayName("when map is empty, returns empty immutable map")
-		void returnsEmptyImmutableMapWhenEmpty() {
+		@DisplayName("when map is empty, returns empty immutable copy")
+		void returnsEmptyMapWhenEmpty() {
 			final var entries1 = new MutableMap<String, Integer>();
 			final var entries2 = entries1.toImmutable();
 

@@ -30,8 +30,8 @@ class MapTests {
 		}
 
 		@Test
-		@DisplayName("ignores null entries")
-		void ignoresNullEntries() {
+		@DisplayName("when some entries are null, ignores them")
+		void ignoresEntriesWhenNull() {
 			final var entries = new Map<>(
 				null,
 				new Map.Entry<>("F", 3),
@@ -49,8 +49,8 @@ class MapTests {
 		}
 
 		@Test
-		@DisplayName("ignores entries with null keys")
-		void ignoresEntriesWithNullKeys() {
+		@DisplayName("when some entries have null keys, ignores them")
+		void ignoresEntriesWhenKeyNull() {
 			final var entries = new Map<>(
 				null,
 				new Map.Entry<>(null, 3),
@@ -68,8 +68,8 @@ class MapTests {
 		}
 
 		@Test
-		@DisplayName("ignores entries with null values")
-		void ignoresEntriesWithNullValues() {
+		@DisplayName("when some entries have null values, ignores them")
+		void ignoresEntriesWhenValueNull() {
 			final var entries = new Map<>(
 				null,
 				new Map.Entry<>("q", 3),
@@ -86,7 +86,7 @@ class MapTests {
 		}
 
 		@Test
-		@DisplayName("when entries are empty, creates empty map")
+		@DisplayName("when entries array is empty, creates empty map")
 		void createsEmptyMapWhenEntriesEmpty() {
 			final var entries = new Map<>();
 
@@ -242,7 +242,7 @@ class MapTests {
 		}
 
 		@Test
-		@DisplayName("when arg map is empty, creates empty map")
+		@DisplayName("when argument map is empty, creates empty map")
 		void createsEmptyMapWhenArgMapEmpty() {
 			final var entries = new Map<String, Integer>();
 
@@ -407,7 +407,7 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when arg map is empty, returns true")
+			@DisplayName("when argument map is empty, returns true")
 			void returnsTrueWhenArgMapEmpty() {
 				final var entries2 = new Map<Integer, String>();
 				assert entries1.contains(entries2);
@@ -416,11 +416,11 @@ class MapTests {
 
 		@Nested
 		@DisplayName("when map is empty")
-		class EmptyTests {
+		class EmptyMapTests {
 			private final Map<Integer, String> entries1 = new Map<>();
 
 			@Test
-			@DisplayName("when arg map is not empty, returns false")
+			@DisplayName("when argument map is not empty, returns false")
 			void returnsFalseWhenArgMapNotEmpty() {
 				final var entries2 = new MutableMap<Integer, String>()
 					.set(9, "Q")
@@ -431,7 +431,7 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when arg map is empty, returns true")
+			@DisplayName("when argument map is empty, returns true")
 			void returnsTrueWhenArgMapEmpty() {
 				final var entries2 = new MutableMap<Integer, String>()
 					.set(9, "Q")
@@ -589,8 +589,8 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("ignores null keys")
-			void ignoresNullKeys() {
+			@DisplayName("when some keys are null, returns present entries")
+			void returnsEntriesWhenSomeKeysNull() {
 				final var entries2 = entries1.get(null, "O", null, null, "N", null);
 				final var expected = new MutableMap<String, Integer>()
 					.set("O", 5)
@@ -610,7 +610,7 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when keys is empty, returns empty map")
+			@DisplayName("when keys array is empty, returns empty map")
 			void returnsEmptyMapWhenKeysEmpty() {
 				final var entries2 = entries1.get();
 
@@ -634,8 +634,8 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("ignores null keys")
-			void ignoresNullKeys() {
+			@DisplayName("when some keys are null, returns empty map")
+			void returnsEmptyMapWhenSomeKeysNull() {
 				final var entries2 = entries1.get(null, "B", null, "N");
 
 				assert new Map<String, Integer>()
@@ -643,7 +643,7 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when keys are empty, returns empty map")
+			@DisplayName("when keys array is empty, returns empty map")
 			void returnsEmptyMapWhenKeysEmpty() {
 				final var entries2 = entries1.get();
 
@@ -706,7 +706,7 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when keys is empty, returns empty map")
+			@DisplayName("when keys array is empty, returns empty map")
 			void returnsEmptyMapWhenKeysEmpty() {
 				final var entries2 = entries1.get(
 					new Set<>());
@@ -732,7 +732,7 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when keys are empty, returns empty map")
+			@DisplayName("when keys collection is empty, returns empty map")
 			void returnsEmptyMapWhenKeysEmpty() {
 				final var entries2 = entries1.get(
 					new Set<>());
@@ -849,7 +849,7 @@ class MapTests {
 
 			@Test
 			@DisplayName("when some entry does not match, returns false")
-			void returnsFalseWhenSomeEntryNotMatches() {
+			void returnsFalseWhenSomeEntryDoesnNotMatch() {
 				assert !entries.allMatch((key, value) ->
 					value > 5);
 			}
@@ -892,7 +892,7 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when no entries match, returns empty optional")
+			@DisplayName("when no entry matches, returns empty optional")
 			void returnsEmptyWhenNoEntryMatches() {
 				final var matched = entries.matchAny((key, value) ->
 					value > 5);
@@ -916,6 +916,46 @@ class MapTests {
 				assert Optional.empty()
 					.equals(matched);
 			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".iterate(BiConsumer<K, V>)")
+	class IterateTests {
+		@Test
+		@DisplayName("when map is not empty, iterates entries")
+		void iteratesEntriesWhenNotEmpty() {
+			final var entries = new MutableMap<String, Integer>()
+				.set("n", 0)
+				.set("B", 1)
+				.set("P", 2)
+				.set("L", 9)
+				.toImmutable();
+
+			final var iterated = new HashMap<String, Integer>();
+			final var returned = entries.iterate(iterated::put);
+
+			final var expected = java.util.Map.of(
+				"n", 0,
+				"B", 1,
+				"P", 2,
+				"L", 9);
+
+			assert expected.equals(iterated);
+			assert returned == entries;
+		}
+
+		@Test
+		@DisplayName("when map is empty, does nothing")
+		void doesNothingWhenEmpty() {
+			final var entries = new Map<String, Integer>();
+
+			final var iterated = new HashMap<String, Integer>();
+			final var returned = entries.iterate(iterated::put);
+
+			final var expected = java.util.Map.of();
+			assert expected.equals(iterated);
+			assert returned == entries;
 		}
 	}
 
@@ -978,51 +1018,11 @@ class MapTests {
 	}
 
 	@Nested
-	@DisplayName(".iterate(BiConsumer<K, V>)")
-	class IterateTests {
-		@Test
-		@DisplayName("when map is not empty, iterates entries")
-		void iteratesWhenNotEmpty() {
-			final var entries = new MutableMap<String, Integer>()
-				.set("n", 0)
-				.set("B", 1)
-				.set("P", 2)
-				.set("L", 9)
-				.toImmutable();
-
-			final var iterated = new HashMap<String, Integer>();
-			final var returned = entries.iterate(iterated::put);
-
-			final var expected = java.util.Map.of(
-				"n", 0,
-				"B", 1,
-				"P", 2,
-				"L", 9);
-
-			assert expected.equals(iterated);
-			assert returned == entries;
-		}
-
-		@Test
-		@DisplayName("when map is empty, does nothing")
-		void doesNothingWhenEmpty() {
-			final var entries = new Map<String, Integer>();
-
-			final var iterated = new HashMap<String, Integer>();
-			final var returned = entries.iterate(iterated::put);
-
-			final var expected = java.util.Map.of();
-			assert expected.equals(iterated);
-			assert returned == entries;
-		}
-	}
-
-	@Nested
 	@DisplayName(".convert(BiFunction<K, V, Entry<L, W>>)")
 	class ConvertTests {
 		@Nested
 		@DisplayName("when map is not empty")
-		class NotEmptyTests {
+		class NotEmptyMapTests {
 			private final Map<String, Integer> entries = new MutableMap<String, Integer>()
 				.set("B", 4)
 				.set("V", 2)
@@ -1047,8 +1047,8 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when entry converted to null, ignores entry")
-			void ignoresEntriesConvertedToNull() {
+			@DisplayName("when some entries converted to null, ignores them")
+			void ignoresEntriesWhenConvertedToNull() {
 				final var converted = entries.convert((key, value) ->
 					value % 2 == 0
 						? new Map.Entry<>(key, value / 2)
@@ -1064,8 +1064,8 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when key converted to null, ignores entry")
-			void ignoresKeysConvertedToNull() {
+			@DisplayName("when some converted entries have null keys, ignores them")
+			void ignoresEntriesWhenKeyConvertedToNull() {
 				final var converted = entries.convert((key, value) ->
 					value % 2 == 0
 						? new Map.Entry<>(null, 0)
@@ -1079,8 +1079,8 @@ class MapTests {
 			}
 
 			@Test
-			@DisplayName("when value converted to null, ignores entry")
-			void ignoresValuesConvertedToNull() {
+			@DisplayName("when some converted entries have null values, ignores them")
+			void ignoresEntriesWhenValueConvertedToNull() {
 				final var converted = entries.convert((key, value) ->
 					value % 3 == 0
 						? new Map.Entry<>(key, value - 1)
@@ -1125,8 +1125,8 @@ class MapTests {
 	@DisplayName(".combine(TriFunction<R, K, V, R>)")
 	class CombineTests {
 		@Test
-		@DisplayName("when map is not empty, returns combined entries")
-		void returnsCombinedWhenNotEmpty() {
+		@DisplayName("when map is not empty, returns combined value")
+		void returnsCombinedValueWhenNotEmpty() {
 			final var entries = new MutableMap<String, Integer>()
 				.set("V", 9)
 				.set("c", 0)
@@ -1143,7 +1143,7 @@ class MapTests {
 
 		@Test
 		@DisplayName("when map is empty, returns initial value")
-		void returnsInitialWhenEmpty() {
+		void returnsInitialVaueWhenEmpty() {
 			final var entries = new Map<String, Integer>();
 			final var combined = entries.combine("Empty Map", (current, key, value) ->
 				String.format("%s %s:%d", current, key, value));
