@@ -2,18 +2,12 @@ package co.tsyba.core.collections;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /*
  * Created by Serge Tsyba (tsyba@me.com) on May 12, 2019.
  */
 public class MutableList<T> extends List<T> {
-	private static final int minimumCapacity = 64;
-
-	MutableList(ContiguousArrayStore<T> store) {
-		super(store);
-	}
+	static final int minimumCapacity = 64;
 
 	/**
 	 * Creates a copy of the specified items.
@@ -26,25 +20,14 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the
-	 * items.
-	 *
-	 * @param items
+	 * Creates a list with the specified items.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
 	 */
 	@SafeVarargs
 	public MutableList(T... items) {
-		this(Math.min(items.length, minimumCapacity));
-		this.store.append(items);
-	}
-
-	/**
-	 * Creates a list with the specified items. Ignores any {@code null} values among the
-	 * items.
-	 *
-	 * @param items
-	 */
-	public MutableList(Iterable<T> items) {
-		super(items);
+		this(Math.max(items.length, minimumCapacity));
+		append(items);
 	}
 
 	/**
@@ -56,29 +39,27 @@ public class MutableList<T> extends List<T> {
 	 * @param capacity
 	 */
 	public MutableList(int capacity) {
-		this(new ContiguousArrayStore<T>(capacity));
+		super(capacity);
 	}
 
-	/**
-	 * Returns items at the specified index range in this list.
-	 *
-	 * @param indexRange
-	 * @return
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this list.
-	 */
-	@Override
-	public MutableList<T> get(IndexRange indexRange) {
-		final var items = store.get(indexRange);
-		return new MutableList<>(items);
-	}
+//	/**
+//	 * Returns items at the specified index range in this list.
+//	 *
+//	 * @param indexRange
+//	 * @return
+//	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+//	 * valid index range of this list.
+//	 */
+//	@Override
+//	public MutableList<T> get(IndexRange indexRange) {
+//		final var items = store.get(indexRange);
+//		return new MutableList<>(items);
+//	}
 
 	/**
-	 * Replaces item at the specified index in this list with the specified one.
+	 * Replaces item at the specified index in this list with the specified item.
 	 *
-	 * @param index
-	 * @param item
-	 * @return
+	 * @return itself
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
 	 * range of this list
 	 */
@@ -118,6 +99,12 @@ public class MutableList<T> extends List<T> {
 	 * @return
 	 */
 	public MutableList<T> append(T... items) {
+		for (var item : items) {
+			if (item != null) {
+
+			}
+		}
+
 		store.append(items);
 		return this;
 	}
@@ -234,52 +221,6 @@ public class MutableList<T> extends List<T> {
 		}
 
 		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public MutableList<T> getDistinct() {
-		final var distinctStore = new ContiguousArrayStore<T>(store.itemCount);
-		final var distinctItems = new MutableList<>(distinctStore);
-
-		for (var item : this) {
-			if (!distinctItems.contains(item)) {
-				distinctItems.store.append(item);
-			}
-		}
-
-		return distinctItems;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public MutableList<T> filter(Predicate<T> condition) {
-		final var filteredStore = new ContiguousArrayStore<T>(store.itemCount);
-		for (var item : this) {
-			if (condition.test(item)) {
-				filteredStore.append(item);
-			}
-		}
-
-		return new MutableList<>(filteredStore);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <R> MutableList<R> convert(Function<T, R> converter) {
-		final var convertedStore = new ContiguousArrayStore<R>(store.itemCount);
-		for (var item : this) {
-			final var convertedItem = converter.apply(item);
-			convertedStore.append(convertedItem);
-		}
-
-		return new MutableList<>(convertedStore);
 	}
 
 	/**

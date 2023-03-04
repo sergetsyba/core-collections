@@ -50,7 +50,7 @@ public class List<T> implements IndexedCollection<T> {
 			}
 		}
 
-		return capacity == items.length;
+		return store.items.length == capacity;
 	}
 
 	@Override
