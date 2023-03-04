@@ -11,16 +11,18 @@ import java.util.function.Predicate;
  * access to its items.
  */
 public class List<T> implements IndexedCollection<T> {
-	// todo: remove
-	ContiguousArrayStore<T> store = null;
-	Object[] store2;
+	ContiguousArrayStore<T> store;
+
+	List(int capacity) {
+		this.store = new ContiguousArrayStore<>(capacity);
+	}
 
 	/**
 	 * Creates a copy of the specified {@link Collection}.
 	 */
 	public List(Collection<T> items) {
-		this.store = null;
-		this.store2 = items.toArray();
+		final var array = items.toArray();
+		this.store = new ContiguousArrayStore<>(array);
 	}
 
 	/**
@@ -30,57 +32,30 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@SafeVarargs
 	public List(T... items) {
-		final var store = new Object[items.length];
-		var count = 0;
-
+		final var store = new ContiguousArrayStore<T>(items.length);
 		for (var item : items) {
 			if (item != null) {
-				store[count] = item;
-				++count;
+				store.append(item);
 			}
 		}
 
-		// trim excess capacity, if necessary
-		this.store2 = (count == store.length)
-			? store
-			: Arrays.copyOf(store, count);
-	}
-
-	/**
-	 * Creates a list with the specified items.
-	 * <p>
-	 * Ignores any {@code null} values among the specified items.
-	 */
-	public List(Iterable<T> items) {
-		var store = new Object[64];
-		var count = 0;
-
-		for (var item : items) {
-			// double capacity when it runs out
-			if (count == store.length) {
-				store = Arrays.copyOf(store, 2 * store.length);
-			}
-
-			if (item != null) {
-				store[count] = item;
-				++count;
-			}
-		}
-
-		// trim excess capacity, if necessary
-		this.store2 = (count == store.length)
-			? store
-			: Arrays.copyOf(store, count);
-	}
-
-	protected List(ContiguousArrayStore<T> store) {
+		store.removeExcessCapacity();
 		this.store = store;
-		this.store2 = Arrays.copyOf(store.items, store.itemCount);
+	}
+
+	boolean storeEquals(int capacity, T[] items) {
+		for (var index = 0; index < items.length; ++index) {
+			if (!store.items[index].equals(items[index])) {
+				return false;
+			}
+		}
+
+		return capacity == items.length;
 	}
 
 	@Override
 	public int getCount() {
-		return store2.length;
+		return store.itemCount;
 	}
 
 	public T get(int index) {
@@ -90,7 +65,7 @@ public class List<T> implements IndexedCollection<T> {
 		}
 
 		@SuppressWarnings("unchecked")
-		final var item = (T) store2[index];
+		final var item = (T) store.items[index];
 		return item;
 	}
 
@@ -100,10 +75,8 @@ public class List<T> implements IndexedCollection<T> {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
-		// todo: replace copy with List with preset index range
-		final var subStore = Arrays.copyOfRange(store2, indexRange.start, indexRange.end);
-		@SuppressWarnings("unchecked")
-		final var items = (List<T>) new List<>(subStore);
+		final var items = new List<T>(indexRange.length);
+		System.arraycopy(store.items, indexRange.start, items.store.items, 0, indexRange.length);
 		return items;
 	}
 
@@ -127,7 +100,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	public List<T> getDistinct() {
 		@SuppressWarnings("unchecked")
-		final var distinct = (T[]) new Object[store2.length];
+		final var distinct = (T[]) new Object[store.itemCount];
 		var count = 0;
 
 		for (var item : this) {
@@ -143,8 +116,8 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public List<T> reverse() {
 		@SuppressWarnings("unchecked")
-		final var reversed = (T[]) new Object[store2.length];
-		var index = store2.length - 1;
+		final var reversed = (T[]) new Object[store.itemCount];
+		var index = store.itemCount - 1;
 
 		for (var item : this) {
 			reversed[index] = item;
@@ -157,7 +130,7 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
 		@SuppressWarnings("unchecked")
-		final var sorted = (T[]) Arrays.copyOf(store2, store2.length);
+		final var sorted = (T[]) Arrays.copyOf(store.items, store.itemCount);
 		Arrays.sort(sorted, 0, sorted.length, comparator);
 
 		return new List<>(sorted);
@@ -173,14 +146,14 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public List<T> shuffle() {
 		@SuppressWarnings("unchecked")
-		final var shuffled = (T[]) Arrays.copyOf(store2, store2.length);
+		final var shuffled = (T[]) Arrays.copyOf(store.items, store.itemCount);
 
 		final var time = System.currentTimeMillis();
 		final var random = new Random(time);
 
 		// it's more convenient to iterate items backwards for simpler random index
 		// generation
-		for (var index = store2.length - 1; index >= 0; --index) {
+		for (var index = store.itemCount - 1; index >= 0; --index) {
 			final var randomIndex = random.nextInt(index + 1);
 
 			// swap items at iterated and randomly generated indices
@@ -205,7 +178,7 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public List<T> filter(Predicate<T> condition) {
 		@SuppressWarnings("unchecked")
-		final var filtered = (T[]) new Object[store2.length];
+		final var filtered = (T[]) new Object[store.itemCount];
 		var index = 0;
 
 		for (var item : this) {
@@ -221,7 +194,7 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public <R> List<R> convert(Function<T, R> converter) {
 		@SuppressWarnings("unchecked")
-		final var converted = (R[]) new Object[store2.length];
+		final var converted = (R[]) new Object[store.itemCount];
 		var index = 0;
 
 		for (var item : this) {
@@ -240,7 +213,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	public java.util.List<T> bridge() {
 		@SuppressWarnings("unchecked")
-		final var items = (T[]) Arrays.copyOf(store2, store2.length);
+		final var items = (T[]) Arrays.copyOf(store.items, store.itemCount);
 		return Arrays.asList(items);
 	}
 
@@ -251,13 +224,13 @@ public class List<T> implements IndexedCollection<T> {
 
 			@Override
 			public boolean hasNext() {
-				return index < store2.length;
+				return index < store.itemCount;
 			}
 
 			@Override
 			public T next() {
 				@SuppressWarnings("unchecked")
-				final var item = (T) store2[index];
+				final var item = (T) store.items[index];
 				++index;
 
 				return item;
@@ -268,7 +241,7 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public Iterator<T> reverseIterator() {
 		return new Iterator<>() {
-			private int index = store2.length - 1;
+			private int index = store.itemCount - 1;
 
 			@Override
 			public boolean hasNext() {
@@ -278,7 +251,7 @@ public class List<T> implements IndexedCollection<T> {
 			@Override
 			public T next() {
 				@SuppressWarnings("unchecked")
-				final var item = (T) store2[index];
+				final var item = (T) store.items[index];
 				--index;
 
 				return item;
@@ -288,12 +261,12 @@ public class List<T> implements IndexedCollection<T> {
 
 	@Override
 	public Object[] toArray() {
-		return Arrays.copyOf(store2, store2.length);
+		return Arrays.copyOf(store.items, store.itemCount);
 	}
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(store2);
+		return Arrays.hashCode(store.items);
 	}
 
 	@Override
@@ -307,7 +280,7 @@ public class List<T> implements IndexedCollection<T> {
 
 		@SuppressWarnings("unchecked")
 		final var items = (List<T>) object;
-		return Arrays.equals(store2, items.store2);
+		return Arrays.equals(store.items, items.store.items);
 	}
 
 	@Override

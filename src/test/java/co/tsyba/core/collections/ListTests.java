@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jul 10, 2019.
@@ -21,8 +20,8 @@ public class ListTests {
 			final var items = new List<>(
 				new Set<>("v", "4", "G", "5"));
 
-			Arrays.sort(items.store2);
-			assert Arrays.equals(items.store2,
+			Arrays.sort(items.store.items);
+			assert items.storeEquals(4,
 				new String[]{
 					"4", "5", "G", "v"
 				});
@@ -34,7 +33,7 @@ public class ListTests {
 			final var items = new List<>(
 				new Set<String>());
 
-			assert Arrays.equals(items.store2,
+			assert items.storeEquals(0,
 				new String[]{});
 		}
 	}
@@ -47,7 +46,7 @@ public class ListTests {
 		void createsList() {
 			final var items = new List<>("v", "4", "G", "5");
 
-			assert Arrays.equals(items.store2,
+			assert items.storeEquals(4,
 				new String[]{
 					"v", "4", "G", "5"
 				});
@@ -58,8 +57,8 @@ public class ListTests {
 		void ignoresNulls() {
 			final var items = new List<>("h", "5", null, "R", null, null);
 
-			assert Arrays.equals(items.store2,
-				new Object[]{
+			assert items.storeEquals(3,
+				new String[]{
 					"h", "5", "R"
 				});
 		}
@@ -69,45 +68,7 @@ public class ListTests {
 		void createsEmptyList() {
 			final var items = new List<>();
 
-			assert Arrays.equals(items.store2,
-				new String[]{});
-		}
-	}
-
-	@Nested
-	@DisplayName("List(Iterable<T>)")
-	class NewWithIterableTests {
-		@Test
-		@DisplayName("creates list")
-		void createsList() {
-			final var items = new List<>(
-				Arrays.asList("b", "Y", "u", "3"));
-
-			assert Arrays.equals(items.store2,
-				new String[]{
-					"b", "Y", "u", "3"
-				});
-		}
-
-		@Test
-		@DisplayName("ignores null values")
-		void ignoresNulls() {
-			final var items = new List<>(
-				Arrays.asList(null, "y", "5", null, "4", "5"));
-
-			assert Arrays.equals(items.store2,
-				new Object[]{
-					"y", "5", "4", "5"
-				});
-		}
-
-		@Test
-		@DisplayName("creates empty list")
-		void createsEmptyList() {
-			final var items = new List<>(
-				new LinkedList<String>());
-
-			assert Arrays.equals(items.store2,
+			assert items.storeEquals(0,
 				new String[]{});
 		}
 	}
@@ -223,7 +184,7 @@ public class ListTests {
 				final var range = new IndexRange(2, 5);
 				final var items2 = items1.get(range);
 
-				assert Arrays.equals(items2.store2,
+				assert Arrays.equals(items2.store.items,
 					new String[]{
 						"v", "E", "P"
 					});
@@ -289,7 +250,7 @@ public class ListTests {
 			final var items = new List<>("a", "b", "5", "a", "4", "4");
 			final var distinct = items.getDistinct();
 
-			assert Arrays.equals(distinct.store2,
+			assert distinct.storeEquals(4,
 				new String[]{
 					"a", "b", "5", "4"
 				});
@@ -301,7 +262,7 @@ public class ListTests {
 			final var items = new List<String>();
 			final var distinct = items.getDistinct();
 
-			assert Arrays.equals(distinct.store2,
+			assert distinct.storeEquals(0,
 				new String[]{});
 		}
 	}
@@ -315,7 +276,7 @@ public class ListTests {
 			final var items = new List<>("a", "b", "5", "a", "4", "4");
 			final var reversed = items.reverse();
 
-			assert Arrays.equals(reversed.store2,
+			assert reversed.storeEquals(6,
 				new String[]{
 					"4", "4", "a", "5", "b", "a"
 				});
@@ -327,7 +288,7 @@ public class ListTests {
 			final var items = new List<String>();
 			final var distinct = items.reverse();
 
-			assert Arrays.equals(distinct.store2,
+			assert distinct.storeEquals(0,
 				new String[]{});
 		}
 	}
@@ -341,7 +302,7 @@ public class ListTests {
 			final var items = new List<>(5, 6, 2, 1, 9, 0, 3, 3, 5);
 			final var sorted = items.sort(Comparator.naturalOrder());
 
-			assert Arrays.equals(sorted.store2,
+			assert sorted.storeEquals(9,
 				new Integer[]{
 					0, 1, 2, 3, 3, 5, 5, 6, 9
 				});
@@ -353,7 +314,7 @@ public class ListTests {
 			final var items = new List<Integer>();
 			final var sorted = items.sort(Comparator.naturalOrder());
 
-			assert Arrays.equals(sorted.store2,
+			assert sorted.storeEquals(0,
 				new Integer[]{});
 		}
 	}
@@ -367,8 +328,8 @@ public class ListTests {
 			final var items = new List<>(5, 6, 2, 1, 9, 0, 3, 3, 5);
 			final var shuffled = items.shuffle();
 
-			assert 9 == shuffled.store2.length;
-			assert !Arrays.equals(items.store2, shuffled.store2);
+			assert !Arrays.equals(items.store.items, shuffled.store.items);
+			assert items.eachMatches(shuffled::contains);
 		}
 
 		@Test
@@ -377,7 +338,7 @@ public class ListTests {
 			final var items = new List<Integer>();
 			final var shuffled = items.shuffle();
 
-			assert Arrays.equals(shuffled.store2,
+			assert shuffled.storeEquals(0,
 				new Integer[]{});
 		}
 	}
@@ -392,7 +353,7 @@ public class ListTests {
 			final var odds = items.filter((item) ->
 				item % 2 == 1);
 
-			assert Arrays.equals(odds.store2,
+			assert odds.storeEquals(3,
 				new Integer[]{
 					3, 1, 9
 				});
@@ -405,7 +366,7 @@ public class ListTests {
 			final var evens = items.filter((item) ->
 				item % 2 == 0);
 
-			assert Arrays.equals(evens.store2,
+			assert evens.storeEquals(0,
 				new Integer[]{});
 		}
 	}
@@ -423,7 +384,7 @@ public class ListTests {
 				final var converted = items.convert((item) ->
 					Integer.toString(item));
 
-				assert Arrays.equals(converted.store2,
+				assert converted.storeEquals(4,
 					new String[]{
 						"3", "6", "1", "2"
 					});
@@ -438,7 +399,7 @@ public class ListTests {
 						? Integer.toString(item)
 						: null);
 
-				assert Arrays.equals(converted.store2,
+				assert converted.storeEquals(4,
 					new String[]{
 						"4", "6", "2", "8"
 					});
@@ -455,7 +416,7 @@ public class ListTests {
 				final var converted = items.convert((item) ->
 					item * 2);
 
-				assert Arrays.equals(converted.store2,
+				assert converted.storeEquals(0,
 					new Integer[]{});
 			}
 		}
