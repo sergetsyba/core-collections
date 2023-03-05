@@ -7,6 +7,19 @@ public class MutableList<T> extends List<T> {
 	static final int minimumCapacity = 64;
 
 	/**
+	 * Creates an empty list with the specified item capacity.
+	 * <p>
+	 * When approximate item count is known in advance, use this constructor to create a
+	 * list with enough space in its backing store. This improves performance of adding
+	 * items to this list and saves memory when default capacity exceeds item count.
+	 *
+	 * @throws IllegalArgumentException when the specified item capacity is negative
+	 */
+	public MutableList(int capacity) {
+		super(capacity);
+	}
+
+	/**
 	 * Creates a list with the specified items.
 	 */
 	public MutableList(Collection<T> items) {
@@ -25,17 +38,6 @@ public class MutableList<T> extends List<T> {
 		append(items);
 	}
 
-	/**
-	 * Creates an empty list with the specified amount of reserved capacity.
-	 * <p>
-	 * When item count is known in advance, reserving item capacity during list creation
-	 * improves performance of item insertion and item appending.
-	 *
-	 * @param capacity
-	 */
-	public MutableList(int capacity) {
-		super(capacity);
-	}
 
 //	/**
 //	 * Returns items at the specified index range in this list.

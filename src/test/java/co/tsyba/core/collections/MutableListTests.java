@@ -10,6 +10,39 @@ import static co.tsyba.core.collections.MutableList.minimumCapacity;
 
 class MutableListTests {
 	@Nested
+	@DisplayName("MutableList(int)")
+	class ConstructorIntTests {
+		@Test
+		@DisplayName("when capacity is positive, creates empty list")
+		void createsEmptyListWhenCapacityPositive() {
+			final var items = new MutableList<>(7);
+
+			assert storeEquals(items, 7,
+				new String[]{});
+		}
+
+		@Test
+		@DisplayName("when capacity is 0, creates empty list")
+		void createsEmptyListWhenCapacityZero() {
+			final var items = new MutableList<>(0);
+
+			assert storeEquals(items, 0,
+				new String[]{});
+		}
+
+		@Test
+		@DisplayName("when capacity is negative, fails")
+		void failsWhenCapacityNegative() {
+			try {
+				new MutableList<>(-8);
+			} catch (IllegalArgumentException ignored) {
+				return;
+			}
+			assert false;
+		}
+	}
+
+	@Nested
 	@DisplayName("MutableList(Collection<T>)")
 	class ConstructorCollectionTests {
 		@Test
