@@ -3,20 +3,15 @@ package co.tsyba.core.collections;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-/*
- * Created by Serge Tsyba (tsyba@me.com) on May 12, 2019.
- */
 public class MutableList<T> extends List<T> {
 	static final int minimumCapacity = 64;
 
 	/**
-	 * Creates a copy of the specified items.
-	 *
-	 * @param items
+	 * Creates a list with the specified items.
 	 */
-	public MutableList(List<T> items) {
-		this(Math.min(items.getCount(), minimumCapacity));
-		this.store.append(items.store);
+	public MutableList(Collection<T> items) {
+		this(Math.max(items.getCount(), minimumCapacity));
+		append(items);
 	}
 
 	/**
@@ -86,8 +81,8 @@ public class MutableList<T> extends List<T> {
 	 * @param items
 	 * @return
 	 */
-	public MutableList<T> append(List<T> items) {
-		store.append(items.store);
+	public MutableList<T> append(Collection<T> items) {
+		items.forEach(this::append);
 		return this;
 	}
 
@@ -230,3 +225,5 @@ public class MutableList<T> extends List<T> {
 		return new List<>(this);
 	}
 }
+
+// created on May 12, 2019

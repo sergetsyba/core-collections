@@ -6,27 +6,57 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
+import static co.tsyba.core.collections.MutableList.minimumCapacity;
+
 class MutableListTests {
+	@Nested
+	@DisplayName("MutableList(Collection<T>)")
+	class ConstructorCollectionTests {
+		@Test
+		@DisplayName("creates list")
+		void createsList() {
+			final var items = new MutableList<>(
+				new List<>("p", "g", "F", "q", "F"));
+
+			assert storeEquals(items, minimumCapacity,
+				new String[]{
+					"p", "g", "F", "q", "F"
+				});
+		}
+
+		@Test
+		@DisplayName("when argument collection is empty, creates empty list")
+		void createsEmptyListWhenArgCollectionEmpty() {
+			final var items = new MutableList<>(
+				new List<String>());
+
+			assert storeEquals(items, minimumCapacity,
+				new String[]{});
+		}
+	}
+
 	@Nested
 	@DisplayName("MutableList(T...)")
 	class ConstructorVarargsTests {
 		@Test
 		@DisplayName("creates list")
 		void createsList() {
-			final var items = new MutableList<>("b", "d", "Q", "P", "G");
+			final var items = new MutableList<>(
+				"b", "d", "Q", "P", "G");
 
-			assert items.storeEquals(MutableList.minimumCapacity,
+			assert storeEquals(items, minimumCapacity,
 				new String[]{
 					"b", "d", "Q", "P", "G"
 				});
 		}
 
 		@Test
-		@DisplayName("when some items are null, creates list ignoring them")
+		@DisplayName("when some items are null, creates list ignoring nulls")
 		void createsListWhenSomeItemsNull() {
-			final var items = new MutableList<>(null, "B", null, null, "G", null);
+			final var items = new MutableList<>(
+				null, "B", null, null, "G", null);
 
-			assert items.storeEquals(MutableList.minimumCapacity,
+			assert storeEquals(items, minimumCapacity,
 				new String[]{
 					"B", "G"
 				});
@@ -35,18 +65,19 @@ class MutableListTests {
 		@Test
 		@DisplayName("when all items are null, creates empty list")
 		void createsEmptyListWhenAllItemsNull() {
-			final var items = new MutableList<>(null, null, null);
+			final var items = new MutableList<>(
+				null, null, null);
 
-			assert items.storeEquals(MutableList.minimumCapacity,
+			assert storeEquals(items, minimumCapacity,
 				new String[]{});
 		}
 
 		@Test
-		@DisplayName("creates empty list")
-		void createsEmptyList() {
+		@DisplayName("when argument array is empty, creates empty list")
+		void createsEmptyListWhenArgArrayEmpty() {
 			final var items = new MutableList<String>();
 
-			assert items.storeEquals(MutableList.minimumCapacity,
+			assert storeEquals(items, minimumCapacity,
 				new String[]{});
 		}
 	}
@@ -70,6 +101,16 @@ class MutableListTests {
 					});
 			}
 		}
+	}
+
+	static <T> boolean storeEquals(List<T> actual, int capacity, T[] expected) {
+		for (var index = 0; index < expected.length; ++index) {
+			if (!actual.store.items[index].equals(expected[index])) {
+				return false;
+			}
+		}
+
+		return actual.store.items.length == capacity;
 	}
 }
 
