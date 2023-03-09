@@ -56,7 +56,7 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Replaces item at the specified index in this list with the specified item.
 	 * <p>
-	 * Does nothing when the specified item is {@code null}.
+	 * When the specified item is {@code null}, does nothing.
 	 *
 	 * @return itself
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
@@ -68,11 +68,11 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Appends the specified item to the end of this list. Does nothing when the specified
-	 * item is {@code null}. Returns itself.
+	 * Appends the specified item to the end of this list.
+	 * <p>
+	 * When the specified item is {@code null}, does nothing
 	 *
-	 * @param item
-	 * @return
+	 * @return itself
 	 */
 	public MutableList<T> append(T item) {
 		store.append(item);

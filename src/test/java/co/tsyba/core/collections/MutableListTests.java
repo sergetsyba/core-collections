@@ -15,8 +15,7 @@ class MutableListTests {
 		void createsEmptyListWhenCapacityPositive() {
 			final var items = new MutableList<>(7);
 
-			assert 7 == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(7,
 				new String[]{});
 		}
 
@@ -25,8 +24,7 @@ class MutableListTests {
 		void createsEmptyListWhenCapacityZero() {
 			final var items = new MutableList<>(0);
 
-			assert 0 == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(0,
 				new String[]{});
 		}
 
@@ -51,8 +49,7 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				new List<>("p", "g", "F", "q", "F"));
 
-			assert minimumCapacity == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(minimumCapacity,
 				new String[]{
 					"p", "g", "F", "q", "F"
 				});
@@ -64,8 +61,7 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				new List<String>());
 
-			assert minimumCapacity == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(minimumCapacity,
 				new String[]{});
 		}
 	}
@@ -79,8 +75,7 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				"b", "d", "Q", "P", "G");
 
-			assert minimumCapacity == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(minimumCapacity,
 				new String[]{
 					"b", "d", "Q", "P", "G"
 				});
@@ -92,8 +87,7 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				null, "B", null, null, "G", null);
 
-			assert minimumCapacity == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(minimumCapacity,
 				new String[]{
 					"B", "G"
 				});
@@ -105,8 +99,7 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				null, null, null);
 
-			assert minimumCapacity == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(minimumCapacity,
 				new String[]{});
 		}
 
@@ -115,8 +108,7 @@ class MutableListTests {
 		void createsEmptyListWhenArgArrayEmpty() {
 			final var items = new MutableList<String>();
 
-			assert minimumCapacity == items.store.items.length;
-			assert storeEquals(items.store,
+			assert items.storeEquals(minimumCapacity,
 				new String[]{});
 		}
 	}
@@ -134,7 +126,7 @@ class MutableListTests {
 				final var returned = items.set(2, "O");
 
 				assert returned == items;
-				assert storeEquals(items.store,
+				assert items.storeEquals(
 					new String[]{
 						"g", "E", "O", "s"
 					});
@@ -147,7 +139,7 @@ class MutableListTests {
 				final var returned = items.set(1, "M");
 
 				assert returned == items;
-				assert storeEquals(items.store,
+				assert items.storeEquals(
 					new String[]{
 						"v", "M", "q", "A"
 					});
@@ -205,22 +197,58 @@ class MutableListTests {
 				assert false;
 			}
 		}
-	}
 
-	static <T> boolean storeEquals(ContiguousArrayStore<T> actual, T[] expected) {
-		var index = 0;
-		for (; index < expected.length; ++index) {
-			if (!actual.items[index].equals(expected[index])) {
-				return false;
+		@Nested
+		@DisplayName(".append(T)")
+		class AppendTests {
+			@Nested
+			@DisplayName("when list is not empty")
+			class NotEmptyListTests {
+				@Test
+				@DisplayName("appends item")
+				void appendsItem() {
+					final var items = new MutableList<>("v", "b", "f");
+					final var returned = items.append("g");
+
+					assert returned == items;
+					assert items.storeEquals(
+						new String[]{
+							"v", "b", "f", "g"
+						});
+				}
+
+				@Test
+				@DisplayName("when item is null, does not append item")
+				void doesNotAppendItemWhenItemNull() {
+					final var items = new MutableList<>("v", "b", "f");
+					final var returned = items.append((String) null);
+
+					assert returned == items;
+					assert items.storeEquals(
+						new String[]{
+							"v", "b", "f"
+						});
+				}
+			}
+
+			@Nested
+			@DisplayName("when list is empty")
+			class EmptyListTests {
+				@Test
+				@DisplayName("appends item")
+				void appendsItem() {
+					final var items = new MutableList<String>();
+					final var returned = items.append("U");
+
+					assert returned == items;
+					assert items.storeEquals(
+						new String[]{
+							"U"
+						});
+				}
+
 			}
 		}
-		for (; index < actual.items.length; ++index) {
-			if (actual.items[index] != null) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 }
 

@@ -43,16 +43,6 @@ public class List<T> implements IndexedCollection<T> {
 		this.store = store;
 	}
 
-	boolean storeEquals(int capacity, T[] items) {
-		for (var index = 0; index < items.length; ++index) {
-			if (!store.items[index].equals(items[index])) {
-				return false;
-			}
-		}
-
-		return store.items.length == capacity;
-	}
-
 	@Override
 	public int getCount() {
 		return store.itemCount;
@@ -286,6 +276,27 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public String toString() {
 		return "[" + join(", ") + "]";
+	}
+
+	boolean storeEquals(T[] items) {
+		var index = 0;
+		for (; index < items.length; ++index) {
+			if (!store.items[index].equals(items[index])) {
+				return false;
+			}
+		}
+		for (; index < store.items.length; ++index) {
+			if (store.items[index] != null) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	boolean storeEquals(int capacity, T[] items) {
+		return storeEquals(items) &&
+			store.items.length == capacity;
 	}
 }
 
