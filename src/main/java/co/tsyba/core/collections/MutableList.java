@@ -10,7 +10,7 @@ public class MutableList<T> extends List<T> {
 	 * Creates an empty list with the specified item capacity.
 	 * <p>
 	 * When approximate item count is known in advance, use this constructor to create a
-	 * list with enough space in its backing store. This improves performance of adding
+	 * list with enough space in its backing store. This improves performance when adding
 	 * items to this list and saves memory when default capacity exceeds item count.
 	 *
 	 * @throws IllegalArgumentException when the specified item capacity is negative
@@ -55,6 +55,8 @@ public class MutableList<T> extends List<T> {
 
 	/**
 	 * Replaces item at the specified index in this list with the specified item.
+	 * <p>
+	 * Does nothing when the specified item is {@code null}.
 	 *
 	 * @return itself
 	 * @throws IndexNotInRangeException when the specified index is out of valid index

@@ -4,8 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static co.tsyba.core.collections.MutableList.minimumCapacity;
 
 class MutableListTests {
@@ -17,7 +15,8 @@ class MutableListTests {
 		void createsEmptyListWhenCapacityPositive() {
 			final var items = new MutableList<>(7);
 
-			assert storeEquals(items, 7,
+			assert 7 == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{});
 		}
 
@@ -26,7 +25,8 @@ class MutableListTests {
 		void createsEmptyListWhenCapacityZero() {
 			final var items = new MutableList<>(0);
 
-			assert storeEquals(items, 0,
+			assert 0 == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{});
 		}
 
@@ -51,7 +51,8 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				new List<>("p", "g", "F", "q", "F"));
 
-			assert storeEquals(items, minimumCapacity,
+			assert minimumCapacity == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{
 					"p", "g", "F", "q", "F"
 				});
@@ -63,7 +64,8 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				new List<String>());
 
-			assert storeEquals(items, minimumCapacity,
+			assert minimumCapacity == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{});
 		}
 	}
@@ -77,7 +79,8 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				"b", "d", "Q", "P", "G");
 
-			assert storeEquals(items, minimumCapacity,
+			assert minimumCapacity == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{
 					"b", "d", "Q", "P", "G"
 				});
@@ -89,7 +92,8 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				null, "B", null, null, "G", null);
 
-			assert storeEquals(items, minimumCapacity,
+			assert minimumCapacity == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{
 					"B", "G"
 				});
@@ -101,7 +105,8 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				null, null, null);
 
-			assert storeEquals(items, minimumCapacity,
+			assert minimumCapacity == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{});
 		}
 
@@ -110,7 +115,8 @@ class MutableListTests {
 		void createsEmptyListWhenArgArrayEmpty() {
 			final var items = new MutableList<String>();
 
-			assert storeEquals(items, minimumCapacity,
+			assert minimumCapacity == items.store.items.length;
+			assert storeEquals(items.store,
 				new String[]{});
 		}
 	}
@@ -128,22 +134,93 @@ class MutableListTests {
 				final var returned = items.set(2, "O");
 
 				assert returned == items;
-				assert Arrays.equals(items.toArray(),
+				assert storeEquals(items.store,
 					new String[]{
 						"g", "E", "O", "s"
 					});
 			}
+
+			@Test
+			@DisplayName("when item is null, does not set item")
+			void doesNotSetItemWhenItemNull() {
+				final var items = new MutableList<>("v", "E", "q", "A");
+				final var returned = items.set(1, "M");
+
+				assert returned == items;
+				assert storeEquals(items.store,
+					new String[]{
+						"v", "M", "q", "A"
+					});
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				try {
+					new MutableList<>("g", "R", "c")
+						.set(-2, "V");
+				} catch (IndexNotInRangeException ignored) {
+					return;
+				}
+				assert false;
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				try {
+					new MutableList<>("g", "R", "c")
+						.set(4, "V");
+				} catch (IndexNotInRangeException ignored) {
+					return;
+				}
+				assert false;
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				try {
+					new MutableList<>()
+						.set(-1, "x");
+				} catch (IndexNotInRangeException ignored) {
+					return;
+				}
+				assert false;
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				try {
+					new MutableList<>()
+						.set(0, "p");
+				} catch (IndexNotInRangeException ignored) {
+					return;
+				}
+				assert false;
+			}
 		}
 	}
 
-	static <T> boolean storeEquals(List<T> actual, int capacity, T[] expected) {
-		for (var index = 0; index < expected.length; ++index) {
-			if (!actual.store.items[index].equals(expected[index])) {
+	static <T> boolean storeEquals(ContiguousArrayStore<T> actual, T[] expected) {
+		var index = 0;
+		for (; index < expected.length; ++index) {
+			if (!actual.items[index].equals(expected[index])) {
+				return false;
+			}
+		}
+		for (; index < actual.items.length; ++index) {
+			if (actual.items[index] != null) {
 				return false;
 			}
 		}
 
-		return actual.store.items.length == capacity;
+		return true;
 	}
 }
 
