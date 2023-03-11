@@ -253,7 +253,7 @@ class MutableListTests {
 			@DisplayName("when item is null, does not prepend null")
 			void doesNotPrependNullWhenItemNull() {
 				final var items = new MutableList<String>();
-				final var returned = items.append((String) null);
+				final var returned = items.prepend((String) null);
 
 				assert returned == items;
 				assertEquals(items,
@@ -326,7 +326,7 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			@Test
-			@DisplayName("prepend items")
+			@DisplayName("prepends items")
 			void prependItems() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend("V", "B", "M");
@@ -343,6 +343,72 @@ class MutableListTests {
 			void doesNothingWhenArgArrayEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend();
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{});
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".prepend(List<T>)")
+	class PrependListTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("prepends items")
+			void prependsItems() {
+				final var items = new MutableList<>("G", "f");
+				final var returned = items.prepend(
+					new List<>("F", "F", "a"));
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"F", "F", "a", "G", "f"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
+				final var items = new MutableList<>("G", "f");
+				final var returned = items.prepend(
+					new List<>());
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"G", "f"
+					});
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("prepends items")
+			void prependsItems() {
+				final var items = new MutableList<String>();
+				final var returned = items.prepend(
+					new List<>("V", "Q", "P"));
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"V", "Q", "P"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
+				final var items = new MutableList<String>();
+				final var returned = items.prepend(
+					new List<>());
 
 				assert returned == items;
 				assertEquals(items,

@@ -118,6 +118,24 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Prepends the specified items to the beginning of this list.
+	 *
+	 * @return itself
+	 */
+	public MutableList<T> prepend(List<T> items) {
+		final var count = items.getCount();
+		store.moveItems(0, count);
+
+		var index = 0;
+		for (var item : items) {
+			store.items[index] = item;
+			index += 1;
+		}
+
+		return this;
+	}
+
+	/**
 	 * Appends the specified item to the end of this list.
 	 * <p>
 	 * When the specified item is {@code null}, does nothing.
