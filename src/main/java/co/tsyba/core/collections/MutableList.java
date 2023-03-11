@@ -90,6 +90,34 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Prepends the specified items to the beginning of this list.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
+	 *
+	 * @return itself
+	 */
+	@SafeVarargs
+	public final MutableList<T> prepend(T... items) {
+		var nullCount = 0;
+		for (var item : items) {
+			if (item == null) {
+				nullCount += 1;
+			}
+		}
+
+		store.moveItems(0, items.length - nullCount);
+
+		for (int index1 = 0, index2 = 0; index1 < items.length; index1 += 1) {
+			if (items[index1] != null) {
+				store.items[index2] = items[index1];
+				index2 += 1;
+			}
+		}
+
+		return this;
+	}
+
+	/**
 	 * Appends the specified item to the end of this list.
 	 * <p>
 	 * When the specified item is {@code null}, does nothing.

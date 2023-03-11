@@ -262,6 +262,95 @@ class MutableListTests {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
+	@Nested
+	@DisplayName(".prepend(T...)")
+	class PrependVarargsTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("prepends items")
+			void prependsItems() {
+				final var items = new MutableList<>("h", "V", "d");
+				final var returned = items.prepend("n", "M");
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"n", "M", "h", "V", "d"
+					});
+			}
+
+			@Test
+			@DisplayName("when some items are null, does not prepend nulls")
+			void doesNotPrependNullsWhenSomeItemsNull() {
+				final var items = new MutableList<>("g", "H");
+				final var returned = items.prepend(null, "n", null, null, "O", null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"n", "O", "g", "H"
+					});
+			}
+
+			@Test
+			@DisplayName("when all items are null, does not prepend nulls")
+			void doesNotPrependNullsWhenAllItemsNull() {
+				final var items = new MutableList<>("f", "E", "q");
+				final var returned = items.prepend(null, null, null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"f", "E", "q"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
+				final var items = new MutableList<>("b", "R", "O");
+				final var returned = items.prepend();
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"b", "R", "O"
+					});
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("prepend items")
+			void prependItems() {
+				final var items = new MutableList<String>();
+				final var returned = items.prepend("V", "B", "M");
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"V", "B", "M"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
+				final var items = new MutableList<String>();
+				final var returned = items.prepend();
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{});
+			}
+		}
+	}
+
 	@Nested
 	@DisplayName(".append(T)")
 	class AppendTests {

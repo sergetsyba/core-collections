@@ -133,7 +133,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 
 	public void prepend(T item) {
 		moveItems(0, 1);
-		
+
 		items[0] = item;
 		itemCount += 1;
 	}
@@ -354,7 +354,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		items = newStorage;
 	}
 
-	private void moveItems(int startIndex, int positions) {
+	void moveItems(int startIndex, int positions) {
 		final var newItemCount = itemCount + positions;
 
 		if (newItemCount > items.length) {
