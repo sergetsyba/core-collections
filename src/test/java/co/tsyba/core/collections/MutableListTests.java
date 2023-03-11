@@ -203,43 +203,62 @@ class MutableListTests {
 	@Nested
 	@DisplayName(".append(T)")
 	class AppendTests {
-		@Test
-		@DisplayName("appends item")
-		void appendsItem() {
-			final var items = new MutableList<>("v", "b", "f");
-			final var returned = items.append("g");
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("appends item")
+			void appendsItem() {
+				final var items = new MutableList<>("v", "b", "f");
+				final var returned = items.append("g");
 
-			assert returned == items;
-			assertEquals(items,
-				new String[]{
-					"v", "b", "f", "g"
-				});
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"v", "b", "f", "g"
+					});
+			}
+
+			@Test
+			@DisplayName("when item is null, does not append null")
+			void doesNotAppendNullWhenItemNull() {
+				final var items = new MutableList<>("v", "b", "f");
+				final var returned = items.append((String) null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"v", "b", "f"
+					});
+			}
 		}
 
-		@Test
-		@DisplayName("when item is null, does not append null")
-		void doesNotAppendNullWhenItemNull() {
-			final var items = new MutableList<>("v", "b", "f");
-			final var returned = items.append((String) null);
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("appends item")
+			void appendsItem() {
+				final var items = new MutableList<String>();
+				final var returned = items.append("U");
 
-			assert returned == items;
-			assertEquals(items,
-				new String[]{
-					"v", "b", "f"
-				});
-		}
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"U"
+					});
+			}
 
-		@Test
-		@DisplayName("when list is empty, appends item")
-		void appendsItemWhenListEmpty() {
-			final var items = new MutableList<String>();
-			final var returned = items.append("U");
+			@Test
+			@DisplayName("when item is null, does not append null")
+			void doesNotAppendNullWhenItemNull() {
+				final var items = new MutableList<String>();
+				final var returned = items.append((String) null);
 
-			assert returned == items;
-			assertEquals(items,
-				new String[]{
-					"U"
-				});
+				assert returned == items;
+				assertEquals(items,
+					new String[]{});
+			}
 		}
 	}
 
@@ -247,43 +266,154 @@ class MutableListTests {
 	@Nested
 	@DisplayName(".append(T...)")
 	class AppendVarargsTests {
-		@Test
-		@DisplayName("appends items")
-		void appendsItems() {
-			final var items = new MutableList<>("h", "V", "d");
-			final var returned = items.append("n", "M");
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("appends items")
+			void appendsItems() {
+				final var items = new MutableList<>("h", "V", "d");
+				final var returned = items.append("n", "M");
 
-			assert returned == items;
-			assertEquals(items,
-				new String[]{
-					"h", "V", "d", "n", "M"
-				});
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"h", "V", "d", "n", "M"
+					});
+			}
+
+			@Test
+			@DisplayName("when some items are null, does not append nulls")
+			void doesNotAppendNullsWhenSomeItemsNull() {
+				final var items = new MutableList<>("g", "H");
+				final var returned = items.append(null, "n", null, null, "O", null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"g", "H", "n", "O"
+					});
+			}
+
+			@Test
+			@DisplayName("when all items are null, does not append nulls")
+			void doesNotAppendNullsWhenAllItemsNull() {
+				final var items = new MutableList<>("f", "E", "q");
+				final var returned = items.append(null, null, null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"f", "E", "q"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
+				final var items = new MutableList<>("b", "R", "O");
+				final var returned = items.append();
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"b", "R", "O"
+					});
+			}
 		}
 
-		@Test
-		@DisplayName("when some items are null, does not append nulls")
-		void doesNotAppendNullsWhenSomeItemsNull() {
-			final var items = new MutableList<>("g", "H");
-			final var returned = items.append(null, "n", null, null, "O", null);
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("appends items")
+			void appendsItems() {
+				final var items = new MutableList<String>();
+				final var returned = items.append("V", "B", "M");
 
-			assert returned == items;
-			assertEquals(items,
-				new String[]{
-					"g", "H", "n", "O"
-				});
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"V", "B", "M"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
+				final var items = new MutableList<String>();
+				final var returned = items.append();
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{});
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".append(List<T>)")
+	class AppendListTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("appends items")
+			void appendsItems() {
+				final var items = new MutableList<>("G", "f");
+				final var returned = items.append(
+					new List<>("F", "F", "a"));
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"G", "f", "F", "F", "a"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
+				final var items = new MutableList<>("G", "f");
+				final var returned = items.append(
+					new List<>());
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"G", "f"
+					});
+			}
 		}
 
-		@Test
-		@DisplayName("when all items are null, does not append nulls")
-		void doesNotAppendNullsWhenAllItemsNull() {
-			final var items = new MutableList<>("f", "E", "q");
-			final var returned = items.append(null, null, null);
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("appends items")
+			void appendsItems() {
+				final var items = new MutableList<String>();
+				final var returned = items.append(
+					new List<>("V", "Q", "P"));
 
-			assert returned == items;
-			assertEquals(items,
-				new String[]{
-					"f", "E", "q"
-				});
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"V", "Q", "P"
+					});
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
+				final var items = new MutableList<String>();
+				final var returned = items.append(
+					new List<>());
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{});
+			}
 		}
 	}
 

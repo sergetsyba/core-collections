@@ -33,7 +33,7 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Creates a list with the specified items.
 	 */
-	public MutableList(Collection<T> items) {
+	public MutableList(List<T> items) {
 		this(Math.max(items.getCount(), minimumCapacity));
 		append(items);
 	}
@@ -108,12 +108,12 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Appends the specified items to the end of this list. Returns itself.
+	 * Appends the specified items to the end of this list.
 	 *
-	 * @param items
-	 * @return
+	 * @return itself
 	 */
-	public MutableList<T> append(Collection<T> items) {
+	public MutableList<T> append(List<T> items) {
+		// todo: copy array
 		items.forEach(this::append);
 		return this;
 	}
