@@ -21,20 +21,20 @@ public class MutableList<T> extends List<T> {
 
 	/**
 	 * Creates a list with the specified items.
-	 */
-	public MutableList(Collection<T> items) {
-		this(Math.max(items.getCount(), minimumCapacity));
-		append(items);
-	}
-
-	/**
-	 * Creates a list with the specified items.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
 	 */
 	@SafeVarargs
 	public MutableList(T... items) {
 		this(Math.max(items.length, minimumCapacity));
+		append(items);
+	}
+
+	/**
+	 * Creates a list with the specified items.
+	 */
+	public MutableList(Collection<T> items) {
+		this(Math.max(items.getCount(), minimumCapacity));
 		append(items);
 	}
 
@@ -92,7 +92,7 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Appends the specified items to the end of this list.
 	 * <p>
-	 * Ignores any {@code null} values among the items.
+	 * Ignores any {@code null} values among the specified items.
 	 *
 	 * @return itself
 	 */
