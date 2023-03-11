@@ -131,6 +131,13 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		items[index] = item;
 	}
 
+	public void prepend(T item) {
+		moveItems(0, 1);
+		
+		items[0] = item;
+		itemCount += 1;
+	}
+
 	/**
 	 * Appends the specified item to the end of this store. Does nothing when the
 	 * specified item is {@code null}.

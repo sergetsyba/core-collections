@@ -201,6 +201,68 @@ class MutableListTests {
 	}
 
 	@Nested
+	@DisplayName(".prepend(T)")
+	class PrependTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("prepends item")
+			void prependsItem() {
+				final var items = new MutableList<>("v", "b", "f");
+				final var returned = items.prepend("g");
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"g", "v", "b", "f"
+					});
+			}
+
+			@Test
+			@DisplayName("when item is null, does not prepend null")
+			void doesNotPrependNullWhenItemNull() {
+				final var items = new MutableList<>("v", "b", "f");
+				final var returned = items.prepend((String) null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"v", "b", "f"
+					});
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("prepends item")
+			void prependsItem() {
+				final var items = new MutableList<String>();
+				final var returned = items.prepend("U");
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"U"
+					});
+			}
+
+			@Test
+			@DisplayName("when item is null, does not prepend null")
+			void doesNotPrependNullWhenItemNull() {
+				final var items = new MutableList<String>();
+				final var returned = items.append((String) null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{});
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".append(T)")
 	class AppendTests {
 		@Nested

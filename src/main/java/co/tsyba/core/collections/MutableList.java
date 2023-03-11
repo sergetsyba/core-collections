@@ -75,9 +75,24 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Prepends the specified item to the beginning of this list.
+	 * <p>
+	 * When the specified item is {@code null}, does nothing.
+	 *
+	 * @return itself
+	 */
+	public MutableList<T> prepend(T item) {
+		if (item != null) {
+			store.prepend(item);
+		}
+
+		return this;
+	}
+
+	/**
 	 * Appends the specified item to the end of this list.
 	 * <p>
-	 * When the specified item is {@code null}, does nothing
+	 * When the specified item is {@code null}, does nothing.
 	 *
 	 * @return itself
 	 */
