@@ -270,33 +270,12 @@ public class List<T> implements IndexedCollection<T> {
 
 		@SuppressWarnings("unchecked")
 		final var items = (List<T>) object;
-		return Arrays.equals(store.items, items.store.items);
+		return store.equals(items.store);
 	}
 
 	@Override
 	public String toString() {
 		return "[" + join(", ") + "]";
-	}
-
-	boolean storeEquals(T[] items) {
-		var index = 0;
-		for (; index < items.length; ++index) {
-			if (!store.items[index].equals(items[index])) {
-				return false;
-			}
-		}
-		for (; index < store.items.length; ++index) {
-			if (store.items[index] != null) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	boolean storeEquals(int capacity, T[] items) {
-		return storeEquals(items) &&
-			store.items.length == capacity;
 	}
 }
 

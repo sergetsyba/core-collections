@@ -38,6 +38,13 @@ public class MutableList<T> extends List<T> {
 		append(items);
 	}
 
+	/**
+	 * Returns the number of items, which can be added to the list, before it needs to
+	 * resize its backing store.
+	 */
+	int getCapacity() {
+		return store.items.length;
+	}
 
 //	/**
 //	 * Returns items at the specified index range in this list.
@@ -75,7 +82,28 @@ public class MutableList<T> extends List<T> {
 	 * @return itself
 	 */
 	public MutableList<T> append(T item) {
-		store.append(item);
+		if (item != null) {
+			store.append(item);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Appends the specified items to the end of this list.
+	 * <p>
+	 * Ignores any {@code null} values among the items.
+	 *
+	 * @return itself
+	 */
+	@SafeVarargs
+	public final MutableList<T> append(T... items) {
+		for (var item : items) {
+			if (item != null) {
+				store.append(item);
+			}
+		}
+
 		return this;
 	}
 
@@ -90,23 +118,6 @@ public class MutableList<T> extends List<T> {
 		return this;
 	}
 
-	/**
-	 * Appends the specified items to the end of this list. Ignores any {@code null}
-	 * values among the items. Returns itself.
-	 *
-	 * @param items
-	 * @return
-	 */
-	public MutableList<T> append(T... items) {
-		for (var item : items) {
-			if (item != null) {
-
-			}
-		}
-
-		store.append(items);
-		return this;
-	}
 
 	/**
 	 * Inserts the specified item into this list at the specified index. Does nothing when
