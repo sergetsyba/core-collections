@@ -31,12 +31,9 @@ class MutableListTests {
 		@Test
 		@DisplayName("when capacity is negative, fails")
 		void failsWhenCapacityNegative() {
-			try {
-				new MutableList<>(-8);
-			} catch (IllegalArgumentException ignored) {
-				return;
-			}
-			assert false;
+			assertThrows(() -> {
+				new MutableList<String>(-8);
+			}, IllegalArgumentException.class);
 		}
 	}
 
@@ -149,25 +146,19 @@ class MutableListTests {
 			@Test
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
-				try {
+				assertThrows(() -> {
 					new MutableList<>("g", "R", "c")
 						.set(-2, "V");
-				} catch (IndexNotInRangeException ignored) {
-					return;
-				}
-				assert false;
+				}, IndexNotInRangeException.class);
 			}
 
 			@Test
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
-				try {
+				assertThrows(() -> {
 					new MutableList<>("g", "R", "c")
 						.set(4, "V");
-				} catch (IndexNotInRangeException ignored) {
-					return;
-				}
-				assert false;
+				}, IndexNotInRangeException.class);
 			}
 		}
 
@@ -177,25 +168,25 @@ class MutableListTests {
 			@Test
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
-				try {
+				final var expected = new IndexNotInRangeException(4,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
 					new MutableList<>()
-						.set(-1, "x");
-				} catch (IndexNotInRangeException ignored) {
-					return;
-				}
-				assert false;
+						.set(4, "V");
+				}, expected);
 			}
 
 			@Test
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
-				try {
+				final var expected = new IndexNotInRangeException(0,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
 					new MutableList<>()
 						.set(0, "p");
-				} catch (IndexNotInRangeException ignored) {
-					return;
-				}
-				assert false;
+				}, expected);
 			}
 		}
 	}
@@ -250,8 +241,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does not prepend null")
-			void doesNotPrependNullWhenItemNull() {
+			@DisplayName("when item is null, does nothing")
+			void doesNothingWhenItemNull() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend((String) null);
 
@@ -437,8 +428,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does not append null")
-			void doesNotAppendNullWhenItemNull() {
+			@DisplayName("when item is null, does nothing")
+			void doesNothingWhenItemNull() {
 				final var items = new MutableList<>("v", "b", "f");
 				final var returned = items.append((String) null);
 
@@ -467,8 +458,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does not append null")
-			void doesNotAppendNullWhenItemNull() {
+			@DisplayName("when item is null, does nothing")
+			void doesNothingWhenItemNull() {
 				final var items = new MutableList<String>();
 				final var returned = items.append((String) null);
 
@@ -634,6 +625,92 @@ class MutableListTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".insert(int, T)")
+	class InsertTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("inserts item")
+			void insertsItem() {
+				final var items = new MutableList<>("F", "e", "Q", "T");
+				final var returned = items.insert(2, "R");
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"F", "e", "R", "Q", "T"
+					});
+			}
+
+			@Test
+			@DisplayName("when item is null, does nothing")
+			void doesNothingWhenItemNull() {
+				final var items = new MutableList<>("F", "e", "Q", "T");
+				final var returned = items.insert(2, (String) null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"F", "e", "Q", "T"
+					});
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-4,
+					new IndexRange(0, 4));
+
+				assertThrows(() -> {
+					new MutableList<>("g", "E", "d", "A")
+						.set(-4, "r");
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(9,
+					new IndexRange(0, 2));
+
+				assertThrows(() -> {
+					new MutableList<>("g", "A")
+						.set(9, "r");
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-3,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.set(-3, "r");
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(0,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.set(0, "s");
+				}, expected);
+			}
+		}
+	}
+
 	static <T> void assertCapacity(List<T> actual, int expected) {
 		assert expected == actual.store.items.length :
 			String.format("Incorrect list capacity." +
@@ -641,6 +718,43 @@ class MutableListTests {
 					"\n\tactual: %d",
 				expected,
 				actual.store.items.length);
+	}
+
+	static void assertThrows(ThrowingRunnable runnable, Throwable expected) {
+		try {
+			runnable.run();
+		} catch (Throwable actual) {
+			assert expected.equals(actual) :
+				String.format("Incorrect throwable." +
+						"\n\texpected: %s" +
+						"\n\tactual: %s",
+					expected, actual);
+
+			return;
+		}
+
+		assert false : String.format("Finished without throwing." +
+				"\n\texpected: %s",
+			expected);
+	}
+
+	static void assertThrows(ThrowingRunnable runnable, Class<? extends Throwable> expected) {
+		try {
+			runnable.run();
+		} catch (Throwable throwable) {
+			final var actual = throwable.getClass();
+			assert expected.equals(actual) :
+				String.format("Incorrect throwable." +
+						"\n\texpected: %s" +
+						"\n\tactual: %s",
+					expected, actual);
+
+			return;
+		}
+
+		assert false : String.format("Finished without throwing." +
+				"\n\texpected: %s",
+			expected.getName());
 	}
 
 	static <T> void assertEquals(List<T> actual, T[] expected) {
@@ -651,6 +765,10 @@ class MutableListTests {
 		for (; index < actual.store.items.length; ++index) {
 			assert actual.store.items[index] == null;
 		}
+	}
+
+	interface ThrowingRunnable {
+		void run() throws Exception;
 	}
 }
 

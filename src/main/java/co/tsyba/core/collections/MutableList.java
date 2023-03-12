@@ -38,14 +38,6 @@ public class MutableList<T> extends List<T> {
 		append(items);
 	}
 
-	/**
-	 * Returns the number of items, which can be added to the list, before it needs to
-	 * resize its backing store.
-	 */
-	int getCapacity() {
-		return store.items.length;
-	}
-
 //	/**
 //	 * Returns items at the specified index range in this list.
 //	 *
@@ -179,14 +171,12 @@ public class MutableList<T> extends List<T> {
 		return this;
 	}
 
-
 	/**
-	 * Inserts the specified item into this list at the specified index. Does nothing when
-	 * the specified item is {@code null}.
+	 * Inserts the specified item into this list at the specified index.
+	 * <p>
+	 * When the specified item is {@code null}, does nothing.
 	 *
-	 * @param index
-	 * @param item
-	 * @return
+	 * @return itself
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
 	 * range of this list
 	 */
