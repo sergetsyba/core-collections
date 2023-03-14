@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 class MutableListTests {
 	@Nested
 	@DisplayName("MutableList(int)")
@@ -53,8 +55,8 @@ class MutableListTests {
 		}
 
 		@Test
-		@DisplayName("when some items are null, creates list ignoring nulls")
-		void createsListIgnoringNullsWhenSomeItemsNull() {
+		@DisplayName("when some items are null, creates list without nulls")
+		void createsListWithoutNullsWhenSomeItemsNull() {
 			final var items = new MutableList<>(
 				null, "B", null, null, "G", null);
 
@@ -131,8 +133,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does not set item")
-			void doesNotSetItemWhenItemNull() {
+			@DisplayName("when item is null, does not append item")
+			void doesNotAppendItemWhenItemNull() {
 				final var items = new MutableList<>("v", "E", "q", "A");
 				final var returned = items.set(1, "M");
 
@@ -211,8 +213,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does not prepend null")
-			void doesNotPrependNullWhenItemNull() {
+			@DisplayName("when item is null, does not prepend item")
+			void doesNotPrependItemWhenItemNull() {
 				final var items = new MutableList<>("v", "b", "f");
 				final var returned = items.prepend((String) null);
 
@@ -241,8 +243,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does nothing")
-			void doesNothingWhenItemNull() {
+			@DisplayName("when item is null, does not prepend item")
+			void doesNotPrependItemWhenItemNull() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend((String) null);
 
@@ -274,8 +276,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when some items are null, does not prepend nulls")
-			void doesNotPrependNullsWhenSomeItemsNull() {
+			@DisplayName("when some items are null, prepends items without nulls")
+			void prependsItemsWithoutNullsWhenSomeItemsNull() {
 				final var items = new MutableList<>("g", "H");
 				final var returned = items.prepend(null, "n", null, null, "O", null);
 
@@ -287,8 +289,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when all items are null, does not prepend nulls")
-			void doesNotPrependNullsWhenAllItemsNull() {
+			@DisplayName("when all items are null, does not prepend items")
+			void doesNotPrependItemsWhenAllItemsNull() {
 				final var items = new MutableList<>("f", "E", "q");
 				final var returned = items.prepend(null, null, null);
 
@@ -300,8 +302,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does nothing")
-			void doesNothingWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does not prepend items")
+			void doesNotPrependItemsWhenArgArrayEmpty() {
 				final var items = new MutableList<>("b", "R", "O");
 				final var returned = items.prepend();
 
@@ -330,8 +332,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does nothing")
-			void doesNothingWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does not prepend items")
+			void doesNotPrependItemsWhenArgArrayEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend();
 
@@ -363,8 +365,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does nothing")
-			void doesNothingWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does not prepend items")
+			void doesNotPrependItemsWhenArgListEmpty() {
 				final var items = new MutableList<>("G", "f");
 				final var returned = items.prepend(
 					new List<>());
@@ -395,8 +397,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does nothing")
-			void doesNothingWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does not prepend items")
+			void doesNotPrependItemsWhenArgListEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend(
 					new List<>());
@@ -428,8 +430,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does nothing")
-			void doesNothingWhenItemNull() {
+			@DisplayName("when item is null, does not append item")
+			void doesNotAppendItemWhenItemNull() {
 				final var items = new MutableList<>("v", "b", "f");
 				final var returned = items.append((String) null);
 
@@ -458,8 +460,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does nothing")
-			void doesNothingWhenItemNull() {
+			@DisplayName("when item is null, does not append item")
+			void doesNotAppendItemWhenItemNull() {
 				final var items = new MutableList<String>();
 				final var returned = items.append((String) null);
 
@@ -491,8 +493,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when some items are null, does not append nulls")
-			void doesNotAppendNullsWhenSomeItemsNull() {
+			@DisplayName("when some items are null, appends items without nulls")
+			void appendsItemsWithoutNullsWhenSomeItemsNull() {
 				final var items = new MutableList<>("g", "H");
 				final var returned = items.append(null, "n", null, null, "O", null);
 
@@ -504,8 +506,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when all items are null, does not append nulls")
-			void doesNotAppendNullsWhenAllItemsNull() {
+			@DisplayName("when all items are null, does not append items")
+			void doesNotAppendItemsWhenAllItemsNull() {
 				final var items = new MutableList<>("f", "E", "q");
 				final var returned = items.append(null, null, null);
 
@@ -517,8 +519,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does nothing")
-			void doesNothingWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does not append items")
+			void doesNotAppendItemsWhenArgArrayEmpty() {
 				final var items = new MutableList<>("b", "R", "O");
 				final var returned = items.append();
 
@@ -547,8 +549,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does nothing")
-			void doesNothingWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does not append items")
+			void doesNotAppendItemsWhenArgArrayEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.append();
 
@@ -580,8 +582,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does nothing")
-			void doesNothingWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does not append items")
+			void doesNotAppendItemsWhenArgListEmpty() {
 				final var items = new MutableList<>("G", "f");
 				final var returned = items.append(
 					new List<>());
@@ -612,8 +614,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does nothing")
-			void doesNothingWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does not append items")
+			void doesNotAppendItemsWhenArgListEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.append(
 					new List<>());
@@ -645,8 +647,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does nothing")
-			void doesNothingWhenItemNull() {
+			@DisplayName("when item is null, does not insert item")
+			void doesNotInsertItemWhenItemNull() {
 				final var items = new MutableList<>("F", "e", "Q", "T");
 				final var returned = items.insert(2, (String) null);
 
@@ -711,6 +713,103 @@ class MutableListTests {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
+	@Nested
+	@DisplayName(".insert(int, T...)")
+	class InsertVarargsTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("inserts items")
+			void insertsItems() {
+				final var items = new MutableList<>("v", "F", "G", "h");
+				final var returned = items.insert(2, "F", "F");
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"v", "F", "F", "F", "G", "h"
+				});
+			}
+
+			@Test
+			@DisplayName("when some items are null, inserts items without nulls")
+			void insertsItemsWithoutNullsWhenSomeItemsNull() {
+				final var items = new MutableList<>("b", "a", "s");
+				final var returned = items.insert(0, "F", null, null, "D");
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"F", "D", "b", "a", "s"
+				});
+			}
+
+			@Test
+			@DisplayName("when all items are null, does not insert items")
+			void doesNotInsertItemsWhenAllItemsNull() {
+				final var items = new MutableList<>("b", "a", "s");
+				final var returned = items.insert(0, null, null);
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"b", "a", "s"
+				});
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-4,
+					new IndexRange(0, 4));
+
+				assertThrows(() -> {
+					new MutableList<>("b", "a", "X", "s")
+						.insert(-4, "V", "s", "W");
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(9,
+					new IndexRange(0, 3));
+
+				assertThrows(() -> {
+					new MutableList<>("b", "X", "s")
+						.insert(9, "V", "W");
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-1,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.insert(-1, "f", "d", "Q");
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(0,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.insert(0, "f", "d", "Q");
+				}, expected);
+			}
+		}
+	}
+
 	static <T> void assertCapacity(List<T> actual, int expected) {
 		assert expected == actual.store.items.length :
 			String.format("Incorrect list capacity." +
@@ -760,10 +859,19 @@ class MutableListTests {
 	static <T> void assertEquals(List<T> actual, T[] expected) {
 		var index = 0;
 		for (; index < expected.length; ++index) {
-			assert expected[index].equals(actual.store.items[index]);
+			assert expected[index].equals(actual.store.items[index]) :
+				String.format("Lists are not equal." +
+						"\n\texpected: %s" +
+						"\n\tactual: %s",
+					Arrays.toString(expected), actual);
 		}
 		for (; index < actual.store.items.length; ++index) {
-			assert actual.store.items[index] == null;
+			assert actual.store.items[index] == null :
+				String.format("Lists are not equal." +
+						"\n\texpected: %s" +
+						"\n\tactual: %s",
+					Arrays.toString(expected), actual);
+			;
 		}
 	}
 
