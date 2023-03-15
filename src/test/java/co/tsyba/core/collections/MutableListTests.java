@@ -1016,6 +1016,7 @@ class MutableListTests {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Nested
 	@DisplayName(".replace(IndexRange, List<T>)")
 	class ReplaceListTests {
@@ -1037,20 +1038,6 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, deletes items")
-			void deletesItemsWhenAllArgListEmpty() {
-				final var items = new MutableList<>("f", "e", "q", "R", "w");
-				final var range = new IndexRange(2, 4);
-				final var returned = items.replace(range,
-					new List<>());
-
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "w"
-				});
-			}
-
-			@Test
 			@DisplayName("when index range is empty, inserts items")
 			void insertsItemsWhenIndexRangeEmpty() {
 				final var items = new MutableList<>("v", "a", "f", "j");
@@ -1065,8 +1052,36 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when index range is out of valid range, fails")
-			void failsWhenIndexRangeOutOfValidRange() {
+			@DisplayName("when argument list is empty, deletes items")
+			void deletesItemsWhenAllArgListEmpty() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 4);
+				final var returned = items.replace(range,
+					new List<>());
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "w"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range starts after valid range, fails")
+			void failsWhenIndexRangeStartsAfterValidRange() {
+				final var range = new IndexRange(5, 17);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 4));
+
+				assertThrows(() -> {
+					new MutableList<>("b", "b", "g", "e")
+						.replace(range,
+							new List<>("G", "s", "e"));
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeEndsAfterValidRange() {
 				final var range = new IndexRange(2, 17);
 				final var expected = new IndexRangeNotInRangeException(range,
 					new IndexRange(0, 4));
@@ -1083,9 +1098,37 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			@Test
-			@DisplayName("fails")
-			void fails() {
+			@DisplayName("when index range coincides with valid range, fails")
+			void failsWhenIndexRangeCoincidesValidRange() {
 				final var range = new IndexRange(0, 0);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<String>()
+						.replace(range,
+							new List<>("G", "v", "Q"));
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range starts after valid range, fails")
+			void failsWhenIndexRangeStartsAfterValidRange() {
+				final var range = new IndexRange(1, 2);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<String>()
+						.replace(range,
+							new List<>("G", "v", "Q"));
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeEndsAfterValidRange() {
+				final var range = new IndexRange(0, 2);
 				final var expected = new IndexRangeNotInRangeException(range,
 					new IndexRange(0, 0));
 
@@ -1244,7 +1287,7 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when index range is within valid range and is empty, does nothing")
+			@DisplayName("when index range is empty, does nothing")
 			void doesNothingWhenIndexRangeEmpty() {
 				final var items = new MutableList<>("g", "w", "Q", "c", "j", "P");
 				final var returned = items.remove(
@@ -1287,8 +1330,8 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			@Test
-			@DisplayName("when index range is within valid range, does nothing")
-			void doesNothingWhenIndexRangeEmptyAndStartsAtZero() {
+			@DisplayName("when index range coincides with valid range, fails")
+			void failsWhenIndexRangeCoincidesWithValidRange() {
 				final var items = new MutableList<String>();
 				final var returned = items.remove(
 					new IndexRange(0, 0));
@@ -1322,6 +1365,32 @@ class MutableListTests {
 					new MutableList<>()
 						.remove(range);
 				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName(".clear()")
+		class ClearTests {
+			@Test
+			@DisplayName("when list is not empty, clears list")
+			void clearsWhenListNotEmpty() {
+				final var items = new MutableList<>("b", "D", "e", "P");
+				final var returned = items.clear();
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+				});
+			}
+
+			@Test
+			@DisplayName("when list is empty, does nothing")
+			void doesNothingWhenListEmpty() {
+				final var items = new MutableList<>();
+				final var returned = items.clear();
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+				});
 			}
 		}
 	}

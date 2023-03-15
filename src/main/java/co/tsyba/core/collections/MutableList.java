@@ -326,9 +326,9 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes all items from this list. Returns itself.
+	 * Removes all items from this list.
 	 *
-	 * @return
+	 * @return itself
 	 */
 	public MutableList<T> clear() {
 		store = new ContiguousArrayStore<>(minimumCapacity);
