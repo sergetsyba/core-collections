@@ -1098,6 +1098,33 @@ class MutableListTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".removeFirst()")
+	class RemoveFirstTests {
+		@Test
+		@DisplayName("when list is not empty, removes first item")
+		void removesFirstItemWhenListNotEmpty() {
+			final var items = new MutableList<>("g", "e", "v", "Q");
+			final var returned = items.removeFirst();
+
+			assert returned == items;
+			assertEquals(items, new String[]{
+				"e", "v", "Q"
+			});
+		}
+
+		@Test
+		@DisplayName("when list is empty, does nothing")
+		void doesNothingWhenListEmpty() {
+			final var items = new MutableList<String>();
+			final var returned = items.removeFirst();
+
+			assert returned == items;
+			assertEquals(items, new String[]{
+			});
+		}
+	}
+
 	static <T> void assertCapacity(List<T> actual, int expected) {
 		assert expected == actual.store.items.length :
 			String.format("Incorrect list capacity." +
@@ -1176,9 +1203,9 @@ class MutableListLegacyTests {
 	public void removesFirstItem() {
 		final var items = new MutableList<>("g", "E", "x", "P", "d");
 
-		assert items.removeFirst()
-			.get()
-			.equals("g");
+//		assert items.removeFirst()
+//			.get()
+//			.equals("g");
 
 		assert items.equals(
 			new List<>("E", "x", "P", "d"));

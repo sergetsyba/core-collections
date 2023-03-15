@@ -275,19 +275,17 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes the first item from this list. Returns the removed item. Returns an empty
-	 * {@link Optional} when this list is empty.
+	 * Removes the first item from this list.
+	 * <p>
+	 * When this list is empty, does nothing.
 	 *
-	 * @return
+	 * @return itself
 	 */
-	public Optional<T> removeFirst() {
-		final var startIndex = 0;
-		return guard(0)
-			.map(index -> {
-				final var item = store.get(index);
-				store.remove(index);
-				return item;
-			});
+	public MutableList<T> removeFirst() {
+		guard(0)
+			.ifPresent(store::remove);
+
+		return this;
 	}
 
 	/**
