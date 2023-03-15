@@ -1,6 +1,5 @@
 package co.tsyba.core.collections;
 
-import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public class MutableList<T> extends List<T> {
@@ -289,18 +288,17 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes the last item from this list. Returns the removed item. Returns an empty
-	 * {@link Optional} when this list is empty.
+	 * Removes the last item from this list.
+	 * <p>
+	 * When this list is empty, does nothing.
 	 *
-	 * @return
+	 * @return itself
 	 */
-	public Optional<T> removeLast() {
-		return guard(store.itemCount - 1)
-			.map(index -> {
-				final var item = store.get(index);
-				store.remove(index);
-				return item;
-			});
+	public MutableList<T> removeLast() {
+		guard(store.itemCount - 1)
+			.ifPresent(store::remove);
+
+		return this;
 	}
 
 	/**
