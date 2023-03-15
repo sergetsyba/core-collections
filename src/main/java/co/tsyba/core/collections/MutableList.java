@@ -302,10 +302,9 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Removes item at the specified index from this list. Returns itself.
+	 * Removes item at the specified index from this list.
 	 *
-	 * @param index
-	 * @return
+	 * @return itself
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
 	 * range of this list
 	 */
