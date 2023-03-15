@@ -252,6 +252,29 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Replaces items at the specified index range in this list with the specified items.
+	 *
+	 * @return itself
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this list
+	 */
+	public final MutableList<T> replace(IndexRange range, List<T> items) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(range) || isEmpty()) {
+			throw new IndexRangeNotInRangeException(range, validRange);
+		}
+
+		store.remove(range);
+		if (range.start == store.itemCount) {
+			store.append(items.store);
+		} else {
+			store.insert(range.start, items.store);
+		}
+
+		return this;
+	}
+
+	/**
 	 * Removes the first item from this list. Returns the removed item. Returns an empty
 	 * {@link Optional} when this list is empty.
 	 *

@@ -1016,6 +1016,88 @@ class MutableListTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".replace(IndexRange, List<T>)")
+	class ReplaceListTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("replaces items")
+			void replacesItems() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 4);
+				final var returned = items.replace(range,
+					new List<>("a", "T", "f", "s"));
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "a", "T", "f", "s", "w"
+				});
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, deletes items")
+			void deletesItemsWhenAllArgListEmpty() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 4);
+				final var returned = items.replace(range,
+					new List<>());
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "w"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range is empty, inserts items")
+			void insertsItemsWhenIndexRangeEmpty() {
+				final var items = new MutableList<>("v", "a", "f", "j");
+				final var range = new IndexRange(2, 2);
+				final var returned = items.replace(range,
+					new List<>("v", "m"));
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"v", "a", "v", "m", "f", "j"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range is out of valid range, fails")
+			void failsWhenIndexRangeOutOfValidRange() {
+				final var range = new IndexRange(2, 17);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 4));
+
+				assertThrows(() -> {
+					new MutableList<>("b", "b", "g", "e")
+						.replace(range,
+							new List<>("G", "s", "e"));
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("fails")
+			void fails() {
+				final var range = new IndexRange(0, 0);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<String>()
+						.replace(range,
+							new List<>("G", "v", "Q"));
+				}, expected);
+			}
+		}
+	}
+
 	static <T> void assertCapacity(List<T> actual, int expected) {
 		assert expected == actual.store.items.length :
 			String.format("Incorrect list capacity." +
