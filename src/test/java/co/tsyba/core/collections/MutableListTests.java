@@ -912,6 +912,110 @@ class MutableListTests {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
+	@Nested
+	@DisplayName(".replace(IndexRange, T...)")
+	class ReplaceVarargsTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("replaces items")
+			void replacesItems() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 4);
+				final var returned = items.replace(range, "a", "T", "f", "s");
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "a", "T", "f", "s", "w"
+				});
+			}
+
+			@Test
+			@DisplayName("when some argument items are null, replaces items without nulls")
+			void replacesItemsWithoutNullsWhenSomeArgItemsNull() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 5);
+				final var returned = items.replace(range, null, "b", null, null, "n");
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "b", "n"
+				});
+			}
+
+			@Test
+			@DisplayName("when all argument items are null, deletes items")
+			void deletesItemsWhenAllArgItemsNull() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(1, 3);
+				final var returned = items.replace(range, null, null);
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "R", "w"
+				});
+			}
+
+			@Test
+			@DisplayName("when argument array is empty, deletes items")
+			void deletesItemsWhenAllArgArrayEmpty() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 3);
+				final var returned = items.replace(range);
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "R", "w"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range is empty, inserts items")
+			void insertsItemsWhenIndexRangeEmpty() {
+				final var items = new MutableList<>("v", "a", "f", "j");
+				final var range = new IndexRange(2, 2);
+				final var returned = items.replace(range, "v", "m");
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"v", "a", "v", "m", "f", "j"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range is out of valid range, fails")
+			void failsWhenIndexRangeOutOfValidRange() {
+				final var range = new IndexRange(2, 17);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 4));
+
+				assertThrows(() -> {
+					new MutableList<>("b", "b", "g", "e")
+						.replace(range, "G", "s", "e");
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("fails")
+			void fails() {
+				final var range = new IndexRange(0, 0);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<String>()
+						.replace(range, "G", "v", "Q");
+				}, expected);
+			}
+		}
+	}
+
 	static <T> void assertCapacity(List<T> actual, int expected) {
 		assert expected == actual.store.items.length :
 			String.format("Incorrect list capacity." +

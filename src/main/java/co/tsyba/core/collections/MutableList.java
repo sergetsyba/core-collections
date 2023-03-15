@@ -220,6 +220,38 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Replaces items at the specified index range in this list with the specified items.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
+	 *
+	 * @return itself
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of
+	 * valid index range of this list
+	 */
+	@SafeVarargs
+	public final MutableList<T> replace(IndexRange range, T... items) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(range) || isEmpty()) {
+			throw new IndexRangeNotInRangeException(range, validRange);
+		}
+
+		final var store2 = new ContiguousArrayStore<T>(items.length);
+		for (var item : items) {
+			if (item != null) {
+				store2.append(item);
+			}
+		}
+
+		store.remove(range);
+		if (range.start == store.itemCount) {
+			store.append(store2);
+		} else {
+			store.insert(range.start, store2);
+		}
+		return this;
+	}
+
+	/**
 	 * Removes the first item from this list. Returns the removed item. Returns an empty
 	 * {@link Optional} when this list is empty.
 	 *
