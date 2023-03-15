@@ -354,7 +354,7 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * @return
+	 * Returns immutable copy of this list.
 	 */
 	public List<T> toImmutable() {
 		return new List<>(this);

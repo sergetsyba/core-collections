@@ -1395,6 +1395,37 @@ class MutableListTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".toImmutable()")
+	class ToImmutableTests {
+		@Test
+		@DisplayName("returns immutable list")
+		void returnsImmutableList() {
+			final var items = new MutableList<>("v", "m", "K", "l")
+				.toImmutable();
+
+			final var klass = items.getClass();
+			assert klass.equals(List.class);
+
+			assertEquals(items, new String[]{
+				"v", "m", "K", "l"
+			});
+		}
+
+		@Test
+		@DisplayName("when list is empty, returns empty immutable list")
+		void returnsEmptyImmutableListWhenListEmpty() {
+			final var items = new MutableList<>()
+				.toImmutable();
+
+			final var klass = items.getClass();
+			assert klass.equals(List.class);
+
+			assertEquals(items, new String[]{
+			});
+		}
+	}
+
 	static <T> void assertCapacity(List<T> actual, int expected) {
 		assert expected == actual.store.items.length :
 			String.format("Incorrect list capacity." +
