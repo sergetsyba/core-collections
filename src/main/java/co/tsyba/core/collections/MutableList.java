@@ -1,7 +1,5 @@
 package co.tsyba.core.collections;
 
-import java.util.function.BiConsumer;
-
 public class MutableList<T> extends List<T> {
 	static final int minimumCapacity = 64;
 
@@ -36,20 +34,6 @@ public class MutableList<T> extends List<T> {
 		this(Math.max(items.getCount(), minimumCapacity));
 		append(items);
 	}
-
-//	/**
-//	 * Returns items at the specified index range in this list.
-//	 *
-//	 * @param indexRange
-//	 * @return
-//	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-//	 * valid index range of this list.
-//	 */
-//	@Override
-//	public MutableList<T> get(IndexRange indexRange) {
-//		final var items = store.get(indexRange);
-//		return new MutableList<>(items);
-//	}
 
 	/**
 	 * Replaces item at the specified index in this list with the specified item.
@@ -332,24 +316,6 @@ public class MutableList<T> extends List<T> {
 	 */
 	public MutableList<T> clear() {
 		store = new ContiguousArrayStore<>(minimumCapacity);
-		return this;
-	}
-
-	/**
-	 * Applies the specified {@link BiConsumer} to item at the specified index when the
-	 * index is within the valid index range of this list. Does nothing otherwise. Returns
-	 * itself.
-	 *
-	 * @param index
-	 * @param operation
-	 * @return
-	 */
-	public MutableList<T> guard(int index, BiConsumer<T, Integer> operation) {
-		if (store.hasIndex(index)) {
-			final var item = (T) store.items[index];
-			operation.accept(item, index);
-		}
-
 		return this;
 	}
 
