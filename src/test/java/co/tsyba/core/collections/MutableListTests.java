@@ -1224,6 +1224,108 @@ class MutableListTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".remove(IndexRange)")
+	class RemoveIndexRangeTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("removes items")
+			void removesItems() {
+				final var items = new MutableList<>("g", "w", "Q", "c", "j", "P");
+				final var returned = items.remove(
+					new IndexRange(1, 4));
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"g", "j", "P"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range is within valid range and is empty, does nothing")
+			void doesNothingWhenIndexRangeEmpty() {
+				final var items = new MutableList<>("g", "w", "Q", "c", "j", "P");
+				final var returned = items.remove(
+					new IndexRange(0, 0));
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"g", "w", "Q", "c", "j", "P"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range starts after valid range, fails")
+			void failsWhenIndexRangeStartsAfterValidRange() {
+				final var range = new IndexRange(9, 16);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					new MutableList<>("g", "w", "Q", "c", "j", "P")
+						.remove(range);
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeEndsAfterValidRange() {
+				final var range = new IndexRange(1, 7);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					new MutableList<>("g", "w", "Q", "c", "j", "P")
+						.remove(range);
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("when index range is within valid range, does nothing")
+			void doesNothingWhenIndexRangeEmptyAndStartsAtZero() {
+				final var items = new MutableList<String>();
+				final var returned = items.remove(
+					new IndexRange(0, 0));
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+				});
+			}
+
+			@Test
+			@DisplayName("when index range starts after after valid range, fails")
+			void failsWhenIndexRangeStartsAfterZero() {
+				final var range = new IndexRange(2, 2);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.remove(range);
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeNotEmpty() {
+				final var range = new IndexRange(0, 2);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.remove(range);
+				}, expected);
+			}
+		}
+	}
+
 	static <T> void assertCapacity(List<T> actual, int expected) {
 		assert expected == actual.store.items.length :
 			String.format("Incorrect list capacity." +
