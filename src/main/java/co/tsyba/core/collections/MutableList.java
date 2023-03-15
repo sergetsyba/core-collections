@@ -191,8 +191,8 @@ public class MutableList<T> extends List<T> {
 	 * Ignores any {@code null} values among the specified items.
 	 *
 	 * @return itself
-	 * @throws IndexNotInRangeException when the specified index is out of valid range of
-	 * this list
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
 	 */
 	@SafeVarargs
 	public final MutableList<T> insert(int index, T... items) {
@@ -210,9 +210,7 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Inserts the specified items into this list at the specified index.
 	 *
-	 * @param index
-	 * @param items
-	 * @return
+	 * @return itself
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
 	 * range of this list
 	 */

@@ -757,6 +757,18 @@ class MutableListTests {
 			}
 
 			@Test
+			@DisplayName("when argument array is empty, does not insert items")
+			void doesNotInsertItemsWhenArgArrayEmpty() {
+				final var items = new MutableList<>("b", "a", "s");
+				final var returned = items.insert(0);
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"b", "a", "s"
+				});
+			}
+
+			@Test
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
 				final var expected = new IndexNotInRangeException(-4,
@@ -805,6 +817,96 @@ class MutableListTests {
 				assertThrows(() -> {
 					new MutableList<>()
 						.insert(0, "f", "d", "Q");
+				}, expected);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".insert(int, List<T>)")
+	class InsertListTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("inserts items")
+			void insertsItems() {
+				final var items = new MutableList<>("v", "F", "G", "h");
+				final var returned = items.insert(2,
+					new List<>("F", "F"));
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"v", "F", "F", "F", "G", "h"
+				});
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, does not insert items")
+			void doesNotInsertItemsWhenArgListEmpty() {
+				final var items = new MutableList<>("b", "a", "s");
+				final var returned = items.insert(0,
+					new List<>());
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"b", "a", "s"
+				});
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-4,
+					new IndexRange(0, 2));
+
+				assertThrows(() -> {
+					new MutableList<>("f", "g")
+						.insert(-4,
+							new List<>("R", "E"));
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(9,
+					new IndexRange(0, 3));
+
+				assertThrows(() -> {
+					new MutableList<>("b", "X", "s")
+						.insert(9,
+							new List<>("V", "W"));
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-1,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.insert(-1,
+							new List<>("f", "d", "Q"));
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(0,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<>()
+						.insert(0,
+							new List<>("f", "d", "Q"));
 				}, expected);
 			}
 		}
