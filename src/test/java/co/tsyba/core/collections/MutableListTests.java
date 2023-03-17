@@ -88,7 +88,7 @@ class MutableListTests {
 
 
 	@Nested
-	@DisplayName("MutableList(Collection<T>)")
+	@DisplayName("MutableList(List<T>)")
 	class ConstructorCollectionTests {
 		@Test
 		@DisplayName("creates list")
@@ -103,8 +103,8 @@ class MutableListTests {
 		}
 
 		@Test
-		@DisplayName("when argument collection is empty, creates empty list")
-		void createsEmptyListWhenArgCollectionEmpty() {
+		@DisplayName("when argument list is empty, creates empty list")
+		void createsEmptyListWhenArgListEmpty() {
 			final var items = new MutableList<>(
 				new List<String>());
 
@@ -133,8 +133,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when item is null, does not append item")
-			void doesNotAppendItemWhenItemNull() {
+			@DisplayName("when item is null, does not set item")
+			void doesNotSetItemWhenItemNull() {
 				final var items = new MutableList<>("v", "E", "q", "A");
 				final var returned = items.set(1, "M");
 
@@ -302,8 +302,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does not prepend items")
-			void doesNotPrependItemsWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
 				final var items = new MutableList<>("b", "R", "O");
 				final var returned = items.prepend();
 
@@ -332,8 +332,32 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does not prepend items")
-			void doesNotPrependItemsWhenArgArrayEmpty() {
+			@DisplayName("when some items are null, prepends items without nulls")
+			void prependsItemsWithoutNullsWhenSomeItemsNull() {
+				final var items = new MutableList<String>();
+				final var returned = items.prepend(null, "R", null, "V", null, null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{
+						"R", "V"
+					});
+			}
+
+			@Test
+			@DisplayName("when all items are null, does not prepend items")
+			void doesNothingWhenAllItemsNull() {
+				final var items = new MutableList<String>();
+				final var returned = items.prepend(null, null);
+
+				assert returned == items;
+				assertEquals(items,
+					new String[]{});
+			}
+
+			@Test
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend();
 
@@ -365,8 +389,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does not prepend items")
-			void doesNotPrependItemsWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
 				final var items = new MutableList<>("G", "f");
 				final var returned = items.prepend(
 					new List<>());
@@ -397,8 +421,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does not prepend items")
-			void doesNotPrependItemsWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend(
 					new List<>());
@@ -519,8 +543,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does not append items")
-			void doesNotAppendItemsWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
 				final var items = new MutableList<>("b", "R", "O");
 				final var returned = items.append();
 
@@ -549,8 +573,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does not append items")
-			void doesNotAppendItemsWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.append();
 
@@ -582,8 +606,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does not append items")
-			void doesNotAppendItemsWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
 				final var items = new MutableList<>("G", "f");
 				final var returned = items.append(
 					new List<>());
@@ -614,8 +638,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does not append items")
-			void doesNotAppendItemsWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
 				final var items = new MutableList<String>();
 				final var returned = items.append(
 					new List<>());
@@ -757,8 +781,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument array is empty, does not insert items")
-			void doesNotInsertItemsWhenArgArrayEmpty() {
+			@DisplayName("when argument array is empty, does nothing")
+			void doesNothingWhenArgArrayEmpty() {
 				final var items = new MutableList<>("b", "a", "s");
 				final var returned = items.insert(0);
 
@@ -842,8 +866,8 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, does not insert items")
-			void doesNotInsertItemsWhenArgListEmpty() {
+			@DisplayName("when argument list is empty, does nothing")
+			void doesNothingWhenArgListEmpty() {
 				final var items = new MutableList<>("b", "a", "s");
 				final var returned = items.insert(0,
 					new List<>());
@@ -972,6 +996,19 @@ class MutableListTests {
 			}
 
 			@Test
+			@DisplayName("when index range and argument array are empty, does nothing")
+			void doesNothingWhenIndexRangeAndArgArrayEmpty() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 2);
+				final var returned = items.replace(range);
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "q", "R", "w"
+				});
+			}
+
+			@Test
 			@DisplayName("when index range is empty, inserts items")
 			void insertsItemsWhenIndexRangeEmpty() {
 				final var items = new MutableList<>("v", "a", "f", "j");
@@ -985,8 +1022,21 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when index range is out of valid range, fails")
-			void failsWhenIndexRangeOutOfValidRange() {
+			@DisplayName("when index range starts after valid range, fails")
+			void failsWhenIndexRangeStartsAfterValidRange() {
+				final var range = new IndexRange(7, 17);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 4));
+
+				assertThrows(() -> {
+					new MutableList<>("b", "b", "g", "e")
+						.replace(range, "G", "s", "e");
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeEndsAfterValidRange() {
 				final var range = new IndexRange(2, 17);
 				final var expected = new IndexRangeNotInRangeException(range,
 					new IndexRange(0, 4));
@@ -1002,9 +1052,35 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			@Test
-			@DisplayName("fails")
-			void fails() {
+			@DisplayName("when index range coincides with valid range, fails")
+			void failsWhenIndexRangeCoincidesValidRange() {
 				final var range = new IndexRange(0, 0);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<String>()
+						.replace(range, "G", "v", "Q");
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range starts after valid range, fails")
+			void failsWhenIndexRangeStartsAfterValidRange() {
+				final var range = new IndexRange(3, 7);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 0));
+
+				assertThrows(() -> {
+					new MutableList<String>()
+						.replace(range, "G", "v", "Q");
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeEndsAfterValidRange() {
+				final var range = new IndexRange(0, 1);
 				final var expected = new IndexRangeNotInRangeException(range,
 					new IndexRange(0, 0));
 
@@ -1062,6 +1138,20 @@ class MutableListTests {
 				assert returned == items;
 				assertEquals(items, new String[]{
 					"f", "e", "w"
+				});
+			}
+
+			@Test
+			@DisplayName("when index range and argument list are empty, does nothing")
+			void doesNothingWhenIndexRangeAndArgListEmpty() {
+				final var items = new MutableList<>("f", "e", "q", "R", "w");
+				final var range = new IndexRange(2, 2);
+				final var returned = items.replace(range,
+					new List<>());
+
+				assert returned == items;
+				assertEquals(items, new String[]{
+					"f", "e", "q", "R", "w"
 				});
 			}
 
@@ -1367,31 +1457,31 @@ class MutableListTests {
 				}, expected);
 			}
 		}
+	}
 
-		@Nested
-		@DisplayName(".clear()")
-		class ClearTests {
-			@Test
-			@DisplayName("when list is not empty, clears list")
-			void clearsWhenListNotEmpty() {
-				final var items = new MutableList<>("b", "D", "e", "P");
-				final var returned = items.clear();
+	@Nested
+	@DisplayName(".clear()")
+	class ClearTests {
+		@Test
+		@DisplayName("when list is not empty, clears list")
+		void clearsWhenListNotEmpty() {
+			final var items = new MutableList<>("b", "D", "e", "P");
+			final var returned = items.clear();
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-				});
-			}
+			assert returned == items;
+			assertEquals(items, new String[]{
+			});
+		}
 
-			@Test
-			@DisplayName("when list is empty, does nothing")
-			void doesNothingWhenListEmpty() {
-				final var items = new MutableList<>();
-				final var returned = items.clear();
+		@Test
+		@DisplayName("when list is empty, does nothing")
+		void doesNothingWhenListEmpty() {
+			final var items = new MutableList<>();
+			final var returned = items.clear();
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-				});
-			}
+			assert returned == items;
+			assertEquals(items, new String[]{
+			});
 		}
 	}
 

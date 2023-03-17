@@ -12,7 +12,7 @@ public class MutableList<T> extends List<T> {
 	 *
 	 * @throws IllegalArgumentException when the specified item capacity is negative
 	 */
-	public MutableList(int capacity) {
+	MutableList(int capacity) {
 		super(capacity);
 	}
 
@@ -28,7 +28,7 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
-	 * Creates a list with the specified items.
+	 * Creates a copy of the specified items.
 	 */
 	public MutableList(List<T> items) {
 		this(Math.max(items.getCount(), minimumCapacity));
