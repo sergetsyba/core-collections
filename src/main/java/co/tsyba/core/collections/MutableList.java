@@ -1,5 +1,9 @@
 package co.tsyba.core.collections;
 
+/**
+ * A mutable, sequential {@link Collection}, which provides efficient, randomized access
+ * to its items.
+ */
 public class MutableList<T> extends List<T> {
 	static final int minimumCapacity = 64;
 
