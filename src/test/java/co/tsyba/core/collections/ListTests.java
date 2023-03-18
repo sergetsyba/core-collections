@@ -7,10 +7,59 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Comparator;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Jul 10, 2019.
- */
+import static co.tsyba.core.collections.Assert.*;
+
 public class ListTests {
+	@Nested
+	@DisplayName("List(T...)")
+	class NewWithVarargsTests {
+		@Test
+		@DisplayName("creates list")
+		void createsList() {
+			final var items = new List<>("v", "4", "G", "5");
+
+			assertCapacity(items, 4);
+			assertEquals(items,
+				new String[]{
+					"v", "4", "G", "5"
+				});
+		}
+
+		@Test
+		@DisplayName("when some items are null, creates list without nulls")
+		void createsListWithoutNullsWhenSomeItemsNull() {
+			final var items = new List<>("h", "5", null, "R", null, null);
+
+			assertCapacity(items, 3);
+			assertEquals(items,
+				new String[]{
+					"h", "5", "R"
+				});
+		}
+
+		@Test
+		@DisplayName("when all items are null, creates empty list")
+		void createsEmptyListWhenAllItemsNull() {
+			final var items = new List<>(null, null, null);
+
+			assertCapacity(items, 0);
+			assertEquals(items,
+				new String[]{
+				});
+		}
+
+		@Test
+		@DisplayName("when argument array is empty, creates empty list")
+		void createsEmptyListWhenArgArrayEmpty() {
+			final var items = new List<>();
+
+			assertCapacity(items, 0);
+			assertEquals(items,
+				new String[]{
+				});
+		}
+	}
+
 	@Nested
 	@DisplayName("List(Collection<T>)")
 	class NewWithCollectionTests {
@@ -21,57 +70,27 @@ public class ListTests {
 				new Set<>("v", "4", "G", "5"));
 
 			Arrays.sort(items.store.items);
-			assert items.storeEquals(4,
+
+			assertCapacity(items, 4);
+			assertEquals(items,
 				new String[]{
 					"4", "5", "G", "v"
 				});
 		}
 
 		@Test
-		@DisplayName("creates empty list")
-		void createsEmptyList() {
+		@DisplayName("when argument collection is empty, creates empty list")
+		void createsEmptyListWhenArgCollectionEmpty() {
 			final var items = new List<>(
 				new Set<String>());
 
-			assert items.storeEquals(0,
-				new String[]{});
+			assertCapacity(items, 0);
+			assertEquals(items,
+				new String[]{
+				});
 		}
 	}
 
-	@Nested
-	@DisplayName("List(T...)")
-	class NewWithVarargsTests {
-		@Test
-		@DisplayName("creates list")
-		void createsList() {
-			final var items = new List<>("v", "4", "G", "5");
-
-			assert items.storeEquals(4,
-				new String[]{
-					"v", "4", "G", "5"
-				});
-		}
-
-		@Test
-		@DisplayName("ignores null values")
-		void ignoresNulls() {
-			final var items = new List<>("h", "5", null, "R", null, null);
-
-			assert items.storeEquals(3,
-				new String[]{
-					"h", "5", "R"
-				});
-		}
-
-		@Test
-		@DisplayName("creates empty list")
-		void createsEmptyList() {
-			final var items = new List<>();
-
-			assert items.storeEquals(0,
-				new String[]{});
-		}
-	}
 
 	@Nested
 	@DisplayName(".getCount()")
@@ -98,53 +117,34 @@ public class ListTests {
 		@DisplayName("when list is not empty")
 		class NotEmptyListTests {
 			private final List<String> items = new List<>("e", "D", "d", "E", "X");
-			private final IndexRange validRange = new IndexRange(0, 5);
 
 			@Test
-			@DisplayName("when index is within valid range, returns item")
-			void returnsItemWhenWithinValidRange() {
+			@DisplayName("returns item")
+			void returnsItem() {
 				assert items.get(2)
 					.equals("d");
 			}
 
 			@Test
-			@DisplayName("when index at valid range start, returns first item")
-			void returnsItemAtFirstIndex() {
-				assert items.get(0)
-					.equals("e");
-			}
-
-			@Test
-			@DisplayName("when index at valid range end, returns last item")
-			void returnsItemAtLastIndex() {
-				assert items.get(4)
-					.equals("X");
-			}
-
-			@Test
-			@DisplayName("when index before valid range, fails")
+			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
-				try {
+				final var expected = new IndexNotInRangeException(-1,
+					new IndexRange(0, 5));
+
+				assertThrows(() -> {
 					items.get(-1);
-				} catch (IndexNotInRangeException exception) {
-					assert -1 == exception.index;
-					assert validRange.equals(exception.validRange);
-					return;
-				}
-				assert false;
+				}, expected);
 			}
 
 			@Test
-			@DisplayName("fails when index after valid range")
+			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
-				try {
+				final var expected = new IndexNotInRangeException(5,
+					new IndexRange(0, 5));
+
+				assertThrows(() -> {
 					items.get(5);
-				} catch (IndexNotInRangeException exception) {
-					assert 5 == exception.index;
-					assert validRange.equals(exception.validRange);
-					return;
-				}
-				assert false;
+				}, expected);
 			}
 		}
 
@@ -152,19 +152,16 @@ public class ListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			private final List<String> items = new List<>();
-			private final IndexRange validRange = new IndexRange();
 
 			@Test
 			@DisplayName("fails")
-			void failsWhenEmpty() {
-				try {
+			void fails() {
+				final var expected = new IndexNotInRangeException(0,
+					new IndexRange());
+
+				assertThrows(() -> {
 					items.get(0);
-				} catch (IndexNotInRangeException exception) {
-					assert 0 == exception.index;
-					assert validRange.equals(exception.validRange);
-					return;
-				}
-				assert false;
+				}, expected);
 			}
 		}
 	}
@@ -175,47 +172,54 @@ public class ListTests {
 		@Nested
 		@DisplayName("when list is not empty")
 		class NotEmptyListTests {
-			private final List<String> items1 = new List<>("r", "4", "v", "E", "P", "e", "Q");
-			private final IndexRange validRange = new IndexRange(0, 7);
+			private final List<String> items1 = new List<>(
+				"r", "4", "v", "E", "P", "e", "Q");
 
 			@Test
-			@DisplayName("when index range is within valid index range, returns items")
-			void returnsItemsWhenWithinValidRange() {
-				final var range = new IndexRange(2, 5);
-				final var items2 = items1.get(range);
+			@DisplayName("returns items")
+			void returnsItems() {
+				final var items2 = items1.get(
+					new IndexRange(2, 5));
 
-				assert Arrays.equals(items2.store.items,
+				assertEquals(items2,
 					new String[]{
 						"v", "E", "P"
 					});
 			}
 
 			@Test
-			@DisplayName("when index range ends after valid range, fails")
-			void failsWhenIndexRangeEndsAfterValidRange() {
-				final var range = new IndexRange(5, 8);
-				try {
-					items1.get(range);
-				} catch (IndexRangeNotInRangeException exception) {
-					assert range.equals(exception.indexRange);
-					assert validRange.equals(exception.validRange);
-					return;
-				}
-				assert false;
+			@DisplayName("when index range is empty, returns empty list")
+			void returnsEmptyListWhenIndexRangeEmpty() {
+				final var items2 = items1.get(
+					new IndexRange(2, 2));
+
+				assertEquals(items2,
+					new String[]{
+					});
 			}
 
 			@Test
 			@DisplayName("when index range starts after valid range, fails")
 			void failsWhenIndexRangeStartsAfterValidRange() {
 				final var range = new IndexRange(7, 12);
-				try {
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 7));
+
+				assertThrows(() -> {
 					items1.get(range);
-				} catch (IndexRangeNotInRangeException exception) {
-					assert range.equals(exception.indexRange);
-					assert validRange.equals(exception.validRange);
-					return;
-				}
-				assert false;
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeEndsAfterValidRange() {
+				final var range = new IndexRange(5, 8);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange(0, 7));
+
+				assertThrows(() -> {
+					items1.get(range);
+				}, expected);
 			}
 		}
 
@@ -223,20 +227,41 @@ public class ListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			private final List<String> items = new List<>();
-			private final IndexRange validRange = new IndexRange();
 
 			@Test
-			@DisplayName("fails")
-			void failsWhenEmpty() {
-				final var range = new IndexRange(0, 1);
-				try {
+			@DisplayName("when index range coincides with valid range, fails")
+			void failsWhenIndexRangeCoincidesWithValidRange() {
+				final var range = new IndexRange(0, 0);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange());
+
+				assertThrows(() -> {
 					items.get(range);
-				} catch (IndexRangeNotInRangeException exception) {
-					assert range.equals(exception.indexRange);
-					assert validRange.equals(exception.validRange);
-					return;
-				}
-				assert false;
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range starts after valid range, fails")
+			void failsWhenIndexRangeStartsAfterValidRange() {
+				final var range = new IndexRange(4, 7);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange());
+
+				assertThrows(() -> {
+					items.get(range);
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index range ends after valid range, fails")
+			void failsWhenIndexRangeEndsAfterValidRange() {
+				final var range = new IndexRange(0, 1);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange());
+
+				assertThrows(() -> {
+					items.get(range);
+				}, expected);
 			}
 		}
 	}
@@ -246,11 +271,11 @@ public class ListTests {
 	class GetDistinctTests {
 		@Test
 		@DisplayName("when list is not empty, returns distinct items")
-		void returnsDistinctItemsWhenNotEmpty() {
+		void returnsDistinctItemsWhenListNotEmpty() {
 			final var items = new List<>("a", "b", "5", "a", "4", "4");
 			final var distinct = items.getDistinct();
 
-			assert distinct.storeEquals(4,
+			assertEquals(distinct,
 				new String[]{
 					"a", "b", "5", "4"
 				});
@@ -258,12 +283,13 @@ public class ListTests {
 
 		@Test
 		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenEmpty() {
+		void returnsEmptyListWhenListEmpty() {
 			final var items = new List<String>();
 			final var distinct = items.getDistinct();
 
-			assert distinct.storeEquals(0,
-				new String[]{});
+			assertEquals(distinct,
+				new String[]{
+				});
 		}
 	}
 
@@ -272,11 +298,11 @@ public class ListTests {
 	class ReverseTests {
 		@Test
 		@DisplayName("when list is not empty, returns reversed items")
-		void returnsReversedItemsWhenNotEmpty() {
+		void returnsReversedItemsWhenListNotEmpty() {
 			final var items = new List<>("a", "b", "5", "a", "4", "4");
 			final var reversed = items.reverse();
 
-			assert reversed.storeEquals(6,
+			assertEquals(reversed,
 				new String[]{
 					"4", "4", "a", "5", "b", "a"
 				});
@@ -284,12 +310,13 @@ public class ListTests {
 
 		@Test
 		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenEmpty() {
+		void returnsEmptyListWhenListEmpty() {
 			final var items = new List<String>();
-			final var distinct = items.reverse();
+			final var reversed = items.reverse();
 
-			assert distinct.storeEquals(0,
-				new String[]{});
+			assertEquals(reversed,
+				new String[]{
+				});
 		}
 	}
 
@@ -298,11 +325,11 @@ public class ListTests {
 	class SortTests {
 		@Test
 		@DisplayName("when list is not empty, returns sorted items")
-		void returnsSortedItemsWhenNotEmpty() {
+		void returnsSortedItemsWhenListNotEmpty() {
 			final var items = new List<>(5, 6, 2, 1, 9, 0, 3, 3, 5);
 			final var sorted = items.sort(Comparator.naturalOrder());
 
-			assert sorted.storeEquals(9,
+			assertEquals(sorted,
 				new Integer[]{
 					0, 1, 2, 3, 3, 5, 5, 6, 9
 				});
@@ -310,12 +337,13 @@ public class ListTests {
 
 		@Test
 		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenEmpty() {
+		void returnsEmptyListWhenListEmpty() {
 			final var items = new List<Integer>();
 			final var sorted = items.sort(Comparator.naturalOrder());
 
-			assert sorted.storeEquals(0,
-				new Integer[]{});
+			assertEquals(sorted,
+				new Integer[]{
+				});
 		}
 	}
 
@@ -324,22 +352,28 @@ public class ListTests {
 	class ShuffleTests {
 		@Test
 		@DisplayName("when list is not empty, returns shuffled items")
-		void returnsSortedItemsWhenNotEmpty() {
-			final var items = new List<>(5, 6, 2, 1, 9, 0, 3, 3, 5);
+		void returnsShuffledItemsWhenListNotEmpty() {
+			final var proto = new Integer[]{
+				5, 6, 2, 1, 9, 0, 3, 3, 5
+			};
+
+			final var items = new List<>(proto);
 			final var shuffled = items.shuffle();
 
-			assert !Arrays.equals(items.store.items, shuffled.store.items);
-			assert items.eachMatches(shuffled::contains);
+			assertNotEquals(shuffled, proto);
+			assertEqualsIgnoringOrder(shuffled, proto);
 		}
 
 		@Test
 		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenEmpty() {
-			final var items = new List<Integer>();
+		void returnsEmptyListWhenListEmpty() {
+			final var proto = new Integer[]{
+			};
+
+			final var items = new List<>(proto);
 			final var shuffled = items.shuffle();
 
-			assert shuffled.storeEquals(0,
-				new Integer[]{});
+			assertEquals(shuffled, proto);
 		}
 	}
 
@@ -348,12 +382,12 @@ public class ListTests {
 	class FilterTests {
 		@Test
 		@DisplayName("when list is not empty, returns filtered items")
-		void returnsFilteredItemsWhenNotEmpty() {
+		void returnsFilteredItemsWhenListNotEmpty() {
 			final var items = new List<>(2, 4, 3, 2, 1, 9);
 			final var odds = items.filter((item) ->
 				item % 2 == 1);
 
-			assert odds.storeEquals(3,
+			assertEquals(odds,
 				new Integer[]{
 					3, 1, 9
 				});
@@ -361,47 +395,59 @@ public class ListTests {
 
 		@Test
 		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenEmpty() {
+		void returnsEmptyListWhenListEmpty() {
 			final var items = new List<Integer>();
 			final var evens = items.filter((item) ->
 				item % 2 == 0);
 
-			assert evens.storeEquals(0,
-				new Integer[]{});
+			assertEquals(evens,
+				new Integer[]{
+				});
 		}
 	}
 
 	@Nested
 	@DisplayName(".convert(Function<T, R>)")
 	class ConvertTests {
+		private final List<Integer> items = new List<>(4, 6, 2, 1, 7, 8, 5);
+
 		@Nested
 		@DisplayName("when list is not empty")
 		class NotEmptyListTests {
 			@Test
 			@DisplayName("converts items")
 			void returnsConvertedItems() {
-				final var items = new List<>(3, 6, 1, 2);
 				final var converted = items.convert((item) ->
 					Integer.toString(item));
 
-				assert converted.storeEquals(4,
+				assertEquals(converted,
 					new String[]{
-						"3", "6", "1", "2"
+						"4", "6", "2", "1", "7", "8", "5"
 					});
 			}
 
 			@Test
-			@DisplayName("ignores items converted to null")
-			void ignoresItemsConvertedToNull() {
-				final var items = new List<>(4, 6, 2, 1, 7, 8, 5);
+			@DisplayName("when some items are converted to null, returns converted items without nulls")
+			void returnsConvertedItemsWithoutNullsWhenSomeItemsConvertedToNull() {
 				final var converted = items.convert((item) ->
 					item % 2 == 0
 						? Integer.toString(item)
 						: null);
 
-				assert converted.storeEquals(4,
+				assertEquals(converted,
 					new String[]{
 						"4", "6", "2", "8"
+					});
+			}
+
+			@Test
+			@DisplayName("when all items are converted to null, returns empty list")
+			void returnsEmptyListWhenAllItemsConvertedToNull() {
+				final var converted = items.convert((item) ->
+					null);
+
+				assertEquals(converted,
+					new String[]{
 					});
 			}
 		}
@@ -409,15 +455,17 @@ public class ListTests {
 		@Nested
 		@DisplayName("when list is empty")
 		class EmptyListTests {
+			private final List<Integer> items = new List<>();
+
 			@Test
 			@DisplayName("returns empty list")
 			void returnsEmptyList() {
-				final var items = new List<Integer>();
 				final var converted = items.convert((item) ->
 					item * 2);
 
-				assert converted.storeEquals(0,
-					new Integer[]{});
+				assertEquals(converted,
+					new Integer[]{
+					});
 			}
 		}
 	}
@@ -427,7 +475,7 @@ public class ListTests {
 	class ToArrayTests {
 		@Test
 		@DisplayName("when list is not empty, returns items in array")
-		void returnsArrayWhenNotEmpty() {
+		void returnsItemsInArrayWhenListNotEmpty() {
 			final var items = new List<>(5, 3, 2, 0, 0, 3, 4);
 			final var array = items.toArray();
 
@@ -439,12 +487,13 @@ public class ListTests {
 
 		@Test
 		@DisplayName("when list is empty, returns empty array")
-		void returnsEmptyArrayWhenEmpty() {
+		void returnsEmptyArrayWhenListEmpty() {
 			final var items = new List<>();
 			final var array = items.toArray();
 
 			assert Arrays.equals(array,
-				new Integer[]{});
+				new Integer[]{
+				});
 		}
 	}
 
@@ -453,7 +502,7 @@ public class ListTests {
 	class BridgeTests {
 		@Test
 		@DisplayName("when list is not empty, returns items in java.util.List")
-		void returnsJavaListWhenNotEmpty() {
+		void returnsItemsInJavaListWhenNotEmpty() {
 			final var items = new List<>("5", "y", "a", "v");
 			final var bridged = items.bridge();
 
@@ -476,8 +525,8 @@ public class ListTests {
 	@DisplayName(".toString()")
 	class ToStringTests {
 		@Test
-		@DisplayName("when list is not empty, converts to string")
-		void returnsStringWhenNotEmpty() {
+		@DisplayName("when list is not empty, returns items in string")
+		void convertsToStringWhenListNotEmpty() {
 			final var items = new List<>("g", "H", "6", "c", "E");
 			final var string = items.toString();
 
@@ -487,7 +536,7 @@ public class ListTests {
 
 		@Test
 		@DisplayName("when list is empty, returns []")
-		void returnsStringWhenEmpty() {
+		void convertsToStringWhenListEmpty() {
 			final var items = new List<>();
 			final var string = items.toString();
 
@@ -496,3 +545,5 @@ public class ListTests {
 		}
 	}
 }
+
+// created on Jul 10, 2019

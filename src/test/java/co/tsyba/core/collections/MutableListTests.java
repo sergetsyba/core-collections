@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import static co.tsyba.core.collections.Assert.*;
 
 class MutableListTests {
 	@Nested
@@ -1514,74 +1514,6 @@ class MutableListTests {
 			assertEquals(items, new String[]{
 			});
 		}
-	}
-
-	static <T> void assertCapacity(List<T> actual, int expected) {
-		assert expected == actual.store.items.length :
-			String.format("Incorrect list capacity." +
-					"\n\texpected: %d" +
-					"\n\tactual: %d",
-				expected,
-				actual.store.items.length);
-	}
-
-	static void assertThrows(ThrowingRunnable runnable, Throwable expected) {
-		try {
-			runnable.run();
-		} catch (Throwable actual) {
-			assert expected.equals(actual) :
-				String.format("Incorrect throwable." +
-						"\n\texpected: %s" +
-						"\n\tactual: %s",
-					expected, actual);
-
-			return;
-		}
-
-		assert false : String.format("Finished without throwing." +
-				"\n\texpected: %s",
-			expected);
-	}
-
-	static void assertThrows(ThrowingRunnable runnable, Class<? extends Throwable> expected) {
-		try {
-			runnable.run();
-		} catch (Throwable throwable) {
-			final var actual = throwable.getClass();
-			assert expected.equals(actual) :
-				String.format("Incorrect throwable." +
-						"\n\texpected: %s" +
-						"\n\tactual: %s",
-					expected, actual);
-
-			return;
-		}
-
-		assert false : String.format("Finished without throwing." +
-				"\n\texpected: %s",
-			expected.getName());
-	}
-
-	static <T> void assertEquals(List<T> actual, T[] expected) {
-		var index = 0;
-		for (; index < expected.length; ++index) {
-			assert expected[index].equals(actual.store.items[index]) :
-				String.format("Lists are not equal." +
-						"\n\texpected: %s" +
-						"\n\tactual: %s",
-					Arrays.toString(expected), actual);
-		}
-		for (; index < actual.store.items.length; ++index) {
-			assert actual.store.items[index] == null :
-				String.format("Lists are not equal." +
-						"\n\texpected: %s" +
-						"\n\tactual: %s",
-					Arrays.toString(expected), actual);
-		}
-	}
-
-	interface ThrowingRunnable {
-		void run() throws Exception;
 	}
 }
 

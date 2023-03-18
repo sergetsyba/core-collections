@@ -18,14 +18,6 @@ public class List<T> implements IndexedCollection<T> {
 	}
 
 	/**
-	 * Creates a copy of the specified {@link Collection}.
-	 */
-	public List(Collection<T> items) {
-		final var array = items.toArray();
-		this.store = new ContiguousArrayStore<>(array);
-	}
-
-	/**
 	 * Creates a list with the specified items.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
@@ -43,11 +35,20 @@ public class List<T> implements IndexedCollection<T> {
 		this.store = store;
 	}
 
+	/**
+	 * Creates a copy of the specified {@link Collection}.
+	 */
+	public List(Collection<T> items) {
+		final var array = items.toArray();
+		this.store = new ContiguousArrayStore<>(array);
+	}
+
 	@Override
 	public int getCount() {
 		return store.itemCount;
 	}
 
+	@Override
 	public T get(int index) {
 		final var range = getIndexRange();
 		if (!range.contains(index)) {
@@ -59,9 +60,10 @@ public class List<T> implements IndexedCollection<T> {
 		return item;
 	}
 
+	@Override
 	public List<T> get(IndexRange indexRange) {
 		final var validRange = getIndexRange();
-		if (!validRange.contains(indexRange)) {
+		if (!validRange.contains(indexRange) || isEmpty()) {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
@@ -276,27 +278,6 @@ public class List<T> implements IndexedCollection<T> {
 	@Override
 	public String toString() {
 		return "[" + join(", ") + "]";
-	}
-
-	boolean storeEquals(T[] items) {
-		var index = 0;
-		for (; index < items.length; ++index) {
-			if (!store.items[index].equals(items[index])) {
-				return false;
-			}
-		}
-		for (; index < store.items.length; ++index) {
-			if (store.items[index] != null) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	boolean storeEquals(int capacity, T[] items) {
-		return storeEquals(items) &&
-			store.items.length == capacity;
 	}
 }
 

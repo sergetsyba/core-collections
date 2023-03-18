@@ -30,9 +30,9 @@ public class MutableList<T> extends List<T> {
 	/**
 	 * Creates a copy of the specified items.
 	 */
-	public MutableList(List<T> items) {
+	public MutableList(Collection<T> items) {
 		this(Math.max(items.getCount(), minimumCapacity));
-		append(items);
+		items.forEach(this::append);
 	}
 
 	/**
