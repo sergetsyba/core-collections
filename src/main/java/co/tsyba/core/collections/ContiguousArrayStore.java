@@ -140,11 +140,21 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Prepends the specified item to the beginning of this store.
 	 */
-	public void prepend(T item) {
+	public void prepend(Object item) {
 		shiftItems(0, 1);
 
 		items[0] = item;
-		itemCount += 1;
+		++itemCount;
+	}
+
+	/**
+	 * Prepends the specified items to the beginning of this store.
+	 */
+	public void prepend(Object[] items) {
+		shiftItems(0, items.length);
+
+		arraycopy(items, 0, this.items, 0, items.length);
+		itemCount += items.length;
 	}
 
 	/**
@@ -364,7 +374,9 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 
 	private void shiftItems(int index, int positions) {
 		if (itemCount + positions > items.length) {
-			final var expanded = new Object[2 * items.length];
+			final var capacity = 2 * (itemCount + positions);
+			final var expanded = new Object[capacity];
+
 			if (index > 0) {
 				arraycopy(items, 0, expanded, 0, index);
 			}

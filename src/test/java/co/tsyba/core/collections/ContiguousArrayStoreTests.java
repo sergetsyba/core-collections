@@ -10,11 +10,11 @@ import java.util.Random;
 
 class ContiguousArrayStoreTests {
 	@Nested
-	@DisplayName(".prepend(T)")
+	@DisplayName(".prepend(Object)")
 	class PrependTests {
 		@Test
-		@DisplayName("prepends item")
-		void prependsItem() {
+		@DisplayName("when store has enough capacity, prepends item")
+		void prependsItemWhenStoreHasEnoughCapacity() {
 			final var store = new ContiguousArrayStore<>(7,
 				new String[]{
 					"5", "3", "6", "7"
@@ -30,8 +30,8 @@ class ContiguousArrayStoreTests {
 		}
 
 		@Test
-		@DisplayName("when store is full, prepending item expands capacity")
-		void expandsCapacityWhenPrependingFullStore() {
+		@DisplayName("when store is full, expands capacity and prepends item")
+		void prependsItemWhenStoreFull() {
 			final var store = new ContiguousArrayStore<>(5,
 				new String[]{
 					"5", "3", "7", "5", "3"
@@ -42,7 +42,106 @@ class ContiguousArrayStoreTests {
 			assertItemCount(store, 6);
 			assertItems(store,
 				new String[]{
-					"6", "5", "3", "7", "5", "3", null, null, null, null
+					"6", "5", "3", "7", "5", "3", null, null, null, null, null, null
+				});
+		}
+
+		@Test
+		@DisplayName("when store is empty with 0 capacity, prepends item")
+		void prependsItemWhenStoreEmptyWithZeroCapacity() {
+			final var store = new ContiguousArrayStore<>(0,
+				new String[]{
+				});
+
+			store.prepend("8");
+
+			assertItemCount(store, 1);
+			assertItems(store, new String[]{
+				"8", null
+			});
+		}
+	}
+
+
+	@Nested
+	@DisplayName(".prepend(Object[])")
+	class PrependArrayTests {
+		@Test
+		@DisplayName("when store has enough capacity, prepends items")
+		void prependsItemsWhenStoreHasEnoughCapacity() {
+			final var store = new ContiguousArrayStore<>(5,
+				new String[]{
+					"f", "e"
+				});
+
+			store.prepend(
+				new String[]{
+					"g", "r", "W"
+				});
+
+			assertItemCount(store, 5);
+			assertItems(store,
+				new String[]{
+					"g", "r", "W", "f", "e"
+				});
+		}
+
+		@Test
+		@DisplayName("when store does not have enough capacity, expands capacity and prepends items")
+		void prependsItemsWhenStoreDoesNotHaveEnoughCapacity() {
+			final var store = new ContiguousArrayStore<>(5,
+				new String[]{
+					"h", "e", "w"
+				});
+
+			store.prepend(
+				new String[]{
+					"g", "r", "W"
+				});
+
+			assertItemCount(store, 6);
+			assertItems(store,
+				new String[]{
+					"g", "r", "W", "h", "e", "w", null, null, null, null, null, null
+				});
+		}
+
+		@Test
+		@DisplayName("when store is full, expands capacity and prepends items")
+		void prependsItemsWhenStoreFull() {
+			final var store = new ContiguousArrayStore<>(3,
+				new String[]{
+					"f", "e", "q"
+				});
+
+			store.prepend(
+				new String[]{
+					"f", "w"
+				});
+
+			assertItemCount(store, 5);
+			assertItems(store,
+				new String[]{
+					"f", "w", "f", "e", "q", null, null, null, null, null
+				});
+		}
+
+		@Test
+		@DisplayName("when store is empty and has 0 capacity, prepends items")
+		void prependsItemsWhenEmptyWithZeroCapacity() {
+			final var store = new ContiguousArrayStore<>(0,
+				new String[]{
+				});
+
+			store.prepend(
+				new String[]{
+					"v", "e"
+				});
+
+			assertItemCount(store, 2);
+			assertItems(store,
+				new String[]{
+					"v", "e", null, null
 				});
 		}
 	}
@@ -51,7 +150,7 @@ class ContiguousArrayStoreTests {
 		assert store.itemCount == expected :
 			String.format("Incorrect item count." +
 					"\n\texpected: %d," +
-					"\n\tactual: %d",
+					"\n\tactual:   %d",
 				expected, store.itemCount);
 	}
 
@@ -59,8 +158,9 @@ class ContiguousArrayStoreTests {
 		assert Arrays.equals(store.items, expected) :
 			String.format("Incorrect items." +
 					"\n\texpected: %s" +
-					"\n\tactual: %s",
-				expected, store.items);
+					"\n\tactual:   %s",
+				Arrays.toString(expected),
+				Arrays.toString(store.items));
 	}
 }
 
