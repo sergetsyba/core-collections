@@ -198,6 +198,89 @@ class ContiguousArrayStoreTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".append(Object[])")
+	class AppendArrayTests {
+		@Test
+		@DisplayName("when store has enough capacity, appends items")
+		void appendsItemsWhenStoreHasEnoughCapacity() {
+			final var store = new ContiguousArrayStore<>(5,
+				new String[]{
+					"f", "e"
+				});
+
+			store.append(
+				new String[]{
+					"g", "r", "W"
+				});
+
+			assertItemCount(store, 5);
+			assertItems(store,
+				new String[]{
+					"f", "e", "g", "r", "W"
+				});
+		}
+
+		@Test
+		@DisplayName("when store does not have enough capacity, expands capacity and appends items")
+		void appendsItemsWhenStoreDoesNotHaveEnoughCapacity() {
+			final var store = new ContiguousArrayStore<>(5,
+				new String[]{
+					"h", "e", "w"
+				});
+
+			store.append(
+				new String[]{
+					"g", "r", "W"
+				});
+
+			assertItemCount(store, 6);
+			assertItems(store,
+				new String[]{
+					"h", "e", "w", "g", "r", "W", null, null, null, null, null, null
+				});
+		}
+
+		@Test
+		@DisplayName("when store is full, expands capacity and appends items")
+		void appendsItemsWhenStoreFull() {
+			final var store = new ContiguousArrayStore<>(3,
+				new String[]{
+					"f", "e", "q"
+				});
+
+			store.append(
+				new String[]{
+					"f", "w"
+				});
+
+			assertItemCount(store, 5);
+			assertItems(store,
+				new String[]{
+					"f", "e", "q", "f", "w", null, null, null, null, null
+				});
+		}
+
+		@Test
+		@DisplayName("when store is empty and has 0 capacity, appends items")
+		void appendsItemsWhenEmptyWithZeroCapacity() {
+			final var store = new ContiguousArrayStore<>(0,
+				new String[]{
+				});
+
+			store.append(
+				new String[]{
+					"v", "e"
+				});
+
+			assertItemCount(store, 2);
+			assertItems(store,
+				new String[]{
+					"v", "e", null, null
+				});
+		}
+	}
+
 	static void assertItemCount(ContiguousArrayStore store, int expected) {
 		assert store.itemCount == expected :
 			String.format("Incorrect item count." +
@@ -368,22 +451,22 @@ class ContiguousArrayStoreLegacyTests {
 			.equals(store);
 	}
 
-	@Test
-	public void appendsVariardicItems() {
-		final var store = store("t", "h", "b");
-
-		// appends items
-		store.append("g", "f");
-		assert store("t", "h", "b", "g", "f")
-			.equals(store);
-
-		// does not append nulls
-		store.append(null, null, "r");
-		store.append("g", null);
-
-		assert store("t", "h", "b", "g", "f", "r", "g")
-			.equals(store);
-	}
+//	@Test
+//	public void appendsVariardicItems() {
+//		final var store = store("t", "h", "b");
+//
+//		// appends items
+//		store.append("g", "f");
+//		assert store("t", "h", "b", "g", "f")
+//			.equals(store);
+//
+//		// does not append nulls
+//		store.append(null, null, "r");
+//		store.append("g", null);
+//
+//		assert store("t", "h", "b", "g", "f", "r", "g")
+//			.equals(store);
+//	}
 
 	@Test
 	public void insertsItem() {

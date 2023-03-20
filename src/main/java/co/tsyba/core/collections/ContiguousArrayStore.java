@@ -168,6 +168,16 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
+	 * Appends the specified items to the end of this store.
+	 */
+	public void append(Object[] items) {
+		ensureCapacity(items.length);
+
+		arraycopy(items, 0, this.items, itemCount, items.length);
+		itemCount += items.length;
+	}
+
+	/**
 	 * Appends items of the specified store to the end of this store.
 	 */
 	public void append(ContiguousArrayStore<T> store) {
@@ -177,20 +187,6 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		itemCount += store.itemCount;
 	}
 
-	/**
-	 * Appends the specified items to the end of this store. Ignores any {@code null}
-	 * values among the items.
-	 */
-	public void append(T... items) {
-		prepareCapacity(items.length);
-
-		for (var item : items) {
-			if (item != null) {
-				this.items[itemCount] = item;
-				itemCount += 1;
-			}
-		}
-	}
 
 	/**
 	 * Inserts the specified item into this store at the specified index. Does nothing
