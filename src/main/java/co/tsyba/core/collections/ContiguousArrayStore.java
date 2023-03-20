@@ -160,15 +160,11 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Appends the specified item to the end of this store.
 	 */
-	public void append(T item) {
-		if (item == null) {
-			return;
-		}
-
-		prepareCapacity(1);
+	public void append(Object item) {
+		ensureCapacity(1);
 
 		items[itemCount] = item;
-		itemCount += 1;
+		++itemCount;
 	}
 
 	/**
@@ -345,6 +341,16 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		}
 
 		return new ContiguousArrayStore<>(shuffledItems, itemCount);
+	}
+
+	private void ensureCapacity(int extra) {
+		if (itemCount + extra > items.length) {
+			final var capacity = 2 * (itemCount + extra);
+			final var expanded = new Object[capacity];
+			arraycopy(items, 0, expanded, 0, itemCount);
+
+			items = expanded;
+		}
 	}
 
 	private void prepareCapacity(int extraItemCount) {
