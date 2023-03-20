@@ -10,34 +10,57 @@ import java.util.Random;
 
 class ContiguousArrayStoreTests {
 	@Nested
-	@DisplayName("new ContiguousArrayStore(int)")
-	class ConstructorWithCapacityTests {
+	@DisplayName(".prepend(T)")
+	class PrependTests {
 		@Test
-		@DisplayName("creates with capacity")
-		void createsWhenCapacityPositive() {
-			final var store = new ContiguousArrayStore<String>(7);
-			assert 7 == store.items.length;
-			assert 0 == store.itemCount;
+		@DisplayName("prepends item")
+		void prependsItem() {
+			final var store = new ContiguousArrayStore<>(7,
+				new String[]{
+					"5", "3", "6", "7"
+				});
+
+			store.prepend("6");
+
+			assertItemCount(store, 5);
+			assertItems(store,
+				new String[]{
+					"6", "5", "3", "6", "7", null, null
+				});
 		}
 
 		@Test
-		@DisplayName("creates empty when capacity is 0")
-		void createsEmptyStoreWhenCapacityZero() {
-			final var store = new ContiguousArrayStore<String>(0);
-			assert 0 == store.items.length;
-			assert 0 == store.itemCount;
-		}
+		@DisplayName("when store is full, prepending item expands capacity")
+		void expandsCapacityWhenPrependingFullStore() {
+			final var store = new ContiguousArrayStore<>(5,
+				new String[]{
+					"5", "3", "7", "5", "3"
+				});
 
-		@Test
-		@DisplayName("fails when capacity is negative")
-		void failsWhenCapacityNegative() {
-			try {
-				new ContiguousArrayStore<String>(-7);
-			} catch (IllegalArgumentException ignored) {
-				return;
-			}
-			assert false;
+			store.prepend("6");
+
+			assertItemCount(store, 6);
+			assertItems(store,
+				new String[]{
+					"6", "5", "3", "7", "5", "3", null, null, null, null
+				});
 		}
+	}
+
+	static void assertItemCount(ContiguousArrayStore store, int expected) {
+		assert store.itemCount == expected :
+			String.format("Incorrect item count." +
+					"\n\texpected: %d," +
+					"\n\tactual: %d",
+				expected, store.itemCount);
+	}
+
+	static void assertItems(ContiguousArrayStore store, Object[] expected) {
+		assert Arrays.equals(store.items, expected) :
+			String.format("Incorrect items." +
+					"\n\texpected: %s" +
+					"\n\tactual: %s",
+				expected, store.items);
 	}
 }
 

@@ -33,6 +33,12 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		this.itemCount = 0;
 	}
 
+	ContiguousArrayStore(int capacity, Object[] items) {
+		this.items = new Object[capacity];
+		this.itemCount = items.length;
+		arraycopy(items, 0, this.items, 0, items.length);
+	}
+
 	ContiguousArrayStore(ContiguousArrayStore<T> store) {
 		this.items = new Object[store.items.length];
 		this.itemCount = store.itemCount;
@@ -131,16 +137,18 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		items[index] = item;
 	}
 
+	/**
+	 * Prepends the specified item to the beginning of this store.
+	 */
 	public void prepend(T item) {
-		moveItems(0, 1);
+		shiftItems(0, 1);
 
 		items[0] = item;
 		itemCount += 1;
 	}
 
 	/**
-	 * Appends the specified item to the end of this store. Does nothing when the
-	 * specified item is {@code null}.
+	 * Appends the specified item to the end of this store.
 	 */
 	public void append(T item) {
 		if (item == null) {
@@ -352,6 +360,22 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		arraycopy(items, 0, newStorage, 0, itemCount);
 
 		items = newStorage;
+	}
+
+	private void shiftItems(int index, int positions) {
+		if (itemCount + positions > items.length) {
+			final var expanded = new Object[2 * items.length];
+			if (index > 0) {
+				arraycopy(items, 0, expanded, 0, index);
+			}
+			arraycopy(items, index, expanded, index + positions,
+				itemCount - index);
+
+			items = expanded;
+		} else {
+			arraycopy(items, index, items, index + positions,
+				itemCount - index);
+		}
 	}
 
 	void moveItems(int startIndex, int positions) {
