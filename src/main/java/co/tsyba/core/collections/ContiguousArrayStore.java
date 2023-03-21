@@ -8,9 +8,6 @@ import java.util.Random;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Jan 28, 2019.
- */
 class ContiguousArrayStore<T> implements Iterable<T> {
 	Object[] items;
 	int itemCount;
@@ -40,108 +37,15 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		arraycopy(items, 0, this.items, 0, items.length);
 	}
 
-	ContiguousArrayStore(ContiguousArrayStore<T> store) {
-		this.items = new Object[store.items.length];
-		this.itemCount = store.itemCount;
-		arraycopy(store.items, 0, this.items, 0, this.itemCount);
-	}
-
-	/**
-	 * Creates a copy of the specified index range in the specified array store.
-	 */
-	public ContiguousArrayStore(ContiguousArrayStore<T> items, IndexRange indexRange) {
-		this.itemCount = indexRange.end - indexRange.start + 1;
-		this.items = (T[]) new Object[itemCount];
-		arraycopy(items.items, indexRange.start, this.items, 0, itemCount);
-	}
-
 	private ContiguousArrayStore(T[] storage, int itemCount) {
 		this.items = storage;
 		this.itemCount = itemCount;
 	}
 
 	/**
-	 * Returns {@code true} when this store contains an item at the specified index;
-	 * returns {@code false} otherwise.
-	 */
-	public boolean hasIndex(int index) {
-		return index >= 0
-			&& index < itemCount;
-	}
-
-	/**
-	 * Returns {@code true} when this store contains items at the specified index range;
-	 * returns {@code false} otherwise.
-	 */
-	public boolean hasIndexRange(IndexRange indexRange) {
-		return indexRange.start >= 0
-			&& indexRange.end <= itemCount;
-	}
-
-	/**
-	 * Returns item at the specified index in this store.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
-	 */
-	public T get(int index) {
-		if (itemCount == 0) {
-			throw new IndexNotInRangeException(
-				index, new IndexRange());
-		}
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-
-		return (T) items[index];
-	}
-
-	/**
-	 * Returns items at the specified index range in this store.
-	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this store
-	 */
-	public ContiguousArrayStore<T> get(IndexRange indexRange) {
-		if (itemCount == 0) {
-			throw new IndexRangeNotInRangeException(indexRange,
-				new IndexRange());
-		}
-		if (!hasIndexRange(indexRange)) {
-			throw new IndexRangeNotInRangeException(indexRange,
-				new IndexRange(0, itemCount));
-		}
-
-		final var items = (T[]) new Object[indexRange.length];
-		arraycopy(this.items, indexRange.start, items, 0, indexRange.length);
-
-		return new ContiguousArrayStore<>(items, indexRange.length);
-	}
-
-	/**
-	 * Replaces item at the specified index with the specified one. Does nothing when the
-	 * specified item is {@code null}.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
-	 */
-	public void set(int index, T item) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-		if (item == null) {
-			return;
-		}
-
-		items[index] = item;
-	}
-
-	/**
 	 * Prepends the specified item to the beginning of this store.
 	 */
-	public void prepend(Object item) {
+	void prepend(Object item) {
 		shiftItems(0, 1);
 
 		items[0] = item;
@@ -151,7 +55,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Prepends the specified items to the beginning of this store.
 	 */
-	public void prepend(Object[] items) {
+	void prepend(Object[] items) {
 		shiftItems(0, items.length);
 
 		arraycopy(items, 0, this.items, 0, items.length);
@@ -161,7 +65,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Appends the specified item to the end of this store.
 	 */
-	public void append(Object item) {
+	void append(Object item) {
 		ensureCapacity(1);
 
 		items[itemCount] = item;
@@ -171,7 +75,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Appends the specified items to the end of this store.
 	 */
-	public void append(Object[] items) {
+	void append(Object[] items) {
 		ensureCapacity(items.length);
 
 		arraycopy(items, 0, this.items, itemCount, items.length);
@@ -181,13 +85,12 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Appends items of the specified store to the end of this store.
 	 */
-	public void append(ContiguousArrayStore<T> store) {
-		prepareCapacity(store.itemCount);
+	void append(ContiguousArrayStore<T> store) {
+		ensureCapacity(store.itemCount);
 
 		arraycopy(store.items, 0, items, itemCount, store.itemCount);
 		itemCount += store.itemCount;
 	}
-
 
 	/**
 	 * Inserts the specified item into this store at the specified index.
@@ -195,7 +98,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * Produces undefined result when the specified index is after the current item
 	 * count.
 	 */
-	public void insert(int index, Object item) {
+	void insert(int index, Object item) {
 		shiftItems(index, 1);
 
 		items[index] = item;
@@ -208,31 +111,11 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * Produces undefined result when the specified index is after the current item
 	 * count.
 	 */
-	public void insert(int index, Object[] items) {
+	void insert(int index, Object[] items) {
 		shiftItems(index, items.length);
 
 		arraycopy(items, 0, this.items, index, items.length);
 		itemCount += items.length;
-	}
-
-	/**
-	 * Inserts items of the specified store into this store at the specified index.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
-	 */
-	public void insert(int index, ContiguousArrayStore<T> store) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-
-		// shift items at the insertion index to the right to make room
-		// for the inserted items
-		moveItems(index, store.itemCount);
-
-		arraycopy(store.items, 0, items, index, store.itemCount);
-		itemCount += store.itemCount;
 	}
 
 	/**
@@ -256,7 +139,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	/**
 	 * Removes items at the specified index range from this store.
 	 */
-	public void remove(IndexRange indexRange) {
+	void remove(IndexRange indexRange) {
 		shiftItems(indexRange.end, -indexRange.length);
 		itemCount -= indexRange.length;
 	}
@@ -266,7 +149,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 *
 	 * @return
 	 */
-	public ContiguousArrayStore<T> reverse() {
+	ContiguousArrayStore<T> reverse() {
 		final var reverseItems = (T[]) new Object[itemCount];
 		for (var index = 0; index < itemCount; ++index) {
 			final var reverseIndex = itemCount - index - 1;
@@ -280,7 +163,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * Returns items of this store, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	public ContiguousArrayStore<T> sort(Comparator<T> comparator) {
+	ContiguousArrayStore<T> sort(Comparator<T> comparator) {
 		final var sortedItems = (T[]) new Object[itemCount];
 		arraycopy(items, 0, sortedItems, 0, itemCount);
 
@@ -305,7 +188,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * @param random
 	 * @return
 	 */
-	public ContiguousArrayStore<T> shuffle(Random random) {
+	ContiguousArrayStore<T> shuffle(Random random) {
 		final var shuffledItems = (T[]) new Object[itemCount];
 		arraycopy(items, 0, shuffledItems, 0, itemCount);
 
@@ -331,19 +214,6 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 
 			items = expanded;
 		}
-	}
-
-	private void prepareCapacity(int extraItemCount) {
-		final var newItemCount = itemCount + extraItemCount;
-		if (newItemCount <= items.length) {
-			return;
-		}
-
-		final var newCapacity = 2 * newItemCount + 1;
-		final var newStorage = (T[]) new Object[newCapacity];
-		arraycopy(items, 0, newStorage, 0, itemCount);
-
-		items = newStorage;
 	}
 
 	public void removeExcessCapacity() {
@@ -442,3 +312,5 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 			store.items, 0, store.itemCount);
 	}
 }
+
+// created on Jan 28, 2019

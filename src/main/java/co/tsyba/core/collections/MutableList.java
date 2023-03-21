@@ -49,7 +49,7 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> set(int index, T item) {
-		store.set(index, item);
+		store.items[index] = item;
 		return this;
 	}
 
