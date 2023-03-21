@@ -247,22 +247,11 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 
 	/**
 	 * Removes item at the specified index from this store.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
 	 */
 	public void remove(int index) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-
-		// shift items after the removed index one position to the left
 		moveItems(index + 1, -1);
 		itemCount -= 1;
 
-		// clear the item after the shifted ones to make it eligible
-		// for garbage collection
 		items[itemCount] = null;
 	}
 

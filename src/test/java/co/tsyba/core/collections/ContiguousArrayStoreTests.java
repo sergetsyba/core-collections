@@ -562,6 +562,27 @@ class ContiguousArrayStoreTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".remove(int)")
+	class RemoveTests {
+		@Test
+		@DisplayName("removes item")
+		void removesItem() {
+			final var store = new ContiguousArrayStore<>(5,
+				new String[]{
+					"g", "r", "E", "x"
+				});
+
+			store.remove(3);
+
+			assertItemCount(store, 3);
+			assertItems(store,
+				new String[]{
+					"g", "r", "E", null, null
+				});
+		}
+	}
+
 	static void assertItemCount(ContiguousArrayStore store, int expected) {
 		assert store.itemCount == expected :
 			String.format("Incorrect item count." +
