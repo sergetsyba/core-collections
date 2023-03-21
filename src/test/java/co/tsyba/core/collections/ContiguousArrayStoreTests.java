@@ -383,6 +383,185 @@ class ContiguousArrayStoreTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".replace(IndexRange, Object[])")
+	class ReplaceTests {
+		@Nested
+		@DisplayName("when store has enough capacity")
+		class EnoughCapacityTests {
+			@Test
+			@DisplayName("when index range and argument array are equal in length, replaces items")
+			void replacesItemsWhenIndexRangeAndArgArrayEqualInLength() {
+				final var store = new ContiguousArrayStore<>(7,
+					new String[]{
+						"f", "r", "w", "q", "t"
+					});
+
+				final var range = new IndexRange(1, 3);
+				store.replace(range,
+					new String[]{
+						"W", "u"
+					});
+
+				assertItemCount(store, 5);
+				assertItems(store,
+					new String[]{
+						"f", "W", "u", "q", "t", null, null
+					});
+			}
+
+			@Test
+			@DisplayName("when index range is longer than argument array, replaces items")
+			void replacesItemsWhenIndexRangeLongerThanArgArray() {
+				final var store = new ContiguousArrayStore<>(7,
+					new String[]{
+						"f", "r", "w", "q", "t"
+					});
+
+				final var range = new IndexRange(1, 4);
+				store.replace(range,
+					new String[]{
+						"W"
+					});
+
+				assertItemCount(store, 3);
+				assertItems(store,
+					new String[]{
+						"f", "W", "t", null, null, null, null
+					});
+			}
+
+			@Test
+			@DisplayName("when index range is shorter than argument array, replaces items")
+			void replacesItemsWhenIndexRangeShorterThanArgArray() {
+				final var store = new ContiguousArrayStore<>(7,
+					new String[]{
+						"f", "e", "W", "h"
+					});
+
+				final var range = new IndexRange(0, 2);
+				store.replace(range,
+					new String[]{
+						"g", "b", "e", "O"
+					});
+
+				assertItemCount(store, 6);
+				assertItems(store,
+					new String[]{
+						"g", "b", "e", "O", "W", "h", null
+					});
+			}
+
+			@Test
+			@DisplayName("when index range is empty, inserts items")
+			void insertsItemsWhenIndexRangeEmpty() {
+				final var store = new ContiguousArrayStore<>(8,
+					new String[]{
+						"b", "g", "e"
+					});
+
+				final var range = new IndexRange(2, 2);
+				store.replace(range,
+					new String[]{
+						"b", "u", "P"
+					});
+
+				assertItemCount(store, 6);
+				assertItems(store,
+					new String[]{
+						"b", "g", "b", "u", "P", "e", null, null
+					});
+			}
+
+			@Test
+			@DisplayName("when argument array is empty, removes items")
+			void removesItemsWhenArgArrayEmpty() {
+				final var store = new ContiguousArrayStore<>(5,
+					new String[]{
+						"b", "M", "L", "b"
+					});
+
+				final var range = new IndexRange(1, 4);
+				store.replace(range,
+					new String[]{
+					});
+
+				assertItemCount(store, 1);
+				assertItems(store,
+					new String[]{
+						"b", null, null, null, null
+					});
+			}
+
+			@Test
+			@DisplayName("when index range and argument array are empty, does nothing")
+			void doesNothingWhenIndexRangeAndArgArrayEmpty() {
+				final var store = new ContiguousArrayStore<>(5,
+					new String[]{
+						"b", "M", "L", "b"
+					});
+
+				final var range = new IndexRange(1, 1);
+				store.replace(range,
+					new String[]{
+					});
+
+				assertItemCount(store, 4);
+				assertItems(store,
+					new String[]{
+						"b", "M", "L", "b", null
+					});
+			}
+		}
+
+		@Nested
+		@DisplayName("when store does not have enough capacity")
+		class NotEnoughCapacityTests {
+			@Test
+			@DisplayName("when index range is shorter than argument array, expands capacity and replaces items")
+			void replacesItemsWhenIndexRangeShorterThanArgArray() {
+				final var store = new ContiguousArrayStore<>(5,
+					new String[]{
+						"f", "e", "W", "h"
+					});
+
+				final var range = new IndexRange(0, 2);
+				store.replace(range,
+					new String[]{
+						"g", "b", "e", "O"
+					});
+
+				assertItemCount(store, 6);
+				assertItems(store,
+					new String[]{
+						"g", "b", "e", "O", "W", "h", null, null, null, null, null, null
+					});
+			}
+
+
+			@Test
+			@DisplayName("when index range is empty, expands capacity and inserts items")
+			void insertsItemsWhenIndexRangeEmpty() {
+				final var store = new ContiguousArrayStore<>(4,
+					new String[]{
+						"b", "g", "e"
+					});
+
+				final var range = new IndexRange(2, 2);
+				store.replace(range,
+					new String[]{
+						"b", "u", "P"
+					});
+
+				assertItemCount(store, 6);
+				assertItems(store,
+					new String[]{
+						"b", "g", "b", "u", "P", "e", null, null, null, null, null, null
+					});
+			}
+		}
+	}
+
 	static void assertItemCount(ContiguousArrayStore store, int expected) {
 		assert store.itemCount == expected :
 			String.format("Incorrect item count." +

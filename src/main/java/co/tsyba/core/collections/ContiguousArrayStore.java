@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import static java.lang.System.arraycopy;
+import static java.util.Arrays.fill;
 
 /*
  * Created by Serge Tsyba <tsyba@me.com> on Jan 28, 2019.
@@ -235,6 +236,16 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
+	 * Replaces items at the specified index range in this list with the specified items.
+	 */
+	void replace(IndexRange range, Object[] items) {
+		shiftItems(range.end, items.length - range.length);
+
+		arraycopy(items, 0, this.items, range.start, items.length);
+		itemCount += items.length - range.length;
+	}
+
+	/**
 	 * Removes item at the specified index from this store.
 	 *
 	 * @throws IndexNotInRangeException when the specified index is out of valid index
@@ -391,6 +402,11 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		} else {
 			arraycopy(items, index, items, index + positions,
 				itemCount - index);
+
+			if (positions < 0) {
+				// clear items after the shifted range
+				fill(items, itemCount + positions, itemCount, null);
+			}
 		}
 	}
 
