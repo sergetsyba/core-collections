@@ -189,27 +189,13 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 
 
 	/**
-	 * Inserts the specified item into this store at the specified index. Does nothing
-	 * when the specified item is {@code null}.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
+	 * Inserts the specified item into this store at the specified index.
 	 */
-	public void insert(int index, T item) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-		if (item == null) {
-			return;
-		}
-
-		// shift items at the insertion index one position to the right
-		// to make room for the inserted item
-		moveItems(index, 1);
+	public void insert(int index, Object item) {
+		shiftItems(index, 1);
 
 		items[index] = item;
-		itemCount += 1;
+		++itemCount;
 	}
 
 	/**

@@ -47,7 +47,7 @@ class ContiguousArrayStoreTests {
 		}
 
 		@Test
-		@DisplayName("when store is empty with 0 capacity, prepends item")
+		@DisplayName("when store is empty with no capacity, expands capacity and prepends item")
 		void prependsItemWhenStoreEmptyWithZeroCapacity() {
 			final var store = new ContiguousArrayStore<>(0,
 				new String[]{
@@ -126,7 +126,7 @@ class ContiguousArrayStoreTests {
 		}
 
 		@Test
-		@DisplayName("when store is empty and has 0 capacity, prepends items")
+		@DisplayName("when store is empty and has no capacity, expands capacity and prepends items")
 		void prependsItemsWhenEmptyWithZeroCapacity() {
 			final var store = new ContiguousArrayStore<>(0,
 				new String[]{
@@ -183,7 +183,7 @@ class ContiguousArrayStoreTests {
 		}
 
 		@Test
-		@DisplayName("when store is empty with 0 capacity, appends item")
+		@DisplayName("when store is empty with no capacity, expands capacity and appends item")
 		void prependsItemWhenStoreEmptyWithZeroCapacity() {
 			final var store = new ContiguousArrayStore<>(0,
 				new String[]{
@@ -262,7 +262,7 @@ class ContiguousArrayStoreTests {
 		}
 
 		@Test
-		@DisplayName("when store is empty and has 0 capacity, appends items")
+		@DisplayName("when store is empty and has no capacity, expands capacity and appends items")
 		void appendsItemsWhenEmptyWithZeroCapacity() {
 			final var store = new ContiguousArrayStore<>(0,
 				new String[]{
@@ -277,6 +277,44 @@ class ContiguousArrayStoreTests {
 			assertItems(store,
 				new String[]{
 					"v", "e", null, null
+				});
+		}
+	}
+
+	@Nested
+	@DisplayName(".insert(int, Object)")
+	class InsertTests {
+		@Test
+		@DisplayName("when store has enough capacity, inserts item")
+		void insertsItemWhenStoreHasEnoughCapacity() {
+			final var store = new ContiguousArrayStore<>(7,
+				new String[]{
+					"5", "3", "6", "7"
+				});
+
+			store.insert(2, "6");
+
+			assertItemCount(store, 5);
+			assertItems(store,
+				new String[]{
+					"5", "3", "6", "6", "7", null, null
+				});
+		}
+
+		@Test
+		@DisplayName("when store is full, expands capacity and inserts item")
+		void appendsItemWhenStoreFull() {
+			final var store = new ContiguousArrayStore<>(5,
+				new String[]{
+					"5", "3", "7", "5", "3"
+				});
+
+			store.insert(2, "6");
+
+			assertItemCount(store, 6);
+			assertItems(store,
+				new String[]{
+					"5", "3", "6", "7", "5", "3", null, null, null, null, null, null
 				});
 		}
 	}
