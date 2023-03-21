@@ -583,6 +583,28 @@ class ContiguousArrayStoreTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".remove(IndexRange)")
+	class RemoveIndexRangeTests {
+		@Test
+		@DisplayName("removes items")
+		void removesItems() {
+			final var store = new ContiguousArrayStore<>(7,
+				new String[]{
+					"b", "E", "Q", "f", "L", "B"
+				});
+
+			final var range = new IndexRange(2, 5);
+			store.remove(range);
+
+			assertItemCount(store, 3);
+			assertItems(store,
+				new String[]{
+					"b", "E", "B", null, null, null, null
+				});
+		}
+	}
+
 	static void assertItemCount(ContiguousArrayStore store, int expected) {
 		assert store.itemCount == expected :
 			String.format("Incorrect item count." +
