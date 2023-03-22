@@ -392,27 +392,29 @@ class ContiguousArrayStoreTests {
 	}
 
 	@Nested
-	@DisplayName(".replace(IndexRange, Object[])")
-	class ReplaceTests {
+	@DisplayName(".replace(IndexRange, ContiguousArrayStore)")
+	class ReplaceStoreTests {
 		@Nested
 		@DisplayName("when store has enough capacity")
 		class EnoughCapacityTests {
 			@Test
 			@DisplayName("when index range and argument array are equal in length, replaces items")
 			void replacesItemsWhenIndexRangeAndArgArrayEqualInLength() {
-				final var store = new ContiguousArrayStore<>(7,
+				final var store1 = new ContiguousArrayStore<>(7,
 					new String[]{
 						"f", "r", "w", "q", "t"
 					});
 
 				final var range = new IndexRange(1, 3);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 						"W", "u"
 					});
 
-				assertItemCount(store, 5);
-				assertItems(store,
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 5);
+				assertItems(store1,
 					new String[]{
 						"f", "W", "u", "q", "t", null, null
 					});
@@ -421,19 +423,21 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is longer than argument array, replaces items")
 			void replacesItemsWhenIndexRangeLongerThanArgArray() {
-				final var store = new ContiguousArrayStore<>(7,
+				final var store1 = new ContiguousArrayStore<>(7,
 					new String[]{
 						"f", "r", "w", "q", "t"
 					});
 
 				final var range = new IndexRange(1, 4);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 						"W"
 					});
 
-				assertItemCount(store, 3);
-				assertItems(store,
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 3);
+				assertItems(store1,
 					new String[]{
 						"f", "W", "t", null, null, null, null
 					});
@@ -442,19 +446,20 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is shorter than argument array, replaces items")
 			void replacesItemsWhenIndexRangeShorterThanArgArray() {
-				final var store = new ContiguousArrayStore<>(7,
+				final var store1 = new ContiguousArrayStore<>(7,
 					new String[]{
 						"f", "e", "W", "h"
 					});
-
-				final var range = new IndexRange(0, 2);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 						"g", "b", "e", "O"
 					});
 
-				assertItemCount(store, 6);
-				assertItems(store,
+				final var range = new IndexRange(0, 2);
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 6);
+				assertItems(store1,
 					new String[]{
 						"g", "b", "e", "O", "W", "h", null
 					});
@@ -463,19 +468,20 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is empty, inserts items")
 			void insertsItemsWhenIndexRangeEmpty() {
-				final var store = new ContiguousArrayStore<>(8,
+				final var store1 = new ContiguousArrayStore<>(8,
 					new String[]{
 						"b", "g", "e"
 					});
-
-				final var range = new IndexRange(2, 2);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 						"b", "u", "P"
 					});
 
-				assertItemCount(store, 6);
-				assertItems(store,
+				final var range = new IndexRange(2, 2);
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 6);
+				assertItems(store1,
 					new String[]{
 						"b", "g", "b", "u", "P", "e", null, null
 					});
@@ -484,18 +490,19 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when argument array is empty, removes items")
 			void removesItemsWhenArgArrayEmpty() {
-				final var store = new ContiguousArrayStore<>(5,
+				final var store1 = new ContiguousArrayStore<>(5,
 					new String[]{
 						"b", "M", "L", "b"
 					});
-
-				final var range = new IndexRange(1, 4);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 					});
 
-				assertItemCount(store, 1);
-				assertItems(store,
+				final var range = new IndexRange(1, 4);
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 1);
+				assertItems(store1,
 					new String[]{
 						"b", null, null, null, null
 					});
@@ -504,18 +511,20 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range and argument array are empty, does nothing")
 			void doesNothingWhenIndexRangeAndArgArrayEmpty() {
-				final var store = new ContiguousArrayStore<>(5,
+				final var store1 = new ContiguousArrayStore<>(5,
 					new String[]{
 						"b", "M", "L", "b"
 					});
 
 				final var range = new IndexRange(1, 1);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 					});
 
-				assertItemCount(store, 4);
-				assertItems(store,
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 4);
+				assertItems(store1,
 					new String[]{
 						"b", "M", "L", "b", null
 					});
@@ -528,41 +537,43 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is shorter than argument array, expands capacity and replaces items")
 			void replacesItemsWhenIndexRangeShorterThanArgArray() {
-				final var store = new ContiguousArrayStore<>(5,
+				final var store1 = new ContiguousArrayStore<>(5,
 					new String[]{
 						"f", "e", "W", "h"
 					});
 
 				final var range = new IndexRange(0, 2);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 						"g", "b", "e", "O"
 					});
 
-				assertItemCount(store, 6);
-				assertItems(store,
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 6);
+				assertItems(store1,
 					new String[]{
 						"g", "b", "e", "O", "W", "h", null, null, null, null, null, null
 					});
 			}
 
-
 			@Test
 			@DisplayName("when index range is empty, expands capacity and inserts items")
 			void insertsItemsWhenIndexRangeEmpty() {
-				final var store = new ContiguousArrayStore<>(4,
+				final var store1 = new ContiguousArrayStore<>(4,
 					new String[]{
 						"b", "g", "e"
 					});
-
-				final var range = new IndexRange(2, 2);
-				store.replace(range,
+				final var store2 = new ContiguousArrayStore<>(
 					new String[]{
 						"b", "u", "P"
 					});
 
-				assertItemCount(store, 6);
-				assertItems(store,
+				final var range = new IndexRange(2, 2);
+				store1.replace(range, store2);
+
+				assertItemCount(store1, 6);
+				assertItems(store1,
 					new String[]{
 						"b", "g", "b", "u", "P", "e", null, null, null, null, null, null
 					});

@@ -145,9 +145,9 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> insert(int index, T item) {
-		final var range = getIndexRange();
-		if (!range.contains(index)) {
-			throw new IndexNotInRangeException(index, range);
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
 		}
 
 		if (item != null) {
@@ -168,9 +168,9 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public final MutableList<T> insert(int index, T... items) {
-		final var range = getIndexRange();
-		if (!range.contains(index)) {
-			throw new IndexNotInRangeException(index, range);
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
 		}
 
 		final var compacted = compact(items);
@@ -187,9 +187,9 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> insert(int index, List<T> items) {
-		final var range = getIndexRange();
-		if (!range.contains(index)) {
-			throw new IndexNotInRangeException(index, range);
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
 		}
 
 		store.insert(index, items.store);
@@ -208,23 +208,13 @@ public class MutableList<T> extends List<T> {
 	@SafeVarargs
 	public final MutableList<T> replace(IndexRange range, T... items) {
 		final var validRange = getIndexRange();
-		if (!validRange.contains(range) || isEmpty()) {
+		if (!validRange.contains(range)) {
 			throw new IndexRangeNotInRangeException(range, validRange);
 		}
 
-		final var store2 = new ContiguousArrayStore<T>(items.length);
-		for (var item : items) {
-			if (item != null) {
-				store2.append(item);
-			}
-		}
+		final var compacted = compact(items);
+		store.replace(range, compacted);
 
-		store.remove(range);
-		if (range.start == store.itemCount) {
-			store.append(store2);
-		} else {
-			store.insert(range.start, store2);
-		}
 		return this;
 	}
 
@@ -237,17 +227,11 @@ public class MutableList<T> extends List<T> {
 	 */
 	public final MutableList<T> replace(IndexRange range, List<T> items) {
 		final var validRange = getIndexRange();
-		if (!validRange.contains(range) || isEmpty()) {
+		if (!validRange.contains(range)) {
 			throw new IndexRangeNotInRangeException(range, validRange);
 		}
 
-		store.remove(range);
-		if (range.start == store.itemCount) {
-			store.append(items.store);
-		} else {
-			store.insert(range.start, items.store);
-		}
-
+		store.replace(range, items.store);
 		return this;
 	}
 

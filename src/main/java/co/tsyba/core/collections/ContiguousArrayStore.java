@@ -111,7 +111,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Inserts the specified items into this store at the specified index.
+	 * Inserts items from the specified store into this store at the specified index.
 	 * <p>
 	 * Produces undefined result when the specified index is after the current item
 	 * count.
@@ -124,13 +124,14 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Replaces items at the specified index range in this list with the specified items.
+	 * Replaces items at the specified index range in this store with the items from the
+	 * specified store.
 	 */
-	void replace(IndexRange range, Object[] items) {
-		shiftItems(range.end, items.length - range.length);
+	void replace(IndexRange range, ContiguousArrayStore store) {
+		shiftItems(range.end, store.itemCount - range.length);
 
-		arraycopy(items, 0, this.items, range.start, items.length);
-		itemCount += items.length - range.length;
+		arraycopy(store.items, 0, items, range.start, store.itemCount);
+		itemCount += store.itemCount - range.length;
 	}
 
 	/**
