@@ -145,7 +145,15 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> insert(int index, T item) {
-		store.insert(index, item);
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
+		if (item != null) {
+			store.insert(index, item);
+		}
+
 		return this;
 	}
 
@@ -160,14 +168,14 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public final MutableList<T> insert(int index, T... items) {
-		final var store2 = new ContiguousArrayStore<T>(items.length);
-		for (var item : items) {
-			if (item != null) {
-				store2.append(item);
-			}
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
 		}
 
-		store.insert(index, store2);
+		final var compacted = compact(items);
+		store.insert(index, compacted);
+
 		return this;
 	}
 
@@ -179,6 +187,11 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> insert(int index, List<T> items) {
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
 		store.insert(index, items.store);
 		return this;
 	}

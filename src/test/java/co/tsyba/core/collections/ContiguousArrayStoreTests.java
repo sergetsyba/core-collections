@@ -325,23 +325,24 @@ class ContiguousArrayStoreTests {
 	}
 
 	@Nested
-	@DisplayName(".insert(int, Object[])")
-	class InsertArrayTests {
+	@DisplayName(".insert(int, ContiguousArrayStore)")
+	class InsertStoreTests {
 		@Test
 		@DisplayName("when store has enough capacity, inserts items")
 		void insertsItemsWhenStoreHasEnoughCapacity() {
-			final var store = new ContiguousArrayStore<>(9,
+			final var store1 = new ContiguousArrayStore<>(9,
 				new String[]{
 					"g", "3", "d", "W"
 				});
-
-			store.insert(3,
+			final var store2 = new ContiguousArrayStore<>(
 				new String[]{
 					"b", "J", "L", "O"
 				});
 
-			assertItemCount(store, 8);
-			assertItems(store,
+			store1.insert(3, store2);
+
+			assertItemCount(store1, 8);
+			assertItems(store1,
 				new String[]{
 					"g", "3", "d", "b", "J", "L", "O", "W", null
 				});
@@ -350,18 +351,19 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store does not have enough capacity, expands capacity and inserts items")
 		void insertsItemsWhenStoreDoesNotHaveEnoughCapacity() {
-			final var store = new ContiguousArrayStore<>(3,
+			final var store1 = new ContiguousArrayStore<>(3,
 				new String[]{
 					"g", "3"
 				});
-
-			store.insert(1,
+			final var store2 = new ContiguousArrayStore<>(
 				new String[]{
 					"b", "J"
 				});
 
-			assertItemCount(store, 4);
-			assertItems(store,
+			store1.insert(1, store2);
+
+			assertItemCount(store1, 4);
+			assertItems(store1,
 				new String[]{
 					"g", "b", "J", "3", null, null, null, null
 				});
@@ -370,18 +372,19 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and inserts items")
 		void insertsItemsWhenStoreFull() {
-			final var store = new ContiguousArrayStore<>(3,
+			final var store1 = new ContiguousArrayStore<>(3,
 				new String[]{
 					"g", "3", "F"
 				});
-
-			store.insert(1,
+			final var store2 = new ContiguousArrayStore<>(
 				new String[]{
 					"b", "J"
 				});
 
-			assertItemCount(store, 5);
-			assertItems(store,
+			store1.insert(1, store2);
+
+			assertItemCount(store1, 5);
+			assertItems(store1,
 				new String[]{
 					"g", "b", "J", "3", "F", null, null, null, null, null
 				});

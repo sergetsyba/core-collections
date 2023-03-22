@@ -691,7 +691,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>("g", "E", "d", "A")
-						.set(-4, "r");
+						.insert(-4, "r");
 				}, expected);
 			}
 
@@ -703,7 +703,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>("g", "A")
-						.set(9, "r");
+						.insert(9, "r");
 				}, expected);
 			}
 		}
@@ -719,7 +719,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>()
-						.set(-3, "r");
+						.insert(-3, "r");
 				}, expected);
 			}
 
@@ -731,7 +731,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>()
-						.set(0, "s");
+						.insert(0, "s");
 				}, expected);
 			}
 		}

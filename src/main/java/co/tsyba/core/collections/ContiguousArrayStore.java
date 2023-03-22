@@ -116,11 +116,11 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * Produces undefined result when the specified index is after the current item
 	 * count.
 	 */
-	void insert(int index, Object[] items) {
-		shiftItems(index, items.length);
+	void insert(int index, ContiguousArrayStore store) {
+		shiftItems(index, store.itemCount);
 
-		arraycopy(items, 0, this.items, index, items.length);
-		itemCount += items.length;
+		arraycopy(store.items, 0, items, index, store.itemCount);
+		itemCount += store.itemCount;
 	}
 
 	/**
