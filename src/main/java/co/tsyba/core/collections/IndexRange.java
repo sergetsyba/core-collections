@@ -70,9 +70,13 @@ public class IndexRange implements Iterable<Integer> {
 	/**
 	 * Returns {@code true} when the specified {@link IndexRange} is within this index
 	 * range; returns {@code false} otherwise.
+	 * <p>
+	 * When this index range is empty, returns {@code false}, even when the specified
+	 * index range coincides with this one.
 	 */
 	public boolean contains(IndexRange range) {
 		return range.start >= start
+			&& range.start < end
 			&& range.end <= end;
 	}
 

@@ -121,48 +121,111 @@ class IndexRangeTests {
 	@Nested
 	@DisplayName(".contains(IndexRange)")
 	class ContainsIndexRangeTests {
-		private final IndexRange range = new IndexRange(5, 18);
+		@Nested
+		@DisplayName("when index range is not empty")
+		class NotEmptyIndexRangeTests {
+			private final IndexRange range1 = new IndexRange(5, 18);
 
-		@Test
-		@DisplayName("when range is within range, returns true")
-		void returnsTrueWhenRangeWithinRange() {
-			final var range2 = new IndexRange(7, 12);
-			assert range.contains(range2);
+			@Test
+			@DisplayName("when argument range starts before range, returns false")
+			void returnsFalseWhenArgRangeStartsBeforeRange() {
+				final var range2 = new IndexRange(2, 9);
+				assert !range1.contains(range2);
+			}
+
+			@Test
+			@DisplayName("when argument range coincides range, returns true")
+			void returnsTrueWhenArgRangeCoincidesRange() {
+				final var range2 = new IndexRange(5, 18);
+				assert range1.contains(range2);
+			}
+
+			@Test
+			@DisplayName("when argument range is within range, returns true")
+			void returnsTrueWhenRangeWithinRange() {
+				final var range2 = new IndexRange(7, 12);
+				assert range1.contains(range2);
+			}
+
+			@Test
+			@DisplayName("when argument range ends after range, returns false")
+			void returnsFalseWhenArgRangeEndsAfterRange() {
+				final var range2 = new IndexRange(9, 19);
+				assert !range1.contains(range2);
+			}
+
+			@Test
+			@DisplayName("when argument range starts after range, returns false")
+			void returnsFalseWhenArgRangeStartsAfterRange() {
+				final var range2 = new IndexRange(20, 22);
+				assert !range1.contains(range2);
+			}
+
+			@Nested
+			@DisplayName("when argument range is empty")
+			class EmptyArgRangeTests {
+				@Test
+				@DisplayName("when argument range starts before range, returns false")
+				void returnsFalseWhenArgRangeStartsBeforeRange() {
+					final var range2 = new IndexRange(2, 2);
+					assert !range1.contains(range2);
+				}
+
+				@Test
+				@DisplayName("when argument range is within range, returns false")
+				void returnsFalseWhenArgRangeWithinRange() {
+					final var range2 = new IndexRange(7, 7);
+					assert range1.contains(range2);
+				}
+
+				@Test
+				@DisplayName("when argument range starts at range end, returns false")
+				void returnsFalseWhenArgRangeStartsAtRangeEnd() {
+					final var range2 = new IndexRange(18, 18);
+					assert !range1.contains(range2);
+				}
+
+				@Test
+				@DisplayName("when argument range starts after range, returns false")
+				void returnsFalseWhenArgRangeStartsAfterRange() {
+					final var range2 = new IndexRange(20, 20);
+					assert !range1.contains(range2);
+				}
+			}
 		}
 
-		@Test
-		@DisplayName("when range is outside range, returns false")
-		void returnsFalseWhenRangeOutsideRange() {
-			final var range2 = new IndexRange(2, 22);
-			assert !range.contains(range2);
-		}
+		@Nested
+		@DisplayName("when index range is empty")
+		class EmptyIndexRangeTests {
+			private final IndexRange range1 = new IndexRange(3, 3);
 
-		@Test
-		@DisplayName("when range starts before start, returns false")
-		void returnsFalseWhenRangeStartsBeforeStarts() {
-			final var range2 = new IndexRange(3, 12);
-			assert !range.contains(range2);
-		}
+			@Test
+			@DisplayName("when argument range starts before range, returns false")
+			void returnsFalseWhenArgRangeStartsBeforeRange() {
+				final var range2 = new IndexRange(1, 3);
+				assert !range1.contains(range2);
+			}
 
-		@Test
-		@DisplayName("when range starts at start, returns true")
-		void returnsTrueWhenRangeStartsAtStart() {
-			final var range2 = new IndexRange(5, 12);
-			assert range.contains(range2);
-		}
+			@Test
+			@DisplayName("when argument range coincides with range, returns false")
+			void returnsFalseWhenArgRangeCoincidesWithRange() {
+				final var range2 = new IndexRange(3, 3);
+				assert !range1.contains(range2);
+			}
 
-		@Test
-		@DisplayName("when range ends after end, returns false")
-		void returnsFalseWhenRangeEndsAfterEnd() {
-			final var range2 = new IndexRange(7, 22);
-			assert !range.contains(range2);
-		}
+			@Test
+			@DisplayName("when argument range ends after range, returns false")
+			void returnsFalseWhenArgRangeEndsAfterRange() {
+				final var range2 = new IndexRange(3, 5);
+				assert !range1.contains(range2);
+			}
 
-		@Test
-		@DisplayName("when range ends at end, returns true")
-		void returnsTrueWhenRangeEndsAtEnd() {
-			final var range2 = new IndexRange(7, 18);
-			assert range.contains(range2);
+			@Test
+			@DisplayName("when argument range starts after range, returns false")
+			void returnsFalseWhenArgRangeStartsAfterRange() {
+				final var range2 = new IndexRange(7, 9);
+				assert !range1.contains(range2);
+			}
 		}
 	}
 
