@@ -12,6 +12,21 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	Object[] items;
 	int itemCount;
 
+	static ContiguousArrayStore compact(Object[] items) {
+		final var store = new ContiguousArrayStore<>(items.length);
+		var count = 0;
+
+		for (var item : items) {
+			if (item != null) {
+				store.items[count] = item;
+				++count;
+			}
+		}
+
+		store.itemCount = count;
+		return store;
+	}
+
 	ContiguousArrayStore(Object[] items) {
 		this.items = items;
 		this.itemCount = items.length;
@@ -53,13 +68,13 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Prepends the specified items to the beginning of this store.
+	 * Prepends items from the specified store to the beginning of this store.
 	 */
-	void prepend(Object[] items) {
-		shiftItems(0, items.length);
+	void prepend(ContiguousArrayStore store) {
+		shiftItems(0, store.itemCount);
 
-		arraycopy(items, 0, this.items, 0, items.length);
-		itemCount += items.length;
+		arraycopy(store.items, 0, items, 0, store.itemCount);
+		itemCount += store.itemCount;
 	}
 
 	/**

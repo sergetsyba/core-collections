@@ -61,23 +61,24 @@ class ContiguousArrayStoreTests {
 	}
 
 	@Nested
-	@DisplayName(".prepend(Object[])")
+	@DisplayName(".prepend(ContiguousArrayStore)")
 	class PrependArrayTests {
 		@Test
 		@DisplayName("when store has enough capacity, prepends items")
 		void prependsItemsWhenStoreHasEnoughCapacity() {
-			final var store = new ContiguousArrayStore<>(5,
+			final var store1 = new ContiguousArrayStore<>(5,
 				new String[]{
 					"f", "e"
 				});
-
-			store.prepend(
+			final var store2 = new ContiguousArrayStore<>(
 				new String[]{
 					"g", "r", "W"
 				});
 
-			assertItemCount(store, 5);
-			assertItems(store,
+			store1.prepend(store2);
+
+			assertItemCount(store1, 5);
+			assertItems(store1,
 				new String[]{
 					"g", "r", "W", "f", "e"
 				});
@@ -86,18 +87,18 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store does not have enough capacity, expands capacity and prepends items")
 		void prependsItemsWhenStoreDoesNotHaveEnoughCapacity() {
-			final var store = new ContiguousArrayStore<>(5,
+			final var store1 = new ContiguousArrayStore<>(5,
 				new String[]{
 					"h", "e", "w"
 				});
+			final var store2 = new ContiguousArrayStore<>(new String[]{
+				"g", "r", "W"
+			});
 
-			store.prepend(
-				new String[]{
-					"g", "r", "W"
-				});
+			store1.prepend(store2);
 
-			assertItemCount(store, 6);
-			assertItems(store,
+			assertItemCount(store1, 6);
+			assertItems(store1,
 				new String[]{
 					"g", "r", "W", "h", "e", "w", null, null, null, null, null, null
 				});
@@ -106,18 +107,19 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and prepends items")
 		void prependsItemsWhenStoreFull() {
-			final var store = new ContiguousArrayStore<>(3,
+			final var store1 = new ContiguousArrayStore<>(3,
 				new String[]{
 					"f", "e", "q"
 				});
-
-			store.prepend(
+			final var store2 = new ContiguousArrayStore<>(
 				new String[]{
 					"f", "w"
 				});
 
-			assertItemCount(store, 5);
-			assertItems(store,
+			store1.prepend(store2);
+
+			assertItemCount(store1, 5);
+			assertItems(store1,
 				new String[]{
 					"f", "w", "f", "e", "q", null, null, null, null, null
 				});
@@ -126,17 +128,18 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is empty and has no capacity, expands capacity and prepends items")
 		void prependsItemsWhenEmptyWithZeroCapacity() {
-			final var store = new ContiguousArrayStore<>(0,
+			final var store1 = new ContiguousArrayStore<>(0,
 				new String[]{
 				});
-
-			store.prepend(
+			final var store2 = new ContiguousArrayStore<>(
 				new String[]{
 					"v", "e"
 				});
 
-			assertItemCount(store, 2);
-			assertItems(store,
+			store1.prepend(store2);
+
+			assertItemCount(store1, 2);
+			assertItems(store1,
 				new String[]{
 					"v", "e", null, null
 				});

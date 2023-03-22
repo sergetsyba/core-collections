@@ -1,5 +1,7 @@
 package co.tsyba.core.collections;
 
+import static co.tsyba.core.collections.ContiguousArrayStore.compact;
+
 /**
  * A mutable, sequential {@link Collection}, which provides efficient, randomized access
  * to its items.
@@ -77,21 +79,8 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public final MutableList<T> prepend(T... items) {
-		var nullCount = 0;
-		for (var item : items) {
-			if (item == null) {
-				nullCount += 1;
-			}
-		}
-
-		store.moveItems(0, items.length - nullCount);
-
-		for (int index1 = 0, index2 = 0; index1 < items.length; index1 += 1) {
-			if (items[index1] != null) {
-				store.items[index2] = items[index1];
-				index2 += 1;
-			}
-		}
+		final var compacted = compact(items);
+		store.prepend(compacted);
 
 		return this;
 	}
@@ -102,15 +91,7 @@ public class MutableList<T> extends List<T> {
 	 * @return itself
 	 */
 	public MutableList<T> prepend(List<T> items) {
-		final var count = items.getCount();
-		store.moveItems(0, count);
-
-		var index = 0;
-		for (var item : items) {
-			store.items[index] = item;
-			index += 1;
-		}
-
+		store.prepend(items.store);
 		return this;
 	}
 
