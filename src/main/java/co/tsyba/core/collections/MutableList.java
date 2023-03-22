@@ -119,11 +119,8 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public final MutableList<T> append(T... items) {
-		for (var item : items) {
-			if (item != null) {
-				store.append(item);
-			}
-		}
+		final var compacted = compact(items);
+		store.append(compacted);
 
 		return this;
 	}
@@ -134,8 +131,7 @@ public class MutableList<T> extends List<T> {
 	 * @return itself
 	 */
 	public MutableList<T> append(List<T> items) {
-		// todo: copy array
-		items.forEach(this::append);
+		store.append(items.store);
 		return this;
 	}
 

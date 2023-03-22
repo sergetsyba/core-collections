@@ -88,19 +88,9 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Appends the specified items to the end of this store.
+	 * Appends items from the specified store to the end of this store.
 	 */
-	void append(Object[] items) {
-		ensureCapacity(items.length);
-
-		arraycopy(items, 0, this.items, itemCount, items.length);
-		itemCount += items.length;
-	}
-
-	/**
-	 * Appends items of the specified store to the end of this store.
-	 */
-	void append(ContiguousArrayStore<T> store) {
+	void append(ContiguousArrayStore store) {
 		ensureCapacity(store.itemCount);
 
 		arraycopy(store.items, 0, items, itemCount, store.itemCount);
