@@ -169,11 +169,11 @@ class ContiguousArrayStore {
 	 */
 	@SuppressWarnings("unchecked")
 	<T> ContiguousArrayStore sort(Comparator<T> comparator) {
-		final var sorted = new Object[itemCount];
+		final var sorted = new Object[items.length];
 		arraycopy(items, 0, sorted, 0, itemCount);
 
 		Arrays.sort((T[]) sorted, 0, itemCount, comparator);
-		return new ContiguousArrayStore(sorted);
+		return new ContiguousArrayStore(sorted, itemCount);
 	}
 
 	/**

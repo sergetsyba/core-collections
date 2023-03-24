@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 class ContiguousArrayStoreTests {
 	@Nested
@@ -659,6 +660,46 @@ class ContiguousArrayStoreTests {
 				new String[]{
 					null, null, null, null
 				});
+		}
+	}
+
+	@Nested
+	@DisplayName(".sort(Comparator<T>)")
+	class SortTests {
+		@Test
+		@DisplayName("when store is not empty, sorts items")
+		void sortsItemsWhenStoreNotEmpty() {
+			final var store = new ContiguousArrayStore(
+				new String[]{
+					"v", "R", "e", "C", "q", null, null
+				});
+
+			final var sorted = store.<String>sort(Comparator.naturalOrder());
+
+			assertItemCount(sorted, 5);
+			assertItems(sorted,
+				new String[]{
+					"C", "R", "e", "q", "v", null, null
+				});
+
+		}
+
+		@Test
+		@DisplayName("when store is empty, does nothing")
+		void doesNothingWhenStoreEmpty() {
+			final var store = new ContiguousArrayStore(
+				new String[]{
+					null, null, null, null
+				});
+
+			final var sorted = store.<String>sort(Comparator.naturalOrder());
+
+			assertItemCount(sorted, 0);
+			assertItems(sorted,
+				new String[]{
+					null, null, null, null
+				});
+
 		}
 	}
 
