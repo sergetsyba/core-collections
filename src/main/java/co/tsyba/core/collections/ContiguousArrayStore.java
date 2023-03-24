@@ -52,10 +52,9 @@ class ContiguousArrayStore {
 		this.itemCount = 0;
 	}
 
-	ContiguousArrayStore(Object[] items, int itemCount) {
-		this.items = new Object[items.length];
+	private ContiguousArrayStore(Object[] items, int itemCount) {
+		this.items = items;
 		this.itemCount = itemCount;
-		arraycopy(items, 0, this.items, 0, itemCount);
 	}
 
 	/**
