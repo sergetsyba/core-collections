@@ -27,8 +27,15 @@ class ContiguousArrayStore {
 	}
 
 	ContiguousArrayStore(Object[] items) {
+		var index = 0;
+		for (; index < items.length; ++index) {
+			if (items[index] == null) {
+				break;
+			}
+		}
+
 		this.items = items;
-		this.itemCount = items.length;
+		this.itemCount = index;
 	}
 
 	/**
@@ -45,10 +52,10 @@ class ContiguousArrayStore {
 		this.itemCount = 0;
 	}
 
-	ContiguousArrayStore(int capacity, Object[] items) {
-		this.items = new Object[capacity];
-		this.itemCount = items.length;
-		arraycopy(items, 0, this.items, 0, items.length);
+	ContiguousArrayStore(Object[] items, int itemCount) {
+		this.items = new Object[items.length];
+		this.itemCount = itemCount;
+		arraycopy(items, 0, this.items, 0, itemCount);
 	}
 
 	/**
@@ -148,27 +155,25 @@ class ContiguousArrayStore {
 	 * Returns items of this store in reverse order.
 	 */
 	ContiguousArrayStore reverse() {
-		final var reversed = new Object[itemCount];
+		final var reversed = new Object[items.length];
 		for (var index = 0; index < itemCount; ++index) {
-			final var reverseIndex = itemCount - index - 1;
-			reversed[reverseIndex] = items[index];
+			reversed[index] = items[itemCount - 1 - index];
 		}
 
-		return new ContiguousArrayStore(reversed);
+		return new ContiguousArrayStore(reversed, itemCount);
 	}
 
 	/**
 	 * Returns items of this store, ordered according to the specified
 	 * {@link Comparator}.
 	 */
+	@SuppressWarnings("unchecked")
 	<T> ContiguousArrayStore sort(Comparator<T> comparator) {
-		final var sorted1 = new Object[itemCount];
-		arraycopy(items, 0, sorted1, 0, itemCount);
+		final var sorted = new Object[itemCount];
+		arraycopy(items, 0, sorted, 0, itemCount);
 
-		@SuppressWarnings("unchecked")
-		final var sorted2 = (T[]) sorted1;
-		Arrays.sort(sorted2, 0, itemCount, comparator);
-		return new ContiguousArrayStore(sorted2);
+		Arrays.sort((T[]) sorted, 0, itemCount, comparator);
+		return new ContiguousArrayStore(sorted);
 	}
 
 	/**

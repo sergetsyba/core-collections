@@ -13,9 +13,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store has enough capacity, prepends item")
 		void prependsItemWhenStoreHasEnoughCapacity() {
-			final var store = new ContiguousArrayStore(7,
+			final var store = new ContiguousArrayStore(
 				new String[]{
-					"5", "3", "6", "7"
+					"5", "3", "6", "7", null, null, null
 				});
 
 			store.prepend("6");
@@ -30,7 +30,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and prepends item")
 		void prependsItemWhenStoreFull() {
-			final var store = new ContiguousArrayStore(5,
+			final var store = new ContiguousArrayStore(
 				new String[]{
 					"5", "3", "7", "5", "3"
 				});
@@ -47,7 +47,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is empty with no capacity, expands capacity and prepends item")
 		void prependsItemWhenStoreEmptyWithZeroCapacity() {
-			final var store = new ContiguousArrayStore(0,
+			final var store = new ContiguousArrayStore(
 				new String[]{
 				});
 
@@ -66,9 +66,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store has enough capacity, prepends items")
 		void prependsItemsWhenStoreHasEnoughCapacity() {
-			final var store1 = new ContiguousArrayStore(5,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
-					"f", "e"
+					"f", "e", null, null, null
 				});
 			final var store2 = new ContiguousArrayStore(
 				new String[]{
@@ -87,9 +87,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store does not have enough capacity, expands capacity and prepends items")
 		void prependsItemsWhenStoreDoesNotHaveEnoughCapacity() {
-			final var store1 = new ContiguousArrayStore(5,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
-					"h", "e", "w"
+					"h", "e", "w", null, null
 				});
 			final var store2 = new ContiguousArrayStore(new String[]{
 				"g", "r", "W"
@@ -107,7 +107,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and prepends items")
 		void prependsItemsWhenStoreFull() {
-			final var store1 = new ContiguousArrayStore(3,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
 					"f", "e", "q"
 				});
@@ -128,7 +128,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is empty and has no capacity, expands capacity and prepends items")
 		void prependsItemsWhenEmptyWithZeroCapacity() {
-			final var store1 = new ContiguousArrayStore(0,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
 				});
 			final var store2 = new ContiguousArrayStore(
@@ -152,9 +152,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store has enough capacity, appends item")
 		void appendsItemWhenStoreHasEnoughCapacity() {
-			final var store = new ContiguousArrayStore(7,
+			final var store = new ContiguousArrayStore(
 				new String[]{
-					"5", "3", "6", "7"
+					"5", "3", "6", "7", null, null, null
 				});
 
 			store.append("6");
@@ -169,7 +169,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and appends item")
 		void appendsItemWhenStoreFull() {
-			final var store = new ContiguousArrayStore(5,
+			final var store = new ContiguousArrayStore(
 				new String[]{
 					"5", "3", "7", "5", "3"
 				});
@@ -186,7 +186,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is empty with no capacity, expands capacity and appends item")
 		void prependsItemWhenStoreEmptyWithZeroCapacity() {
-			final var store = new ContiguousArrayStore(0,
+			final var store = new ContiguousArrayStore(
 				new String[]{
 				});
 
@@ -205,9 +205,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store has enough capacity, appends items")
 		void appendsItemsWhenStoreHasEnoughCapacity() {
-			final var store1 = new ContiguousArrayStore(5,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
-					"f", "e"
+					"f", "e", null, null, null
 				});
 			final var store2 = new ContiguousArrayStore(
 				new String[]{
@@ -226,9 +226,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store does not have enough capacity, expands capacity and appends items")
 		void appendsItemsWhenStoreDoesNotHaveEnoughCapacity() {
-			final var store1 = new ContiguousArrayStore(5,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
-					"h", "e", "w"
+					"h", "e", "w", null, null
 				});
 			final var store2 = new ContiguousArrayStore(
 				new String[]{
@@ -247,7 +247,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and appends items")
 		void appendsItemsWhenStoreFull() {
-			final var store1 = new ContiguousArrayStore(3,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
 					"f", "e", "q"
 				});
@@ -268,7 +268,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is empty and has no capacity, expands capacity and appends items")
 		void appendsItemsWhenEmptyWithZeroCapacity() {
-			final var store1 = new ContiguousArrayStore(0,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
 				});
 			final var store2 = new ContiguousArrayStore(
@@ -292,9 +292,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store has enough capacity, inserts item")
 		void insertsItemWhenStoreHasEnoughCapacity() {
-			final var store = new ContiguousArrayStore(7,
+			final var store = new ContiguousArrayStore(
 				new String[]{
-					"5", "3", "6", "7"
+					"5", "3", "6", "7", null, null, null
 				});
 
 			store.insert(2, "6");
@@ -309,7 +309,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and inserts item")
 		void appendsItemWhenStoreFull() {
-			final var store = new ContiguousArrayStore(5,
+			final var store = new ContiguousArrayStore(
 				new String[]{
 					"5", "3", "7", "5", "3"
 				});
@@ -330,9 +330,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store has enough capacity, inserts items")
 		void insertsItemsWhenStoreHasEnoughCapacity() {
-			final var store1 = new ContiguousArrayStore(9,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
-					"g", "3", "d", "W"
+					"g", "3", "d", "W", null, null, null, null, null
 				});
 			final var store2 = new ContiguousArrayStore(
 				new String[]{
@@ -351,9 +351,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store does not have enough capacity, expands capacity and inserts items")
 		void insertsItemsWhenStoreDoesNotHaveEnoughCapacity() {
-			final var store1 = new ContiguousArrayStore(3,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
-					"g", "3"
+					"g", "3", null
 				});
 			final var store2 = new ContiguousArrayStore(
 				new String[]{
@@ -372,7 +372,7 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("when store is full, expands capacity and inserts items")
 		void insertsItemsWhenStoreFull() {
-			final var store1 = new ContiguousArrayStore(3,
+			final var store1 = new ContiguousArrayStore(
 				new String[]{
 					"g", "3", "F"
 				});
@@ -400,9 +400,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range and argument array are equal in length, replaces items")
 			void replacesItemsWhenIndexRangeAndArgArrayEqualInLength() {
-				final var store1 = new ContiguousArrayStore(7,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"f", "r", "w", "q", "t"
+						"f", "r", "w", "q", "t", null, null
 					});
 
 				final var range = new IndexRange(1, 3);
@@ -423,9 +423,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is longer than argument array, replaces items")
 			void replacesItemsWhenIndexRangeLongerThanArgArray() {
-				final var store1 = new ContiguousArrayStore(7,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"f", "r", "w", "q", "t"
+						"f", "r", "w", "q", "t", null, null
 					});
 
 				final var range = new IndexRange(1, 4);
@@ -446,9 +446,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is shorter than argument array, replaces items")
 			void replacesItemsWhenIndexRangeShorterThanArgArray() {
-				final var store1 = new ContiguousArrayStore(7,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"f", "e", "W", "h"
+						"f", "e", "W", "h", null, null, null
 					});
 				final var store2 = new ContiguousArrayStore(
 					new String[]{
@@ -468,9 +468,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is empty, inserts items")
 			void insertsItemsWhenIndexRangeEmpty() {
-				final var store1 = new ContiguousArrayStore(8,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"b", "g", "e"
+						"b", "g", "e", null, null, null, null, null
 					});
 				final var store2 = new ContiguousArrayStore(
 					new String[]{
@@ -490,9 +490,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when argument array is empty, removes items")
 			void removesItemsWhenArgArrayEmpty() {
-				final var store1 = new ContiguousArrayStore(5,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"b", "M", "L", "b"
+						"b", "M", "L", "b", null
 					});
 				final var store2 = new ContiguousArrayStore(
 					new String[]{
@@ -511,9 +511,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range and argument array are empty, does nothing")
 			void doesNothingWhenIndexRangeAndArgArrayEmpty() {
-				final var store1 = new ContiguousArrayStore(5,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"b", "M", "L", "b"
+						"b", "M", "L", "b", null
 					});
 
 				final var range = new IndexRange(1, 1);
@@ -537,9 +537,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is shorter than argument array, expands capacity and replaces items")
 			void replacesItemsWhenIndexRangeShorterThanArgArray() {
-				final var store1 = new ContiguousArrayStore(5,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"f", "e", "W", "h"
+						"f", "e", "W", "h", null
 					});
 
 				final var range = new IndexRange(0, 2);
@@ -560,9 +560,9 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when index range is empty, expands capacity and inserts items")
 			void insertsItemsWhenIndexRangeEmpty() {
-				final var store1 = new ContiguousArrayStore(4,
+				final var store1 = new ContiguousArrayStore(
 					new String[]{
-						"b", "g", "e"
+						"b", "g", "e", null
 					});
 				final var store2 = new ContiguousArrayStore(
 					new String[]{
@@ -587,9 +587,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("removes item")
 		void removesItem() {
-			final var store = new ContiguousArrayStore(5,
+			final var store = new ContiguousArrayStore(
 				new String[]{
-					"g", "r", "E", "x"
+					"g", "r", "E", "x", null
 				});
 
 			store.remove(3);
@@ -608,9 +608,9 @@ class ContiguousArrayStoreTests {
 		@Test
 		@DisplayName("removes items")
 		void removesItems() {
-			final var store = new ContiguousArrayStore(7,
+			final var store = new ContiguousArrayStore(
 				new String[]{
-					"b", "E", "Q", "f", "L", "B"
+					"b", "E", "Q", "f", "L", "B", null
 				});
 
 			final var range = new IndexRange(2, 5);
@@ -620,6 +620,44 @@ class ContiguousArrayStoreTests {
 			assertItems(store,
 				new String[]{
 					"b", "E", "B", null, null, null, null
+				});
+		}
+	}
+
+	@Nested
+	@DisplayName(".reverse()")
+	class ReverseTests {
+		@Test
+		@DisplayName("when store is not empty, reverses items")
+		void reversesItemsWhenStoreNotEmpty() {
+			final var store = new ContiguousArrayStore(
+				new String[]{
+					"v", "R", "e", "Q", null, null, null
+				});
+
+			final var reversed = store.reverse();
+
+			assertItemCount(reversed, 4);
+			assertItems(reversed,
+				new String[]{
+					"Q", "e", "R", "v", null, null, null
+				});
+		}
+
+		@Test
+		@DisplayName("when store is empty, does nothing")
+		void doesNothingWhenStoreEmpty() {
+			final var store = new ContiguousArrayStore(
+				new String[]{
+					null, null, null, null
+				});
+
+			final var reversed = store.reverse();
+
+			assertItemCount(reversed, 0);
+			assertItems(reversed,
+				new String[]{
+					null, null, null, null
 				});
 		}
 	}
