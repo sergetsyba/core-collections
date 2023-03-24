@@ -177,7 +177,7 @@ class ContiguousArrayStore {
 	}
 
 	/**
-	 * Returns items of this store in random order, according to the specified
+	 * Returns items of this store in random order, based on the specified
 	 * {@link Random}.
 	 *
 	 * <pre>
@@ -191,7 +191,7 @@ class ContiguousArrayStore {
 	 * </pre>
 	 */
 	ContiguousArrayStore shuffle(Random random) {
-		final var shuffled = new Object[itemCount];
+		final var shuffled = new Object[items.length];
 		arraycopy(items, 0, shuffled, 0, itemCount);
 
 		// it's more convenient to iterate items backwards for simpler
@@ -205,7 +205,7 @@ class ContiguousArrayStore {
 			shuffled[randomIndex] = item;
 		}
 
-		return new ContiguousArrayStore(shuffled);
+		return new ContiguousArrayStore(shuffled, itemCount);
 	}
 
 	private void ensureExcessCapacity(int extra) {

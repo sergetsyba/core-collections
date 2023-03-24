@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Random;
 
 class ContiguousArrayStoreTests {
 	@Nested
@@ -703,6 +704,43 @@ class ContiguousArrayStoreTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".shuffle(Random)")
+	class ShuffleTests {
+		@Test
+		@DisplayName("when store is not empty, shuffles items")
+		void shufflesItemsWhenStoreNotEmpty() {
+			final var store = new ContiguousArrayStore(
+				new String[]{
+					"v", "M", "l", "P", null, null, null
+				});
+
+			final var random = new Random();
+			final var shuffled = store.shuffle(random);
+
+			assertItemCount(shuffled, 4);
+			assertItemsShuffled(shuffled, store, 4);
+		}
+
+		@Test
+		@DisplayName("when store is empty, does nothing")
+		void doesNothingWhenStoreEmpty() {
+			final var store = new ContiguousArrayStore(
+				new String[]{
+					null, null, null, null
+				});
+
+			final var random = new Random();
+			final var shuffled = store.shuffle(random);
+
+			assertItemCount(shuffled, 0);
+			assertItems(shuffled,
+				new String[]{
+					null, null, null, null
+				});
+		}
+	}
+
 	static void assertItemCount(ContiguousArrayStore store, int expected) {
 		assert store.itemCount == expected :
 			String.format("Incorrect item count." +
@@ -718,6 +756,25 @@ class ContiguousArrayStoreTests {
 					"\n\tactual:   %s",
 				Arrays.toString(expected),
 				Arrays.toString(store.items));
+	}
+
+	static void assertItemsShuffled(ContiguousArrayStore shuffled, ContiguousArrayStore original, int itemCount) {
+		// verify shuffled store preserves item capacity
+		assert shuffled.items.length == original.items.length;
+
+		// verify items part of shuffled store differs from the original
+		assert !Arrays.equals(shuffled.items, 0, itemCount,
+			original.items, 0, itemCount);
+
+		// verify capacity part of shuffled store is the same as the original
+		assert Arrays.equals(shuffled.items, itemCount, shuffled.items.length,
+			original.items, itemCount, original.items.length);
+
+		// verify shuffled array contains all items of the original
+		Arrays.sort(shuffled.items, 0, itemCount);
+		Arrays.sort(original.items, 0, itemCount);
+		assert Arrays.equals(shuffled.items, 0, itemCount,
+			original.items, 0, itemCount);
 	}
 }
 
