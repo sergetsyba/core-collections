@@ -2,18 +2,17 @@ package co.tsyba.core.collections;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Random;
 
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
 
-class ContiguousArrayStore<T> implements Iterable<T> {
+class ContiguousArrayStore {
 	Object[] items;
 	int itemCount;
 
 	static ContiguousArrayStore compact(Object[] items) {
-		final var store = new ContiguousArrayStore<>(items.length);
+		final var store = new ContiguousArrayStore(items.length);
 		var count = 0;
 
 		for (var item : items) {
@@ -52,11 +51,6 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		arraycopy(items, 0, this.items, 0, items.length);
 	}
 
-	private ContiguousArrayStore(T[] storage, int itemCount) {
-		this.items = storage;
-		this.itemCount = itemCount;
-	}
-
 	/**
 	 * Prepends the specified item to the beginning of this store.
 	 */
@@ -81,7 +75,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * Appends the specified item to the end of this store.
 	 */
 	void append(Object item) {
-		ensureCapacity(1);
+		ensureExcessCapacity(1);
 
 		items[itemCount] = item;
 		++itemCount;
@@ -91,7 +85,7 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * Appends items from the specified store to the end of this store.
 	 */
 	void append(ContiguousArrayStore store) {
-		ensureCapacity(store.itemCount);
+		ensureExcessCapacity(store.itemCount);
 
 		arraycopy(store.items, 0, items, itemCount, store.itemCount);
 		itemCount += store.itemCount;
@@ -152,29 +146,29 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 
 	/**
 	 * Returns items of this store in reverse order.
-	 *
-	 * @return
 	 */
-	ContiguousArrayStore<T> reverse() {
-		final var reverseItems = (T[]) new Object[itemCount];
+	ContiguousArrayStore reverse() {
+		final var reversed = new Object[itemCount];
 		for (var index = 0; index < itemCount; ++index) {
 			final var reverseIndex = itemCount - index - 1;
-			reverseItems[reverseIndex] = (T) items[index];
+			reversed[reverseIndex] = items[index];
 		}
 
-		return new ContiguousArrayStore<>(reverseItems, itemCount);
+		return new ContiguousArrayStore(reversed);
 	}
 
 	/**
 	 * Returns items of this store, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	ContiguousArrayStore<T> sort(Comparator<T> comparator) {
-		final var sortedItems = (T[]) new Object[itemCount];
-		arraycopy(items, 0, sortedItems, 0, itemCount);
+	<T> ContiguousArrayStore sort(Comparator<T> comparator) {
+		final var sorted1 = new Object[itemCount];
+		arraycopy(items, 0, sorted1, 0, itemCount);
 
-		Arrays.sort(sortedItems, 0, itemCount, comparator);
-		return new ContiguousArrayStore<>(sortedItems, itemCount);
+		@SuppressWarnings("unchecked")
+		final var sorted2 = (T[]) sorted1;
+		Arrays.sort(sorted2, 0, itemCount, comparator);
+		return new ContiguousArrayStore(sorted2);
 	}
 
 	/**
@@ -190,13 +184,10 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * 2. D. Knuth. "The Art of Computer Programming" vol. 2.
 	 *    Addison–Wesley, 1969, pp. 139–140, algorithm P.
 	 * </pre>
-	 *
-	 * @param random
-	 * @return
 	 */
-	ContiguousArrayStore<T> shuffle(Random random) {
-		final var shuffledItems = (T[]) new Object[itemCount];
-		arraycopy(items, 0, shuffledItems, 0, itemCount);
+	ContiguousArrayStore shuffle(Random random) {
+		final var shuffled = new Object[itemCount];
+		arraycopy(items, 0, shuffled, 0, itemCount);
 
 		// it's more convenient to iterate items backwards for simpler
 		// random index generation
@@ -204,15 +195,15 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 			final var randomIndex = random.nextInt(index + 1);
 
 			// swap items at iterated and randomly generated indices
-			final var item = shuffledItems[index];
-			shuffledItems[index] = shuffledItems[randomIndex];
-			shuffledItems[randomIndex] = item;
+			final var item = shuffled[index];
+			shuffled[index] = shuffled[randomIndex];
+			shuffled[randomIndex] = item;
 		}
 
-		return new ContiguousArrayStore<>(shuffledItems, itemCount);
+		return new ContiguousArrayStore(shuffled);
 	}
 
-	private void ensureCapacity(int extra) {
+	private void ensureExcessCapacity(int extra) {
 		if (itemCount + extra > items.length) {
 			final var capacity = 2 * (itemCount + extra);
 			final var expanded = new Object[capacity];
@@ -223,15 +214,11 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	}
 
 	public void removeExcessCapacity() {
-		if (itemCount == items.length) {
-			return;
+		if (itemCount < items.length) {
+			final var items = new Object[itemCount];
+			arraycopy(this.items, 0, items, 0, itemCount);
+			this.items = items;
 		}
-
-		final var newCapacity = itemCount;
-		final var newStorage = (T[]) new Object[newCapacity];
-		arraycopy(items, 0, newStorage, 0, itemCount);
-
-		items = newStorage;
 	}
 
 	private void shiftItems(int index, int positions) {
@@ -255,48 +242,6 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 				fill(items, itemCount + positions, itemCount, null);
 			}
 		}
-	}
-
-	void moveItems(int startIndex, int positions) {
-		final var newItemCount = itemCount + positions;
-
-		if (newItemCount > items.length) {
-			final var newCapacity = 2 * newItemCount + 1;
-			final var newStorage = (T[]) new Object[newCapacity];
-
-			arraycopy(items, 0, newStorage, 0, startIndex);
-			arraycopy(items, startIndex, newStorage,
-				startIndex + positions, itemCount - startIndex);
-
-			items = newStorage;
-		} else {
-			arraycopy(items, startIndex, items,
-				startIndex + positions, itemCount - startIndex);
-		}
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return iterator(0);
-	}
-
-	public Iterator<T> iterator(int startIndex) {
-		return new Iterator<T>() {
-			private int index = startIndex;
-
-			@Override
-			public boolean hasNext() {
-				return index < itemCount;
-			}
-
-			@Override
-			public T next() {
-				final var nextItem = items[index];
-				index += 1;
-
-				return (T) nextItem;
-			}
-		};
 	}
 
 	@Override

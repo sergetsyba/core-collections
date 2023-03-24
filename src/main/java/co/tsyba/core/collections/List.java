@@ -11,10 +11,10 @@ import java.util.function.Predicate;
  * access to its items.
  */
 public class List<T> implements IndexedCollection<T> {
-	ContiguousArrayStore<T> store;
+	ContiguousArrayStore store;
 
 	List(int capacity) {
-		this.store = new ContiguousArrayStore<>(capacity);
+		this.store = new ContiguousArrayStore(capacity);
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@SafeVarargs
 	public List(T... items) {
-		final var store = new ContiguousArrayStore<T>(items.length);
+		final var store = new ContiguousArrayStore(items.length);
 		for (var item : items) {
 			if (item != null) {
 				store.append(item);
@@ -40,7 +40,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	public List(Collection<T> items) {
 		final var array = items.toArray();
-		this.store = new ContiguousArrayStore<>(array);
+		this.store = new ContiguousArrayStore(array);
 	}
 
 	@Override

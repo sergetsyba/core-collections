@@ -282,8 +282,8 @@ public class MutableList<T> extends List<T> {
 	 * @throws IndexRangeNotInRangeException when the specified index range is out of
 	 * valid index range of this list
 	 */
-	public MutableList<T> remove(IndexRange indexRange) {
-		store.remove(indexRange);
+	public MutableList<T> remove(IndexRange range) {
+		store.remove(range);
 		return this;
 	}
 
@@ -293,7 +293,7 @@ public class MutableList<T> extends List<T> {
 	 * @return itself
 	 */
 	public MutableList<T> clear() {
-		store = new ContiguousArrayStore<>(minimumCapacity);
+		store = new ContiguousArrayStore(minimumCapacity);
 		return this;
 	}
 
