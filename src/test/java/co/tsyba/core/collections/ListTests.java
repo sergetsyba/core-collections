@@ -514,6 +514,92 @@ public class ListTests {
 	}
 
 	@Nested
+	@DisplayName(".matchFirst(Predicate<T>)")
+	class MatchFirstTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<Integer> items = new List<>(5, 6, 4, 3, 4, 5);
+
+			@Test
+			@DisplayName("when item matches, returns item")
+			void returnsItemWhenItemMatches() {
+				final var matched = items.matchFirst((item) ->
+					item == 4);
+
+				assertEquals(matched, 4);
+			}
+
+			@Test
+			@DisplayName("when no item matches, returns empty optional")
+			void returnsEmptyOptionalWhenNoItemMatches() {
+				final var matched = items.matchFirst((item) ->
+					item == 2);
+
+				assertEmpty(matched);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<Integer> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var matched = items.matchFirst((item) ->
+					item == 4);
+
+				assertEmpty(matched);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".matchLast(Predicate<T>)")
+	class MatchLastTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<Integer> items = new List<>(5, 6, 4, 3, 4, 5);
+
+			@Test
+			@DisplayName("when item matches, returns item")
+			void returnsItemWhenItemMatches() {
+				final var matched = items.matchLast((item) ->
+					item == 5);
+
+				assertEquals(matched, 5);
+			}
+
+			@Test
+			@DisplayName("when no item matches, returns empty optional")
+			void returnsEmptyOptionalWhenNoItemMatches() {
+				final var matched = items.matchLast((item) ->
+					item == 9);
+
+				assertEmpty(matched);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<Integer> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var matched = items.matchLast((item) ->
+					item == 5);
+
+				assertEmpty(matched);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".findFirst(T)")
 	class FindFirstTests {
 		private final List<Integer> items = new List<>(9, 3, 7, 8, 5, 8, 2, 8);

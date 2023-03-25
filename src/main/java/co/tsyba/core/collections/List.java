@@ -169,6 +169,42 @@ public class List<T> implements Collection<T> {
 	}
 
 	/**
+	 * Returns the first item in this list, which matches the specified {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<T> matchFirst(Predicate<T> condition) {
+		for (var index = 0; index < store.itemCount; ++index) {
+			@SuppressWarnings("unchecked")
+			final var item = (T) store.items[index];
+			if (condition.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns the last item in this list, which matches the specified {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<T> matchLast(Predicate<T> condition) {
+		for (var index = store.itemCount - 1; index >= 0; --index) {
+			@SuppressWarnings("unchecked")
+			final var item = (T) store.items[index];
+			if (condition.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
 	 * Returns index of the first occurrence of the specified item in this list.
 	 * <p>
 	 * When the specified item does not occur in this list, returns an empty
