@@ -10,7 +10,7 @@ import java.util.function.Predicate;
  * An immutable, sequential {@link Collection}, which provides efficient, randomized
  * access to its items.
  */
-public class List<T> implements IndexedCollection<T> {
+public class List<T> implements Collection<T> {
 	ContiguousArrayStore store;
 
 	List(int capacity) {
@@ -47,12 +47,67 @@ public class List<T> implements IndexedCollection<T> {
 		this.store = new ContiguousArrayStore(array);
 	}
 
+	/**
+	 * Returns valid index range of this list.
+	 */
+	public IndexRange getIndexRange() {
+		return new IndexRange(0, store.itemCount);
+	}
+
+	/**
+	 * Returns an {@link Optional} with the specified index when it is within the valid
+	 * index range of this list; returns an empty {@link Optional} otherwise.
+	 * <p>
+	 * This method safeguards any index-based operations on this list. It may serve as an
+	 * alternative to explicitly checking whether an index is within the valid index
+	 * range.
+	 * <p>
+	 * For instance, to safely get an item at an index
+	 * <pre>{@code
+	 * 	final var items = new List<String>("a", "b", "c");
+	 * 	final var c = items.guard(2)
+	 * 		.map(items::get);
+	 * }</pre>
+	 */
+	public Optional<Integer> guard(int index) {
+		final var range = getIndexRange();
+
+		return range.contains(index)
+			? Optional.of(index)
+			: Optional.empty();
+	}
+
 	@Override
 	public int getCount() {
 		return store.itemCount;
 	}
 
-	@Override
+	/**
+	 * Returns the first item in this list.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
+	 */
+	public Optional<T> getFirst() {
+		return guard(0)
+			.map(this::get);
+	}
+
+	/**
+	 * Returns the last item in this list.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
+	 */
+	public Optional<T> getLast() {
+		return guard(store.itemCount - 1)
+			.map(this::get);
+	}
+
+	/**
+	 * Returns item at the specified index in this list.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out valid index range
+	 * of this list
+	 */
 	public T get(int index) {
 		final var range = getIndexRange();
 		if (!range.contains(index)) {
@@ -64,10 +119,47 @@ public class List<T> implements IndexedCollection<T> {
 		return item;
 	}
 
-	@Override
+	/**
+	 * Returns items from the first up to the one at the specified index in this list.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
+	 */
+	public List<T> getPrefix(int index) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
+		final var prefixRange = new IndexRange(0, index);
+		return get(prefixRange);
+	}
+
+	/**
+	 * Returns items from the one at the specified index up to the last in this list.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
+	 */
+	public List<T> getSuffix(int index) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
+		final var prefixRange = new IndexRange(index, validRange.end);
+		return get(prefixRange);
+	}
+
+	/**
+	 * Returns items at the specified index range in this list.
+	 *
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of the
+	 * valid index range of this list
+	 */
 	public List<T> get(IndexRange indexRange) {
 		final var validRange = getIndexRange();
-		if (!validRange.contains(indexRange) || isEmpty()) {
+		if (!validRange.contains(indexRange)) {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
@@ -76,9 +168,30 @@ public class List<T> implements IndexedCollection<T> {
 		return items;
 	}
 
-	@Override
-	public Optional<Integer> find(IndexedCollection<T> items) {
+	/**
+	 * Returns index of the first occurrence of the specified item in this list.
+	 * <p>
+	 * When the specified item does not occur in this list, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findFirst(T item) {
+		for (var index = 0; index < store.itemCount; ++index) {
+			if (store.items[index].equals(item)) {
+				return Optional.of(index);
+			}
+		}
+
 		return Optional.empty();
+	}
+
+	/**
+	 * Returns index of the first occurrence of the specified items in this list.
+	 * <p>
+	 * Returns an empty {@link Optional} when the specified items do not occur in this
+	 * lis.
+	 */
+	public Optional<Integer> find(List<T> items) {
+		throw new UnsupportedOperationException();
 	}
 
 	private static <T> boolean contains(T[] items, int count, T item) {
@@ -109,7 +222,9 @@ public class List<T> implements IndexedCollection<T> {
 		return new List<>(distinct);
 	}
 
-	@Override
+	/**
+	 * Returns items of this list in reverse order.
+	 */
 	public List<T> reverse() {
 		final var reversed = store.reverse();
 		return new List<>(reversed);
@@ -121,7 +236,9 @@ public class List<T> implements IndexedCollection<T> {
 		return new List<>(sorted);
 	}
 
-	@Override
+	/**
+	 * Returns items of this list in random order.
+	 */
 	public List<T> shuffle() {
 		final var time = System.currentTimeMillis();
 		final var random = new Random(time);
@@ -132,12 +249,22 @@ public class List<T> implements IndexedCollection<T> {
 
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
-		return (List<T>) IndexedCollection.super.iterate(operation);
+		return (List<T>) Collection.super.iterate(operation);
 	}
 
-	@Override
+	/**
+	 * Applies the specified {@link BiConsumer} to every item and its index in this list.
+	 *
+	 * @return itself.
+	 */
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
-		return (List<T>) IndexedCollection.super.enumerate(operation);
+		var index = 0;
+		for (var item : this) {
+			operation.accept(item, index);
+			++index;
+		}
+
+		return this;
 	}
 
 	@Override
@@ -203,7 +330,9 @@ public class List<T> implements IndexedCollection<T> {
 		};
 	}
 
-	@Override
+	/**
+	 * Returns iterator over items of this collection in reverse order.
+	 */
 	public Iterator<T> reverseIterator() {
 		return new Iterator<>() {
 			private int index = store.itemCount - 1;

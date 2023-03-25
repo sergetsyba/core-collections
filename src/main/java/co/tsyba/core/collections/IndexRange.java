@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 /**
- * A semi-open, contiguous range of indexes in an {@link IndexedCollection}.
+ * A semi-open, contiguous range of indexes in a {@link List}.
  */
 public class IndexRange implements Iterable<Integer> {
 	/**
