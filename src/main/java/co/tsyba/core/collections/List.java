@@ -185,6 +185,22 @@ public class List<T> implements Collection<T> {
 	}
 
 	/**
+	 * Returns index of the last occurrence of the specified item in this list.
+	 * <p>
+	 * When the specified item does not occur in this list, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findLast(T item) {
+		for (var index = store.itemCount - 1; index >= 0; --index) {
+			if (store.items[index].equals(item)) {
+				return Optional.of(index);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
 	 * Returns index of the first occurrence of the specified items in this list.
 	 * <p>
 	 * Returns an empty {@link Optional} when the specified items do not occur in this

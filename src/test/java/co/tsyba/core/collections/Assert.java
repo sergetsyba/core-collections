@@ -1,6 +1,7 @@
 package co.tsyba.core.collections;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 final class Assert {
 	private Assert() {
@@ -50,6 +51,32 @@ final class Assert {
 					"\n\tactual: %d",
 				expected,
 				actual.store.items.length);
+	}
+
+	static <T> void assertEquals(Optional<T> actual, T expected) {
+		assert actual.isPresent() :
+			String.format("Optional value differs." +
+					"\n\texpected: %s" +
+					"\n\tactual:   %s",
+				expected, "<empty>");
+
+		final var actual2 = actual.get();
+		assert actual2.equals(expected) :
+			String.format("Optional value differs." +
+					"\n\texpected: %s" +
+					"\n\tactual:   %s",
+				expected, actual2);
+	}
+
+	static <T> void assertEmpty(Optional<T> actual) {
+		if (actual.isPresent()) {
+			final var actual2 = actual.get();
+			assert false :
+				String.format("Optional is not empty." +
+						"\n\texpected: %s" +
+						"\n\tactual:   %s",
+					"<empty>", actual2);
+		}
 	}
 
 	static <T> void assertEquals(List<T> actual, T[] expected) {

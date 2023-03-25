@@ -247,8 +247,8 @@ public class ListTests {
 			}
 
 			@Test
-			@DisplayName("when index is 0, returns empty collection")
-			void returnsEmptyCollectionWhenIndexZero() {
+			@DisplayName("when index is 0, returns empty list")
+			void returnsEmptyListWhenIndexZero() {
 				final var prefix = items.getPrefix(0);
 
 				assertEquals(prefix,
@@ -525,28 +525,64 @@ public class ListTests {
 			@DisplayName("when item is present, returns item index")
 			void returnsIndexWhenItemPresent() {
 				final var index = items.findFirst(8);
-				assert Optional.of(3)
-					.equals(index);
+				assertEquals(index, 3);
 			}
 
 			@Test
 			@DisplayName("when item is absent, returns empty optional")
 			void returnsEmptyOptionalWhenItemAbsent() {
 				final var index = items.findFirst(0);
-				assert index.isEmpty();
+				assertEmpty(index);
 			}
 		}
 
 		@Nested
 		@DisplayName("when list is empty")
-		class EmptyCollectionTests {
+		class EmptyListTests {
 			private final List<Integer> items = new List<>();
 
 			@Test
 			@DisplayName("returns empty optional")
 			void returnsEmptyOptional() {
 				final var index = items.findFirst(6);
-				assert index.isEmpty();
+				assertEmpty(index);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".findLast(T)")
+	class FindLastTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items = new List<>("b", "e", "Q", "e", "f", "2");
+
+			@Test
+			@DisplayName("when item is present, returns item index")
+			void returnsItemIndexWhenItemPresent() {
+				final var index = items.findLast("e");
+				assertEquals(index, 3);
+			}
+
+			@Test
+			@DisplayName("when item is absent, returns empty optional")
+			void returnsEmptyOptionalWhenItemAbsent() {
+				final var index = items.findLast("F");
+				assertEmpty(index);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var index = items.findLast("e");
+				assertEmpty(index);
 			}
 		}
 	}
@@ -597,7 +633,7 @@ public class ListTests {
 		}
 
 		@Test
-		@DisplayName("when collection is empty, does nothing")
+		@DisplayName("when list is empty, does nothing")
 		void doesNothingWhenListEmpty() {
 			final var items = new List<String>();
 			final var enumerated = new String[3];
