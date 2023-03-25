@@ -54,6 +54,29 @@ public class List<T> implements IndexedCollection<T> {
 		return new IndexRange(0, store.itemCount);
 	}
 
+	/**
+	 * Returns an {@link Optional} with the specified index when it is within the valid
+	 * index range of this list; returns an empty {@link Optional} otherwise.
+	 * <p>
+	 * This method safeguards any index-based operations on this list. It may serve as an
+	 * alternative to explicitly checking whether an index is within the valid index
+	 * range.
+	 * <p>
+	 * For instance, to safely get an item at an index
+	 * <pre>{@code
+	 * 	final var items = new List<String>("a", "b", "c");
+	 * 	final var c = items.guard(2)
+	 * 		.map(items::get);
+	 * }</pre>
+	 */
+	public Optional<Integer> guard(int index) {
+		final var range = getIndexRange();
+
+		return range.contains(index)
+			? Optional.of(index)
+			: Optional.empty();
+	}
+
 	@Override
 	public int getCount() {
 		return store.itemCount;

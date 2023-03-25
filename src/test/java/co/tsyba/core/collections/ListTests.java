@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static co.tsyba.core.collections.Assert.*;
 
@@ -94,8 +95,8 @@ public class ListTests {
 	@DisplayName(".getIndexRange()")
 	class GetIndexRangeTests {
 		@Test
-		@DisplayName("when list is not empty, returns index range")
-		void returnsIndexRangeWhenListNotEmpty() {
+		@DisplayName("when list is not empty, returns valid index range")
+		void returnsValidRangeWhenListNotEmpty() {
 			final var items = new List<>(6, 3, 2, 1, 3, 0);
 			final var range = items.getIndexRange();
 
@@ -105,12 +106,58 @@ public class ListTests {
 
 		@Test
 		@DisplayName("when list is empty, returns empty index range")
-		void returnsEmptyIndexRangeWhenListEmpty() {
+		void returnsEmptyRangeWhenListEmpty() {
 			final var items = new List<>();
 			final var range = items.getIndexRange();
 
 			assert new IndexRange()
 				.equals(range);
+		}
+	}
+
+	@Nested
+	@DisplayName(".guard(int)")
+	class GuardTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items = new List<>("e", "4", "6", "7");
+
+			@Test
+			@DisplayName("when index is within valid range, returns index")
+			void returnsIndexWhenIndexWithinValidRange() {
+				final var index = items.guard(2);
+
+				assert Optional.of(2)
+					.equals(index);
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, returns empty optional")
+			void returnsEmptyOptionalWhenIndexBeforeValidRange() {
+				final var index = items.guard(-3);
+				assert index.isEmpty();
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, returns empty optional")
+			void returnsEmptyOptionalWhenIndexAfterValidRange() {
+				final var index = items.guard(7);
+				assert index.isEmpty();
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var index = items.guard(0);
+				assert index.isEmpty();
+			}
 		}
 	}
 
