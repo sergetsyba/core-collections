@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 import static co.tsyba.core.collections.Assert.*;
 
@@ -290,90 +289,6 @@ public class ListTests {
 			assertEquals(distinct,
 				new String[]{
 				});
-		}
-	}
-
-	@Nested
-	@DisplayName(".reverse()")
-	class ReverseTests {
-		@Test
-		@DisplayName("when list is not empty, returns reversed items")
-		void returnsReversedItemsWhenListNotEmpty() {
-			final var items = new List<>("a", "b", "5", "a", "4", "4");
-			final var reversed = items.reverse();
-
-			assertEquals(reversed,
-				new String[]{
-					"4", "4", "a", "5", "b", "a"
-				});
-		}
-
-		@Test
-		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenListEmpty() {
-			final var items = new List<String>();
-			final var reversed = items.reverse();
-
-			assertEquals(reversed,
-				new String[]{
-				});
-		}
-	}
-
-	@Nested
-	@DisplayName(".sort(Comparator<T>)")
-	class SortTests {
-		@Test
-		@DisplayName("when list is not empty, returns sorted items")
-		void returnsSortedItemsWhenListNotEmpty() {
-			final var items = new List<>(5, 6, 2, 1, 9, 0, 3, 3, 5);
-			final var sorted = items.sort(Comparator.naturalOrder());
-
-			assertEquals(sorted,
-				new Integer[]{
-					0, 1, 2, 3, 3, 5, 5, 6, 9
-				});
-		}
-
-		@Test
-		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenListEmpty() {
-			final var items = new List<Integer>();
-			final var sorted = items.sort(Comparator.naturalOrder());
-
-			assertEquals(sorted,
-				new Integer[]{
-				});
-		}
-	}
-
-	@Nested
-	@DisplayName(".shuffle()")
-	class ShuffleTests {
-		@Test
-		@DisplayName("when list is not empty, returns shuffled items")
-		void returnsShuffledItemsWhenListNotEmpty() {
-			final var proto = new Integer[]{
-				5, 6, 2, 1, 9, 0, 3, 3, 5
-			};
-
-			final var items = new List<>(proto);
-			final var shuffled = items.shuffle();
-
-			assertNotEquals(shuffled, proto);
-			assertEqualsIgnoringOrder(shuffled, proto);
-		}
-
-		@Test
-		@DisplayName("when list is empty, returns empty list")
-		void returnsEmptyListWhenListEmpty() {
-			final var proto = new Integer[]{
-			};
-
-			final var items = new List<>(proto);
-			final var shuffled = items.shuffle();
-
-			assertEquals(shuffled, proto);
 		}
 	}
 

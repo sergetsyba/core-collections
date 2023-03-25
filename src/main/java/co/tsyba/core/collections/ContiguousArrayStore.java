@@ -2,21 +2,40 @@ package co.tsyba.core.collections;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Random;
 
 import static java.lang.System.arraycopy;
+import static java.util.Arrays.fill;
 
-/*
- * Created by Serge Tsyba <tsyba@me.com> on Jan 28, 2019.
- */
-class ContiguousArrayStore<T> implements Iterable<T> {
+class ContiguousArrayStore {
 	Object[] items;
 	int itemCount;
 
+	static ContiguousArrayStore compact(Object[] items) {
+		final var store = new ContiguousArrayStore(items.length);
+		var count = 0;
+
+		for (var item : items) {
+			if (item != null) {
+				store.items[count] = item;
+				++count;
+			}
+		}
+
+		store.itemCount = count;
+		return store;
+	}
+
 	ContiguousArrayStore(Object[] items) {
+		var index = 0;
+		for (; index < items.length; ++index) {
+			if (items[index] == null) {
+				break;
+			}
+		}
+
 		this.items = items;
-		this.itemCount = items.length;
+		this.itemCount = index;
 	}
 
 	/**
@@ -33,269 +52,131 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 		this.itemCount = 0;
 	}
 
-	ContiguousArrayStore(ContiguousArrayStore<T> store) {
-		this.items = new Object[store.items.length];
-		this.itemCount = store.itemCount;
-		arraycopy(store.items, 0, this.items, 0, this.itemCount);
-	}
-
-	/**
-	 * Creates a copy of the specified index range in the specified array store.
-	 */
-	public ContiguousArrayStore(ContiguousArrayStore<T> items, IndexRange indexRange) {
-		this.itemCount = indexRange.end - indexRange.start + 1;
-		this.items = (T[]) new Object[itemCount];
-		arraycopy(items.items, indexRange.start, this.items, 0, itemCount);
-	}
-
-	private ContiguousArrayStore(T[] storage, int itemCount) {
-		this.items = storage;
+	private ContiguousArrayStore(Object[] items, int itemCount) {
+		this.items = items;
 		this.itemCount = itemCount;
 	}
 
 	/**
-	 * Returns {@code true} when this store contains an item at the specified index;
-	 * returns {@code false} otherwise.
+	 * Prepends the specified item to the beginning of this store.
 	 */
-	public boolean hasIndex(int index) {
-		return index >= 0
-			&& index < itemCount;
-	}
-
-	/**
-	 * Returns {@code true} when this store contains items at the specified index range;
-	 * returns {@code false} otherwise.
-	 */
-	public boolean hasIndexRange(IndexRange indexRange) {
-		return indexRange.start >= 0
-			&& indexRange.end <= itemCount;
-	}
-
-	/**
-	 * Returns item at the specified index in this store.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
-	 */
-	public T get(int index) {
-		if (itemCount == 0) {
-			throw new IndexNotInRangeException(
-				index, new IndexRange());
-		}
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-
-		return (T) items[index];
-	}
-
-	/**
-	 * Returns items at the specified index range in this store.
-	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this store
-	 */
-	public ContiguousArrayStore<T> get(IndexRange indexRange) {
-		if (itemCount == 0) {
-			throw new IndexRangeNotInRangeException(indexRange,
-				new IndexRange());
-		}
-		if (!hasIndexRange(indexRange)) {
-			throw new IndexRangeNotInRangeException(indexRange,
-				new IndexRange(0, itemCount));
-		}
-
-		final var items = (T[]) new Object[indexRange.length];
-		arraycopy(this.items, indexRange.start, items, 0, indexRange.length);
-
-		return new ContiguousArrayStore<>(items, indexRange.length);
-	}
-
-	/**
-	 * Replaces item at the specified index with the specified one. Does nothing when the
-	 * specified item is {@code null}.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
-	 */
-	public void set(int index, T item) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-		if (item == null) {
-			return;
-		}
-
-		items[index] = item;
-	}
-
-	public void prepend(T item) {
-		moveItems(0, 1);
+	void prepend(Object item) {
+		shiftItems(0, 1);
 
 		items[0] = item;
-		itemCount += 1;
+		++itemCount;
 	}
 
 	/**
-	 * Appends the specified item to the end of this store. Does nothing when the
-	 * specified item is {@code null}.
+	 * Prepends items from the specified store to the beginning of this store.
 	 */
-	public void append(T item) {
-		if (item == null) {
-			return;
-		}
+	void prepend(ContiguousArrayStore store) {
+		shiftItems(0, store.itemCount);
 
-		prepareCapacity(1);
+		arraycopy(store.items, 0, items, 0, store.itemCount);
+		itemCount += store.itemCount;
+	}
+
+	/**
+	 * Appends the specified item to the end of this store.
+	 */
+	void append(Object item) {
+		ensureExcessCapacity(1);
 
 		items[itemCount] = item;
-		itemCount += 1;
+		++itemCount;
 	}
 
 	/**
-	 * Appends items of the specified store to the end of this store.
+	 * Appends items from the specified store to the end of this store.
 	 */
-	public void append(ContiguousArrayStore<T> store) {
-		prepareCapacity(store.itemCount);
+	void append(ContiguousArrayStore store) {
+		ensureExcessCapacity(store.itemCount);
 
 		arraycopy(store.items, 0, items, itemCount, store.itemCount);
 		itemCount += store.itemCount;
 	}
 
 	/**
-	 * Appends the specified items to the end of this store. Ignores any {@code null}
-	 * values among the items.
+	 * Inserts the specified item into this store at the specified index.
+	 * <p>
+	 * Produces undefined result when the specified index is after the current item
+	 * count.
 	 */
-	public void append(T... items) {
-		prepareCapacity(items.length);
-
-		for (var item : items) {
-			if (item != null) {
-				this.items[itemCount] = item;
-				itemCount += 1;
-			}
-		}
-	}
-
-	/**
-	 * Inserts the specified item into this store at the specified index. Does nothing
-	 * when the specified item is {@code null}.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
-	 */
-	public void insert(int index, T item) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-		if (item == null) {
-			return;
-		}
-
-		// shift items at the insertion index one position to the right
-		// to make room for the inserted item
-		moveItems(index, 1);
+	void insert(int index, Object item) {
+		shiftItems(index, 1);
 
 		items[index] = item;
-		itemCount += 1;
+		++itemCount;
 	}
 
 	/**
-	 * Inserts items of the specified store into this store at the specified index.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
+	 * Inserts items from the specified store into this store at the specified index.
+	 * <p>
+	 * Produces undefined result when the specified index is after the current item
+	 * count.
 	 */
-	public void insert(int index, ContiguousArrayStore<T> store) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
-
-		// shift items at the insertion index to the right to make room
-		// for the inserted items
-		moveItems(index, store.itemCount);
+	void insert(int index, ContiguousArrayStore store) {
+		shiftItems(index, store.itemCount);
 
 		arraycopy(store.items, 0, items, index, store.itemCount);
 		itemCount += store.itemCount;
 	}
 
 	/**
-	 * Removes item at the specified index from this store.
-	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
-	 * range of this store
+	 * Replaces items at the specified index range in this store with the items from the
+	 * specified store.
 	 */
-	public void remove(int index) {
-		if (!hasIndex(index)) {
-			throw new IndexNotInRangeException(index,
-				new IndexRange(0, itemCount));
-		}
+	void replace(IndexRange range, ContiguousArrayStore store) {
+		shiftItems(range.end, store.itemCount - range.length);
 
-		// shift items after the removed index one position to the left
-		moveItems(index + 1, -1);
+		arraycopy(store.items, 0, items, range.start, store.itemCount);
+		itemCount += store.itemCount - range.length;
+	}
+
+	/**
+	 * Removes item at the specified index from this store.
+	 */
+	void remove(int index) {
+		shiftItems(index + 1, -1);
 		itemCount -= 1;
-
-		// clear the item after the shifted ones to make it eligible
-		// for garbage collection
-		items[itemCount] = null;
 	}
 
 	/**
 	 * Removes items at the specified index range from this store.
-	 *
-	 * @throws IndexRangeNotInRangeException when the specified index range is out of
-	 * valid index range of this store
 	 */
-	public void remove(IndexRange indexRange) {
-		if (!hasIndexRange(indexRange)) {
-			throw new IndexRangeNotInRangeException(indexRange,
-				new IndexRange(0, itemCount));
-		}
-
-		// shift items after the removed index range to the left
-		moveItems(indexRange.end, -indexRange.length);
+	void remove(IndexRange indexRange) {
+		shiftItems(indexRange.end, -indexRange.length);
 		itemCount -= indexRange.length;
-
-		// clear items after the shifted ones to make them eligible for
-		// garbage collection
-		final var endIndex = itemCount + indexRange.length;
-		for (var index = itemCount; index < endIndex; index += 1) {
-			items[index] = null;
-		}
 	}
 
 	/**
 	 * Returns items of this store in reverse order.
-	 *
-	 * @return
 	 */
-	public ContiguousArrayStore<T> reverse() {
-		final var reverseItems = (T[]) new Object[itemCount];
+	ContiguousArrayStore reverse() {
+		final var reversed = new Object[items.length];
 		for (var index = 0; index < itemCount; ++index) {
-			final var reverseIndex = itemCount - index - 1;
-			reverseItems[reverseIndex] = (T) items[index];
+			reversed[index] = items[itemCount - 1 - index];
 		}
 
-		return new ContiguousArrayStore<>(reverseItems, itemCount);
+		return new ContiguousArrayStore(reversed, itemCount);
 	}
 
 	/**
 	 * Returns items of this store, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	public ContiguousArrayStore<T> sort(Comparator<T> comparator) {
-		final var sortedItems = (T[]) new Object[itemCount];
-		arraycopy(items, 0, sortedItems, 0, itemCount);
+	@SuppressWarnings("unchecked")
+	<T> ContiguousArrayStore sort(Comparator<T> comparator) {
+		final var sorted = new Object[items.length];
+		arraycopy(items, 0, sorted, 0, itemCount);
 
-		Arrays.sort(sortedItems, 0, itemCount, comparator);
-		return new ContiguousArrayStore<>(sortedItems, itemCount);
+		Arrays.sort((T[]) sorted, 0, itemCount, comparator);
+		return new ContiguousArrayStore(sorted, itemCount);
 	}
 
 	/**
-	 * Returns items of this store in random order, according to the specified
+	 * Returns items of this store in random order, based on the specified
 	 * {@link Random}.
 	 *
 	 * <pre>
@@ -307,13 +188,10 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 	 * 2. D. Knuth. "The Art of Computer Programming" vol. 2.
 	 *    Addison–Wesley, 1969, pp. 139–140, algorithm P.
 	 * </pre>
-	 *
-	 * @param random
-	 * @return
 	 */
-	public ContiguousArrayStore<T> shuffle(Random random) {
-		final var shuffledItems = (T[]) new Object[itemCount];
-		arraycopy(items, 0, shuffledItems, 0, itemCount);
+	ContiguousArrayStore shuffle(Random random) {
+		final var shuffled = new Object[items.length];
+		arraycopy(items, 0, shuffled, 0, itemCount);
 
 		// it's more convenient to iterate items backwards for simpler
 		// random index generation
@@ -321,79 +199,53 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 			final var randomIndex = random.nextInt(index + 1);
 
 			// swap items at iterated and randomly generated indices
-			final var item = shuffledItems[index];
-			shuffledItems[index] = shuffledItems[randomIndex];
-			shuffledItems[randomIndex] = item;
+			final var item = shuffled[index];
+			shuffled[index] = shuffled[randomIndex];
+			shuffled[randomIndex] = item;
 		}
 
-		return new ContiguousArrayStore<>(shuffledItems, itemCount);
+		return new ContiguousArrayStore(shuffled, itemCount);
 	}
 
-	private void prepareCapacity(int extraItemCount) {
-		final var newItemCount = itemCount + extraItemCount;
-		if (newItemCount <= items.length) {
-			return;
+	void ensureExcessCapacity(int extra) {
+		if (itemCount + extra > items.length) {
+			final var capacity = 2 * (itemCount + extra);
+			final var expanded = new Object[capacity];
+			arraycopy(items, 0, expanded, 0, itemCount);
+
+			items = expanded;
 		}
-
-		final var newCapacity = 2 * newItemCount + 1;
-		final var newStorage = (T[]) new Object[newCapacity];
-		arraycopy(items, 0, newStorage, 0, itemCount);
-
-		items = newStorage;
 	}
 
-	public void removeExcessCapacity() {
-		if (itemCount == items.length) {
-			return;
+	void removeExcessCapacity() {
+		if (itemCount < items.length) {
+			final var items = new Object[itemCount];
+			arraycopy(this.items, 0, items, 0, itemCount);
+			this.items = items;
 		}
-
-		final var newCapacity = itemCount;
-		final var newStorage = (T[]) new Object[newCapacity];
-		arraycopy(items, 0, newStorage, 0, itemCount);
-
-		items = newStorage;
 	}
 
-	void moveItems(int startIndex, int positions) {
-		final var newItemCount = itemCount + positions;
+	private void shiftItems(int index, int positions) {
+		if (itemCount + positions > items.length) {
+			final var capacity = 2 * (itemCount + positions);
+			final var expanded = new Object[capacity];
 
-		if (newItemCount > items.length) {
-			final var newCapacity = 2 * newItemCount + 1;
-			final var newStorage = (T[]) new Object[newCapacity];
+			if (index > 0) {
+				arraycopy(items, 0, expanded, 0, index);
+			}
+			arraycopy(items, index, expanded, index + positions,
+				itemCount - index);
 
-			arraycopy(items, 0, newStorage, 0, startIndex);
-			arraycopy(items, startIndex, newStorage,
-				startIndex + positions, itemCount - startIndex);
-
-			items = newStorage;
+			items = expanded;
 		} else {
-			arraycopy(items, startIndex, items,
-				startIndex + positions, itemCount - startIndex);
+			arraycopy(items, index, items, index + positions,
+				itemCount - index);
+
+			if (positions < 0) {
+				// clear items after the shifted range
+				fill(items, itemCount + positions, itemCount, null);
+			}
 		}
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return iterator(0);
-	}
-
-	public Iterator<T> iterator(int startIndex) {
-		return new Iterator<T>() {
-			private int index = startIndex;
-
-			@Override
-			public boolean hasNext() {
-				return index < itemCount;
-			}
-
-			@Override
-			public T next() {
-				final var nextItem = items[index];
-				index += 1;
-
-				return (T) nextItem;
-			}
-		};
 	}
 
 	@Override
@@ -415,3 +267,5 @@ class ContiguousArrayStore<T> implements Iterable<T> {
 			store.items, 0, store.itemCount);
 	}
 }
+
+// created on Jan 28, 2019

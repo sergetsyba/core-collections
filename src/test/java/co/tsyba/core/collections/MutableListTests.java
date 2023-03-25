@@ -691,7 +691,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>("g", "E", "d", "A")
-						.set(-4, "r");
+						.insert(-4, "r");
 				}, expected);
 			}
 
@@ -703,7 +703,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>("g", "A")
-						.set(9, "r");
+						.insert(9, "r");
 				}, expected);
 			}
 		}
@@ -719,7 +719,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>()
-						.set(-3, "r");
+						.insert(-3, "r");
 				}, expected);
 			}
 
@@ -731,7 +731,7 @@ class MutableListTests {
 
 				assertThrows(() -> {
 					new MutableList<>()
-						.set(0, "s");
+						.insert(0, "s");
 				}, expected);
 			}
 		}
@@ -1422,13 +1422,14 @@ class MutableListTests {
 			@Test
 			@DisplayName("when index range coincides with valid range, fails")
 			void failsWhenIndexRangeCoincidesWithValidRange() {
-				final var items = new MutableList<String>();
-				final var returned = items.remove(
-					new IndexRange(0, 0));
+				final var range = new IndexRange(0, 0);
+				final var expected = new IndexRangeNotInRangeException(range,
+					new IndexRange());
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-				});
+				assertThrows(() -> {
+					new MutableList<>()
+						.remove(range);
+				}, expected);
 			}
 
 			@Test
@@ -1436,7 +1437,7 @@ class MutableListTests {
 			void failsWhenIndexRangeStartsAfterZero() {
 				final var range = new IndexRange(2, 2);
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -1449,7 +1450,7 @@ class MutableListTests {
 			void failsWhenIndexRangeNotEmpty() {
 				final var range = new IndexRange(0, 2);
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()

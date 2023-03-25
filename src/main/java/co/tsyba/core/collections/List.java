@@ -11,10 +11,14 @@ import java.util.function.Predicate;
  * access to its items.
  */
 public class List<T> implements IndexedCollection<T> {
-	ContiguousArrayStore<T> store;
+	ContiguousArrayStore store;
 
 	List(int capacity) {
-		this.store = new ContiguousArrayStore<>(capacity);
+		this.store = new ContiguousArrayStore(capacity);
+	}
+
+	List(ContiguousArrayStore store) {
+		this.store = store;
 	}
 
 	/**
@@ -24,7 +28,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	@SafeVarargs
 	public List(T... items) {
-		final var store = new ContiguousArrayStore<T>(items.length);
+		final var store = new ContiguousArrayStore(items.length);
 		for (var item : items) {
 			if (item != null) {
 				store.append(item);
@@ -40,7 +44,7 @@ public class List<T> implements IndexedCollection<T> {
 	 */
 	public List(Collection<T> items) {
 		final var array = items.toArray();
-		this.store = new ContiguousArrayStore<>(array);
+		this.store = new ContiguousArrayStore(array);
 	}
 
 	@Override
@@ -107,52 +111,21 @@ public class List<T> implements IndexedCollection<T> {
 
 	@Override
 	public List<T> reverse() {
-		@SuppressWarnings("unchecked")
-		final var reversed = (T[]) new Object[store.itemCount];
-		var index = store.itemCount - 1;
-
-		for (var item : this) {
-			reversed[index] = item;
-			--index;
-		}
-
+		final var reversed = store.reverse();
 		return new List<>(reversed);
 	}
 
 	@Override
 	public List<T> sort(Comparator<T> comparator) {
-		@SuppressWarnings("unchecked")
-		final var sorted = (T[]) Arrays.copyOf(store.items, store.itemCount);
-		Arrays.sort(sorted, 0, sorted.length, comparator);
-
+		final var sorted = store.sort(comparator);
 		return new List<>(sorted);
 	}
 
-	// Implements in-place version of Fisher-Yates shuffle algorithm.
-	//
-	// Sources:
-	//	1. R. Durstenfeld. "Algorithm 235: Random permutation".
-	//		Communications of the ACM, vol. 7, July 1964, p. 420.
-	//	2. D. Knuth. "The Art of Computer Programming" vol. 2.
-	//		Addison–Wesley, 1969, pp. 139–140, algorithm P.
 	@Override
 	public List<T> shuffle() {
-		@SuppressWarnings("unchecked")
-		final var shuffled = (T[]) Arrays.copyOf(store.items, store.itemCount);
-
 		final var time = System.currentTimeMillis();
 		final var random = new Random(time);
-
-		// it's more convenient to iterate items backwards for simpler random index
-		// generation
-		for (var index = store.itemCount - 1; index >= 0; --index) {
-			final var randomIndex = random.nextInt(index + 1);
-
-			// swap items at iterated and randomly generated indices
-			final var item = shuffled[index];
-			shuffled[index] = shuffled[randomIndex];
-			shuffled[randomIndex] = item;
-		}
+		final var shuffled = store.shuffle(random);
 
 		return new List<>(shuffled);
 	}

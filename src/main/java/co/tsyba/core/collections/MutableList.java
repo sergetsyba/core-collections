@@ -1,5 +1,10 @@
 package co.tsyba.core.collections;
 
+import java.util.Comparator;
+import java.util.Random;
+
+import static co.tsyba.core.collections.ContiguousArrayStore.compact;
+
 /**
  * A mutable, sequential {@link Collection}, which provides efficient, randomized access
  * to its items.
@@ -18,6 +23,10 @@ public class MutableList<T> extends List<T> {
 	 */
 	MutableList(int capacity) {
 		super(capacity);
+	}
+
+	MutableList(ContiguousArrayStore store) {
+		super(store);
 	}
 
 	/**
@@ -49,7 +58,12 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> set(int index, T item) {
-		store.set(index, item);
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
+		store.items[index] = item;
 		return this;
 	}
 
@@ -77,21 +91,8 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public final MutableList<T> prepend(T... items) {
-		var nullCount = 0;
-		for (var item : items) {
-			if (item == null) {
-				nullCount += 1;
-			}
-		}
-
-		store.moveItems(0, items.length - nullCount);
-
-		for (int index1 = 0, index2 = 0; index1 < items.length; index1 += 1) {
-			if (items[index1] != null) {
-				store.items[index2] = items[index1];
-				index2 += 1;
-			}
-		}
+		final var compacted = compact(items);
+		store.prepend(compacted);
 
 		return this;
 	}
@@ -102,15 +103,7 @@ public class MutableList<T> extends List<T> {
 	 * @return itself
 	 */
 	public MutableList<T> prepend(List<T> items) {
-		final var count = items.getCount();
-		store.moveItems(0, count);
-
-		var index = 0;
-		for (var item : items) {
-			store.items[index] = item;
-			index += 1;
-		}
-
+		store.prepend(items.store);
 		return this;
 	}
 
@@ -138,11 +131,8 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public final MutableList<T> append(T... items) {
-		for (var item : items) {
-			if (item != null) {
-				store.append(item);
-			}
-		}
+		final var compacted = compact(items);
+		store.append(compacted);
 
 		return this;
 	}
@@ -153,8 +143,7 @@ public class MutableList<T> extends List<T> {
 	 * @return itself
 	 */
 	public MutableList<T> append(List<T> items) {
-		// todo: copy array
-		items.forEach(this::append);
+		store.append(items.store);
 		return this;
 	}
 
@@ -168,7 +157,15 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> insert(int index, T item) {
-		store.insert(index, item);
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
+		if (item != null) {
+			store.insert(index, item);
+		}
+
 		return this;
 	}
 
@@ -183,14 +180,14 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public final MutableList<T> insert(int index, T... items) {
-		final var store2 = new ContiguousArrayStore<T>(items.length);
-		for (var item : items) {
-			if (item != null) {
-				store2.append(item);
-			}
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
 		}
 
-		store.insert(index, store2);
+		final var compacted = compact(items);
+		store.insert(index, compacted);
+
 		return this;
 	}
 
@@ -202,6 +199,11 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> insert(int index, List<T> items) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
 		store.insert(index, items.store);
 		return this;
 	}
@@ -218,23 +220,13 @@ public class MutableList<T> extends List<T> {
 	@SafeVarargs
 	public final MutableList<T> replace(IndexRange range, T... items) {
 		final var validRange = getIndexRange();
-		if (!validRange.contains(range) || isEmpty()) {
+		if (!validRange.contains(range)) {
 			throw new IndexRangeNotInRangeException(range, validRange);
 		}
 
-		final var store2 = new ContiguousArrayStore<T>(items.length);
-		for (var item : items) {
-			if (item != null) {
-				store2.append(item);
-			}
-		}
+		final var compacted = compact(items);
+		store.replace(range, compacted);
 
-		store.remove(range);
-		if (range.start == store.itemCount) {
-			store.append(store2);
-		} else {
-			store.insert(range.start, store2);
-		}
 		return this;
 	}
 
@@ -247,17 +239,11 @@ public class MutableList<T> extends List<T> {
 	 */
 	public final MutableList<T> replace(IndexRange range, List<T> items) {
 		final var validRange = getIndexRange();
-		if (!validRange.contains(range) || isEmpty()) {
+		if (!validRange.contains(range)) {
 			throw new IndexRangeNotInRangeException(range, validRange);
 		}
 
-		store.remove(range);
-		if (range.start == store.itemCount) {
-			store.append(items.store);
-		} else {
-			store.insert(range.start, items.store);
-		}
-
+		store.replace(range, items.store);
 		return this;
 	}
 
@@ -297,6 +283,11 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> remove(int index) {
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
 		store.remove(index);
 		return this;
 	}
@@ -308,8 +299,13 @@ public class MutableList<T> extends List<T> {
 	 * @throws IndexRangeNotInRangeException when the specified index range is out of
 	 * valid index range of this list
 	 */
-	public MutableList<T> remove(IndexRange indexRange) {
-		store.remove(indexRange);
+	public MutableList<T> remove(IndexRange range) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(range)) {
+			throw new IndexRangeNotInRangeException(range, validRange);
+		}
+
+		store.remove(range);
 		return this;
 	}
 
@@ -319,8 +315,29 @@ public class MutableList<T> extends List<T> {
 	 * @return itself
 	 */
 	public MutableList<T> clear() {
-		store = new ContiguousArrayStore<>(minimumCapacity);
+		store = new ContiguousArrayStore(minimumCapacity);
 		return this;
+	}
+
+	@Override
+	public List<T> reverse() {
+		final var reversed = store.reverse();
+		return new MutableList<>(reversed);
+	}
+
+	@Override
+	public List<T> sort(Comparator<T> comparator) {
+		final var sorted = store.sort(comparator);
+		return new MutableList<>(sorted);
+	}
+
+	@Override
+	public List<T> shuffle() {
+		final var seed = System.currentTimeMillis();
+		final var random = new Random(seed);
+		final var shuffled = store.shuffle(random);
+
+		return new MutableList<>(shuffled);
 	}
 
 	/**
