@@ -176,7 +176,7 @@ public class List<T> implements IndexedCollection<T> {
 
 	@Override
 	public Optional<Integer> find(IndexedCollection<T> items) {
-		return Optional.empty();
+		throw new UnsupportedOperationException();
 	}
 
 	private static <T> boolean contains(T[] items, int count, T item) {
@@ -235,7 +235,13 @@ public class List<T> implements IndexedCollection<T> {
 
 	@Override
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
-		return (List<T>) IndexedCollection.super.enumerate(operation);
+		var index = 0;
+		for (var item : this) {
+			operation.accept(item, index);
+			++index;
+		}
+
+		return this;
 	}
 
 	@Override

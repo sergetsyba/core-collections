@@ -579,6 +579,38 @@ public class ListTests {
 	}
 
 	@Nested
+	@DisplayName(".enumerate(BiConsumer<T, Integer>)")
+	class EnumerateTests {
+		@Test
+		@DisplayName("when list is not empty, enumerates items and their indexes")
+		void enumeratesItemsAndIndexesWhenListNotEmpty() {
+			final var items = new List<>(6, 3, 2, 1, 8);
+			final var enumerated = new int[5];
+			items.enumerate((item, index) ->
+				enumerated[index] = item);
+
+			assert Arrays.equals(enumerated,
+				new int[]{
+					6, 3, 2, 1, 8
+				});
+		}
+
+		@Test
+		@DisplayName("when collection is empty, does nothing")
+		void doesNothingWhenListEmpty() {
+			final var items = new List<String>();
+			final var enumerated = new String[3];
+			items.enumerate((item, index) ->
+				enumerated[index] = item);
+
+			assert Arrays.equals(enumerated,
+				new String[]{
+					null, null, null
+				});
+		}
+	}
+
+	@Nested
 	@DisplayName(".filter(Predicate<T>)")
 	class FilterTests {
 		@Test
