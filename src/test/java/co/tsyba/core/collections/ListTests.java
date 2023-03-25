@@ -586,9 +586,10 @@ public class ListTests {
 		void enumeratesItemsAndIndexesWhenListNotEmpty() {
 			final var items = new List<>(6, 3, 2, 1, 8);
 			final var enumerated = new int[5];
-			items.enumerate((item, index) ->
+			final var returned = items.enumerate((item, index) ->
 				enumerated[index] = item);
 
+			assert returned == items;
 			assert Arrays.equals(enumerated,
 				new int[]{
 					6, 3, 2, 1, 8
@@ -600,9 +601,10 @@ public class ListTests {
 		void doesNothingWhenListEmpty() {
 			final var items = new List<String>();
 			final var enumerated = new String[3];
-			items.enumerate((item, index) ->
+			final var returned = items.enumerate((item, index) ->
 				enumerated[index] = item);
 
+			assert returned == items;
 			assert Arrays.equals(enumerated,
 				new String[]{
 					null, null, null

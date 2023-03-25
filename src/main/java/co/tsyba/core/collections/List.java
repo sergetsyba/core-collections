@@ -10,7 +10,7 @@ import java.util.function.Predicate;
  * An immutable, sequential {@link Collection}, which provides efficient, randomized
  * access to its items.
  */
-public class List<T> implements IndexedCollection<T> {
+public class List<T> implements Collection<T> {
 	ContiguousArrayStore store;
 
 	List(int capacity) {
@@ -190,7 +190,7 @@ public class List<T> implements IndexedCollection<T> {
 	 * Returns an empty {@link Optional} when the specified items do not occur in this
 	 * lis.
 	 */
-	public Optional<Integer> find(IndexedCollection<T> items) {
+	public Optional<Integer> find(List<T> items) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -249,7 +249,7 @@ public class List<T> implements IndexedCollection<T> {
 
 	@Override
 	public List<T> iterate(Consumer<T> operation) {
-		return (List<T>) IndexedCollection.super.iterate(operation);
+		return (List<T>) Collection.super.iterate(operation);
 	}
 
 	/**
