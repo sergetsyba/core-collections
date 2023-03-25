@@ -102,7 +102,12 @@ public class List<T> implements IndexedCollection<T> {
 			.map(this::get);
 	}
 
-	@Override
+	/**
+	 * Returns item at the specified index in this list.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out valid index range
+	 * of this list
+	 */
 	public T get(int index) {
 		final var range = getIndexRange();
 		if (!range.contains(index)) {
@@ -146,10 +151,15 @@ public class List<T> implements IndexedCollection<T> {
 		return get(prefixRange);
 	}
 
-	@Override
+	/**
+	 * Returns items at the specified index range in this list.
+	 *
+	 * @throws IndexRangeNotInRangeException when the specified index range is out of the
+	 * valid index range of this list
+	 */
 	public List<T> get(IndexRange indexRange) {
 		final var validRange = getIndexRange();
-		if (!validRange.contains(indexRange) || isEmpty()) {
+		if (!validRange.contains(indexRange)) {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
@@ -174,7 +184,12 @@ public class List<T> implements IndexedCollection<T> {
 		return Optional.empty();
 	}
 
-	@Override
+	/**
+	 * Returns index of the first occurrence of the specified items in this list.
+	 * <p>
+	 * Returns an empty {@link Optional} when the specified items do not occur in this
+	 * lis.
+	 */
 	public Optional<Integer> find(IndexedCollection<T> items) {
 		throw new UnsupportedOperationException();
 	}
@@ -207,7 +222,9 @@ public class List<T> implements IndexedCollection<T> {
 		return new List<>(distinct);
 	}
 
-	@Override
+	/**
+	 * Returns items of this list in reverse order.
+	 */
 	public List<T> reverse() {
 		final var reversed = store.reverse();
 		return new List<>(reversed);
@@ -219,7 +236,9 @@ public class List<T> implements IndexedCollection<T> {
 		return new List<>(sorted);
 	}
 
-	@Override
+	/**
+	 * Returns items of this list in random order.
+	 */
 	public List<T> shuffle() {
 		final var time = System.currentTimeMillis();
 		final var random = new Random(time);
@@ -233,7 +252,11 @@ public class List<T> implements IndexedCollection<T> {
 		return (List<T>) IndexedCollection.super.iterate(operation);
 	}
 
-	@Override
+	/**
+	 * Applies the specified {@link BiConsumer} to every item and its index in this list.
+	 *
+	 * @return itself.
+	 */
 	public List<T> enumerate(BiConsumer<T, Integer> operation) {
 		var index = 0;
 		for (var item : this) {
@@ -307,7 +330,9 @@ public class List<T> implements IndexedCollection<T> {
 		};
 	}
 
-	@Override
+	/**
+	 * Returns iterator over items of this collection in reverse order.
+	 */
 	public Iterator<T> reverseIterator() {
 		return new Iterator<>() {
 			private int index = store.itemCount - 1;
