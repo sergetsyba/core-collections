@@ -228,6 +228,136 @@ public class ListTests {
 	}
 
 	@Nested
+	@DisplayName(".getPrefix(int)")
+	class GetPrefixTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items = new List<>("B", "d", "R", "f", "a", "Q");
+
+			@Test
+			@DisplayName("when index is in valid range, returns prefix")
+			void returnsPrefixWhenIndexInValidRange() {
+				final var prefix = items.getPrefix(4);
+
+				assertEquals(prefix,
+					new String[]{
+						"B", "d", "R", "f"
+					});
+			}
+
+			@Test
+			@DisplayName("when index is 0, returns empty collection")
+			void returnsEmptyCollectionWhenIndexZero() {
+				final var prefix = items.getPrefix(0);
+
+				assertEquals(prefix,
+					new String[]{
+					});
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-1,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					items.getPrefix(-1);
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(9,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					items.getPrefix(9);
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items = new List<>();
+
+			@Test
+			@DisplayName("fails")
+			void fails() {
+				final var expected = new IndexNotInRangeException(0,
+					new IndexRange());
+
+				assertThrows(() -> {
+					items.getPrefix(0);
+				}, expected);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".getSuffix(int)")
+	class GetSuffixTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items = new List<>("B", "d", "R", "f", "a", "Q");
+
+			@Test
+			@DisplayName("when index is in valid range, returns suffix")
+			void returnsPrefixWhenIndexInRange() {
+				final var suffix = items.getSuffix(3);
+
+				assertEquals(suffix,
+					new String[]{
+						"f", "a", "Q"
+					});
+			}
+
+			@Test
+			@DisplayName("when index is before valid range, fails")
+			void failsWhenIndexBeforeValidRange() {
+				final var expected = new IndexNotInRangeException(-1,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					items.getSuffix(-1);
+				}, expected);
+			}
+
+			@Test
+			@DisplayName("when index is after valid range, fails")
+			void failsWhenIndexAfterValidRange() {
+				final var expected = new IndexNotInRangeException(6,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					items.getSuffix(6);
+				}, expected);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items = new List<>();
+
+			@Test
+			@DisplayName("fails")
+			void fails() {
+				final var expected = new IndexNotInRangeException(0,
+					new IndexRange());
+
+				assertThrows(() -> {
+					items.getSuffix(0);
+				}, expected);
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".get(int)")
 	class GetAtIndexTests {
 		@Nested

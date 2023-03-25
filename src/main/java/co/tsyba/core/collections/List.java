@@ -114,6 +114,38 @@ public class List<T> implements IndexedCollection<T> {
 		return item;
 	}
 
+	/**
+	 * Returns items from the first up to the one at the specified index in this list.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
+	 */
+	public List<T> getPrefix(int index) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
+		final var prefixRange = new IndexRange(0, index);
+		return get(prefixRange);
+	}
+
+	/**
+	 * Returns items from the one at the specified index up to the last in this list.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * range of this list
+	 */
+	public List<T> getSuffix(int index) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(index)) {
+			throw new IndexNotInRangeException(index, validRange);
+		}
+
+		final var prefixRange = new IndexRange(index, validRange.end);
+		return get(prefixRange);
+	}
+
 	@Override
 	public List<T> get(IndexRange indexRange) {
 		final var validRange = getIndexRange();
