@@ -58,6 +58,11 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> set(int index, T item) {
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
 		store.items[index] = item;
 		return this;
 	}
@@ -278,6 +283,11 @@ public class MutableList<T> extends List<T> {
 	 * range of this list
 	 */
 	public MutableList<T> remove(int index) {
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
 		store.remove(index);
 		return this;
 	}
@@ -290,6 +300,11 @@ public class MutableList<T> extends List<T> {
 	 * valid index range of this list
 	 */
 	public MutableList<T> remove(IndexRange range) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(range)) {
+			throw new IndexRangeNotInRangeException(range, validRange);
+		}
+
 		store.remove(range);
 		return this;
 	}
