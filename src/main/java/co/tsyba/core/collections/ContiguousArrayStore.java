@@ -137,7 +137,7 @@ class ContiguousArrayStore {
 	/**
 	 * Removes item at the specified index from this store.
 	 */
-	public void remove(int index) {
+	void remove(int index) {
 		shiftItems(index + 1, -1);
 		itemCount -= 1;
 	}
@@ -207,7 +207,7 @@ class ContiguousArrayStore {
 		return new ContiguousArrayStore(shuffled, itemCount);
 	}
 
-	private void ensureExcessCapacity(int extra) {
+	void ensureExcessCapacity(int extra) {
 		if (itemCount + extra > items.length) {
 			final var capacity = 2 * (itemCount + extra);
 			final var expanded = new Object[capacity];
@@ -217,7 +217,7 @@ class ContiguousArrayStore {
 		}
 	}
 
-	public void removeExcessCapacity() {
+	void removeExcessCapacity() {
 		if (itemCount < items.length) {
 			final var items = new Object[itemCount];
 			arraycopy(this.items, 0, items, 0, itemCount);
