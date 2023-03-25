@@ -47,6 +47,13 @@ public class List<T> implements IndexedCollection<T> {
 		this.store = new ContiguousArrayStore(array);
 	}
 
+	/**
+	 * Returns valid index range of this list.
+	 */
+	public IndexRange getIndexRange() {
+		return new IndexRange(0, store.itemCount);
+	}
+
 	@Override
 	public int getCount() {
 		return store.itemCount;

@@ -90,6 +90,29 @@ public class ListTests {
 		}
 	}
 
+	@Nested
+	@DisplayName(".getIndexRange()")
+	class GetIndexRangeTests {
+		@Test
+		@DisplayName("when list is not empty, returns index range")
+		void returnsIndexRangeWhenListNotEmpty() {
+			final var items = new List<>(6, 3, 2, 1, 3, 0);
+			final var range = items.getIndexRange();
+
+			assert new IndexRange(0, 6)
+				.equals(range);
+		}
+
+		@Test
+		@DisplayName("when list is empty, returns empty index range")
+		void returnsEmptyIndexRangeWhenListEmpty() {
+			final var items = new List<>();
+			final var range = items.getIndexRange();
+
+			assert new IndexRange()
+				.equals(range);
+		}
+	}
 
 	@Nested
 	@DisplayName(".getCount()")
