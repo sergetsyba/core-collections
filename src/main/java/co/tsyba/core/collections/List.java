@@ -158,6 +158,22 @@ public class List<T> implements IndexedCollection<T> {
 		return items;
 	}
 
+	/**
+	 * Returns index of the first occurrence of the specified item in this list.
+	 * <p>
+	 * When the specified item does not occur in this list, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findFirst(T item) {
+		for (var index = 0; index < store.itemCount; ++index) {
+			if (store.items[index].equals(item)) {
+				return Optional.of(index);
+			}
+		}
+
+		return Optional.empty();
+	}
+
 	@Override
 	public Optional<Integer> find(IndexedCollection<T> items) {
 		return Optional.empty();

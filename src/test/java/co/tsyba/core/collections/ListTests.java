@@ -514,6 +514,44 @@ public class ListTests {
 	}
 
 	@Nested
+	@DisplayName(".findFirst(T)")
+	class FindFirstTests {
+		private final List<Integer> items = new List<>(9, 3, 7, 8, 5, 8, 2, 8);
+
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			@Test
+			@DisplayName("when item is present, returns item index")
+			void returnsIndexWhenItemPresent() {
+				final var index = items.findFirst(8);
+				assert Optional.of(3)
+					.equals(index);
+			}
+
+			@Test
+			@DisplayName("when item is absent, returns empty optional")
+			void returnsEmptyOptionalWhenItemAbsent() {
+				final var index = items.findFirst(0);
+				assert index.isEmpty();
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyCollectionTests {
+			private final List<Integer> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var index = items.findFirst(6);
+				assert index.isEmpty();
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".getDistinct()")
 	class GetDistinctTests {
 		@Test
