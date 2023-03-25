@@ -82,6 +82,26 @@ public class List<T> implements IndexedCollection<T> {
 		return store.itemCount;
 	}
 
+	/**
+	 * Returns the first item in this list.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
+	 */
+	public Optional<T> getFirst() {
+		return guard(0)
+			.map(this::get);
+	}
+
+	/**
+	 * Returns the last item in this list.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
+	 */
+	public Optional<T> getLast() {
+		return guard(store.itemCount - 1)
+			.map(this::get);
+	}
+
 	@Override
 	public T get(int index) {
 		final var range = getIndexRange();

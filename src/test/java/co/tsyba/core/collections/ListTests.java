@@ -180,6 +180,54 @@ public class ListTests {
 	}
 
 	@Nested
+	@DisplayName(".getFirst()")
+	class GetFirstTests {
+		@Test
+		@DisplayName("when list is not empty, returns first item")
+		void returnsFirstItemWhenListNotEmpty() {
+			final var items = new List<>("B", "V", "4");
+			final var first = items.getFirst();
+
+			assert Optional.of("B")
+				.equals(first);
+		}
+
+		@Test
+		@DisplayName("when list is empty, returns empty optional")
+		void returnsEmptyOptionalWhenListEmpty() {
+			final var items = new List<String>();
+			final var first = items.getFirst();
+
+			assert Optional.empty()
+				.equals(first);
+		}
+	}
+
+	@Nested
+	@DisplayName(".getLast()")
+	class GetLastTests {
+		@Test
+		@DisplayName("when list is not empty, returns last item")
+		void returnsLastItemWhenListNotEmpty() {
+			final var items = new List<>("B", "V", "4");
+			final var last = items.getLast();
+
+			assert Optional.of("4")
+				.equals(last);
+		}
+
+		@Test
+		@DisplayName("when list is empty, returns empty optional")
+		void returnsEmptyOptionalWhenEmpty() {
+			final var items = new List<String>();
+			final var last = items.getFirst();
+
+			assert Optional.empty()
+				.equals(last);
+		}
+	}
+
+	@Nested
 	@DisplayName(".get(int)")
 	class GetAtIndexTests {
 		@Nested
