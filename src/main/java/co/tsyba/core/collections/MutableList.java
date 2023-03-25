@@ -1,5 +1,8 @@
 package co.tsyba.core.collections;
 
+import java.util.Comparator;
+import java.util.Random;
+
 import static co.tsyba.core.collections.ContiguousArrayStore.compact;
 
 /**
@@ -20,6 +23,10 @@ public class MutableList<T> extends List<T> {
 	 */
 	MutableList(int capacity) {
 		super(capacity);
+	}
+
+	MutableList(ContiguousArrayStore store) {
+		super(store);
 	}
 
 	/**
@@ -295,6 +302,27 @@ public class MutableList<T> extends List<T> {
 	public MutableList<T> clear() {
 		store = new ContiguousArrayStore(minimumCapacity);
 		return this;
+	}
+
+	@Override
+	public List<T> reverse() {
+		final var reversed = store.reverse();
+		return new MutableList<>(reversed);
+	}
+
+	@Override
+	public List<T> sort(Comparator<T> comparator) {
+		final var sorted = store.sort(comparator);
+		return new MutableList<>(sorted);
+	}
+
+	@Override
+	public List<T> shuffle() {
+		final var seed = System.currentTimeMillis();
+		final var random = new Random(seed);
+		final var shuffled = store.shuffle(random);
+
+		return new MutableList<>(shuffled);
 	}
 
 	/**
