@@ -565,7 +565,7 @@ public class ListTests {
 			private final List<Integer> items = new List<>(5, 6, 4, 3, 4, 5);
 
 			@Test
-			@DisplayName("when item matches, returns item")
+			@DisplayName("when an item matches, returns item")
 			void returnsItemWhenItemMatches() {
 				final var matched = items.matchLast((item) ->
 					item == 5);
@@ -645,7 +645,7 @@ public class ListTests {
 			private final List<String> items = new List<>("b", "e", "Q", "e", "f", "2");
 
 			@Test
-			@DisplayName("when item is present, returns item index")
+			@DisplayName("when item is present, returns its index")
 			void returnsItemIndexWhenItemPresent() {
 				final var index = items.findLast("e");
 				assertEquals(index, 3);
@@ -668,6 +668,92 @@ public class ListTests {
 			@DisplayName("returns empty optional")
 			void returnsEmptyOptional() {
 				final var index = items.findLast("e");
+				assertEmpty(index);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".findFirst(Predicate<T>)")
+	class FindFirstPredicate {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items = new List<>("f", "e", "b", "e", "Q", "d");
+
+			@Test
+			@DisplayName("when an item matches, returns its index")
+			void returnsItemIndexWhenItemMatches() {
+				final var index = items.findFirst((item) ->
+					item.equals("e"));
+
+				assertEquals(index, 1);
+			}
+
+			@Test
+			@DisplayName("when no item matches, returns empty optional")
+			void returnsEmptyOptionalWhenNoItemMatches() {
+				final var index = items.findFirst((item) ->
+					item.equals("E"));
+
+				assertEmpty(index);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var index = items.findFirst((item) ->
+					item.equals("e"));
+
+				assertEmpty(index);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".findLast(Predicate<T>)")
+	class FindLastPredicate {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items = new List<>("f", "e", "b", "e", "Q", "d");
+
+			@Test
+			@DisplayName("when an item matches, returns its index")
+			void returnsItemIndexWhenItemMatches() {
+				final var index = items.findLast((item) ->
+					item.equals("e"));
+
+				assertEquals(index, 3);
+			}
+
+			@Test
+			@DisplayName("when no item matches, returns empty optional")
+			void returnsEmptyOptionalWhenNoItemMatches() {
+				final var index = items.findLast((item) ->
+					item.equals("E"));
+
+				assertEmpty(index);
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty optional")
+			void returnsEmptyOptional() {
+				final var index = items.findLast((item) ->
+					item.equals("e"));
+
 				assertEmpty(index);
 			}
 		}

@@ -169,7 +169,8 @@ public class List<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns the first item in this list, which matches the specified {@link Predicate}.
+	 * Returns the first item in this list, which matches the specified
+	 * {@link Predicate}.
 	 * <p>
 	 * When no item in this list matches the specified {@link Predicate}, returns an empty
 	 * {@link Optional}.
@@ -198,6 +199,44 @@ public class List<T> implements Collection<T> {
 			final var item = (T) store.items[index];
 			if (condition.test(item)) {
 				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns index of the first occurrence of an item, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findFirst(Predicate<T> condition) {
+		for (var index = 0; index < store.itemCount; ++index) {
+			@SuppressWarnings("unchecked")
+			final var item = (T) store.items[index];
+			if (condition.test(item)) {
+				return Optional.of(index);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns index of the last occurrence of an item, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findLast(Predicate<T> condition) {
+		for (var index = store.itemCount - 1; index >= 0; --index) {
+			@SuppressWarnings("unchecked")
+			final var item = (T) store.items[index];
+			if (condition.test(item)) {
+				return Optional.of(index);
 			}
 		}
 
