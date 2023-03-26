@@ -674,6 +674,73 @@ public class ListTests {
 	}
 
 	@Nested
+	@DisplayName(".findAll(T)")
+	class FindAllTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items = new List<>("g", "E", "g", "R", "r", "g", "v");
+
+			@Test
+			@DisplayName("when item is present, returns its indexes")
+			void returnsItemIndexesWhenItemPresent() {
+				final var indexes = items.findAll("g");
+
+				assertEquals(indexes,
+					new Integer[]{
+						0, 2, 5
+					});
+			}
+
+			@Test
+			@DisplayName("when item is absent, returns empty list")
+			void returnsEmptyListWhenItemAbsent() {
+				final var indexes = items.findAll("G");
+
+				assertEquals(indexes,
+					new Integer[]{
+					});
+			}
+
+			@Test
+			@DisplayName("when item is null, returns empty list")
+			void returnsEmptyListWhenItemNull() {
+				final var indexes = items.findAll(null);
+
+				assertEquals(indexes,
+					new Integer[]{
+					});
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items = new List<>();
+
+			@Test
+			@DisplayName("returns empty list")
+			void returnsEmptyList() {
+				final var indexes = items.findAll("g");
+
+				assertEquals(indexes,
+					new Integer[]{
+					});
+			}
+
+			@Test
+			@DisplayName("when item is null, returns empty list")
+			void returnsEmptyListWhenItemNull() {
+				final var indexes = items.findAll(null);
+
+				assertEquals(indexes,
+					new Integer[]{
+					});
+			}
+		}
+	}
+
+	@Nested
 	@DisplayName(".findFirst(Predicate<T>)")
 	class FindFirstPredicateTests {
 		@Nested

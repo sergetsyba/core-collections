@@ -276,6 +276,24 @@ public class List<T> implements Collection<T> {
 	}
 
 	/**
+	 * Returns indexes of all occurrences of the specified item in this list.
+	 * <p>
+	 * When the specified item does not occur in this list, returns an empty
+	 * {@link List}.
+	 */
+	public List<Integer> findAll(T item) {
+		final var indexes = new ContiguousArrayStore(store.itemCount);
+		for (var index = 0; index < store.itemCount; ++index) {
+			if (store.items[index].equals(item)) {
+				indexes.append(index);
+			}
+		}
+
+		indexes.removeExcessCapacity();
+		return new List<>(indexes);
+	}
+
+	/**
 	 * Returns index of the first occurrence of the specified items in this list.
 	 * <p>
 	 * Returns an empty {@link Optional} when the specified items do not occur in this
