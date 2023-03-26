@@ -279,10 +279,59 @@ public class List<T> implements Collection<T> {
 	 * Returns index of the first occurrence of the specified items in this list.
 	 * <p>
 	 * Returns an empty {@link Optional} when the specified items do not occur in this
-	 * lis.
+	 * list.
 	 */
-	public Optional<Integer> find(List<T> items) {
-		throw new UnsupportedOperationException();
+	public Optional<Integer> findFirst(List<T> items) {
+		if (isEmpty() && items.isEmpty()) {
+			return Optional.empty();
+		}
+
+		mainLoop:
+		for (var index1 = 0; index1 < store.itemCount - items.store.itemCount + 1; ++index1) {
+			for (var index2 = 0; index2 < items.store.itemCount; ++index2) {
+				final var item1 = store.items[index1 + index2];
+				final var item2 = items.store.items[index2];
+				if (!item1.equals(item2)) {
+					continue mainLoop;
+				}
+			}
+
+			return Optional.of(index1);
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns index of the last occurrence of the specified items in this list.
+	 * <p>
+	 * Returns an empty {@link Optional} when the specified items do not occur in this
+	 * list.
+	 */
+	public Optional<Integer> findLast(List<T> items) {
+		if (items.isEmpty()) {
+			return isEmpty()
+				? Optional.empty()
+				: Optional.of(store.itemCount - 1);
+		}
+
+		final var start = store.itemCount - items.store.itemCount;
+
+		mainLoop:
+		for (var index1 = start; index1 >= 0; --index1) {
+			for (var index2 = 0; index2 < items.store.itemCount; ++index2) {
+				final var item1 = store.items[index1 + index2];
+				final var item2 = items.store.items[index2];
+
+				if (!item1.equals(item2)) {
+					continue mainLoop;
+				}
+			}
+
+			return Optional.of(index1);
+		}
+
+		return Optional.empty();
 	}
 
 	private static <T> boolean contains(T[] items, int count, T item) {
