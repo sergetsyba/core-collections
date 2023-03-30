@@ -12,69 +12,6 @@ import static co.tsyba.core.collections.Assert.assertEquals;
 
 class ContiguousArrayStoreTests {
 	@Nested
-	@DisplayName(".find(int, Object)")
-	class FindTests {
-		@Nested
-		@DisplayName("when store is not empty")
-		class NotEmptyStoreTests {
-			private final ContiguousArrayStore store = new ContiguousArrayStore(
-				new String[]{
-					"g", "f", "g", "r", "E", "g", "r", "g"
-				});
-
-			@Test
-			@DisplayName("when item is present after argument index, returns its index")
-			void returnsItemIndexWhenItemPresentAfterArgIndex() {
-				final var index = store.find(4, "r");
-				assertEquals(index, 6);
-			}
-
-			@Test
-			@DisplayName("when item is present at argument index, returns not found")
-			void returnsNotFoundWhenItemPresentAtArgIndex() {
-				final var index = store.find(6, "r");
-				assertEquals(index, -1);
-			}
-
-			@Test
-			@DisplayName("when item is absent after argument index, returns not found")
-			void returnsNotFoundWhenItemAbsentAfterArgIndex() {
-				final var index = store.find(4, "f");
-				assertEquals(index, -1);
-			}
-
-			@Test
-			@DisplayName("when item is present at the first position, returns its index")
-			void returnsItemIndexWhenItemPresentAtFirstPosition() {
-				final var index = store.find(-1, "g");
-				assertEquals(index, 0);
-			}
-
-			@Test
-			@DisplayName("when item is present at the last position, returns its index")
-			void returnsItemIndexWhenItemPresentAtLastPosition() {
-				final var index = store.find(6, "g");
-				assertEquals(index, 7);
-			}
-		}
-
-		@Nested
-		@DisplayName("when store is empty")
-		class EmptyStoreTests {
-			private final ContiguousArrayStore store = new ContiguousArrayStore(
-				new String[]{
-				});
-
-			@Test
-			@DisplayName("returns not found")
-			void returnsNotFound() {
-				final var index = store.find(-1, "F");
-				assertEquals(index, -1);
-			}
-		}
-	}
-
-	@Nested
 	@DisplayName(".find(int, ContiguousArrayStore)")
 	class FindStoreTests {
 		@Nested

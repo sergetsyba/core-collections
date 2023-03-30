@@ -58,24 +58,6 @@ class ContiguousArrayStore {
 	}
 
 	/**
-	 * Returns index of the first appearance of specified item in this store after the
-	 * specified index.
-	 * <p>
-	 * When the specified item does not appear in this store after the specified index,
-	 * returns -1.
-	 */
-	int find(int index, Object item) {
-		++index;
-		for (; index < itemCount; ++index) {
-			if (items[index] == item) {
-				return index;
-			}
-		}
-
-		return -1;
-	}
-
-	/**
 	 * Returns index of the first appearance of items from the specified store at or after
 	 * the specified index in this store.
 	 * <p>
