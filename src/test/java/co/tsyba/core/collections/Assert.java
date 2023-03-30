@@ -152,7 +152,7 @@ final class Assert {
 			String.format("Values are not equal." +
 					"\n\texpected: %s" +
 					"\n\tactual:   %s",
-				actual, expected);
+				expected, actual);
 	}
 }
 

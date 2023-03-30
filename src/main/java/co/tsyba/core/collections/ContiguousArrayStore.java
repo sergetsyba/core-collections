@@ -75,11 +75,22 @@ class ContiguousArrayStore {
 		return -1;
 	}
 
-	int find(int startIndex, ContiguousArrayStore store) {
-		final var maxIndex = itemCount - store.itemCount + 1;
+	/**
+	 * Returns index of the first appearance of items from the specified store at or after
+	 * the specified index in this store.
+	 * <p>
+	 * When items from the specified store do not appear in this store at or after the
+	 * specified index, returns -1.
+	 */
+	int find(int index, ContiguousArrayStore store) {
+		if (store.itemCount == 0) {
+			return index < itemCount
+				? index
+				: -1;
+		}
 
 		outerLoop:
-		for (var index1 = startIndex + 1; index1 < maxIndex; ++index1) {
+		for (var index1 = index; index1 <= itemCount - store.itemCount; ++index1) {
 			for (var index2 = 0; index2 < store.itemCount; ++index2) {
 				final var item1 = items[index1 + index2];
 				final var item2 = store.items[index2];

@@ -82,82 +82,139 @@ class ContiguousArrayStoreTests {
 		class NotEmptyStoreTests {
 			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
 				new String[]{
-					"g", "E", "q", "e", "e", "f", "E", "q", "e", "q"
+					"g", "E", "q", "e", "e", "f", "E", "q", "e", "q", null, null
 				});
 
-			@Test
-			@DisplayName("when items are present after argument index, returns their index")
-			void returnsIndexWhenItemsPresentAfterArgIndex() {
-				final var store2 = new ContiguousArrayStore(
-					new String[]{
-						"E", "q", "e"
-					});
+			@Nested
+			@DisplayName("when argument store is not empty")
+			class NotEmptyArgStoreTests {
+				@Test
+				@DisplayName("when items are present at argument index, returns their index")
+				void returnsItemsIndexWhenItemsPresentAtArgIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"E", "q", "e", null
+						});
 
-				final var index = store1.find(2, store2);
-				assertEquals(index, 6);
-			}
+					final var index = store1.find(6, store2);
+					assertEquals(index, 6);
+				}
 
-			@Test
-			@DisplayName("when items are present at argument index, returns -1")
-			void returnsNotFoundWhenItemsPresentAtArgIndex() {
-				final var store2 = new ContiguousArrayStore(
-					new String[]{
-						"E", "q", "e"
-					});
+				@Test
+				@DisplayName("when items are present after argument index, returns their index")
+				void returnsItemsIndexWhenItemsPresentAfterArgIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"E", "q", "e", null
+						});
 
-				final var index = store1.find(6, store2);
-				assertEquals(index, -1);
-			}
+					final var index = store1.find(2, store2);
+					assertEquals(index, 6);
+				}
 
-			@Test
-			@DisplayName("when items are absent after argument index, returns -1")
-			void returnsNotFoundWhenItemsAbsentAfterArgIndex() {
-				final var store2 = new ContiguousArrayStore(
-					new String[]{
-						"q", "e", "e"
-					});
+				@Test
+				@DisplayName("when items are absent after argument index, returns -1")
+				void returnsNotFoundWhenItemsAbsentAfterArgIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"q", "e", "e", null, null
+						});
 
-				final var index = store1.find(3, store2);
-				assertEquals(index, -1);
-			}
+					final var index = store1.find(3, store2);
+					assertEquals(index, -1);
+				}
 
-			@Test
-			@DisplayName("when items are present at beginning, returns 0")
-			void returnsIndexWhenItemsPresentAtBeginning() {
-				final var store2 = new ContiguousArrayStore(
-					new String[]{
-						"g", "E", "q"
-					});
+				@Test
+				@DisplayName("when items are present at store start, returns first index")
+				void returnsFirstIndexWhenItemsPresentAtStart() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"g", "E", "q", null
+						});
 
-				final var index = store1.find(-1, store2);
-				assertEquals(index, 0);
-			}
+					final var index = store1.find(0, store2);
+					assertEquals(index, 0);
+				}
 
-			@Test
-			@DisplayName("when items are present at end, returns their index")
-			void returnsIndexWhenItemsPresentAtEnd() {
-				final var store2 = new ContiguousArrayStore(
-					new String[]{
-						"q", "e", "q"
-					});
+				@Test
+				@DisplayName("when items are present at store end, returns last index")
+				void returnsLastIndexWhenItemsPresentAtEnd() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"q", "e", "q", null, null
+						});
 
-				final var index = store1.find(-1, store2);
-				assertEquals(index, 7);
+					final var index = store1.find(0, store2);
+					assertEquals(index, 7);
+				}
 			}
 
 			@Nested
 			@DisplayName("when argument store is empty")
 			class EmptyArgStoreTests {
-				@Test
-				@DisplayName("returns index after argument index")
-				void returnsIndexAfterArgIndexWhenItemsEmpty() {
-					final var store2 = new ContiguousArrayStore(
-						new String[]{
-						});
+				private final ContiguousArrayStore store2 = new ContiguousArrayStore(
+					new String[]{
+						null, null
+					});
 
+				@Test
+				@DisplayName("returns argument index")
+				void returnsIndexAfterArgIndex() {
 					final var index = store1.find(4, store2);
-					assertEquals(index, 5);
+					assertEquals(index, 4);
 				}
+
+				@Test
+				@DisplayName("when argument index equals first index, returns first index")
+				void returnsFirstIndexWhenArgIndexEqualsFirstIndex() {
+					final var index = store1.find(0, store2);
+					assertEquals(index, 0);
+				}
+
+				@Test
+				@DisplayName("when argument index equals last index, returns last index")
+				void returnsLastIndexWhenArgIndexEqualsLastIndex() {
+					final var index = store1.find(9, store2);
+					assertEquals(index, 9);
+				}
+
+				@Test
+				@DisplayName("when argument index is after last index, returns -1")
+				void returnsNotFoundWhenArgIndexAfterLastIndex() {
+					final var index = store1.find(10, store2);
+					assertEquals(index, -1);
+				}
+			}
+		}
+
+		@Nested
+		@DisplayName("when store is empty")
+		class EmptyStoreTests {
+			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
+				new String[]{
+				});
+
+			@Test
+			@DisplayName("when argument store is not empty, returns -1")
+			void returnsNotFoundWhenArgStoreIsNotEmpty() {
+				final var store2 = new ContiguousArrayStore(
+					new String[]{
+						"g", "E", "A"
+					});
+
+				final var index = store1.find(0, store2);
+				assertEquals(index, -1);
+			}
+
+			@Test
+			@DisplayName("when argument store is empty, returns -1")
+			void returnsNotFoundWhenArgStoreIsEmpty() {
+				final var store2 = new ContiguousArrayStore(
+					new String[]{
+					});
+
+				final var index = store1.find(0, store2);
+				assertEquals(index, -1);
 			}
 		}
 	}
