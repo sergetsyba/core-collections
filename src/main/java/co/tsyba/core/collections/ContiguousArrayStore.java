@@ -58,6 +58,57 @@ class ContiguousArrayStore {
 	}
 
 	/**
+	 * Returns index of the first appearance of specified item in this store after the
+	 * specified index.
+	 * <p>
+	 * When the specified item does not appear in this store after the specified index,
+	 * returns -1.
+	 */
+	int find(int index, Object item) {
+		++index;
+		for (; index < itemCount; ++index) {
+			if (items[index] == item) {
+				return index;
+			}
+		}
+
+		return -1;
+	}
+
+	int find(int startIndex, ContiguousArrayStore store) {
+		final var maxIndex = itemCount - store.itemCount + 1;
+
+		outerLoop:
+		for (var index1 = startIndex + 1; index1 < maxIndex; ++index1) {
+			for (var index2 = 0; index2 < store.itemCount; ++index2) {
+				final var item1 = items[index1 + index2];
+				final var item2 = store.items[index2];
+				if (!item1.equals(item2)) {
+					continue outerLoop;
+				}
+			}
+
+			return index1;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Returns {@code true} when items of the specified store occur in this store at the
+	 * specified index; returns {@code false} otherwise.
+	 */
+	boolean contains(int index, ContiguousArrayStore store) {
+		for (var index2 = 0; index2 < store.itemCount; ++index2) {
+			if (!items[index + index2].equals(store.items[index])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Prepends the specified item to the beginning of this store.
 	 */
 	void prepend(Object item) {

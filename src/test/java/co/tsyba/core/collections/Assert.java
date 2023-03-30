@@ -79,21 +79,34 @@ final class Assert {
 		}
 	}
 
+	static <T> void assertEmpty(List<T> actual) {
+		for (var item : actual.store.items) {
+			assert item == null
+				: String.format("List it not empty." +
+					"\n\texpected: []" +
+					"\n\tactual:   %s",
+				actual);
+		}
+	}
+
 	static <T> void assertEquals(List<T> actual, T[] expected) {
+		final var message = String.format("Lists are not equal." +
+				"\n\texpected: %s" +
+				"\n\tactual:   %s",
+			Arrays.toString(expected), actual);
+
+		final var itemCount = actual.getCount();
+		assert itemCount == expected.length
+			: message;
+
 		var index = 0;
 		for (; index < expected.length; ++index) {
-			assert expected[index].equals(actual.store.items[index]) :
-				String.format("Lists are not equal." +
-						"\n\texpected: %s" +
-						"\n\tactual: %s",
-					Arrays.toString(expected), actual);
+			assert expected[index].equals(actual.store.items[index])
+				: message;
 		}
 		for (; index < actual.store.items.length; ++index) {
-			assert actual.store.items[index] == null :
-				String.format("Lists are not equal." +
-						"\n\texpected: %s" +
-						"\n\tactual: %s",
-					Arrays.toString(expected), actual);
+			assert actual.store.items[index] == null
+				: message;
 		}
 	}
 
@@ -132,6 +145,14 @@ final class Assert {
 					"\n\texpected: %s" +
 					"\n\tactual: %s",
 				Arrays.toString(expected), actual);
+	}
+
+	static <T> void assertEquals(T actual, T expected) {
+		assert expected.equals(actual) :
+			String.format("Values are not equal." +
+					"\n\texpected: %s" +
+					"\n\tactual:   %s",
+				actual, expected);
 	}
 }
 
