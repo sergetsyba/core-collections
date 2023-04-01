@@ -58,6 +58,18 @@ class ContiguousArrayStore {
 	}
 
 	/**
+	 * Returns a new store with a copy of items between the specified start and end
+	 * indexes.
+	 */
+	ContiguousArrayStore get(int start, int end) {
+		final var itemCount = end - start;
+		final var copy = new Object[itemCount];
+		arraycopy(items, start, copy, 0, itemCount);
+
+		return new ContiguousArrayStore(copy, itemCount);
+	}
+
+	/**
 	 * Returns index of the first occurrence of items from the specified store at or
 	 * before the specified index in this store.
 	 * <p>
