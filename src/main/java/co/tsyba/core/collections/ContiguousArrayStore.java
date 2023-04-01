@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 import static java.lang.System.arraycopy;
+import static java.lang.System.in;
 import static java.util.Arrays.fill;
 
 class ContiguousArrayStore {
@@ -55,6 +56,39 @@ class ContiguousArrayStore {
 	private ContiguousArrayStore(Object[] items, int itemCount) {
 		this.items = items;
 		this.itemCount = itemCount;
+	}
+
+	/**
+	 * Returns index of the first occurrence of items from the specified store before the
+	 * specified index in this store.
+	 * <p>
+	 * When items from the specified store do not occur in this store before the specified
+	 * index, returns -1.
+	 */
+	int findBefore(int index, ContiguousArrayStore store) {
+		if (store.itemCount == 0) {
+			return index < itemCount
+				? index
+				: itemCount - 1;
+		}
+
+		final var startIndex = Math.min(index, itemCount - store.itemCount);
+
+		outerLoop:
+		for (var index1 = startIndex; index1 > -1; --index1) {
+			for (var index2 = 0; index2 < store.itemCount; ++index2) {
+				final var item1 = items[index1 + index2];
+				final var item2 = store.items[index2];
+
+				if (!item1.equals(item2)) {
+					continue outerLoop;
+				}
+			}
+
+			return index1;
+		}
+
+		return -1;
 	}
 
 	/**
