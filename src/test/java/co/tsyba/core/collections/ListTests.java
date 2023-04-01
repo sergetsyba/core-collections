@@ -705,7 +705,7 @@ public class ListTests {
 			@Test
 			@DisplayName("when item is null, returns empty list")
 			void returnsEmptyListWhenItemNull() {
-				final var indexes = items.findAll(null);
+				final var indexes = items.findAll((String) null);
 
 				assertEquals(indexes,
 					new Integer[]{
@@ -731,7 +731,7 @@ public class ListTests {
 			@Test
 			@DisplayName("when item is null, returns empty list")
 			void returnsEmptyListWhenItemNull() {
-				final var indexes = items.findAll(null);
+				final var indexes = items.findAll((String) null);
 
 				assertEquals(indexes,
 					new Integer[]{
@@ -844,45 +844,9 @@ public class ListTests {
 			}
 
 			@Test
-			@DisplayName("when items present at list start, returns their index")
-			void returnsItemsIndexWhenItemsAtListStart() {
-				final var items2 = new List<>("v", "r", "e");
-				final var index = items1.findFirst(items2);
-
-				assertEquals(index, 0);
-			}
-
-			@Test
-			@DisplayName("when items present at list end, returns their index")
-			void returnsItemsIndexWhenItemsAtListEnd() {
-				final var items2 = new List<>("c", "r", "e");
-				final var index = items1.findFirst(items2);
-
-				assertEquals(index, 3);
-			}
-
-			@Test
-			@DisplayName("when items prefix present at list end, returns empty optional")
-			void returnsEmptyOptionalWhenListEndsInArgListPrefix() {
-				final var items2 = new List<>("c", "r", "e", "T");
-				final var index = items1.findFirst(items2);
-
-				assertEmpty(index);
-			}
-
-			@Test
 			@DisplayName("when some items are absent, returns empty optional")
 			void returnsEmptyOptionalWhenSomeItemsAbsent() {
 				final var items2 = new List<>("c", "r", "E");
-				final var index = items1.findFirst(items2);
-
-				assertEmpty(index);
-			}
-
-			@Test
-			@DisplayName("when argument list is larger, returns empty optional")
-			void returnsEmptyOptionalWhenArgListLarger() {
-				final var items2 = new List<>("v", "e", "q", "W", "f", "c", "q");
 				final var index = items1.findFirst(items2);
 
 				assertEmpty(index);
@@ -986,7 +950,7 @@ public class ListTests {
 			}
 
 			@Test
-			@DisplayName("when argument list is empty, returns empty optional")
+			@DisplayName("when argument list is empty, returns last index")
 			void returnsLastIndexWhenArgListEmpty() {
 				final var items2 = new List<String>();
 				final var index = items1.findLast(items2);
@@ -1016,6 +980,74 @@ public class ListTests {
 				final var index = items1.findLast(items2);
 
 				assertEmpty(index);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".find(List<T>)")
+	class FindListTests {
+		@Nested
+		@DisplayName("when list is not empty")
+		class NotEmptyListTests {
+			private final List<String> items1 = new List<>(
+				"v", "v", "b", "r", "v", "b", "v", "b", "F");
+
+			@Test
+			@DisplayName("when items are present, returns their indexes")
+			void returnsIndexesWhenItemsPresent() {
+				final var items2 = new List<>("v", "b");
+				final var indexes = items1.find(items2);
+
+				assertEquals(indexes,
+					new Integer[]{
+						1, 4, 6
+					});
+			}
+
+			@Test
+			@DisplayName("when items are absent, returns empty list")
+			void returnsEmptyListWhenItemsAbsent() {
+				final var items2 = new List<>("V", "b");
+				final var indexes = items1.find(items2);
+
+				assertEmpty(indexes);
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, returns all indexes")
+			void returnsAllIndexesWhenArgListEmpty() {
+				final var items2 = new List<String>();
+				final var indexes = items1.find(items2);
+
+				assertEquals(indexes,
+					new Integer[]{
+						0, 1, 2, 3, 4, 5, 6, 7, 8
+					});
+			}
+		}
+
+		@Nested
+		@DisplayName("when list is empty")
+		class EmptyListTests {
+			private final List<String> items1 = new List<>();
+
+			@Test
+			@DisplayName("when argument list is not empty, returns empty list")
+			void returnsEmptyListWhenArgListNotEmpty() {
+				final var items2 = new List<>("g", "R");
+				final var indexes = items1.findFirst(items2);
+
+				assertEmpty(indexes);
+			}
+
+			@Test
+			@DisplayName("when argument list is empty, returns empty list")
+			void returnsEmptyListWhenArgListEmpty() {
+				final var items2 = new List<String>();
+				final var indexes = items1.findFirst(items2);
+
+				assertEmpty(indexes);
 			}
 		}
 	}

@@ -176,15 +176,8 @@ public class List<T> implements Collection<T> {
 	 * {@link Optional}.
 	 */
 	public Optional<T> matchFirst(Predicate<T> condition) {
-		for (var index = 0; index < store.itemCount; ++index) {
-			@SuppressWarnings("unchecked")
-			final var item = (T) store.items[index];
-			if (condition.test(item)) {
-				return Optional.of(item);
-			}
-		}
-
-		return Optional.empty();
+		return findFirst(condition)
+			.map(this::get);
 	}
 
 	/**
@@ -194,15 +187,8 @@ public class List<T> implements Collection<T> {
 	 * {@link Optional}.
 	 */
 	public Optional<T> matchLast(Predicate<T> condition) {
-		for (var index = store.itemCount - 1; index >= 0; --index) {
-			@SuppressWarnings("unchecked")
-			final var item = (T) store.items[index];
-			if (condition.test(item)) {
-				return Optional.of(item);
-			}
-		}
-
-		return Optional.empty();
+		return findLast(condition)
+			.map(this::get);
 	}
 
 	/**
@@ -250,13 +236,8 @@ public class List<T> implements Collection<T> {
 	 * {@link Optional}.
 	 */
 	public Optional<Integer> findFirst(T item) {
-		for (var index = 0; index < store.itemCount; ++index) {
-			if (store.items[index].equals(item)) {
-				return Optional.of(index);
-			}
-		}
-
-		return Optional.empty();
+		return findFirst((item2) ->
+			item2.equals(item));
 	}
 
 	/**
@@ -266,13 +247,8 @@ public class List<T> implements Collection<T> {
 	 * {@link Optional}.
 	 */
 	public Optional<Integer> findLast(T item) {
-		for (var index = store.itemCount - 1; index >= 0; --index) {
-			if (store.items[index].equals(item)) {
-				return Optional.of(index);
-			}
-		}
-
-		return Optional.empty();
+		return findLast((item2) ->
+			item2.equals(item));
 	}
 
 	/**
@@ -300,24 +276,11 @@ public class List<T> implements Collection<T> {
 	 * list.
 	 */
 	public Optional<Integer> findFirst(List<T> items) {
-		if (isEmpty() && items.isEmpty()) {
-			return Optional.empty();
-		}
-
-		mainLoop:
-		for (var index1 = 0; index1 < store.itemCount - items.store.itemCount + 1; ++index1) {
-			for (var index2 = 0; index2 < items.store.itemCount; ++index2) {
-				final var item1 = store.items[index1 + index2];
-				final var item2 = items.store.items[index2];
-				if (!item1.equals(item2)) {
-					continue mainLoop;
-				}
-			}
-
-			return Optional.of(index1);
-		}
-
-		return Optional.empty();
+		final var index = store.find(0, items.store);
+		
+		return index > -1
+			? Optional.of(index)
+			: Optional.empty();
 	}
 
 	/**
@@ -350,6 +313,23 @@ public class List<T> implements Collection<T> {
 		}
 
 		return Optional.empty();
+	}
+
+	/**
+	 * Returns indexes of all occurrences of the specified items in this list.
+	 * <p>
+	 * When the specified items do not occur in this list, returns an empty {@link List}.
+	 */
+	public List<Integer> find(List<T> items) {
+		final var indexes = new ContiguousArrayStore(items.store.itemCount);
+		var index = store.find(0, items.store);
+		while (index > -1) {
+			indexes.append(index);
+			index = store.find(index + 1, items.store);
+		}
+
+		indexes.removeExcessCapacity();
+		return new List<>(indexes);
 	}
 
 	private static <T> boolean contains(T[] items, int count, T item) {
