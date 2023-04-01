@@ -257,7 +257,7 @@ public class List<T> implements Collection<T> {
 	 * When the specified item does not occur in this list, returns an empty
 	 * {@link List}.
 	 */
-	public List<Integer> findAll(T item) {
+	public List<Integer> find(T item) {
 		final var indexes = new ContiguousArrayStore(store.itemCount);
 		for (var index = 0; index < store.itemCount; ++index) {
 			if (store.items[index].equals(item)) {

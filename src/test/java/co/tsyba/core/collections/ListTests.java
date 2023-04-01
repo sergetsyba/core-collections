@@ -674,8 +674,8 @@ public class ListTests {
 	}
 
 	@Nested
-	@DisplayName(".findAll(T)")
-	class FindAllTests {
+	@DisplayName(".find(T)")
+	class FindTests {
 		@Nested
 		@DisplayName("when list is not empty")
 		class NotEmptyListTests {
@@ -684,7 +684,7 @@ public class ListTests {
 			@Test
 			@DisplayName("when item is present, returns its indexes")
 			void returnsItemIndexesWhenItemPresent() {
-				final var indexes = items.findAll("g");
+				final var indexes = items.find("g");
 
 				assertEquals(indexes,
 					new Integer[]{
@@ -695,7 +695,7 @@ public class ListTests {
 			@Test
 			@DisplayName("when item is absent, returns empty list")
 			void returnsEmptyListWhenItemAbsent() {
-				final var indexes = items.findAll("G");
+				final var indexes = items.find("G");
 
 				assertEquals(indexes,
 					new Integer[]{
@@ -705,7 +705,7 @@ public class ListTests {
 			@Test
 			@DisplayName("when item is null, returns empty list")
 			void returnsEmptyListWhenItemNull() {
-				final var indexes = items.findAll((String) null);
+				final var indexes = items.find((String) null);
 
 				assertEquals(indexes,
 					new Integer[]{
@@ -721,7 +721,7 @@ public class ListTests {
 			@Test
 			@DisplayName("returns empty list")
 			void returnsEmptyList() {
-				final var indexes = items.findAll("g");
+				final var indexes = items.find("g");
 
 				assertEquals(indexes,
 					new Integer[]{
@@ -731,7 +731,7 @@ public class ListTests {
 			@Test
 			@DisplayName("when item is null, returns empty list")
 			void returnsEmptyListWhenItemNull() {
-				final var indexes = items.findAll((String) null);
+				final var indexes = items.find((String) null);
 
 				assertEquals(indexes,
 					new Integer[]{
