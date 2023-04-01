@@ -290,29 +290,11 @@ public class List<T> implements Collection<T> {
 	 * list.
 	 */
 	public Optional<Integer> findLast(List<T> items) {
-		if (items.isEmpty()) {
-			return isEmpty()
-				? Optional.empty()
-				: Optional.of(store.itemCount - 1);
-		}
+		final var index = store.findBefore(store.itemCount, items.store);
 
-		final var start = store.itemCount - items.store.itemCount;
-
-		mainLoop:
-		for (var index1 = start; index1 >= 0; --index1) {
-			for (var index2 = 0; index2 < items.store.itemCount; ++index2) {
-				final var item1 = store.items[index1 + index2];
-				final var item2 = items.store.items[index2];
-
-				if (!item1.equals(item2)) {
-					continue mainLoop;
-				}
-			}
-
-			return Optional.of(index1);
-		}
-
-		return Optional.empty();
+		return index > -1
+			? Optional.of(index)
+			: Optional.empty();
 	}
 
 	/**

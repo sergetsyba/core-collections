@@ -58,11 +58,11 @@ class ContiguousArrayStore {
 	}
 
 	/**
-	 * Returns index of the first occurrence of items from the specified store before the
-	 * specified index in this store.
+	 * Returns index of the first occurrence of items from the specified store at or
+	 * before the specified index in this store.
 	 * <p>
-	 * When items from the specified store do not occur in this store before the specified
-	 * index, returns -1.
+	 * When items from the specified store do not occur in this store at or before the
+	 * specified index, returns -1.
 	 */
 	int findBefore(int index, ContiguousArrayStore store) {
 		if (store.itemCount == 0) {
@@ -72,19 +72,10 @@ class ContiguousArrayStore {
 		}
 
 		final var startIndex = Math.min(index, itemCount - store.itemCount);
-
-		outerLoop:
 		for (var index1 = startIndex; index1 > -1; --index1) {
-			for (var index2 = 0; index2 < store.itemCount; ++index2) {
-				final var item1 = items[index1 + index2];
-				final var item2 = store.items[index2];
-
-				if (!item1.equals(item2)) {
-					continue outerLoop;
-				}
+			if (contains(index1, store)) {
+				return index1;
 			}
-
-			return index1;
 		}
 
 		return -1;
@@ -104,17 +95,11 @@ class ContiguousArrayStore {
 				: -1;
 		}
 
-		outerLoop:
-		for (var index1 = index; index1 <= itemCount - store.itemCount; ++index1) {
-			for (var index2 = 0; index2 < store.itemCount; ++index2) {
-				final var item1 = items[index1 + index2];
-				final var item2 = store.items[index2];
-				if (!item1.equals(item2)) {
-					continue outerLoop;
-				}
+		final var endIndex = itemCount - store.itemCount;
+		for (var index1 = index; index1 <= endIndex; ++index1) {
+			if (contains(index1, store)) {
+				return index1;
 			}
-
-			return index1;
 		}
 
 		return -1;
@@ -126,7 +111,10 @@ class ContiguousArrayStore {
 	 */
 	boolean contains(int index, ContiguousArrayStore store) {
 		for (var index2 = 0; index2 < store.itemCount; ++index2) {
-			if (!items[index + index2].equals(store.items[index])) {
+			final var item1 = items[index + index2];
+			final var item2 = store.items[index2];
+
+			if (!item1.equals(item2)) {
 				return false;
 			}
 		}
