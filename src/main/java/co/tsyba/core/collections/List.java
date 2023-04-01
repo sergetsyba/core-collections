@@ -131,8 +131,8 @@ public class List<T> implements Collection<T> {
 			throw new IndexNotInRangeException(index, validRange);
 		}
 
-		final var prefixRange = new IndexRange(0, index);
-		return get(prefixRange);
+		final var prefix = store.get(0, index);
+		return new List<>(prefix);
 	}
 
 	/**
@@ -147,8 +147,8 @@ public class List<T> implements Collection<T> {
 			throw new IndexNotInRangeException(index, validRange);
 		}
 
-		final var prefixRange = new IndexRange(index, validRange.end);
-		return get(prefixRange);
+		final var suffix = store.get(index, store.itemCount);
+		return new List<>(suffix);
 	}
 
 	/**
@@ -163,9 +163,8 @@ public class List<T> implements Collection<T> {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
-		final var items = new List<T>(indexRange.length);
-		System.arraycopy(store.items, indexRange.start, items.store.items, 0, indexRange.length);
-		return items;
+		final var sub = store.get(indexRange.start, indexRange.end);
+		return new List<>(sub);
 	}
 
 	/**

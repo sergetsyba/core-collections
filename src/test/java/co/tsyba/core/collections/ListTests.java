@@ -236,8 +236,8 @@ public class ListTests {
 			private final List<String> items = new List<>("B", "d", "R", "f", "a", "Q");
 
 			@Test
-			@DisplayName("when index is in valid range, returns prefix")
-			void returnsPrefixWhenIndexInValidRange() {
+			@DisplayName("when index is within valid range, returns prefix")
+			void returnsPrefixWhenIndexWithinValidRange() {
 				final var prefix = items.getPrefix(4);
 
 				assertEquals(prefix,
@@ -254,6 +254,17 @@ public class ListTests {
 				assertEquals(prefix,
 					new String[]{
 					});
+			}
+
+			@Test
+			@DisplayName("when index equals item count, fails")
+			void failsWhenIndexEqualsItemCount() {
+				final var expected = new IndexNotInRangeException(6,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					items.getPrefix(6);
+				}, expected);
 			}
 
 			@Test
@@ -306,14 +317,37 @@ public class ListTests {
 			private final List<String> items = new List<>("B", "d", "R", "f", "a", "Q");
 
 			@Test
-			@DisplayName("when index is in valid range, returns suffix")
-			void returnsPrefixWhenIndexInRange() {
+			@DisplayName("when index is within valid range, returns suffix")
+			void returnsSuffixWhenIndexWithinValidRange() {
 				final var suffix = items.getSuffix(3);
 
 				assertEquals(suffix,
 					new String[]{
 						"f", "a", "Q"
 					});
+			}
+
+			@Test
+			@DisplayName("when index is 0, returns list copy")
+			void returnsListCopyWhenIndexZero() {
+				final var suffix = items.getSuffix(0);
+
+				assert suffix != items;
+				assertEquals(suffix,
+					new String[]{
+						"B", "d", "R", "f", "a", "Q"
+					});
+			}
+
+			@Test
+			@DisplayName("when index equals item count, fails")
+			void failsWhenIndexEqualsItemCount() {
+				final var expected = new IndexNotInRangeException(6,
+					new IndexRange(0, 6));
+
+				assertThrows(() -> {
+					items.getSuffix(6);
+				}, expected);
 			}
 
 			@Test
@@ -330,11 +364,11 @@ public class ListTests {
 			@Test
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
-				final var expected = new IndexNotInRangeException(6,
+				final var expected = new IndexNotInRangeException(9,
 					new IndexRange(0, 6));
 
 				assertThrows(() -> {
-					items.getSuffix(6);
+					items.getSuffix(9);
 				}, expected);
 			}
 		}
@@ -423,8 +457,8 @@ public class ListTests {
 				"r", "4", "v", "E", "P", "e", "Q");
 
 			@Test
-			@DisplayName("returns items")
-			void returnsItems() {
+			@DisplayName("when index range is within valid range, returns items")
+			void returnsItemsWhenIndexRangeWithinValidRange() {
 				final var items2 = items1.get(
 					new IndexRange(2, 5));
 
