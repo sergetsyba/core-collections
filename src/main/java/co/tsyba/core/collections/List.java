@@ -276,8 +276,8 @@ public class List<T> implements Collection<T> {
 	 * list.
 	 */
 	public Optional<Integer> findFirst(List<T> items) {
-		final var index = store.find(0, items.store);
-		
+		final var index = store.findAfter(0, items.store);
+
 		return index > -1
 			? Optional.of(index)
 			: Optional.empty();
@@ -322,10 +322,10 @@ public class List<T> implements Collection<T> {
 	 */
 	public List<Integer> find(List<T> items) {
 		final var indexes = new ContiguousArrayStore(items.store.itemCount);
-		var index = store.find(0, items.store);
+		var index = store.findAfter(0, items.store);
 		while (index > -1) {
 			indexes.append(index);
-			index = store.find(index + 1, items.store);
+			index = store.findAfter(index + 1, items.store);
 		}
 
 		indexes.removeExcessCapacity();

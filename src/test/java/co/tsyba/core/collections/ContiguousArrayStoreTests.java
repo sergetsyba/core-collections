@@ -168,8 +168,8 @@ class ContiguousArrayStoreTests {
 	}
 
 	@Nested
-	@DisplayName(".find(int, ContiguousArrayStore)")
-	class FindStoreTests {
+	@DisplayName(".findAfter(int, ContiguousArrayStore)")
+	class FindAfterStoreTests {
 		@Nested
 		@DisplayName("when store is not empty")
 		class NotEmptyStoreTests {
@@ -189,7 +189,7 @@ class ContiguousArrayStoreTests {
 							"E", "q", "e", null
 						});
 
-					final var index = store1.find(6, store2);
+					final var index = store1.findAfter(6, store2);
 					assertEquals(index, 6);
 				}
 
@@ -201,7 +201,7 @@ class ContiguousArrayStoreTests {
 							"E", "q", "e", null
 						});
 
-					final var index = store1.find(2, store2);
+					final var index = store1.findAfter(2, store2);
 					assertEquals(index, 6);
 				}
 
@@ -213,7 +213,7 @@ class ContiguousArrayStoreTests {
 							"q", "e", "e", null, null
 						});
 
-					final var index = store1.find(3, store2);
+					final var index = store1.findAfter(3, store2);
 					assertEquals(index, -1);
 				}
 
@@ -225,7 +225,7 @@ class ContiguousArrayStoreTests {
 							"g", "E", "q", null
 						});
 
-					final var index = store1.find(0, store2);
+					final var index = store1.findAfter(0, store2);
 					assertEquals(index, 0);
 				}
 
@@ -237,7 +237,7 @@ class ContiguousArrayStoreTests {
 							"q", "e", "q", null, null
 						});
 
-					final var index = store1.find(0, store2);
+					final var index = store1.findAfter(0, store2);
 					assertEquals(index, 7);
 				}
 
@@ -249,7 +249,7 @@ class ContiguousArrayStoreTests {
 							"g", "E", "q", "e", "e", "f", "E", "q", "e", "q", "R", "c", null
 						});
 
-					final var index = store1.find(0, store2);
+					final var index = store1.findAfter(0, store2);
 					assertEquals(index, -1);
 				}
 
@@ -261,7 +261,7 @@ class ContiguousArrayStoreTests {
 							"g", "E"
 						});
 
-					final var index = store1.find(27, store2);
+					final var index = store1.findAfter(27, store2);
 					assertEquals(index, -1);
 				}
 			}
@@ -277,28 +277,28 @@ class ContiguousArrayStoreTests {
 				@Test
 				@DisplayName("returns argument index")
 				void returnsArgIndex() {
-					final var index = store1.find(4, store2);
+					final var index = store1.findAfter(4, store2);
 					assertEquals(index, 4);
 				}
 
 				@Test
 				@DisplayName("when argument index equals first index, returns first index")
 				void returnsFirstIndexWhenArgIndexEqualsFirstIndex() {
-					final var index = store1.find(0, store2);
+					final var index = store1.findAfter(0, store2);
 					assertEquals(index, 0);
 				}
 
 				@Test
 				@DisplayName("when argument index equals last index, returns last index")
 				void returnsLastIndexWhenArgIndexEqualsLastIndex() {
-					final var index = store1.find(9, store2);
+					final var index = store1.findAfter(9, store2);
 					assertEquals(index, 9);
 				}
 
 				@Test
 				@DisplayName("when argument index is after last index, returns -1")
 				void returnsNotFoundWhenArgIndexAfterLastIndex() {
-					final var index = store1.find(10, store2);
+					final var index = store1.findAfter(10, store2);
 					assertEquals(index, -1);
 				}
 			}
@@ -319,7 +319,7 @@ class ContiguousArrayStoreTests {
 						"g", "E", "A"
 					});
 
-				final var index = store1.find(0, store2);
+				final var index = store1.findAfter(0, store2);
 				assertEquals(index, -1);
 			}
 
@@ -330,7 +330,7 @@ class ContiguousArrayStoreTests {
 					new String[]{
 					});
 
-				final var index = store1.find(0, store2);
+				final var index = store1.findAfter(0, store2);
 				assertEquals(index, -1);
 			}
 		}

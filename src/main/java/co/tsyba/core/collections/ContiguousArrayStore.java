@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.Random;
 
 import static java.lang.System.arraycopy;
-import static java.lang.System.in;
 import static java.util.Arrays.fill;
 
 class ContiguousArrayStore {
@@ -98,7 +97,7 @@ class ContiguousArrayStore {
 	 * When items from the specified store do not appear in this store at or after the
 	 * specified index, returns -1.
 	 */
-	int find(int index, ContiguousArrayStore store) {
+	int findAfter(int index, ContiguousArrayStore store) {
 		if (store.itemCount == 0) {
 			return index < itemCount
 				? index
