@@ -8,7 +8,402 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
+import static co.tsyba.core.collections.Assertions.assertEquals;
+
 class ContiguousArrayStoreTests {
+	@Nested
+	@DisplayName(".get(int, int)")
+	class GetTests {
+		@Nested
+		@DisplayName("when store is not empty")
+		class NotEmptyStoreTests {
+			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
+				new String[]{
+					"g", "e", "W", "h", "F", "s", "M", "V", null, null
+				});
+
+			@Test
+			@DisplayName("when indexes in range, returns items in range")
+			void returnsItemsInRangeWhenIndexesInRange() {
+				final var store2 = store1.get(3, 7);
+
+				assertItemCount(store2, 4);
+				assertEquals(store2,
+					new String[]{
+						"h", "F", "s", "M"
+					});
+			}
+
+			@Test
+			@DisplayName("when indexes equal, returns empty store")
+			void returnsEmptyStoreWhenIndexesEqual() {
+				final var store2 = store1.get(4, 4);
+
+				assertItemCount(store2, 0);
+				assertEquals(store2,
+					new String[]{
+					});
+			}
+
+			@Test
+			@DisplayName("when indexes are at start and end, returns copy of store")
+			void returnsStoreCopyWhenIndexesAtStartAndEnd() {
+				final var store2 = store1.get(0, 8);
+
+				assertItemCount(store2, 8);
+				assertEquals(store2,
+					new String[]{
+						"g", "e", "W", "h", "F", "s", "M", "V"
+					});
+			}
+		}
+
+		@Nested
+		@DisplayName("when store is empty")
+		class EmptyStoreTests {
+			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
+				new String[]{
+					null, null
+				});
+
+			@Test
+			@DisplayName("when indexes are at start and end, returns empty store")
+			void returnsEmptyStoreWhenIndexesAtStartAndEnd() {
+				final var store2 = store1.get(0, 0);
+
+				assertItemCount(store2, 0);
+				assertEquals(store2,
+					new String[]{
+					});
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".findBefore(int, ContiguousArrayStore)")
+	class FindBeforeStoreTests {
+		@Nested
+		@DisplayName("when store is not empty")
+		class NotEmptyStoreTests {
+			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
+				new String[]{
+					"f", "h", "R", "f", "h", "e", "R", "f", "o"
+				});
+
+			@Nested
+			@DisplayName("when argument store is not empty")
+			class NotEmptyArgStoreTests {
+				@Test
+				@DisplayName("when items are present at argument index, returns their index")
+				void returnsItemsIndexWhenPresentAtIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"R", "f"
+						});
+
+					final var index = store1.findBefore(6, store2);
+					assertEquals(index, 6);
+				}
+
+				@Test
+				@DisplayName("when items are present before argument index, returns their index")
+				void returnsItemsIndexWhenPresentBeforeIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"R", "f"
+						});
+
+					final var index = store1.findBefore(5, store2);
+					assertEquals(index, 2);
+				}
+
+				@Test
+				@DisplayName("when items are absent before argument index, returns -1")
+				void returnsNotFoundWhenItemsAbsentBeforeIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"h", "r", "R"
+						});
+
+					final var index = store1.findBefore(3, store2);
+					assertEquals(index, -1);
+				}
+
+				@Test
+				@DisplayName("when items are present at store start, returns their index")
+				void returnsItemsIndexWhenItemsPresentAtStart() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"f", "h", "R"
+						});
+
+					final var index = store1.findBefore(6, store2);
+					assertEquals(index, 0);
+				}
+
+				@Test
+				@DisplayName("when items are present at store end, returns their index")
+				void returnsItemsIndexWhenItemsPresentAtEnd() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"e", "R", "f", "o"
+						});
+
+					final var index = store1.findBefore(8, store2);
+					assertEquals(index, 5);
+				}
+
+				@Test
+				@DisplayName("when argument store is larger, returns -1")
+				void returnsNotFoundWhenArgStoreLarger() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"f", "h", "R", "f", "h", "e", "R", "f", "o", "R", "R", "f"
+						});
+
+					final var index = store1.findBefore(8, store2);
+					assertEquals(index, -1);
+				}
+			}
+
+			@Nested
+			@DisplayName("when argument store is empty")
+			class EmptyArgStoreTests {
+				private final ContiguousArrayStore store2 = new ContiguousArrayStore(
+					new String[]{
+					});
+
+				@Test
+				@DisplayName("returns argument index")
+				void returnsIndexArgIndex() {
+					final var index = store1.findBefore(5, store2);
+					assertEquals(index, 5);
+				}
+
+				@Test
+				@DisplayName("when argument index equals first index, returns first index")
+				void returnsFirstIndexArgIndexEqualsFirstIndex() {
+					final var index = store1.findBefore(0, store2);
+					assertEquals(index, 0);
+				}
+
+				@Test
+				@DisplayName("when argument index equals last index, returns last index")
+				void returnsLastIndexArgIndexEqualsLastIndex() {
+					final var index = store1.findBefore(8, store2);
+					assertEquals(index, 8);
+				}
+
+				@Test
+				@DisplayName("when argument index is after last index, returns last index")
+				void returnsLastIndexArgIndexAfterLastIndex() {
+					final var index = store1.findBefore(17, store2);
+					assertEquals(index, 8);
+				}
+			}
+		}
+
+		@Nested
+		@DisplayName("when store is empty")
+		class EmptyStoreTests {
+			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
+				new String[]{
+				});
+
+			@Test
+			@DisplayName("when argument store is not empty, returns -1")
+			void returnsNotFoundWhenArgStoreNotEmpty() {
+				final var store2 = new ContiguousArrayStore(
+					new String[]{
+						"g", "E", "f", "a"
+					});
+
+				final var index = store1.findBefore(0, store2);
+				assertEquals(index, -1);
+			}
+
+			@Test
+			@DisplayName("when argument store is empty, returns -1")
+			void returnsNotFoundWhenArgStoreEmpty() {
+				final var store2 = new ContiguousArrayStore(
+					new String[]{
+					});
+
+				final var index = store1.findBefore(0, store2);
+				assertEquals(index, -1);
+			}
+		}
+	}
+
+	@Nested
+	@DisplayName(".findAfter(int, ContiguousArrayStore)")
+	class FindAfterStoreTests {
+		@Nested
+		@DisplayName("when store is not empty")
+		class NotEmptyStoreTests {
+			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
+				new String[]{
+					"g", "E", "q", "e", "e", "f", "E", "q", "e", "q", null, null
+				});
+
+			@Nested
+			@DisplayName("when argument store is not empty")
+			class NotEmptyArgStoreTests {
+				@Test
+				@DisplayName("when items are present at argument index, returns their index")
+				void returnsItemsIndexWhenItemsPresentAtArgIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"E", "q", "e", null
+						});
+
+					final var index = store1.findAfter(6, store2);
+					assertEquals(index, 6);
+				}
+
+				@Test
+				@DisplayName("when items are present after argument index, returns their index")
+				void returnsItemsIndexWhenItemsPresentAfterArgIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"E", "q", "e", null
+						});
+
+					final var index = store1.findAfter(2, store2);
+					assertEquals(index, 6);
+				}
+
+				@Test
+				@DisplayName("when items are absent after argument index, returns -1")
+				void returnsNotFoundWhenItemsAbsentAfterArgIndex() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"q", "e", "e", null, null
+						});
+
+					final var index = store1.findAfter(3, store2);
+					assertEquals(index, -1);
+				}
+
+				@Test
+				@DisplayName("when items are present at store start, returns their index")
+				void returnsItemsIndexWhenItemsPresentAtStart() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"g", "E", "q", null
+						});
+
+					final var index = store1.findAfter(0, store2);
+					assertEquals(index, 0);
+				}
+
+				@Test
+				@DisplayName("when items are present at store end, returns their index")
+				void returnsItemsIndexWhenItemsPresentAtEnd() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"q", "e", "q", null, null
+						});
+
+					final var index = store1.findAfter(0, store2);
+					assertEquals(index, 7);
+				}
+
+				@Test
+				@DisplayName("when argument store is larger, returns -1")
+				void returnsNotFoundWhenArgStoreLarger() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"g", "E", "q", "e", "e", "f", "E", "q", "e", "q", "R", "c", null
+						});
+
+					final var index = store1.findAfter(0, store2);
+					assertEquals(index, -1);
+				}
+
+				@Test
+				@DisplayName("when argument index is after last index, returns -1")
+				void returnsNotFoundWhenArgIndexLargerThanItemCount() {
+					final var store2 = new ContiguousArrayStore(
+						new String[]{
+							"g", "E"
+						});
+
+					final var index = store1.findAfter(27, store2);
+					assertEquals(index, -1);
+				}
+			}
+
+			@Nested
+			@DisplayName("when argument store is empty")
+			class EmptyArgStoreTests {
+				private final ContiguousArrayStore store2 = new ContiguousArrayStore(
+					new String[]{
+						null, null
+					});
+
+				@Test
+				@DisplayName("returns argument index")
+				void returnsArgIndex() {
+					final var index = store1.findAfter(4, store2);
+					assertEquals(index, 4);
+				}
+
+				@Test
+				@DisplayName("when argument index equals first index, returns first index")
+				void returnsFirstIndexWhenArgIndexEqualsFirstIndex() {
+					final var index = store1.findAfter(0, store2);
+					assertEquals(index, 0);
+				}
+
+				@Test
+				@DisplayName("when argument index equals last index, returns last index")
+				void returnsLastIndexWhenArgIndexEqualsLastIndex() {
+					final var index = store1.findAfter(9, store2);
+					assertEquals(index, 9);
+				}
+
+				@Test
+				@DisplayName("when argument index is after last index, returns -1")
+				void returnsNotFoundWhenArgIndexAfterLastIndex() {
+					final var index = store1.findAfter(10, store2);
+					assertEquals(index, -1);
+				}
+			}
+		}
+
+		@Nested
+		@DisplayName("when store is empty")
+		class EmptyStoreTests {
+			private final ContiguousArrayStore store1 = new ContiguousArrayStore(
+				new String[]{
+				});
+
+			@Test
+			@DisplayName("when argument store is not empty, returns -1")
+			void returnsNotFoundWhenArgStoreIsNotEmpty() {
+				final var store2 = new ContiguousArrayStore(
+					new String[]{
+						"g", "E", "A"
+					});
+
+				final var index = store1.findAfter(0, store2);
+				assertEquals(index, -1);
+			}
+
+			@Test
+			@DisplayName("when argument store is empty, returns -1")
+			void returnsNotFoundWhenArgStoreIsEmpty() {
+				final var store2 = new ContiguousArrayStore(
+					new String[]{
+					});
+
+				final var index = store1.findAfter(0, store2);
+				assertEquals(index, -1);
+			}
+		}
+	}
+
 	@Nested
 	@DisplayName(".prepend(Object)")
 	class PrependTests {
@@ -23,7 +418,7 @@ class ContiguousArrayStoreTests {
 			store.prepend("6");
 
 			assertItemCount(store, 5);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"6", "5", "3", "6", "7", null, null
 				});
@@ -40,7 +435,7 @@ class ContiguousArrayStoreTests {
 			store.prepend("6");
 
 			assertItemCount(store, 6);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"6", "5", "3", "7", "5", "3", null, null, null, null, null, null
 				});
@@ -56,7 +451,7 @@ class ContiguousArrayStoreTests {
 			store.prepend("8");
 
 			assertItemCount(store, 1);
-			assertItems(store, new String[]{
+			assertEquals(store, new String[]{
 				"8", null
 			});
 		}
@@ -80,7 +475,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "r", "W", "f", "e"
 				});
@@ -100,7 +495,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 6);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "r", "W", "h", "e", "w", null, null, null, null, null, null
 				});
@@ -121,7 +516,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"f", "w", "f", "e", "q", null, null, null, null, null
 				});
@@ -141,7 +536,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 2);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"v", "e", null, null
 				});
@@ -162,7 +557,7 @@ class ContiguousArrayStoreTests {
 			store.append("6");
 
 			assertItemCount(store, 5);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "6", "7", "6", null, null
 				});
@@ -179,7 +574,7 @@ class ContiguousArrayStoreTests {
 			store.append("6");
 
 			assertItemCount(store, 6);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "7", "5", "3", "6", null, null, null, null, null, null
 				});
@@ -195,7 +590,7 @@ class ContiguousArrayStoreTests {
 			store.append("8");
 
 			assertItemCount(store, 1);
-			assertItems(store, new String[]{
+			assertEquals(store, new String[]{
 				"8", null
 			});
 		}
@@ -219,7 +614,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"f", "e", "g", "r", "W"
 				});
@@ -240,7 +635,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 6);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"h", "e", "w", "g", "r", "W", null, null, null, null, null, null
 				});
@@ -261,7 +656,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"f", "e", "q", "f", "w", null, null, null, null, null
 				});
@@ -281,7 +676,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 2);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"v", "e", null, null
 				});
@@ -302,7 +697,7 @@ class ContiguousArrayStoreTests {
 			store.insert(2, "6");
 
 			assertItemCount(store, 5);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "6", "6", "7", null, null
 				});
@@ -319,7 +714,7 @@ class ContiguousArrayStoreTests {
 			store.insert(2, "6");
 
 			assertItemCount(store, 6);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "6", "7", "5", "3", null, null, null, null, null, null
 				});
@@ -344,7 +739,7 @@ class ContiguousArrayStoreTests {
 			store1.insert(3, store2);
 
 			assertItemCount(store1, 8);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "3", "d", "b", "J", "L", "O", "W", null
 				});
@@ -365,7 +760,7 @@ class ContiguousArrayStoreTests {
 			store1.insert(1, store2);
 
 			assertItemCount(store1, 4);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "b", "J", "3", null, null, null, null
 				});
@@ -386,7 +781,7 @@ class ContiguousArrayStoreTests {
 			store1.insert(1, store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "b", "J", "3", "F", null, null, null, null, null
 				});
@@ -416,7 +811,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 5);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"f", "W", "u", "q", "t", null, null
 					});
@@ -439,7 +834,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 3);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"f", "W", "t", null, null, null, null
 					});
@@ -461,7 +856,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"g", "b", "e", "O", "W", "h", null
 					});
@@ -483,7 +878,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", "g", "b", "u", "P", "e", null, null
 					});
@@ -504,7 +899,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 1);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", null, null, null, null
 					});
@@ -526,7 +921,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 4);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", "M", "L", "b", null
 					});
@@ -553,7 +948,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"g", "b", "e", "O", "W", "h", null, null, null, null, null, null
 					});
@@ -575,7 +970,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", "g", "b", "u", "P", "e", null, null, null, null, null, null
 					});
@@ -597,7 +992,7 @@ class ContiguousArrayStoreTests {
 			store.remove(3);
 
 			assertItemCount(store, 3);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"g", "r", "E", null, null
 				});
@@ -619,7 +1014,7 @@ class ContiguousArrayStoreTests {
 			store.remove(range);
 
 			assertItemCount(store, 3);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"b", "E", "B", null, null, null, null
 				});
@@ -640,7 +1035,7 @@ class ContiguousArrayStoreTests {
 			final var reversed = store.reverse();
 
 			assertItemCount(reversed, 4);
-			assertItems(reversed,
+			assertEquals(reversed,
 				new String[]{
 					"Q", "e", "R", "v", null, null, null
 				});
@@ -657,7 +1052,7 @@ class ContiguousArrayStoreTests {
 			final var reversed = store.reverse();
 
 			assertItemCount(reversed, 0);
-			assertItems(reversed,
+			assertEquals(reversed,
 				new String[]{
 					null, null, null, null
 				});
@@ -678,7 +1073,7 @@ class ContiguousArrayStoreTests {
 			final var sorted = store.<String>sort(Comparator.naturalOrder());
 
 			assertItemCount(sorted, 5);
-			assertItems(sorted,
+			assertEquals(sorted,
 				new String[]{
 					"C", "R", "e", "q", "v", null, null
 				});
@@ -696,7 +1091,7 @@ class ContiguousArrayStoreTests {
 			final var sorted = store.<String>sort(Comparator.naturalOrder());
 
 			assertItemCount(sorted, 0);
-			assertItems(sorted,
+			assertEquals(sorted,
 				new String[]{
 					null, null, null, null
 				});
@@ -719,7 +1114,7 @@ class ContiguousArrayStoreTests {
 			final var shuffled = store.shuffle(random);
 
 			assertItemCount(shuffled, 4);
-			assertItemsShuffled(shuffled, store, 4);
+			assertShuffled(shuffled, store, 4);
 		}
 
 		@Test
@@ -734,31 +1129,19 @@ class ContiguousArrayStoreTests {
 			final var shuffled = store.shuffle(random);
 
 			assertItemCount(shuffled, 0);
-			assertItems(shuffled,
+			assertEquals(shuffled,
 				new String[]{
 					null, null, null, null
 				});
 		}
 	}
 
-	static void assertItemCount(ContiguousArrayStore store, int expected) {
-		assert store.itemCount == expected :
-			String.format("Incorrect item count." +
-					"\n\texpected: %d," +
-					"\n\tactual:   %d",
-				expected, store.itemCount);
+	private static void assertItemCount(ContiguousArrayStore store, int expected) {
+		assertEquals(store.itemCount, expected,
+			"Item count differs from expectation.");
 	}
 
-	static void assertItems(ContiguousArrayStore store, Object[] expected) {
-		assert Arrays.equals(store.items, expected) :
-			String.format("Incorrect items." +
-					"\n\texpected: %s" +
-					"\n\tactual:   %s",
-				Arrays.toString(expected),
-				Arrays.toString(store.items));
-	}
-
-	static void assertItemsShuffled(ContiguousArrayStore shuffled, ContiguousArrayStore original, int itemCount) {
+	private static void assertShuffled(ContiguousArrayStore shuffled, ContiguousArrayStore original, int itemCount) {
 		// verify shuffled store preserves item capacity
 		assert shuffled.items.length == original.items.length;
 

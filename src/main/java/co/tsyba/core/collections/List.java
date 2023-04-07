@@ -13,10 +13,6 @@ import java.util.function.Predicate;
 public class List<T> implements Collection<T> {
 	ContiguousArrayStore store;
 
-	List(int capacity) {
-		this.store = new ContiguousArrayStore(capacity);
-	}
-
 	List(ContiguousArrayStore store) {
 		this.store = store;
 	}
@@ -131,8 +127,8 @@ public class List<T> implements Collection<T> {
 			throw new IndexNotInRangeException(index, validRange);
 		}
 
-		final var prefixRange = new IndexRange(0, index);
-		return get(prefixRange);
+		final var prefix = store.get(0, index);
+		return new List<>(prefix);
 	}
 
 	/**
@@ -147,8 +143,8 @@ public class List<T> implements Collection<T> {
 			throw new IndexNotInRangeException(index, validRange);
 		}
 
-		final var prefixRange = new IndexRange(index, validRange.end);
-		return get(prefixRange);
+		final var suffix = store.get(index, store.itemCount);
+		return new List<>(suffix);
 	}
 
 	/**
@@ -163,9 +159,69 @@ public class List<T> implements Collection<T> {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
-		final var items = new List<T>(indexRange.length);
-		System.arraycopy(store.items, indexRange.start, items.store.items, 0, indexRange.length);
-		return items;
+		final var sub = store.get(indexRange.start, indexRange.end);
+		return new List<>(sub);
+	}
+
+	/**
+	 * Returns the first item in this list, which matches the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<T> matchFirst(Predicate<T> condition) {
+		return findFirst(condition)
+			.map(this::get);
+	}
+
+	/**
+	 * Returns the last item in this list, which matches the specified {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<T> matchLast(Predicate<T> condition) {
+		return findLast(condition)
+			.map(this::get);
+	}
+
+	/**
+	 * Returns index of the first occurrence of an item, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findFirst(Predicate<T> condition) {
+		for (var index = 0; index < store.itemCount; ++index) {
+			@SuppressWarnings("unchecked")
+			final var item = (T) store.items[index];
+			if (condition.test(item)) {
+				return Optional.of(index);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns index of the last occurrence of an item, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this list matches the specified {@link Predicate}, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findLast(Predicate<T> condition) {
+		for (var index = store.itemCount - 1; index >= 0; --index) {
+			@SuppressWarnings("unchecked")
+			final var item = (T) store.items[index];
+			if (condition.test(item)) {
+				return Optional.of(index);
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	/**
@@ -175,23 +231,82 @@ public class List<T> implements Collection<T> {
 	 * {@link Optional}.
 	 */
 	public Optional<Integer> findFirst(T item) {
+		return findFirst((item2) ->
+			item2.equals(item));
+	}
+
+	/**
+	 * Returns index of the last occurrence of the specified item in this list.
+	 * <p>
+	 * When the specified item does not occur in this list, returns an empty
+	 * {@link Optional}.
+	 */
+	public Optional<Integer> findLast(T item) {
+		return findLast((item2) ->
+			item2.equals(item));
+	}
+
+	/**
+	 * Returns indexes of all occurrences of the specified item in this list.
+	 * <p>
+	 * When the specified item does not occur in this list, returns an empty
+	 * {@link List}.
+	 */
+	public List<Integer> find(T item) {
+		final var indexes = new ContiguousArrayStore(store.itemCount);
 		for (var index = 0; index < store.itemCount; ++index) {
 			if (store.items[index].equals(item)) {
-				return Optional.of(index);
+				indexes.append(index);
 			}
 		}
 
-		return Optional.empty();
+		indexes.removeExcessCapacity();
+		return new List<>(indexes);
 	}
 
 	/**
 	 * Returns index of the first occurrence of the specified items in this list.
 	 * <p>
 	 * Returns an empty {@link Optional} when the specified items do not occur in this
-	 * lis.
+	 * list.
 	 */
-	public Optional<Integer> find(List<T> items) {
-		throw new UnsupportedOperationException();
+	public Optional<Integer> findFirst(List<T> items) {
+		final var index = store.findAfter(0, items.store);
+
+		return index > -1
+			? Optional.of(index)
+			: Optional.empty();
+	}
+
+	/**
+	 * Returns index of the last occurrence of the specified items in this list.
+	 * <p>
+	 * Returns an empty {@link Optional} when the specified items do not occur in this
+	 * list.
+	 */
+	public Optional<Integer> findLast(List<T> items) {
+		final var index = store.findBefore(store.itemCount, items.store);
+
+		return index > -1
+			? Optional.of(index)
+			: Optional.empty();
+	}
+
+	/**
+	 * Returns indexes of all occurrences of the specified items in this list.
+	 * <p>
+	 * When the specified items do not occur in this list, returns an empty {@link List}.
+	 */
+	public List<Integer> find(List<T> items) {
+		final var indexes = new ContiguousArrayStore(items.store.itemCount);
+		var index = store.findAfter(0, items.store);
+		while (index > -1) {
+			indexes.append(index);
+			index = store.findAfter(index + 1, items.store);
+		}
+
+		indexes.removeExcessCapacity();
+		return new List<>(indexes);
 	}
 
 	private static <T> boolean contains(T[] items, int count, T item) {

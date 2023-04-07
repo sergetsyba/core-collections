@@ -58,6 +58,83 @@ class ContiguousArrayStore {
 	}
 
 	/**
+	 * Returns a new store with a copy of items between the specified start and end
+	 * indexes.
+	 */
+	ContiguousArrayStore get(int start, int end) {
+		final var itemCount = end - start;
+		final var copy = new Object[itemCount];
+		arraycopy(items, start, copy, 0, itemCount);
+
+		return new ContiguousArrayStore(copy, itemCount);
+	}
+
+	/**
+	 * Returns index of the first occurrence of items from the specified store at or
+	 * before the specified index in this store.
+	 * <p>
+	 * When items from the specified store do not occur in this store at or before the
+	 * specified index, returns -1.
+	 */
+	int findBefore(int index, ContiguousArrayStore store) {
+		if (store.itemCount == 0) {
+			return index < itemCount
+				? index
+				: itemCount - 1;
+		}
+
+		final var startIndex = Math.min(index, itemCount - store.itemCount);
+		for (var index1 = startIndex; index1 > -1; --index1) {
+			if (contains(index1, store)) {
+				return index1;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Returns index of the first appearance of items from the specified store at or after
+	 * the specified index in this store.
+	 * <p>
+	 * When items from the specified store do not appear in this store at or after the
+	 * specified index, returns -1.
+	 */
+	int findAfter(int index, ContiguousArrayStore store) {
+		if (store.itemCount == 0) {
+			return index < itemCount
+				? index
+				: -1;
+		}
+
+		final var endIndex = itemCount - store.itemCount;
+		for (var index1 = index; index1 <= endIndex; ++index1) {
+			if (contains(index1, store)) {
+				return index1;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Returns {@code true} when items of the specified store occur in this store at the
+	 * specified index; returns {@code false} otherwise.
+	 */
+	boolean contains(int index, ContiguousArrayStore store) {
+		for (var index2 = 0; index2 < store.itemCount; ++index2) {
+			final var item1 = items[index + index2];
+			final var item2 = store.items[index2];
+
+			if (!item1.equals(item2)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Prepends the specified item to the beginning of this store.
 	 */
 	void prepend(Object item) {

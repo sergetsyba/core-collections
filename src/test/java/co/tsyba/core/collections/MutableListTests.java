@@ -4,7 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static co.tsyba.core.collections.Assert.*;
+import static co.tsyba.core.collections.Assertions.*;
+import static co.tsyba.core.collections.MutableList.minimumCapacity;
 
 class MutableListTests {
 	@Nested
@@ -17,7 +18,8 @@ class MutableListTests {
 
 			assertCapacity(items, 7);
 			assertEquals(items,
-				new String[]{});
+				new String[]{
+				});
 		}
 
 		@Test
@@ -27,7 +29,8 @@ class MutableListTests {
 
 			assertCapacity(items, 0);
 			assertEquals(items,
-				new String[]{});
+				new String[]{
+				});
 		}
 
 		@Test
@@ -45,9 +48,9 @@ class MutableListTests {
 		@Test
 		@DisplayName("creates list")
 		void createsList() {
-			final var items = new MutableList<>(
-				"b", "d", "Q", "P", "G");
+			final var items = new MutableList<>("b", "d", "Q", "P", "G");
 
+			assertCapacity(items, minimumCapacity);
 			assertEquals(items,
 				new String[]{
 					"b", "d", "Q", "P", "G"
@@ -57,9 +60,9 @@ class MutableListTests {
 		@Test
 		@DisplayName("when some items are null, creates list without nulls")
 		void createsListWithoutNullsWhenSomeItemsNull() {
-			final var items = new MutableList<>(
-				null, "B", null, null, "G", null);
+			final var items = new MutableList<>(null, "B", null, null, "G", null);
 
+			assertCapacity(items, minimumCapacity);
 			assertEquals(items,
 				new String[]{
 					"B", "G"
@@ -69,11 +72,12 @@ class MutableListTests {
 		@Test
 		@DisplayName("when all items are null, creates empty list")
 		void createsEmptyListWhenAllItemsNull() {
-			final var items = new MutableList<String>(
-				null, null, null);
+			final var items = new MutableList<String>(null, null, null);
 
+			assertCapacity(items, minimumCapacity);
 			assertEquals(items,
-				new String[]{});
+				new String[]{
+				});
 		}
 
 		@Test
@@ -81,11 +85,12 @@ class MutableListTests {
 		void createsEmptyListWhenArgArrayEmpty() {
 			final var items = new MutableList<String>();
 
+			assertCapacity(items, minimumCapacity);
 			assertEquals(items,
-				new String[]{});
+				new String[]{
+				});
 		}
 	}
-
 
 	@Nested
 	@DisplayName("MutableList(List<T>)")
@@ -96,6 +101,7 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				new List<>("p", "g", "F", "q", "F"));
 
+			assertCapacity(items, minimumCapacity);
 			assertEquals(items,
 				new String[]{
 					"p", "g", "F", "q", "F"
@@ -108,8 +114,10 @@ class MutableListTests {
 			final var items = new MutableList<>(
 				new List<String>());
 
+			assertCapacity(items, minimumCapacity);
 			assertEquals(items,
-				new String[]{});
+				new String[]{
+				});
 		}
 	}
 
@@ -125,7 +133,7 @@ class MutableListTests {
 				final var items = new MutableList<>("g", "E", "x", "s");
 				final var returned = items.set(2, "O");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"g", "E", "O", "s"
@@ -138,7 +146,7 @@ class MutableListTests {
 				final var items = new MutableList<>("v", "E", "q", "A");
 				final var returned = items.set(1, "M");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"v", "M", "q", "A"
@@ -171,7 +179,7 @@ class MutableListTests {
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
 				final var expected = new IndexNotInRangeException(4,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -183,7 +191,7 @@ class MutableListTests {
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
 				final var expected = new IndexNotInRangeException(0,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -205,7 +213,7 @@ class MutableListTests {
 				final var items = new MutableList<>("v", "b", "f");
 				final var returned = items.prepend("g");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"g", "v", "b", "f"
@@ -218,7 +226,7 @@ class MutableListTests {
 				final var items = new MutableList<>("v", "b", "f");
 				final var returned = items.prepend((String) null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"v", "b", "f"
@@ -235,7 +243,7 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend("U");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"U"
@@ -248,9 +256,10 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend((String) null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
-					new String[]{});
+					new String[]{
+					});
 			}
 		}
 	}
@@ -268,7 +277,7 @@ class MutableListTests {
 				final var items = new MutableList<>("h", "V", "d");
 				final var returned = items.prepend("n", "M");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"n", "M", "h", "V", "d"
@@ -281,7 +290,7 @@ class MutableListTests {
 				final var items = new MutableList<>("g", "H");
 				final var returned = items.prepend(null, "n", null, null, "O", null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"n", "O", "g", "H"
@@ -294,7 +303,7 @@ class MutableListTests {
 				final var items = new MutableList<>("f", "E", "q");
 				final var returned = items.prepend(null, null, null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"f", "E", "q"
@@ -307,7 +316,7 @@ class MutableListTests {
 				final var items = new MutableList<>("b", "R", "O");
 				final var returned = items.prepend();
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"b", "R", "O"
@@ -324,7 +333,7 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend("V", "B", "M");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"V", "B", "M"
@@ -337,7 +346,7 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend(null, "R", null, "V", null, null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"R", "V"
@@ -350,9 +359,10 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend(null, null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
-					new String[]{});
+					new String[]{
+					});
 			}
 
 			@Test
@@ -361,9 +371,10 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.prepend();
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
-					new String[]{});
+					new String[]{
+					});
 			}
 		}
 	}
@@ -381,7 +392,7 @@ class MutableListTests {
 				final var returned = items.prepend(
 					new List<>("F", "F", "a"));
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"F", "F", "a", "G", "f"
@@ -395,7 +406,7 @@ class MutableListTests {
 				final var returned = items.prepend(
 					new List<>());
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"G", "f"
@@ -413,7 +424,7 @@ class MutableListTests {
 				final var returned = items.prepend(
 					new List<>("V", "Q", "P"));
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"V", "Q", "P"
@@ -427,9 +438,10 @@ class MutableListTests {
 				final var returned = items.prepend(
 					new List<>());
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
-					new String[]{});
+					new String[]{
+					});
 			}
 		}
 	}
@@ -446,7 +458,7 @@ class MutableListTests {
 				final var items = new MutableList<>("v", "b", "f");
 				final var returned = items.append("g");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"v", "b", "f", "g"
@@ -459,7 +471,7 @@ class MutableListTests {
 				final var items = new MutableList<>("v", "b", "f");
 				final var returned = items.append((String) null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"v", "b", "f"
@@ -476,7 +488,7 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.append("U");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"U"
@@ -489,9 +501,10 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.append((String) null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
-					new String[]{});
+					new String[]{
+					});
 			}
 		}
 	}
@@ -509,7 +522,7 @@ class MutableListTests {
 				final var items = new MutableList<>("h", "V", "d");
 				final var returned = items.append("n", "M");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"h", "V", "d", "n", "M"
@@ -522,7 +535,7 @@ class MutableListTests {
 				final var items = new MutableList<>("g", "H");
 				final var returned = items.append(null, "n", null, null, "O", null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"g", "H", "n", "O"
@@ -535,7 +548,7 @@ class MutableListTests {
 				final var items = new MutableList<>("f", "E", "q");
 				final var returned = items.append(null, null, null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"f", "E", "q"
@@ -548,7 +561,7 @@ class MutableListTests {
 				final var items = new MutableList<>("b", "R", "O");
 				final var returned = items.append();
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"b", "R", "O"
@@ -565,7 +578,7 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.append("V", "B", "M");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"V", "B", "M"
@@ -578,9 +591,10 @@ class MutableListTests {
 				final var items = new MutableList<String>();
 				final var returned = items.append();
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
-					new String[]{});
+					new String[]{
+					});
 			}
 		}
 	}
@@ -598,7 +612,7 @@ class MutableListTests {
 				final var returned = items.append(
 					new List<>("F", "F", "a"));
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"G", "f", "F", "F", "a"
@@ -612,7 +626,7 @@ class MutableListTests {
 				final var returned = items.append(
 					new List<>());
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"G", "f"
@@ -630,7 +644,7 @@ class MutableListTests {
 				final var returned = items.append(
 					new List<>("V", "Q", "P"));
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"V", "Q", "P"
@@ -644,9 +658,10 @@ class MutableListTests {
 				final var returned = items.append(
 					new List<>());
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
-					new String[]{});
+					new String[]{
+					});
 			}
 		}
 	}
@@ -663,7 +678,7 @@ class MutableListTests {
 				final var items = new MutableList<>("F", "e", "Q", "T");
 				final var returned = items.insert(2, "R");
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"F", "e", "R", "Q", "T"
@@ -676,7 +691,7 @@ class MutableListTests {
 				final var items = new MutableList<>("F", "e", "Q", "T");
 				final var returned = items.insert(2, (String) null);
 
-				assert returned == items;
+				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
 						"F", "e", "Q", "T"
@@ -715,7 +730,7 @@ class MutableListTests {
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
 				final var expected = new IndexNotInRangeException(-3,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -727,7 +742,7 @@ class MutableListTests {
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
 				final var expected = new IndexNotInRangeException(0,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -750,10 +765,11 @@ class MutableListTests {
 				final var items = new MutableList<>("v", "F", "G", "h");
 				final var returned = items.insert(2, "F", "F");
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"v", "F", "F", "F", "G", "h"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"v", "F", "F", "F", "G", "h"
+					});
 			}
 
 			@Test
@@ -762,10 +778,11 @@ class MutableListTests {
 				final var items = new MutableList<>("b", "a", "s");
 				final var returned = items.insert(0, "F", null, null, "D");
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"F", "D", "b", "a", "s"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"F", "D", "b", "a", "s"
+					});
 			}
 
 			@Test
@@ -774,10 +791,11 @@ class MutableListTests {
 				final var items = new MutableList<>("b", "a", "s");
 				final var returned = items.insert(0, null, null);
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"b", "a", "s"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"b", "a", "s"
+					});
 			}
 
 			@Test
@@ -786,10 +804,11 @@ class MutableListTests {
 				final var items = new MutableList<>("b", "a", "s");
 				final var returned = items.insert(0);
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"b", "a", "s"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"b", "a", "s"
+					});
 			}
 
 			@Test
@@ -824,7 +843,7 @@ class MutableListTests {
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
 				final var expected = new IndexNotInRangeException(-1,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -836,7 +855,7 @@ class MutableListTests {
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
 				final var expected = new IndexNotInRangeException(0,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -859,10 +878,11 @@ class MutableListTests {
 				final var returned = items.insert(2,
 					new List<>("F", "F"));
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"v", "F", "F", "F", "G", "h"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"v", "F", "F", "F", "G", "h"
+					});
 			}
 
 			@Test
@@ -872,10 +892,11 @@ class MutableListTests {
 				final var returned = items.insert(0,
 					new List<>());
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"b", "a", "s"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"b", "a", "s"
+					});
 			}
 
 			@Test
@@ -912,7 +933,7 @@ class MutableListTests {
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
 				final var expected = new IndexNotInRangeException(-1,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -925,7 +946,7 @@ class MutableListTests {
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
 				final var expected = new IndexNotInRangeException(0,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -950,10 +971,11 @@ class MutableListTests {
 				final var range = new IndexRange(2, 4);
 				final var returned = items.replace(range, "a", "T", "f", "s");
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "a", "T", "f", "s", "w"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "e", "a", "T", "f", "s", "w"
+					});
 			}
 
 			@Test
@@ -963,10 +985,11 @@ class MutableListTests {
 				final var range = new IndexRange(2, 5);
 				final var returned = items.replace(range, null, "b", null, null, "n");
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "b", "n"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "e", "b", "n"
+					});
 			}
 
 			@Test
@@ -976,10 +999,11 @@ class MutableListTests {
 				final var range = new IndexRange(1, 3);
 				final var returned = items.replace(range, null, null);
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "R", "w"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "R", "w"
+					});
 			}
 
 			@Test
@@ -989,10 +1013,11 @@ class MutableListTests {
 				final var range = new IndexRange(2, 3);
 				final var returned = items.replace(range);
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "R", "w"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "e", "R", "w"
+					});
 			}
 
 			@Test
@@ -1002,10 +1027,11 @@ class MutableListTests {
 				final var range = new IndexRange(2, 2);
 				final var returned = items.replace(range);
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "q", "R", "w"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "e", "q", "R", "w"
+					});
 			}
 
 			@Test
@@ -1015,10 +1041,11 @@ class MutableListTests {
 				final var range = new IndexRange(2, 2);
 				final var returned = items.replace(range, "v", "m");
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"v", "a", "v", "m", "f", "j"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"v", "a", "v", "m", "f", "j"
+					});
 			}
 
 			@Test
@@ -1054,9 +1081,9 @@ class MutableListTests {
 			@Test
 			@DisplayName("when index range coincides with valid range, fails")
 			void failsWhenIndexRangeCoincidesValidRange() {
-				final var range = new IndexRange(0, 0);
+				final var range = new IndexRange();
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<String>()
@@ -1069,7 +1096,7 @@ class MutableListTests {
 			void failsWhenIndexRangeStartsAfterValidRange() {
 				final var range = new IndexRange(3, 7);
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<String>()
@@ -1082,7 +1109,7 @@ class MutableListTests {
 			void failsWhenIndexRangeEndsAfterValidRange() {
 				final var range = new IndexRange(0, 1);
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<String>()
@@ -1107,10 +1134,11 @@ class MutableListTests {
 				final var returned = items.replace(range,
 					new List<>("a", "T", "f", "s"));
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "a", "T", "f", "s", "w"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "e", "a", "T", "f", "s", "w"
+					});
 			}
 
 			@Test
@@ -1121,10 +1149,11 @@ class MutableListTests {
 				final var returned = items.replace(range,
 					new List<>("v", "m"));
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"v", "a", "v", "m", "f", "j"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"v", "a", "v", "m", "f", "j"
+					});
 			}
 
 			@Test
@@ -1135,10 +1164,11 @@ class MutableListTests {
 				final var returned = items.replace(range,
 					new List<>());
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "w"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "e", "w"
+					});
 			}
 
 			@Test
@@ -1149,10 +1179,11 @@ class MutableListTests {
 				final var returned = items.replace(range,
 					new List<>());
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"f", "e", "q", "R", "w"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"f", "e", "q", "R", "w"
+					});
 			}
 
 			@Test
@@ -1190,9 +1221,9 @@ class MutableListTests {
 			@Test
 			@DisplayName("when index range coincides with valid range, fails")
 			void failsWhenIndexRangeCoincidesValidRange() {
-				final var range = new IndexRange(0, 0);
+				final var range = new IndexRange();
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<String>()
@@ -1206,7 +1237,7 @@ class MutableListTests {
 			void failsWhenIndexRangeStartsAfterValidRange() {
 				final var range = new IndexRange(1, 2);
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<String>()
@@ -1220,7 +1251,7 @@ class MutableListTests {
 			void failsWhenIndexRangeEndsAfterValidRange() {
 				final var range = new IndexRange(0, 2);
 				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<String>()
@@ -1240,10 +1271,11 @@ class MutableListTests {
 			final var items = new MutableList<>("g", "e", "v", "Q");
 			final var returned = items.removeFirst();
 
-			assert returned == items;
-			assertEquals(items, new String[]{
-				"e", "v", "Q"
-			});
+			assertIs(returned, items);
+			assertEquals(items,
+				new String[]{
+					"e", "v", "Q"
+				});
 		}
 
 		@Test
@@ -1252,9 +1284,10 @@ class MutableListTests {
 			final var items = new MutableList<String>();
 			final var returned = items.removeFirst();
 
-			assert returned == items;
-			assertEquals(items, new String[]{
-			});
+			assertIs(returned, items);
+			assertEquals(items,
+				new String[]{
+				});
 		}
 	}
 
@@ -1267,10 +1300,11 @@ class MutableListTests {
 			final var items = new MutableList<>("g", "e", "v", "Q");
 			final var returned = items.removeLast();
 
-			assert returned == items;
-			assertEquals(items, new String[]{
-				"g", "e", "v"
-			});
+			assertIs(returned, items);
+			assertEquals(items,
+				new String[]{
+					"g", "e", "v"
+				});
 		}
 
 		@Test
@@ -1279,9 +1313,10 @@ class MutableListTests {
 			final var items = new MutableList<String>();
 			final var returned = items.removeLast();
 
-			assert returned == items;
-			assertEquals(items, new String[]{
-			});
+			assertIs(returned, items);
+			assertEquals(items,
+				new String[]{
+				});
 		}
 	}
 
@@ -1297,10 +1332,11 @@ class MutableListTests {
 				final var items = new MutableList<>("g", "k", "U", "P");
 				final var returned = items.remove(2);
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"g", "k", "P"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"g", "k", "P"
+					});
 			}
 
 			@Test
@@ -1335,7 +1371,7 @@ class MutableListTests {
 			@DisplayName("when index is before valid range, fails")
 			void failsWhenIndexBeforeValidRange() {
 				final var expected = new IndexNotInRangeException(-9,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -1347,7 +1383,7 @@ class MutableListTests {
 			@DisplayName("when index is after valid range, fails")
 			void failsWhenIndexAfterValidRange() {
 				final var expected = new IndexNotInRangeException(0,
-					new IndexRange(0, 0));
+					new IndexRange());
 
 				assertThrows(() -> {
 					new MutableList<>()
@@ -1370,10 +1406,11 @@ class MutableListTests {
 				final var returned = items.remove(
 					new IndexRange(1, 4));
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"g", "j", "P"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"g", "j", "P"
+					});
 			}
 
 			@Test
@@ -1381,12 +1418,13 @@ class MutableListTests {
 			void doesNothingWhenIndexRangeEmpty() {
 				final var items = new MutableList<>("g", "w", "Q", "c", "j", "P");
 				final var returned = items.remove(
-					new IndexRange(0, 0));
+					new IndexRange());
 
-				assert returned == items;
-				assertEquals(items, new String[]{
-					"g", "w", "Q", "c", "j", "P"
-				});
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"g", "w", "Q", "c", "j", "P"
+					});
 			}
 
 			@Test
@@ -1422,7 +1460,7 @@ class MutableListTests {
 			@Test
 			@DisplayName("when index range coincides with valid range, fails")
 			void failsWhenIndexRangeCoincidesWithValidRange() {
-				final var range = new IndexRange(0, 0);
+				final var range = new IndexRange();
 				final var expected = new IndexRangeNotInRangeException(range,
 					new IndexRange());
 
@@ -1469,9 +1507,10 @@ class MutableListTests {
 			final var items = new MutableList<>("b", "D", "e", "P");
 			final var returned = items.clear();
 
-			assert returned == items;
-			assertEquals(items, new String[]{
-			});
+			assertIs(returned, items);
+			assertEquals(items,
+				new String[]{
+				});
 		}
 
 		@Test
@@ -1480,9 +1519,10 @@ class MutableListTests {
 			final var items = new MutableList<>();
 			final var returned = items.clear();
 
-			assert returned == items;
-			assertEquals(items, new String[]{
-			});
+			assertIs(returned, items);
+			assertEquals(items,
+				new String[]{
+				});
 		}
 	}
 
@@ -1496,11 +1536,12 @@ class MutableListTests {
 				.toImmutable();
 
 			final var klass = items.getClass();
-			assert klass.equals(List.class);
+			assertEquals(klass, List.class);
 
-			assertEquals(items, new String[]{
-				"v", "m", "K", "l"
-			});
+			assertEquals(items,
+				new String[]{
+					"v", "m", "K", "l"
+				});
 		}
 
 		@Test
@@ -1510,11 +1551,17 @@ class MutableListTests {
 				.toImmutable();
 
 			final var klass = items.getClass();
-			assert klass.equals(List.class);
+			assertEquals(klass, List.class);
 
-			assertEquals(items, new String[]{
-			});
+			assertEquals(items,
+				new String[]{
+				});
 		}
+	}
+
+	private static void assertCapacity(MutableList<?> actual, int expected) {
+		assertEquals(actual.store.items.length, expected,
+			"List capacity differs from expectation.");
 	}
 }
 
