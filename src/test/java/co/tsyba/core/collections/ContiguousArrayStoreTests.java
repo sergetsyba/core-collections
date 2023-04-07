@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
-import static co.tsyba.core.collections.Assert.assertEquals;
+import static co.tsyba.core.collections.Assertions.assertEquals;
 
 class ContiguousArrayStoreTests {
 	@Nested
@@ -28,7 +28,7 @@ class ContiguousArrayStoreTests {
 				final var store2 = store1.get(3, 7);
 
 				assertItemCount(store2, 4);
-				assertItems(store2,
+				assertEquals(store2,
 					new String[]{
 						"h", "F", "s", "M"
 					});
@@ -40,7 +40,7 @@ class ContiguousArrayStoreTests {
 				final var store2 = store1.get(4, 4);
 
 				assertItemCount(store2, 0);
-				assertItems(store2,
+				assertEquals(store2,
 					new String[]{
 					});
 			}
@@ -51,7 +51,7 @@ class ContiguousArrayStoreTests {
 				final var store2 = store1.get(0, 8);
 
 				assertItemCount(store2, 8);
-				assertItems(store2,
+				assertEquals(store2,
 					new String[]{
 						"g", "e", "W", "h", "F", "s", "M", "V"
 					});
@@ -72,7 +72,7 @@ class ContiguousArrayStoreTests {
 				final var store2 = store1.get(0, 0);
 
 				assertItemCount(store2, 0);
-				assertItems(store2,
+				assertEquals(store2,
 					new String[]{
 					});
 			}
@@ -418,7 +418,7 @@ class ContiguousArrayStoreTests {
 			store.prepend("6");
 
 			assertItemCount(store, 5);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"6", "5", "3", "6", "7", null, null
 				});
@@ -435,7 +435,7 @@ class ContiguousArrayStoreTests {
 			store.prepend("6");
 
 			assertItemCount(store, 6);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"6", "5", "3", "7", "5", "3", null, null, null, null, null, null
 				});
@@ -451,7 +451,7 @@ class ContiguousArrayStoreTests {
 			store.prepend("8");
 
 			assertItemCount(store, 1);
-			assertItems(store, new String[]{
+			assertEquals(store, new String[]{
 				"8", null
 			});
 		}
@@ -475,7 +475,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "r", "W", "f", "e"
 				});
@@ -495,7 +495,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 6);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "r", "W", "h", "e", "w", null, null, null, null, null, null
 				});
@@ -516,7 +516,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"f", "w", "f", "e", "q", null, null, null, null, null
 				});
@@ -536,7 +536,7 @@ class ContiguousArrayStoreTests {
 			store1.prepend(store2);
 
 			assertItemCount(store1, 2);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"v", "e", null, null
 				});
@@ -557,7 +557,7 @@ class ContiguousArrayStoreTests {
 			store.append("6");
 
 			assertItemCount(store, 5);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "6", "7", "6", null, null
 				});
@@ -574,7 +574,7 @@ class ContiguousArrayStoreTests {
 			store.append("6");
 
 			assertItemCount(store, 6);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "7", "5", "3", "6", null, null, null, null, null, null
 				});
@@ -590,7 +590,7 @@ class ContiguousArrayStoreTests {
 			store.append("8");
 
 			assertItemCount(store, 1);
-			assertItems(store, new String[]{
+			assertEquals(store, new String[]{
 				"8", null
 			});
 		}
@@ -614,7 +614,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"f", "e", "g", "r", "W"
 				});
@@ -635,7 +635,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 6);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"h", "e", "w", "g", "r", "W", null, null, null, null, null, null
 				});
@@ -656,7 +656,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"f", "e", "q", "f", "w", null, null, null, null, null
 				});
@@ -676,7 +676,7 @@ class ContiguousArrayStoreTests {
 			store1.append(store2);
 
 			assertItemCount(store1, 2);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"v", "e", null, null
 				});
@@ -697,7 +697,7 @@ class ContiguousArrayStoreTests {
 			store.insert(2, "6");
 
 			assertItemCount(store, 5);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "6", "6", "7", null, null
 				});
@@ -714,7 +714,7 @@ class ContiguousArrayStoreTests {
 			store.insert(2, "6");
 
 			assertItemCount(store, 6);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"5", "3", "6", "7", "5", "3", null, null, null, null, null, null
 				});
@@ -739,7 +739,7 @@ class ContiguousArrayStoreTests {
 			store1.insert(3, store2);
 
 			assertItemCount(store1, 8);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "3", "d", "b", "J", "L", "O", "W", null
 				});
@@ -760,7 +760,7 @@ class ContiguousArrayStoreTests {
 			store1.insert(1, store2);
 
 			assertItemCount(store1, 4);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "b", "J", "3", null, null, null, null
 				});
@@ -781,7 +781,7 @@ class ContiguousArrayStoreTests {
 			store1.insert(1, store2);
 
 			assertItemCount(store1, 5);
-			assertItems(store1,
+			assertEquals(store1,
 				new String[]{
 					"g", "b", "J", "3", "F", null, null, null, null, null
 				});
@@ -811,7 +811,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 5);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"f", "W", "u", "q", "t", null, null
 					});
@@ -834,7 +834,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 3);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"f", "W", "t", null, null, null, null
 					});
@@ -856,7 +856,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"g", "b", "e", "O", "W", "h", null
 					});
@@ -878,7 +878,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", "g", "b", "u", "P", "e", null, null
 					});
@@ -899,7 +899,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 1);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", null, null, null, null
 					});
@@ -921,7 +921,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 4);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", "M", "L", "b", null
 					});
@@ -948,7 +948,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"g", "b", "e", "O", "W", "h", null, null, null, null, null, null
 					});
@@ -970,7 +970,7 @@ class ContiguousArrayStoreTests {
 				store1.replace(range, store2);
 
 				assertItemCount(store1, 6);
-				assertItems(store1,
+				assertEquals(store1,
 					new String[]{
 						"b", "g", "b", "u", "P", "e", null, null, null, null, null, null
 					});
@@ -992,7 +992,7 @@ class ContiguousArrayStoreTests {
 			store.remove(3);
 
 			assertItemCount(store, 3);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"g", "r", "E", null, null
 				});
@@ -1014,7 +1014,7 @@ class ContiguousArrayStoreTests {
 			store.remove(range);
 
 			assertItemCount(store, 3);
-			assertItems(store,
+			assertEquals(store,
 				new String[]{
 					"b", "E", "B", null, null, null, null
 				});
@@ -1035,7 +1035,7 @@ class ContiguousArrayStoreTests {
 			final var reversed = store.reverse();
 
 			assertItemCount(reversed, 4);
-			assertItems(reversed,
+			assertEquals(reversed,
 				new String[]{
 					"Q", "e", "R", "v", null, null, null
 				});
@@ -1052,7 +1052,7 @@ class ContiguousArrayStoreTests {
 			final var reversed = store.reverse();
 
 			assertItemCount(reversed, 0);
-			assertItems(reversed,
+			assertEquals(reversed,
 				new String[]{
 					null, null, null, null
 				});
@@ -1073,7 +1073,7 @@ class ContiguousArrayStoreTests {
 			final var sorted = store.<String>sort(Comparator.naturalOrder());
 
 			assertItemCount(sorted, 5);
-			assertItems(sorted,
+			assertEquals(sorted,
 				new String[]{
 					"C", "R", "e", "q", "v", null, null
 				});
@@ -1091,7 +1091,7 @@ class ContiguousArrayStoreTests {
 			final var sorted = store.<String>sort(Comparator.naturalOrder());
 
 			assertItemCount(sorted, 0);
-			assertItems(sorted,
+			assertEquals(sorted,
 				new String[]{
 					null, null, null, null
 				});
@@ -1114,7 +1114,7 @@ class ContiguousArrayStoreTests {
 			final var shuffled = store.shuffle(random);
 
 			assertItemCount(shuffled, 4);
-			assertItemsShuffled(shuffled, store, 4);
+			assertShuffled(shuffled, store, 4);
 		}
 
 		@Test
@@ -1129,31 +1129,19 @@ class ContiguousArrayStoreTests {
 			final var shuffled = store.shuffle(random);
 
 			assertItemCount(shuffled, 0);
-			assertItems(shuffled,
+			assertEquals(shuffled,
 				new String[]{
 					null, null, null, null
 				});
 		}
 	}
 
-	static void assertItemCount(ContiguousArrayStore store, int expected) {
-		assert store.itemCount == expected :
-			String.format("Incorrect item count." +
-					"\n\texpected: %d," +
-					"\n\tactual:   %d",
-				expected, store.itemCount);
+	private static void assertItemCount(ContiguousArrayStore store, int expected) {
+		assertEquals(store.itemCount, expected,
+			"Item count differs from expectation.");
 	}
 
-	static void assertItems(ContiguousArrayStore store, Object[] expected) {
-		assert Arrays.equals(store.items, expected) :
-			String.format("Incorrect items." +
-					"\n\texpected: %s" +
-					"\n\tactual:   %s",
-				Arrays.toString(expected),
-				Arrays.toString(store.items));
-	}
-
-	static void assertItemsShuffled(ContiguousArrayStore shuffled, ContiguousArrayStore original, int itemCount) {
+	private static void assertShuffled(ContiguousArrayStore shuffled, ContiguousArrayStore original, int itemCount) {
 		// verify shuffled store preserves item capacity
 		assert shuffled.items.length == original.items.length;
 

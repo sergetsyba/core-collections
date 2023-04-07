@@ -12,21 +12,12 @@ import static co.tsyba.core.collections.ContiguousArrayStore.compact;
 public class MutableList<T> extends List<T> {
 	static final int minimumCapacity = 64;
 
-	/**
-	 * Creates an empty list with the specified item capacity.
-	 * <p>
-	 * When approximate item count is known in advance, use this constructor to create a
-	 * list with enough space in its backing store. This improves performance when adding
-	 * items to this list and saves memory when default capacity exceeds item count.
-	 *
-	 * @throws IllegalArgumentException when the specified item capacity is negative
-	 */
-	MutableList(int capacity) {
-		super(capacity);
-	}
-
 	MutableList(ContiguousArrayStore store) {
 		super(store);
+	}
+
+	MutableList(int capacity) {
+		super(new ContiguousArrayStore(capacity));
 	}
 
 	/**

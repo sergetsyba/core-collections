@@ -13,10 +13,6 @@ import java.util.function.Predicate;
 public class List<T> implements Collection<T> {
 	ContiguousArrayStore store;
 
-	List(int capacity) {
-		this.store = new ContiguousArrayStore(capacity);
-	}
-
 	List(ContiguousArrayStore store) {
 		this.store = store;
 	}
