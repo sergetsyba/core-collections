@@ -61,9 +61,9 @@ class ContiguousArrayStore {
 	 * Returns a new store with a copy of items between the specified start and end
 	 * indexes.
 	 */
-	ContiguousArrayStore get(int start, int end) {
+	ContiguousArrayStore get(int capacity, int start, int end) {
+		final var copy = new Object[capacity];
 		final var itemCount = end - start;
-		final var copy = new Object[itemCount];
 		arraycopy(items, start, copy, 0, itemCount);
 
 		return new ContiguousArrayStore(copy, itemCount);
