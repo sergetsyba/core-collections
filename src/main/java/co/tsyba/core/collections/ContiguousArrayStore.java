@@ -44,10 +44,6 @@ class ContiguousArrayStore {
 	 * @throws IllegalArgumentException when the specified store capacity is negative
 	 */
 	ContiguousArrayStore(int capacity) {
-		if (capacity < 0) {
-			throw new IllegalArgumentException("Cannot create array store with negative capacity: " + capacity + ".");
-		}
-
 		this.items = new Object[capacity];
 		this.itemCount = 0;
 	}
