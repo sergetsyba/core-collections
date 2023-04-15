@@ -127,7 +127,7 @@ public class List<T> implements Collection<T> {
 			throw new IndexNotInRangeException(index, validRange);
 		}
 
-		final var prefix = store.get(0, index);
+		final var prefix = store.get(index, 0, index);
 		return new List<>(prefix);
 	}
 
@@ -143,7 +143,8 @@ public class List<T> implements Collection<T> {
 			throw new IndexNotInRangeException(index, validRange);
 		}
 
-		final var suffix = store.get(index, store.itemCount);
+		final var capacity = store.itemCount - index;
+		final var suffix = store.get(capacity, index, store.itemCount);
 		return new List<>(suffix);
 	}
 
@@ -159,7 +160,7 @@ public class List<T> implements Collection<T> {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
-		final var sub = store.get(indexRange.start, indexRange.end);
+		final var sub = store.get(indexRange.length, indexRange.start, indexRange.end);
 		return new List<>(sub);
 	}
 
@@ -439,29 +440,6 @@ public class List<T> implements Collection<T> {
 				@SuppressWarnings("unchecked")
 				final var item = (T) store.items[index];
 				++index;
-
-				return item;
-			}
-		};
-	}
-
-	/**
-	 * Returns iterator over items of this collection in reverse order.
-	 */
-	public Iterator<T> reverseIterator() {
-		return new Iterator<>() {
-			private int index = store.itemCount - 1;
-
-			@Override
-			public boolean hasNext() {
-				return index > -1;
-			}
-
-			@Override
-			public T next() {
-				@SuppressWarnings("unchecked")
-				final var item = (T) store.items[index];
-				--index;
 
 				return item;
 			}

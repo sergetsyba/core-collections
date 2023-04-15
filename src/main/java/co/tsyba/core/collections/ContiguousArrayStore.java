@@ -44,10 +44,6 @@ class ContiguousArrayStore {
 	 * @throws IllegalArgumentException when the specified store capacity is negative
 	 */
 	ContiguousArrayStore(int capacity) {
-		if (capacity < 0) {
-			throw new IllegalArgumentException("Cannot create array store with negative capacity: " + capacity + ".");
-		}
-
 		this.items = new Object[capacity];
 		this.itemCount = 0;
 	}
@@ -61,9 +57,9 @@ class ContiguousArrayStore {
 	 * Returns a new store with a copy of items between the specified start and end
 	 * indexes.
 	 */
-	ContiguousArrayStore get(int start, int end) {
+	ContiguousArrayStore get(int capacity, int start, int end) {
+		final var copy = new Object[capacity];
 		final var itemCount = end - start;
-		final var copy = new Object[itemCount];
 		arraycopy(items, start, copy, 0, itemCount);
 
 		return new ContiguousArrayStore(copy, itemCount);

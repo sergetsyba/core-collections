@@ -90,7 +90,11 @@ final class Assertions {
 	}
 
 	static <T> void assertEquals(MutableList<T> actual, T[] expected) {
+		final var length = Math.min(actual.store.itemCount, expected.length);
+		final var actual2 = Arrays.copyOf(actual.store.items, length);
 
+		assertEquals(actual2, expected,
+			"List differs from expectation.");
 	}
 
 	static <T> void assertEquals(Iterable<T> actual, T[] expected) {

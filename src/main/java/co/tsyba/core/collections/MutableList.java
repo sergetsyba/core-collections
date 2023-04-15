@@ -2,6 +2,10 @@ package co.tsyba.core.collections;
 
 import java.util.Comparator;
 import java.util.Random;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static co.tsyba.core.collections.ContiguousArrayStore.compact;
 
@@ -16,10 +20,6 @@ public class MutableList<T> extends List<T> {
 		super(store);
 	}
 
-	MutableList(int capacity) {
-		super(new ContiguousArrayStore(capacity));
-	}
-
 	/**
 	 * Creates a list with the specified items.
 	 * <p>
@@ -27,7 +27,9 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public MutableList(T... items) {
-		this(Math.max(items.length, minimumCapacity));
+		super(new ContiguousArrayStore(
+			Math.max(items.length, minimumCapacity)));
+
 		append(items);
 	}
 
@@ -35,8 +37,28 @@ public class MutableList<T> extends List<T> {
 	 * Creates a copy of the specified items.
 	 */
 	public MutableList(Collection<T> items) {
-		this(Math.max(items.getCount(), minimumCapacity));
+		this(new ContiguousArrayStore(
+			Math.max(items.getCount(), minimumCapacity)));
+
 		items.forEach(this::append);
+	}
+
+	@Override
+	public MutableList<T> getPrefix(int index) {
+		final var prefix = super.getPrefix(index);
+		return new MutableList<>(prefix.store);
+	}
+
+	@Override
+	public MutableList<T> getSuffix(int index) {
+		final var suffix = super.getSuffix(index);
+		return new MutableList<>(suffix.store);
+	}
+
+	@Override
+	public MutableList<T> get(IndexRange indexRange) {
+		final var sub = super.get(indexRange);
+		return new MutableList<>(sub);
 	}
 
 	/**
@@ -311,24 +333,54 @@ public class MutableList<T> extends List<T> {
 	}
 
 	@Override
-	public List<T> reverse() {
+	public MutableList<T> getDistinct() {
+		final var distinct = super.getDistinct();
+		return new MutableList<>(distinct);
+	}
+
+	@Override
+	public MutableList<T> reverse() {
 		final var reversed = store.reverse();
 		return new MutableList<>(reversed);
 	}
 
 	@Override
-	public List<T> sort(Comparator<T> comparator) {
+	public MutableList<T> sort(Comparator<T> comparator) {
 		final var sorted = store.sort(comparator);
 		return new MutableList<>(sorted);
 	}
 
 	@Override
-	public List<T> shuffle() {
+	public MutableList<T> shuffle() {
 		final var seed = System.currentTimeMillis();
 		final var random = new Random(seed);
 		final var shuffled = store.shuffle(random);
 
 		return new MutableList<>(shuffled);
+	}
+
+	@Override
+	public MutableList<T> iterate(Consumer<T> operation) {
+		super.iterate(operation);
+		return this;
+	}
+
+	@Override
+	public MutableList<T> enumerate(BiConsumer<T, Integer> operation) {
+		super.enumerate(operation);
+		return this;
+	}
+
+	@Override
+	public MutableList<T> filter(Predicate<T> condition) {
+		final var filtered = super.filter(condition);
+		return new MutableList<>(filtered.store);
+	}
+
+	@Override
+	public <R> MutableList<R> convert(Function<T, R> converter) {
+		final var converted = super.convert(converter);
+		return new MutableList<>(converted);
 	}
 
 	/**

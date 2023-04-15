@@ -25,35 +25,36 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when indexes in range, returns items in range")
 			void returnsItemsInRangeWhenIndexesInRange() {
-				final var store2 = store1.get(3, 7);
+				final var store2 = store1.get(6, 3, 7);
 
 				assertItemCount(store2, 4);
 				assertEquals(store2,
 					new String[]{
-						"h", "F", "s", "M"
+						"h", "F", "s", "M", null, null
 					});
 			}
 
 			@Test
 			@DisplayName("when indexes equal, returns empty store")
 			void returnsEmptyStoreWhenIndexesEqual() {
-				final var store2 = store1.get(4, 4);
+				final var store2 = store1.get(3, 4, 4);
 
 				assertItemCount(store2, 0);
 				assertEquals(store2,
 					new String[]{
+						null, null, null
 					});
 			}
 
 			@Test
 			@DisplayName("when indexes are at start and end, returns copy of store")
 			void returnsStoreCopyWhenIndexesAtStartAndEnd() {
-				final var store2 = store1.get(0, 8);
+				final var store2 = store1.get(9, 0, 8);
 
 				assertItemCount(store2, 8);
 				assertEquals(store2,
 					new String[]{
-						"g", "e", "W", "h", "F", "s", "M", "V"
+						"g", "e", "W", "h", "F", "s", "M", "V", null
 					});
 			}
 		}
@@ -69,11 +70,12 @@ class ContiguousArrayStoreTests {
 			@Test
 			@DisplayName("when indexes are at start and end, returns empty store")
 			void returnsEmptyStoreWhenIndexesAtStartAndEnd() {
-				final var store2 = store1.get(0, 0);
+				final var store2 = store1.get(2, 0, 0);
 
 				assertItemCount(store2, 0);
 				assertEquals(store2,
 					new String[]{
+						null, null
 					});
 			}
 		}
