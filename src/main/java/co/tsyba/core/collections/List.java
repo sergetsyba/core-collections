@@ -446,29 +446,6 @@ public class List<T> implements Collection<T> {
 		};
 	}
 
-	/**
-	 * Returns iterator over items of this collection in reverse order.
-	 */
-	public Iterator<T> reverseIterator() {
-		return new Iterator<>() {
-			private int index = store.itemCount - 1;
-
-			@Override
-			public boolean hasNext() {
-				return index > -1;
-			}
-
-			@Override
-			public T next() {
-				@SuppressWarnings("unchecked")
-				final var item = (T) store.items[index];
-				--index;
-
-				return item;
-			}
-		};
-	}
-
 	@Override
 	public Object[] toArray() {
 		return Arrays.copyOf(store.items, store.itemCount);
