@@ -20,10 +20,6 @@ public class MutableList<T> extends List<T> {
 		super(store);
 	}
 
-	MutableList(int capacity) {
-		super(new ContiguousArrayStore(capacity));
-	}
-
 	/**
 	 * Creates a list with the specified items.
 	 * <p>
@@ -31,7 +27,9 @@ public class MutableList<T> extends List<T> {
 	 */
 	@SafeVarargs
 	public MutableList(T... items) {
-		this(Math.max(items.length, minimumCapacity));
+		super(new ContiguousArrayStore(
+			Math.max(items.length, minimumCapacity)));
+
 		append(items);
 	}
 
@@ -39,7 +37,9 @@ public class MutableList<T> extends List<T> {
 	 * Creates a copy of the specified items.
 	 */
 	public MutableList(Collection<T> items) {
-		this(Math.max(items.getCount(), minimumCapacity));
+		this(new ContiguousArrayStore(
+			Math.max(items.getCount(), minimumCapacity)));
+
 		items.forEach(this::append);
 	}
 
