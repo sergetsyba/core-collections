@@ -8,11 +8,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * A container, which allows iteration over its items.
+ * A container, which allows non-destructive iteration over its items.
  * <p>
- * Unlike more general {@link Iterable}, {@link Collection} guarantees iteration will not
- * destructively consume it. Therefore, it can be iterated any number of times. This
- * requirement enables useful operations, which can be based solely on iterability.
+ * Unlike more general {@link Iterable}, {@link Collection} requires that iteration does
+ * not destructively consume it. And so, it can be iterated any number of times.
  * <p>
  * Note, that {@link Collection} does not guarantee that relative item order stays the
  * same in each iteration.

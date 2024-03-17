@@ -1,467 +1,432 @@
 package co.tsyba.core.collections;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.converter.TypedArgumentConverter;
+import org.junit.jupiter.params.provider.CsvSource;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class CollectionTests {
-	@Nested
 	@DisplayName(".isEmpty()")
-	class IsEmptyTests {
-		@Test
-		@DisplayName("returns true when collection is empty")
-		void returnsTrueWhenEmpty() {
-			final var items = new TestCollection<>();
-			assert items.isEmpty();
-		}
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns false;" +
+			"[f, T, q, r];" +
+			"false",
+		"when collection is empty, returns true;" +
+			"[];" +
+			"true"
+	})
+	void testIsEmpty(String name, @StringCollection Collection<String> items,
+		boolean expected) {
 
-		@Test
-		@DisplayName("returns false when collection is not empty")
-		void returnsFalseWhenNotEmpty() {
-			final var items = new TestCollection<>("f", "T", "q", "r");
-			assert !items.isEmpty();
-		}
+		final var empty = items.isEmpty();
+		assertEquals(expected, empty);
 	}
 
-	@Nested
 	@DisplayName(".getCount()")
-	class GetCountTests {
-		@Test
-		@DisplayName("returns item count when collection is not empty")
-		void returnsCountWhenNotEmpty() {
-			final var items = new TestCollection<>("b", "5", "F", "e");
-			final var count = items.getCount();
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns item count;" +
+			"[b, 5, F, e];" +
+			"4",
+		"when collection is empty, returns 0;" +
+			"[];" +
+			"0"
+	})
+	void testGetCount(String name, @StringCollection Collection<String> items,
+		int expected) {
 
-			assert 4 == count;
-		}
-
-		@Test
-		@DisplayName("returns 0 when collection is empty")
-		void returnsZeroWhenEmpty() {
-			final var items = new TestCollection<>();
-			final var count = items.getCount();
-
-			assert 0 == count;
-		}
+		final var count = items.getCount();
+		assertEquals(expected, count);
 	}
 
-	@Nested
-	@DisplayName(".getMinimum()")
-	class GetMinimumTests {
-		@Test
-		@DisplayName("returns minimum item when collection is not empty")
-		void returnsMinWhenNotEmpty() {
-			final var items = new TestCollection<>(5, 12, 7, 0, 3, 6);
-			final var minimum = items.getMinimum(Comparator.naturalOrder());
+	@DisplayName(".getMinimum(Comparator<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns minimum;" +
+			"[b, L, P, g, V, c];" +
+			"L",
+		"when collection is empty, returns empty optional;" +
+			"[];" +
+			" "
+	})
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	void testGetMinimum(String name, @StringCollection Collection<String> items,
+		@StringOptional Optional<String> expected) {
 
-			assert Optional.of(0)
-				.equals(minimum);
-		}
-
-		@Test
-		@DisplayName("returns empty when collection is empty")
-		void returnsEmptyWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			final var minimum = items.getMinimum(Comparator.naturalOrder());
-
-			assert minimum.isEmpty();
-		}
+		final var min = items.getMinimum(Comparator.naturalOrder());
+		assertEquals(expected, min);
 	}
 
-	@Nested
-	@DisplayName(".getMaximum()")
-	class GetMaximumTests {
-		@Test
-		@DisplayName("returns maximum item when collection is not empty")
-		void returnsMaxWhenNotEmpty() {
-			final var items = new TestCollection<>(5, 12, 7, 0, 3, 6);
-			final var maximum = items.getMaximum(Comparator.naturalOrder());
+	@DisplayName(".getMaximum(Comparator<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns maximum;" +
+			"[b, L, P, g, V, c];" +
+			"g",
+		"when collection is empty, returns empty optional;" +
+			"[];" +
+			" "
+	})
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	void testGetMaximum(String name, @StringCollection Collection<String> items,
+		@StringOptional Optional<String> expected) {
 
-			assert Optional.of(12)
-				.equals(maximum);
-		}
-
-		@Test
-		@DisplayName("returns empty when collection is empty")
-		void returnsEmptyWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			final var maximum = items.getMaximum(Comparator.naturalOrder());
-
-			assert maximum.isEmpty();
-		}
+		final var min = items.getMaximum(Comparator.naturalOrder());
+		assertEquals(expected, min);
 	}
 
-	@Nested
 	@DisplayName(".contains(T)")
-	class ContainsTests {
-		@Test
-		@DisplayName("returns true when item is present")
-		void returnsTrueWhenPresent() {
-			final var items = new TestCollection<>("t", "d", "5", "V", "A");
-			assert items.contains("5");
-		}
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when item is present, returns true;" +
+			"[t, d, 5, V, A]; 5;" +
+			"true",
+		"when item is absent, returns false;" +
+			"[t, d, 5, V, A]; 7;" +
+			"false",
+		"when collection is empty, returns false;" +
+			"[]; 5;" +
+			"false",
+	})
+	void testContains(String name, @StringCollection Collection<String> items,
+		String item, boolean expected) {
 
-		@Test
-		@DisplayName("returns false when item is absent")
-		void returnsFalseWhenAbsent() {
-			final var items = new TestCollection<>("O", "P", "q");
-			assert !items.contains("5");
-		}
-
-		@Test
-		@DisplayName("returns false when collection is empty")
-		void returnsFalseWhenEmpty() {
-			final var items = new TestCollection<>();
-			assert !items.contains("5");
-		}
+		final var contains = items.contains(item);
+		assertEquals(expected, contains);
 	}
 
-	@Nested
 	@DisplayName(".contains(Collection<T>)")
-	class ContainsCollectionTests {
-		@Test
-		@DisplayName("returns true when all items are present")
-		void returnsTrueWhenAllPresent() {
-			final var items1 = new TestCollection<>("t", "d", "5", "V", "A");
-			final var items2 = new TestCollection<>("A", "d", "t");
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when all items are present, returns true;" +
+			"[t, d, 5, V, A]; [A, d, t];" +
+			"true",
+		"when some items are absent, returns false;" +
+			"[O, P, q]; [P, 0, O];" +
+			"false",
+		"when all items are absent, returns false;" +
+			"[Y, f, E, 3]; [N, R, P];" +
+			"false",
+		"when items are empty, returns true;" +
+			"[Y, f, E, 3]; [];" +
+			"true",
+		"when collection is empty, returns false;" +
+			"[]; [A, d, t];" +
+			"false",
+		"when collection and items are empty, returns true;" +
+			"[]; [];" +
+			"true"
+	})
+	void testContainsCollection(String name, @StringCollection Collection<String> items1,
+		@StringCollection Collection<String> items2, boolean expected) {
 
-			assert items1.contains(items2);
-		}
-
-		@Test
-		@DisplayName("returns false when some items are absent")
-		void returnsFalseWhenSomeAbsent() {
-			final var items1 = new TestCollection<>("O", "P", "q");
-			final var items2 = new TestCollection<>("P", "0", "O");
-
-			assert !items1.contains(items2);
-		}
-
-		@Test
-		@DisplayName("returns false when all items are absent")
-		void returnsFalseWhenAllAbsent() {
-			final var items1 = new TestCollection<>("Y", "f", "E", "3");
-			final var items2 = new TestCollection<>("N", "R", "P");
-
-			assert !items1.contains(items2);
-		}
-
-		@Test
-		@DisplayName("returns false when collection is empty")
-		void returnsFalseWhenEmpty() {
-			final var items1 = new TestCollection<String>();
-			final var items2 = new TestCollection<>("G", "Q");
-
-			assert !items1.contains(items2);
-		}
-
-		@Test
-		@DisplayName("returns true when items is empty")
-		void returnsTrueWhenItemsEmpty() {
-			final var items1 = new TestCollection<>("A", "t", "I", "P");
-			final var items2 = new TestCollection<String>();
-
-			assert items1.contains(items2);
-		}
-
-		@Test
-		@DisplayName("returns true when collection and items are empty")
-		void returnsTrueWhenBothEmpty() {
-			final var items1 = new TestCollection<String>();
-			final var items2 = new TestCollection<String>();
-
-			assert items1.contains(items2);
-		}
+		final var contains = items1.contains(items2);
+		assertEquals(expected, contains);
 	}
 
-	@Nested
 	@DisplayName(".match(Predicate<T>)")
-	class MatchTests {
-		@Test
-		@DisplayName("returns matched item when item matches")
-		void returnsItemWhenAnyMatches() {
-			final var items = new TestCollection<>(9, 3, 7, 8, 5, 2);
-			final var match = items.match((item) ->
-				item % 2 == 0);
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when some item matches, returns matched item;" +
+			"[F, V, d, P, a, Q];" +
+			"d",
+		"when no item matches, returns empty optional;" +
+			"[F, V, D, P, A, Q];" +
+			" ",
+		"when collection is empty, returns empty optional;" +
+			"[];" +
+			" "
+	})
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	void testMatch(String name, @StringCollection Collection<String> items,
+		@StringOptional Optional<String> expected) {
 
-			assert Optional.of(8)
-				.equals(match);
-		}
+		final var matched = items.match((item) -> {
+			return item.toLowerCase()
+				.equals(item);
+		});
 
-		@Test
-		@DisplayName("returns empty when no item matches")
-		void returnsEmptyWhenNoneMatches() {
-			final var items = new TestCollection<>(9, 3, 7, 5, 5, 1);
-			final var match = items.match((item) ->
-				item % 2 == 0);
-
-			assert match.isEmpty();
-		}
-
-		@Test
-		@DisplayName("returns empty when collection is empty")
-		void returnsEmptyWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			final var match = items.match((item) ->
-				item % 2 == 0);
-
-			assert match.isEmpty();
-		}
+		assertEquals(expected, matched);
 	}
 
-	@Nested
 	@DisplayName(".noneMatches(Predicate<T>)")
-	class NoneMatchesTests {
-		@Test
-		@DisplayName("returns true when no item matches")
-		void returnsTrueWhenNoneMatches() {
-			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert items.noneMatches((item) ->
-				item % 2 == 0);
-		}
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when no item matches, returns true;" +
+			"[K, M, T, S, A];" +
+			"true",
+		"when some item matches, returns false;" +
+			"[K, m, t, S, a];" +
+			"false",
+		"when each items matches, returns false;" +
+			"[k, m, t, s, a];" +
+			"false",
+		"when collection is empty, returns true;" +
+			"[];" +
+			"true",
+	})
+	void testNoneMatches(String name, @StringCollection Collection<String> items,
+		boolean expected) {
 
-		@Test
-		@DisplayName("returns false when any item matches")
-		void returnsFalseWhenAnyMatches() {
-			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert !items.noneMatches((item) ->
-				item % 2 == 0);
-		}
+		final var noneMatches = items.noneMatches((item) -> {
+			return item.toLowerCase()
+				.equals(item);
+		});
 
-		@Test
-		@DisplayName("returns false when each item matches")
-		void returnsFalseWhenEachMatches() {
-			final var items = new TestCollection<>(8, 6, 2, 4);
-			assert !items.noneMatches((item) ->
-				item % 2 == 0);
-		}
-
-		@Test
-		@DisplayName("returns true when collection is empty")
-		void returnsTrueWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			assert items.noneMatches((item) ->
-				item % 2 == 0);
-		}
+		assertEquals(expected, noneMatches);
 	}
 
-	@Nested
 	@DisplayName(".anyMatches(Predicate<T>)")
-	class AnyMatchesTests {
-		@Test
-		@DisplayName("returns true when any item matches")
-		void returnsTrueWhenAnyMatches() {
-			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert items.anyMatches((item) ->
-				item % 2 == 0);
-		}
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when no item matches, returns false;" +
+			"[Y, P, D, A, S, M, S];" +
+			"false",
+		"when some item matches, returns true;" +
+			"[Y, P, d, a, S, M, S];" +
+			"true",
+		"when each items matches, returns true;" +
+			"[y, p, d, a, s, m, s];" +
+			"true",
+		"when collection is empty, returns false;" +
+			"[];" +
+			"false",
+	})
+	void testAnyMatches(String name, @StringCollection Collection<String> items,
+		boolean expected) {
 
-		@Test
-		@DisplayName("returns true when each item matches")
-		void returnsTrueWhenEachMatches() {
-			final var items = new TestCollection<>(8, 6, 2, 4);
-			assert items.anyMatches((item) ->
-				item % 2 == 0);
-		}
+		final var anyMatches = items.anyMatches((item) -> {
+			return item.toLowerCase()
+				.equals(item);
+		});
 
-		@Test
-		@DisplayName("returns false when no item matches")
-		void returnsFalseWhenNoneMatches() {
-			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert !items.anyMatches((item) ->
-				item % 2 == 0);
-		}
-
-		@Test
-		@DisplayName("returns false when collection is empty")
-		void returnsFalseWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			assert !items.anyMatches((item) ->
-				item % 2 == 0);
-		}
+		assertEquals(expected, anyMatches);
 	}
 
-	@Nested
 	@DisplayName(".eachMatches(Predicate<T>)")
-	class EachMatchesTests {
-		@Test
-		@DisplayName("returns true when each items matches")
-		void returnsTrueWhenEachMatches() {
-			final var items = new TestCollection<>(8, 6, 2, 4);
-			assert items.eachMatches((item) ->
-				item % 2 == 0);
-		}
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when no item matches, returns false;" +
+			"[H, B, S, A];" +
+			"false",
+		"when some item matches, returns false;" +
+			"[H, b, S, a];" +
+			"false",
+		"when each items match, returns true;" +
+			"[h, b, s, a];" +
+			"true",
+		"when collection is empty, returns true;" +
+			"[];" +
+			"true",
+	})
+	void testEachMatches(String name, @StringCollection Collection<String> items,
+		boolean expected) {
 
+		final var anyMatches = items.eachMatches((item) -> {
+			return item.toLowerCase()
+				.equals(item);
+		});
 
-		@Test
-		@DisplayName("returns false when any item matches")
-		void returnsFalseWhenAnyMatches() {
-			final var items = new TestCollection<>(5, 7, 1, 4, 9, 2);
-			assert !items.eachMatches((item) ->
-				item % 2 == 0);
-		}
-
-		@Test
-		@DisplayName("returns false when no item matches")
-		void returnsFalseWhenNoneMatches() {
-			final var items = new TestCollection<>(3, 7, 1, 9, 11, 5);
-			assert !items.eachMatches((item) ->
-				item % 2 == 0);
-		}
-
-		@Test
-		@DisplayName("returns true when collection is empty")
-		void returnsTrueWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			assert items.eachMatches((item) ->
-				item % 2 == 0);
-		}
+		assertEquals(expected, anyMatches);
 	}
 
-	@Nested
 	@DisplayName(".iterate(Consumer<T>)")
-	class IterateTests {
-		@Test
-		@DisplayName("iterates when collection is not empty")
-		void iteratesWhenNotEmpty() {
-			final var items = new TestCollection<>(3, 7, 1, 2, 3, 0);
-			final var iterated = new LinkedList<Integer>();
-			items.iterate(iterated::add);
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, iterates items;" +
+			"[f, F, e, q, p, L];" +
+			"[f, F, e, q, p, L]",
+		"when collection is empty, does nothing;" +
+			"[];" +
+			"[]"
+	})
+	void testIterate(String name, @StringCollection Collection<String> items,
+		@StringArray String[] expected) {
 
-			assert java.util.List.of(3, 7, 1, 2, 3, 0)
-				.equals(iterated);
-		}
+		final var iterated = new ArrayList<String>();
+		items.iterate(iterated::add);
 
-		@Test
-		@DisplayName("does nothing when collection is empty")
-		void doesNothingWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			final var iterated = new LinkedList<Integer>();
-			items.iterate(iterated::add);
-
-			assert java.util.List.of()
-				.equals(iterated);
-		}
+		assertArrayEquals(expected,
+			iterated.toArray(new String[]{
+			}));
 	}
 
-	@Nested
 	@DisplayName(".combine(R, BiFunction<R, T, R>)")
-	class CombineTests {
-		@Test
-		@DisplayName("combines when collection is not empty")
-		void combinesWhenNotEmpty() {
-			final var items = new TestCollection<>(5, 3, 2, 9, 4, 7);
-			final var sum = items.combine(4, Integer::sum);
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, combines items with initial value;" +
+			"[g, E, Q, s, a, B]; B;" +
+			"BgEQsaB",
+		"when collection is empty, returns initial value;" +
+			"[]; A;" +
+			"A"
+	})
+	void testCombine(String name, @StringCollection Collection<String> items,
+		String initial, String expected) {
 
-			assert 34 == sum;
-		}
+		final var combined = items.combine(initial, (combined2, item) -> {
+			return combined2 + item;
+		});
 
-		@Test
-		@DisplayName("does nothing when collection is empty")
-		void doesNothingWhenEmpty() {
-			final var items = new TestCollection<Integer>();
-			final var sum = items.combine(4, Integer::sum);
-
-			assert 4 == sum;
-		}
+		assertEquals(expected, combined);
 	}
 
-	@Nested
 	@DisplayName(".join(String)")
-	class JoinTests {
-		@Test
-		@DisplayName("joins items into a string when collection is not empty")
-		void joinsWhenNotEmpty() {
-			final var items = new TestCollection<>("B", "3", "A", "4", "n");
-			final var joined = items.join(", ");
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, joins items into a string;" +
+			"[g, t, W, q, P, l]; -;" +
+			"g-t-W-q-P-l",
+		"when collection is empty, returns empty string;" +
+			"[]; -;" +
+			" "
+	})
+	void testJoin(String name, @StringCollection Collection<String> items,
+		String separator, String expected) {
 
-			assert "B, 3, A, 4, n"
-				.equals(joined);
+		if (expected == null) {
+			expected = "";
 		}
 
-		@Test
-		@DisplayName("returns empty string when collection is empty")
-		void doesNothingWhenEmpty() {
-			final var items = new TestCollection<>();
-			final var joined = items.join(", ");
-
-			assert ""
-				.equals(joined);
-		}
+		final var joined = items.join(separator);
+		assertEquals(expected, joined);
 	}
 
-	@Nested
 	@DisplayName(".toArray()")
-	class ToArrayTests {
-		@Test
-		@DisplayName("when collection is not empty, returns items in array")
-		void returnsArrayWhenNotEmpty() {
-			final var items = new TestCollection<>("T", "b", "4", "0", "O");
-			final var array = items.toArray();
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns items array;" +
+			"[T, b, 4, 0, O];" +
+			"[T, b, 4, 0, O]",
+		"when collection is empty, returns empty array;" +
+			"[];" +
+			"[]"
+	})
+	void testToArray(String name, @StringCollection Collection<String> items,
+		@StringArray String[] expected) {
 
-			assert Arrays.equals(array,
-				new String[]{
-					"T", "b", "4", "0", "O"
-				});
+		final var array = items.toArray();
+		assertArrayEquals(expected, array);
+	}
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@ConvertWith(StringArray.Converter.class)
+@interface StringArray {
+	class Converter extends TypedArgumentConverter<String, String[]> {
+		protected Converter() {
+			super(String.class, String[].class);
 		}
 
-		@Test
-		@DisplayName("when collection is empty, returns empty array")
-		void returnsEmptyArrayWhenEmpty() {
-			final var items = new TestCollection<>();
-			final var array = items.toArray();
+		@Override
+		protected String[] convert(String s) throws ArgumentConversionException {
+			final var substring = s.substring(
+				s.indexOf("[") + 1,
+				s.lastIndexOf("]"));
 
-			assert Arrays.equals(array,
-				new String[]{});
+			if (substring.isBlank()) {
+				return new String[0];
+			} else {
+				final var string = substring.split("\\s*,\\s*");
+
+				return Arrays.stream(string)
+					.filter((item) -> !item.equals("null"))
+					.toArray(String[]::new);
+			}
 		}
 	}
+}
 
-	static class TestCollection<T> implements Collection<T> {
-		private final Object[] items;
-
-		@SafeVarargs
-		public TestCollection(T... items) {
-			this.items = items;
+@ConvertWith(StringOptional.Converter.class)
+@Retention(RetentionPolicy.RUNTIME)
+@interface StringOptional {
+	@SuppressWarnings("rawtypes")
+	class Converter extends TypedArgumentConverter<String, Optional> {
+		protected Converter() {
+			super(String.class, Optional.class);
 		}
 
 		@Override
-		public List<T> sort(Comparator<T> comparator) {
-			throw new UnsupportedOperationException();
+		protected Optional<String> convert(String s) throws ArgumentConversionException {
+			return Optional.ofNullable(s)
+				.filter((s2) -> !s2.equals("null"));
+		}
+	}
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@ConvertWith(StringCollection.Converter.class)
+@interface StringCollection {
+	@SuppressWarnings("rawtypes")
+	class Converter extends TypedArgumentConverter<String, Collection> {
+		protected Converter() {
+			super(String.class, Collection.class);
 		}
 
 		@Override
-		public Collection<T> filter(Predicate<T> condition) {
-			throw new UnsupportedOperationException();
-		}
+		protected Collection<String> convert(String s) throws ArgumentConversionException {
+			final var items = new StringArray.Converter()
+				.convert(s);
 
-		@Override
-		public <R> Collection<R> convert(Function<T, R> converter) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Iterator<T> iterator() {
-			return new Iterator<>() {
-				private int index = 0;
-
-				@Override
-				public boolean hasNext() {
-					return index < items.length;
-				}
-
-				@Override
-				public T next() {
-					@SuppressWarnings("unchecked")
-					var item = (T) items[index];
-					++index;
-					return item;
-				}
+			return new AbstractArrayCollection<>(items) {
 			};
 		}
+	}
+}
+
+abstract class AbstractArrayCollection<T> implements Collection<T> {
+	private final Object[] items;
+
+	@SafeVarargs
+	protected AbstractArrayCollection(T... items) {
+		this.items = items;
+	}
+
+	@Override
+	public List<T> sort(Comparator<T> comparator) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Collection<T> filter(Predicate<T> condition) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <R> Collection<R> convert(Function<T, R> converter) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new Iterator<>() {
+			private int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < items.length;
+			}
+
+			@Override
+			public T next() {
+				@SuppressWarnings("unchecked")
+				var item = (T) items[index];
+				++index;
+				return item;
+			}
+		};
 	}
 }
 
