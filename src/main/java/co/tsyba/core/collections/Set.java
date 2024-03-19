@@ -63,6 +63,10 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 
 	@Override
 	public boolean contains(T item) {
+		if (item == null) {
+			return false;
+		}
+
 		final var index = find(item);
 		return index > -1;
 	}
