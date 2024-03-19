@@ -1,7 +1,6 @@
 package co.tsyba.core.collections;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 import static java.lang.System.arraycopy;
@@ -48,7 +47,7 @@ class ContiguousArrayStore {
 		this.itemCount = 0;
 	}
 
-	private ContiguousArrayStore(Object[] items, int itemCount) {
+	ContiguousArrayStore(Object[] items, int itemCount) {
 		this.items = items;
 		this.itemCount = itemCount;
 	}
@@ -233,19 +232,6 @@ class ContiguousArrayStore {
 		}
 
 		return new ContiguousArrayStore(reversed, itemCount);
-	}
-
-	/**
-	 * Returns items of this store, ordered according to the specified
-	 * {@link Comparator}.
-	 */
-	@SuppressWarnings("unchecked")
-	<T> ContiguousArrayStore sort(Comparator<T> comparator) {
-		final var sorted = new Object[items.length];
-		arraycopy(items, 0, sorted, 0, itemCount);
-
-		Arrays.sort((T[]) sorted, 0, itemCount, comparator);
-		return new ContiguousArrayStore(sorted, itemCount);
 	}
 
 	/**

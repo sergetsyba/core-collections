@@ -346,8 +346,8 @@ public class MutableList<T> extends List<T> {
 
 	@Override
 	public MutableList<T> sort(Comparator<T> comparator) {
-		final var sorted = store.sort(comparator);
-		return new MutableList<>(sorted);
+		final var sorted = super.sort(comparator);
+		return new MutableList<>(sorted.store);
 	}
 
 	@Override

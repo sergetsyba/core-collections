@@ -1,6 +1,5 @@
 package co.tsyba.core.collections;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
@@ -11,7 +10,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
-import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -323,23 +321,6 @@ public class SetTests {
 
 		final var product = items1.multiply(items2);
 		assertEquals(expected, product);
-	}
-
-	@DisplayName(".sort(Comparator<T>)")
-	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
-		"when set is not empty, returns sorted list;" +
-			"[k, M, s, A, 8, d, q];" +
-			"[8, A, M, d, k, q, s]",
-		"when set is empty, returns empty list;" +
-			"[];" +
-			"[]"
-	})
-	void testSort(String name, @StringSet Set<String> items,
-		@StringList List<String> expected) {
-
-		final var sorted = items.sort(Comparator.naturalOrder());
-		Assertions.assertEquals(expected, sorted);
 	}
 
 	@DisplayName(".filter(Predicate<T>)")

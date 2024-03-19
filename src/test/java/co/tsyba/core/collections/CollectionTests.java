@@ -1,5 +1,6 @@
 package co.tsyba.core.collections;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
@@ -242,6 +243,23 @@ public class CollectionTests {
 		assertEquals(expected, anyMatches);
 	}
 
+	@DisplayName(".sort(Comparator<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns sorted list;" +
+			"[k, M, s, A, 8, d, q];" +
+			"[8, A, M, d, k, q, s]",
+		"when collection is empty, returns empty list;" +
+			"[];" +
+			"[]"
+	})
+	void testSort(String name, @StringCollection Collection<String> items,
+		@StringList List<String> expected) {
+
+		final var sorted = items.sort(Comparator.naturalOrder());
+		Assertions.assertEquals(expected, sorted);
+	}
+
 	@DisplayName(".iterate(Consumer<T>)")
 	@ParameterizedTest(name = "{0}")
 	@CsvSource(delimiter = ';', value = {
@@ -392,11 +410,6 @@ abstract class AbstractArrayCollection<T> implements Collection<T> {
 	@SafeVarargs
 	protected AbstractArrayCollection(T... items) {
 		this.items = items;
-	}
-
-	@Override
-	public List<T> sort(Comparator<T> comparator) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

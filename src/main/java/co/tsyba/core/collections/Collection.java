@@ -1,5 +1,6 @@
 package co.tsyba.core.collections;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -155,7 +156,13 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	List<T> sort(Comparator<T> comparator);
+	default List<T> sort(Comparator<T> comparator) {
+		final var items = toArray();
+		Arrays.sort(items, comparator);
+
+		final var store = new ContiguousArrayStore(items, items.length);
+		return new List<>(store);
+	}
 
 	/**
 	 * Applies the specified {@link Consumer} to every item of this collection.
@@ -223,7 +230,8 @@ public interface Collection<T> extends Iterable<T> {
 	/**
 	 * Returns items of this {@link Collection} in an array.
 	 */
-	default Object[] toArray() {
+	@SuppressWarnings("unchecked")
+	default T[] toArray() {
 		final var count = getCount();
 		final var items = new Object[count];
 		var index = 0;
@@ -233,7 +241,7 @@ public interface Collection<T> extends Iterable<T> {
 			++index;
 		}
 
-		return items;
+		return (T[]) items;
 	}
 }
 

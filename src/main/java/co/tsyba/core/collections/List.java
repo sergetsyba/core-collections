@@ -1,6 +1,9 @@
 package co.tsyba.core.collections;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -346,12 +349,6 @@ public class List<T> implements Collection<T> {
 		return new List<>(reversed);
 	}
 
-	@Override
-	public List<T> sort(Comparator<T> comparator) {
-		final var sorted = store.sort(comparator);
-		return new List<>(sorted);
-	}
-
 	/**
 	 * Returns items of this list in random order.
 	 */
@@ -447,8 +444,9 @@ public class List<T> implements Collection<T> {
 	}
 
 	@Override
-	public Object[] toArray() {
-		return Arrays.copyOf(store.items, store.itemCount);
+	@SuppressWarnings("unchecked")
+	public T[] toArray() {
+		return (T[]) Arrays.copyOf(store.items, store.itemCount);
 	}
 
 	@Override
