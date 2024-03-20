@@ -278,8 +278,23 @@ public class CollectionTests {
 		Assertions.assertEquals(expected, sorted);
 	}
 
-	@Nested
+	@DisplayName(".<T not Comparable>sort()")
+	@Test
+	void testSortNotComparable() {
+		Assertions.assertThrows(RuntimeException.class,
+			() -> {
+				final var collection = new AbstractPredicateCollection<>(
+					String::isEmpty,
+					String::isBlank
+				) {
+				};
+
+				collection.sort();
+			});
+	}
+
 	@DisplayName(".shuffle(Random)")
+	@Nested
 	class TestShuffleRandom {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
@@ -300,8 +315,8 @@ public class CollectionTests {
 			}
 		}
 
-		@Test
 		@DisplayName("when collection is empty, returns empty list")
+		@Test
 		void testWhenEmpty() {
 			Collection<String> items = new AbstractArrayCollection<>() {
 			};
@@ -315,8 +330,8 @@ public class CollectionTests {
 		}
 	}
 
-	@Nested
 	@DisplayName(".shuffle()")
+	@Nested
 	class TestShuffle {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
@@ -333,8 +348,8 @@ public class CollectionTests {
 			}
 		}
 
-		@Test
 		@DisplayName("when collection is empty, returns empty list")
+		@Test
 		void testWhenEmpty() {
 			Collection<String> items = new AbstractArrayCollection<>() {
 			};
@@ -424,7 +439,8 @@ public class CollectionTests {
 		assertArrayEquals(expected, array);
 	}
 
-	static void assertShuffled(Collection<String> shuffled, Collection<String> unshuffled) {
+	static void assertShuffled
+		(Collection<String> shuffled, Collection<String> unshuffled) {
 		// todo: change to var once cast in .toArray() is resolved
 		final Object[] items1 = shuffled.toArray();
 		final Object[] items2 = unshuffled.toArray();
@@ -505,7 +521,7 @@ public class CollectionTests {
 }
 
 abstract class AbstractArrayCollection<T> implements Collection<T> {
-	private final Object[] items;
+	final Object[] items;
 
 	@SafeVarargs
 	protected AbstractArrayCollection(T... items) {
@@ -540,6 +556,30 @@ abstract class AbstractArrayCollection<T> implements Collection<T> {
 				return item;
 			}
 		};
+	}
+}
+
+abstract class AbstractPredicateCollection<T> implements Collection<Predicate<T>> {
+	final Predicate<T>[] items;
+
+	@SafeVarargs
+	public AbstractPredicateCollection(Predicate<T>... items) {
+		this.items = items;
+	}
+
+	@Override
+	public Collection<Predicate<T>> filter(Predicate<Predicate<T>> condition) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <R> Collection<R> convert(Function<Predicate<T>, R> converter) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Iterator<Predicate<T>> iterator() {
+		throw new UnsupportedOperationException();
 	}
 }
 

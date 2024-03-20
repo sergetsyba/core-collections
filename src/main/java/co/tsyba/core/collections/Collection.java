@@ -158,7 +158,8 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@link Comparator}.
 	 */
 	default List<T> sort(Comparator<T> comparator) {
-		final var items = toArray();
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) toArray();
 		Arrays.sort(items, comparator);
 
 		final var store = new ContiguousArrayStore(items, items.length);
@@ -166,10 +167,13 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this collection, ordered according to their natural order.
+	 * Returns items of this collection, ordered according to their natural order, when
+	 * items are {@link Comparable}; otherwise fails with {@link RuntimeException}.
+	 *
+	 * @throws RuntimeException when items of this collection are not {@link Comparable}.
 	 */
-	@SuppressWarnings("unchecked")
 	default List<T> sort() {
+		@SuppressWarnings("unchecked")
 		final var comparator = (Comparator<T>) Comparator.naturalOrder();
 		return sort(comparator);
 	}
@@ -289,10 +293,9 @@ public interface Collection<T> extends Iterable<T> {
 	/**
 	 * Returns items of this {@link Collection} in an array.
 	 */
-	@SuppressWarnings("unchecked")
-	default T[] toArray() {
+	default Object[] toArray() {
 		final var count = getCount();
-		final var items = (T[]) new Object[count];
+		final var items = new Object[count];
 		var index = 0;
 
 		for (var item : this) {
@@ -300,12 +303,10 @@ public interface Collection<T> extends Iterable<T> {
 			++index;
 		}
 
-		return copy(items);
+		return items;
 	}
 
-	private static <T> T[] copy(T... items) {
-		return Arrays.copyOf(items, items.length);
-	}
+
 }
 
 // created on May 12, 2019
