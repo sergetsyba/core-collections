@@ -439,11 +439,27 @@ public class CollectionTests {
 		assertArrayEquals(expected, array);
 	}
 
+	@DisplayName(".toArray(Class<? extends T[]>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns items array;" +
+			"[V, b, Q, r, 4, p];" +
+			"[V, b, Q, r, 4, p]",
+		"when collection is empty, returns empty array;" +
+			"[];" +
+			"[]"
+	})
+	void testToArrayClass(String name, @StringCollection Collection<String> items,
+		@StringArray String[] expected) {
+
+		final var array = items.toArray(String[].class);
+		assertArrayEquals(expected, array);
+	}
+
 	static void assertShuffled
 		(Collection<String> shuffled, Collection<String> unshuffled) {
-		// todo: change to var once cast in .toArray() is resolved
-		final Object[] items1 = shuffled.toArray();
-		final Object[] items2 = unshuffled.toArray();
+		final var items1 = shuffled.toArray(String[].class);
+		final var items2 = unshuffled.toArray(String[].class);
 		assertArrayNotEquals(items1, items2);
 
 		Arrays.sort(items1);

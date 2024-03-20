@@ -291,7 +291,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this {@link Collection} in an array.
+	 * Returns items of this collection in an array.
 	 */
 	default Object[] toArray() {
 		final var count = getCount();
@@ -306,7 +306,21 @@ public interface Collection<T> extends Iterable<T> {
 		return items;
 	}
 
+	/**
+	 * Returns items of this collection in a typed array.
+	 */
+	default T[] toArray(Class<? extends T[]> klass) {
+		final var count = getCount();
+		final var items = Arrays.copyOf(new Object[0], count, klass);
 
+		var index = 0;
+		for (var item : this) {
+			items[index] = item;
+			++index;
+		}
+
+		return items;
+	}
 }
 
 // created on May 12, 2019
