@@ -1,7 +1,6 @@
 package co.tsyba.core.collections;
 
 import java.util.Arrays;
-import java.util.Random;
 
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
@@ -232,38 +231,6 @@ class ContiguousArrayStore {
 		}
 
 		return new ContiguousArrayStore(reversed, itemCount);
-	}
-
-	/**
-	 * Returns items of this store in random order, based on the specified
-	 * {@link Random}.
-	 *
-	 * <pre>
-	 * Implements in-place version of Fisher-Yates shuffle algorithm.
-	 *
-	 * Sources:
-	 * 1. R. Durstenfeld. "Algorithm 235: Random permutation".
-	 *    Communications of the ACM, vol. 7, July 1964, p. 420.
-	 * 2. D. Knuth. "The Art of Computer Programming" vol. 2.
-	 *    Addison–Wesley, 1969, pp. 139–140, algorithm P.
-	 * </pre>
-	 */
-	ContiguousArrayStore shuffle(Random random) {
-		final var shuffled = new Object[items.length];
-		arraycopy(items, 0, shuffled, 0, itemCount);
-
-		// it's more convenient to iterate items backwards for simpler
-		// random index generation
-		for (var index = itemCount - 1; index >= 0; --index) {
-			final var randomIndex = random.nextInt(index + 1);
-
-			// swap items at iterated and randomly generated indices
-			final var item = shuffled[index];
-			shuffled[index] = shuffled[randomIndex];
-			shuffled[randomIndex] = item;
-		}
-
-		return new ContiguousArrayStore(shuffled, itemCount);
 	}
 
 	void ensureExcessCapacity(int extra) {

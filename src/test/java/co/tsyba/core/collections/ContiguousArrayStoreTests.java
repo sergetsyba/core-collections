@@ -4,10 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Random;
-
 import static co.tsyba.core.collections.Assertions.assertEquals;
 
 class ContiguousArrayStoreTests {
@@ -1061,105 +1057,9 @@ class ContiguousArrayStoreTests {
 		}
 	}
 
-	@Nested
-	@DisplayName(".sort(Comparator<T>)")
-	class SortTests {
-		@Test
-		@DisplayName("when store is not empty, sorts items")
-		void sortsItemsWhenStoreNotEmpty() {
-			final var store = new ContiguousArrayStore(
-				new String[]{
-					"v", "R", "e", "C", "q", null, null
-				});
-
-			final var sorted = store.<String>sort(Comparator.naturalOrder());
-
-			assertItemCount(sorted, 5);
-			assertEquals(sorted,
-				new String[]{
-					"C", "R", "e", "q", "v", null, null
-				});
-
-		}
-
-		@Test
-		@DisplayName("when store is empty, does nothing")
-		void doesNothingWhenStoreEmpty() {
-			final var store = new ContiguousArrayStore(
-				new String[]{
-					null, null, null, null
-				});
-
-			final var sorted = store.<String>sort(Comparator.naturalOrder());
-
-			assertItemCount(sorted, 0);
-			assertEquals(sorted,
-				new String[]{
-					null, null, null, null
-				});
-
-		}
-	}
-
-	@Nested
-	@DisplayName(".shuffle(Random)")
-	class ShuffleTests {
-		@Test
-		@DisplayName("when store is not empty, shuffles items")
-		void shufflesItemsWhenStoreNotEmpty() {
-			final var store = new ContiguousArrayStore(
-				new String[]{
-					"v", "M", "l", "P", null, null, null
-				});
-
-			final var random = new Random();
-			final var shuffled = store.shuffle(random);
-
-			assertItemCount(shuffled, 4);
-			assertShuffled(shuffled, store, 4);
-		}
-
-		@Test
-		@DisplayName("when store is empty, does nothing")
-		void doesNothingWhenStoreEmpty() {
-			final var store = new ContiguousArrayStore(
-				new String[]{
-					null, null, null, null
-				});
-
-			final var random = new Random();
-			final var shuffled = store.shuffle(random);
-
-			assertItemCount(shuffled, 0);
-			assertEquals(shuffled,
-				new String[]{
-					null, null, null, null
-				});
-		}
-	}
-
 	private static void assertItemCount(ContiguousArrayStore store, int expected) {
 		assertEquals(store.itemCount, expected,
 			"Item count differs from expectation.");
-	}
-
-	private static void assertShuffled(ContiguousArrayStore shuffled, ContiguousArrayStore original, int itemCount) {
-		// verify shuffled store preserves item capacity
-		assert shuffled.items.length == original.items.length;
-
-		// verify items part of shuffled store differs from the original
-		assert !Arrays.equals(shuffled.items, 0, itemCount,
-			original.items, 0, itemCount);
-
-		// verify capacity part of shuffled store is the same as the original
-		assert Arrays.equals(shuffled.items, itemCount, shuffled.items.length,
-			original.items, itemCount, original.items.length);
-
-		// verify shuffled array contains all items of the original
-		Arrays.sort(shuffled.items, 0, itemCount);
-		Arrays.sort(original.items, 0, itemCount);
-		assert Arrays.equals(shuffled.items, 0, itemCount,
-			original.items, 0, itemCount);
 	}
 }
 

@@ -3,6 +3,7 @@ package co.tsyba.core.collections;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -165,6 +166,64 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns items of this collection, ordered according to their natural order.
+	 */
+	@SuppressWarnings("unchecked")
+	default List<T> sort() {
+		final var comparator = (Comparator<T>) Comparator.naturalOrder();
+		return sort(comparator);
+	}
+
+	/**
+	 * Returns items of this collection in random order, based on the specified
+	 * {@link Random}.
+	 */
+	default List<T> shuffle(Random random) {
+		final var items = toArray();
+		shuffle(items, random);
+
+		final var store = new ContiguousArrayStore(items, items.length);
+		return new List<>(store);
+	}
+
+	/**
+	 * Returns items of this collection in random order, where randomization is seeded
+	 * from the current system time.
+	 */
+	default List<T> shuffle() {
+		final var time = System.currentTimeMillis();
+		final var random = new Random(time);
+
+		return shuffle(random);
+	}
+
+	/**
+	 * Shuffles the specified items randomly, based on the specified {@link Random}.
+	 *
+	 * <pre>
+	 * Implements in-place version of Fisher-Yates shuffle algorithm.
+	 *
+	 * Sources:
+	 * 1. R. Durstenfeld. "Algorithm 235: Random permutation".
+	 *    Communications of the ACM, vol. 7, July 1964, p. 420.
+	 * 2. D. Knuth. "The Art of Computer Programming" vol. 2.
+	 *    Addison–Wesley, 1969, pp. 139–140, algorithm P.
+	 * </pre>
+	 */
+	private static <T> void shuffle(T[] items, Random random) {
+		// it's more convenient to iterate items backwards for simpler
+		// random index generation
+		for (var index = items.length - 1; index >= 0; --index) {
+			final var randomIndex = random.nextInt(index + 1);
+
+			// swap items at iterated and randomly generated indices
+			final var item = items[index];
+			items[index] = items[randomIndex];
+			items[randomIndex] = item;
+		}
+	}
+
+	/**
 	 * Applies the specified {@link Consumer} to every item of this collection.
 	 *
 	 * @return itself
@@ -233,7 +292,7 @@ public interface Collection<T> extends Iterable<T> {
 	@SuppressWarnings("unchecked")
 	default T[] toArray() {
 		final var count = getCount();
-		final var items = new Object[count];
+		final var items = (T[]) new Object[count];
 		var index = 0;
 
 		for (var item : this) {
@@ -241,7 +300,11 @@ public interface Collection<T> extends Iterable<T> {
 			++index;
 		}
 
-		return (T[]) items;
+		return copy(items);
+	}
+
+	private static <T> T[] copy(T... items) {
+		return Arrays.copyOf(items, items.length);
 	}
 }
 

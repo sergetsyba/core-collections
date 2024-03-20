@@ -351,12 +351,21 @@ public class MutableList<T> extends List<T> {
 	}
 
 	@Override
-	public MutableList<T> shuffle() {
-		final var seed = System.currentTimeMillis();
-		final var random = new Random(seed);
-		final var shuffled = store.shuffle(random);
+	public List<T> sort() {
+		final var sorted = super.sort();
+		return new MutableList<>(sorted.store);
+	}
 
-		return new MutableList<>(shuffled);
+	@Override
+	public MutableList<T> shuffle(Random random) {
+		final var shuffled = super.shuffle(random);
+		return new MutableList<>(shuffled.store);
+	}
+
+	@Override
+	public List<T> shuffle() {
+		final var shuffled = super.shuffle();
+		return new MutableList<>(shuffled.store);
 	}
 
 	@Override

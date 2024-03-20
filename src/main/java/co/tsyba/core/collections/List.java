@@ -3,7 +3,6 @@ package co.tsyba.core.collections;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -347,17 +346,6 @@ public class List<T> implements Collection<T> {
 	public List<T> reverse() {
 		final var reversed = store.reverse();
 		return new List<>(reversed);
-	}
-
-	/**
-	 * Returns items of this list in random order.
-	 */
-	public List<T> shuffle() {
-		final var time = System.currentTimeMillis();
-		final var random = new Random(time);
-		final var shuffled = store.shuffle(random);
-
-		return new List<>(shuffled);
 	}
 
 	@Override

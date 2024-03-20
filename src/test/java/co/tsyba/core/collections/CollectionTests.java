@@ -2,6 +2,8 @@ package co.tsyba.core.collections;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -14,8 +16,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CollectionTests {
 	@DisplayName(".isEmpty()")
@@ -248,6 +249,23 @@ public class CollectionTests {
 	@CsvSource(delimiter = ';', value = {
 		"when collection is not empty, returns sorted list;" +
 			"[k, M, s, A, 8, d, q];" +
+			"[s, q, k, d, M, A, 8]",
+		"when collection is empty, returns empty list;" +
+			"[];" +
+			"[]"
+	})
+	void testSortComparator(String name, @StringCollection Collection<String> items,
+		@StringList List<String> expected) {
+
+		final var sorted = items.sort(Comparator.reverseOrder());
+		Assertions.assertEquals(expected, sorted);
+	}
+
+	@DisplayName(".sort()")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(delimiter = ';', value = {
+		"when collection is not empty, returns sorted list;" +
+			"[k, M, s, A, 8, d, q];" +
 			"[8, A, M, d, k, q, s]",
 		"when collection is empty, returns empty list;" +
 			"[];" +
@@ -256,8 +274,75 @@ public class CollectionTests {
 	void testSort(String name, @StringCollection Collection<String> items,
 		@StringList List<String> expected) {
 
-		final var sorted = items.sort(Comparator.naturalOrder());
+		final var sorted = items.sort();
 		Assertions.assertEquals(expected, sorted);
+	}
+
+	@Nested
+	@DisplayName(".shuffle(Random)")
+	class TestShuffleRandom {
+		@Test
+		@DisplayName("when collection is not empty, returns shuffled list")
+		void testWhenNotEmpty() {
+			Collection<String> items = new AbstractArrayCollection<>(
+				"r", "E", "V", "s", "x", "w", "O", "8") {
+			};
+
+			final var time = System.currentTimeMillis();
+			final var random = new Random(time);
+
+			// shuffle items 10 times and ensure item order is different after
+			// each shuffle
+			for (var index = 0; index < 10; ++index) {
+				final var shuffled = items.shuffle(random);
+				assertShuffled(shuffled, items);
+				items = shuffled;
+			}
+		}
+
+		@Test
+		@DisplayName("when collection is empty, returns empty list")
+		void testWhenEmpty() {
+			Collection<String> items = new AbstractArrayCollection<>() {
+			};
+
+			final var time = System.currentTimeMillis();
+			final var random = new Random(time);
+
+			final var shuffled = items.shuffle(random);
+			final var items2 = new List<>(items);
+			assertEquals(items2, shuffled);
+		}
+	}
+
+	@Nested
+	@DisplayName(".shuffle()")
+	class TestShuffle {
+		@Test
+		@DisplayName("when collection is not empty, returns shuffled list")
+		void testWhenNotEmpty() {
+			Collection<String> items = new AbstractArrayCollection<>(
+				"o", "M", "F", "0", "K", "z", "v", "S") {
+			};
+
+			for (var index = 0; index < 10; ++index) {
+				final var shuffled = items.shuffle();
+				assertShuffled(shuffled, items);
+
+				items = shuffled;
+			}
+		}
+
+		@Test
+		@DisplayName("when collection is empty, returns empty list")
+		void testWhenEmpty() {
+			Collection<String> items = new AbstractArrayCollection<>() {
+			};
+
+			final var shuffled = items.shuffle();
+			final var items2 = new List<>(items);
+			assertEquals(items2, shuffled);
+		}
 	}
 
 	@DisplayName(".iterate(Consumer<T>)")
@@ -337,6 +422,21 @@ public class CollectionTests {
 
 		final var array = items.toArray();
 		assertArrayEquals(expected, array);
+	}
+
+	static void assertShuffled(Collection<String> shuffled, Collection<String> unshuffled) {
+		// todo: change to var once cast in .toArray() is resolved
+		final Object[] items1 = shuffled.toArray();
+		final Object[] items2 = unshuffled.toArray();
+		assertArrayNotEquals(items1, items2);
+
+		Arrays.sort(items1);
+		Arrays.sort(items2);
+		assertArrayEquals(items1, items2);
+	}
+
+	static <T> void assertArrayNotEquals(T[] items1, T[] items2) {
+		assertFalse(Arrays.equals(items1, items2));
 	}
 }
 
