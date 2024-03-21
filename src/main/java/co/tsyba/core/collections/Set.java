@@ -73,11 +73,10 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 * Returns {@code true} when this set is disjoint from the specified one; returns
 	 * {@code false} otherwise.
 	 * <p>
-	 * This set is disjoint from the specified one (or vice versa) when they don't have
-	 * any common items.
+	 * Two sets are disjoint when they don't contain any common items.
 	 * <p>
-	 * When this or the specified set is empty, this method returns {@code false}, since
-	 * an empty set is disjoint from all other sets, including itself.
+	 * When this or the specified set is empty, returns {@code false}, since an empty set
+	 * is disjoint from all other sets, including itself.
 	 */
 	public boolean isDisjoint(Set<T> set) {
 		return noneMatches(set::contains);
@@ -86,7 +85,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Returns union (A∪B) of this set and the specified one.
 	 * <p>
-	 * The returned set contains all items from this and the specified sets.
+	 * A union of two sets contains all (distinct) items from both sets.
 	 */
 	public Set<T> unite(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -107,8 +106,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 * Returns {@code true} when this set intersects the specified one; returns
 	 * {@code false} otherwise.
 	 * <p>
-	 * This set intersects the specified one (or vice versa) when they have some common
-	 * items.
+	 * A set intersects another set when they have at least one common item.
 	 * <p>
 	 * When this or the specified set is empty, returns {@code false}, since an empty set
 	 * never intersects another set, including itself.
@@ -120,8 +118,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Returns intersection (A∩B) of this set and the specified one.
 	 * <p>
-	 * The returned set contains items, which are only present in both this and the
-	 * specified sets.
+	 * An intersection of two sets contains all of their common items.
 	 */
 	public Set<T> intersect(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -140,8 +137,8 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Returns difference (A\B) of this set from the specified one.
 	 * <p>
-	 * The returned set contains items from this set, which are not present in the
-	 * specified one.
+	 * A difference of a set from another set contains all items from the first set,
+	 * except those, which are common with the other set.
 	 */
 	public Set<T> subtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -161,9 +158,8 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) between this set and the specified
 	 * one.
 	 * <p>
-	 * The returned set contains items from this set, which are not present in the
-	 * specified one, plus items, which are present in the specified set, but not this
-	 * one.
+	 * A symmetric difference of a set with another set contains all (distinct) items from
+	 * both sets, except those, which are common between them.
 	 */
 	public Set<T> symmetricSubtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -187,8 +183,8 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	/**
 	 * Returns cartesian product (A×B) of this set and the specified one.
 	 * <p>
-	 * The returned set contains all ordered pairs, where first item of a pair is from
-	 * this set, and the second one is from the specified set.
+	 * A cartesian product contains all possible (distinct) pairs of items from both
+	 * sets.
 	 */
 	public <R> Set<Pair<T, R>> multiply(Set<R> set) {
 		final var capacity = getCount() * set.getCount();

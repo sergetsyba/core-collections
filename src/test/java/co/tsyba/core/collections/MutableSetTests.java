@@ -1,554 +1,366 @@
 package co.tsyba.core.collections;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.converter.TypedArgumentConverter;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.ArrayList;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 public class MutableSetTests {
-	@Nested
 	@DisplayName(".add(T)")
-	class AddTests {
-		@Test
-		@DisplayName("adds item")
-		void addsItem() {
-			final var items = new MutableSet<>("g", "Q", "h");
-			final var returned = items.add("B");
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when item is absent, adds item;" +
+			"[g, e, Q, s, A, m]; P;" +
+			"[g, e, Q, s, A, m, P]",
+		"when item is present, does not add item;" +
+			"[g, e, Q, s, A, m]; Q;" +
+			"[g, e, Q, s, A, m]",
+		"when item is null, does nothing;" +
+			"[b, M, L, s, P]; null;" +
+			"[b, M, L, s, P]",
+		"when set is empty and item is not null, adds item;" +
+			"[]; V;" +
+			"[V]",
+		"when set is empty and item is null, does not add item;" +
+			"[]; null;" +
+			"[]"
+	}, delimiter = ';', nullValues = "null")
+	void testAdd(String name, @StringMutableSet MutableSet<String> items,
+		String item, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("g", "Q", "h", "B")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("does not add duplicate item")
-		void doesNotAddDuplicate() {
-			final var items = new MutableSet<>("g", "Q", "h");
-			final var returned = items.add("Q");
-
-			assert returned == items;
-			assert new Set<>("g", "Q", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("does not add null item")
-		void doesNotAddNull() {
-			final var items = new MutableSet<>("g", "Q", "h");
-			final var returned = items.add((String) null);
-
-			assert returned == items;
-			assert new Set<>("g", "Q", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("adds first item")
-		void addsFirstItem() {
-			final var items = new MutableSet<>();
-			final var returned = items.add("Q");
-
-			assert returned == items;
-			assert new Set<>("Q")
-				.equals(items);
-		}
+		final var returned = items.add(item);
+		assertSame(items, returned);
+		assertEquals(expected, items);
 	}
 
-	@Nested
 	@DisplayName(".add(T...)")
-	class AddVarargsTests {
-		@Test
-		@DisplayName("adds items")
-		void addsItems() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add("m", "Q", "k");
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when all items are absent, adds items;" +
+			"[b, L, s, W]; [e, Q, o];" +
+			"[b, L, s, W, e, Q, o]",
+		"when some items are present, adds absent items;" +
+			"[b, L, s, W]; [b, E, s, W, l];" +
+			"[b, L, s, W, E, l]",
+		"when all items are present, does not add items;" +
+			"[b, L, s, W]; [b, E, s, W, l];" +
+			"[b, L, s, W, E, l]",
+		"when some items are null, adds non-null items;" +
+			"[b, L, s, W]; [null, R, null, null, K];" +
+			"[b, L, s, W, R, K]",
+		"when all items are null, does nothing;" +
+			"[b, L, s, W]; [null, null];" +
+			"[b, L, s, W]",
+		"when items are empty, does nothing;" +
+			"[b, L, s, W]; [];" +
+			"[b, L, s, W]",
+		"when set is empty and all items are not null, adds items;" +
+			"[]; [g, O, p, R];" +
+			"[g, O, p, R]",
+		"when set is empty and some items are null, adds non-null items;" +
+			"[]; [b, null, P, k, null];" +
+			"[b, P, k]",
+		"when set is empty and all items are null, does nothing;" +
+			"[]; [null, null, null, null];" +
+			"[]",
+		"when set and items are empty, does nothing;" +
+			"[]; [];" +
+			"[]"
+	}, delimiter = ';', nullValues = "null")
+	void testAddVarargs(String name, @StringMutableSet MutableSet<String> items1,
+		@StringArray String[] items2, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "m", "Q", "k")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("does not add duplicates")
-		void doesNotAddDuplicates() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add("K", "Q", "b");
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "Q")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("does not add nulls")
-		void doesNotAddNulls() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(null, "a", null, null);
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "a")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("adds first items")
-		void addsFirstItems() {
-			final var items = new MutableSet<>();
-			final var returned = items.add("m", "Q", "K");
-
-			assert returned == items;
-			assert new Set<>("m", "Q", "K")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNotAddEmptyItems() {
-			final var items = new MutableSet<>("m", "Q", "K");
-			final var returned = items.add();
-
-			assert returned == items;
-			assert new Set<>("m", "Q", "K")
-				.equals(items);
-		}
+		final var returned = items1.add(items2);
+		assertSame(items1, returned);
+		assertEquals(expected, items1);
 	}
 
-	@Nested
 	@DisplayName(".add(Collection<T>)")
-	class AddCollectionTests {
-		@Test
-		@DisplayName("adds items")
-		void addsItems() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				new List<>("m", "Q", "k"));
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when all items are absent, adds items;" +
+			"[j, I, w, 9, 7]; [l, k, O];" +
+			"[j, I, w, 9, 7, l, k, O]",
+		"when some items are present, adds absent items;" +
+			"[j, I, w, 9, 7]; [l, 9, I];" +
+			"[j, I, w, 9, 7, l]",
+		"when all items are present, does not add items;" +
+			"[j, I, w, 9, 7]; [j, I, w, 9, 7];" +
+			"[j, I, w, 9, 7]",
+		"when items are empty, does nothing;" +
+			"[k, m, H, u, 7, h]; [];" +
+			"[k, m, H, u, 7, h]",
+		"when set is empty, adds items;" +
+			"[]; [j, I, w, 9, 7];" +
+			"[j, I, w, 9, 7]",
+		"when set and items are empty, does nothing;" +
+			"[]; [];" +
+			"[]"
+	}, delimiter = ';')
+	void testAddCollection(String name, @StringMutableSet MutableSet<String> items1,
+		@StringCollection Collection<String> items2, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "m", "Q", "k")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("does not add duplicates")
-		void doesNotAddDuplicates() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				new List<>("K", "Q", "b"));
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "Q")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("adds first items")
-		void addsFirstItems() {
-			final var items = new MutableSet<String>();
-			final var returned = items.add(
-				new List<>("m", "Q", "K"));
-
-			assert returned == items;
-			assert new Set<>("m", "Q", "K")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNotAddEmptyItems() {
-			final var items = new MutableSet<>("m", "Q", "K");
-			final var returned = items.add(
-				new List<>());
-
-			assert returned == items;
-			assert new Set<>("m", "Q", "K")
-				.equals(items);
-		}
+		final var returned = items1.add(items2);
+		assertSame(items1, returned);
+		assertEquals(expected, items1);
 	}
 
-	@Nested
 	@DisplayName(".add(Iterable<T>)")
-	class AddIterableTests {
-		@Test
-		@DisplayName("adds items")
-		void addsItems() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				Arrays.asList("m", "Q", "k"));
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when all items are absent, adds items;" +
+			"[b, L, s, W]; [e, Q, o];" +
+			"[b, L, s, W, e, Q, o]",
+		"when some items are present, adds absent items;" +
+			"[b, L, s, W]; [b, E, s, W, l];" +
+			"[b, L, s, W, E, l]",
+		"when all items are present, does not add items;" +
+			"[b, L, s, W]; [b, E, s, W, l];" +
+			"[b, L, s, W, E, l]",
+		"when some items are null, adds non-null items;" +
+			"[b, L, s, W]; [null, R, null, null, K];" +
+			"[b, L, s, W, R, K]",
+		"when all items are null, does nothing;" +
+			"[b, L, s, W]; [null, null];" +
+			"[b, L, s, W]",
+		"when items are empty, does nothing;" +
+			"[b, L, s, W]; [];" +
+			"[b, L, s, W]",
+		"when set is empty and all items are not null, adds items;" +
+			"[]; [g, O, p, R];" +
+			"[g, O, p, R]",
+		"when set is empty and some items are null, adds non-null items;" +
+			"[]; [b, null, P, k, null];" +
+			"[b, P, k]",
+		"when set is empty and all items are null, does nothing;" +
+			"[]; [null, null, null, null];" +
+			"[]",
+		"when set and items are empty, does nothing;" +
+			"[]; [];" +
+			"[]"
+	}, delimiter = ';', nullValues = "null")
+	void testAddIterable(String name, @StringMutableSet MutableSet<String> items1,
+		@StringArray String[] items2, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "m", "Q", "k")
-				.equals(items);
-		}
+		final var items3 = Arrays.asList(items2);
+		final var returned = items1.add(items3);
 
-		@Test
-		@DisplayName("does not add duplicates")
-		void doesNotAddDuplicates() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				Arrays.asList("K", "Q", "b"));
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "Q")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("does not add nulls")
-		void doesNotAddNulls() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				Arrays.asList(null, "a", null, null));
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K", "a")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("adds first items")
-		void addsFirstItems() {
-			final var items = new MutableSet<>();
-			final var returned = items.add(
-				Arrays.asList("m", "Q", "K"));
-
-			assert returned == items;
-			assert new Set<>("m", "Q", "K")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNotAddEmptyItems() {
-			final var items = new MutableSet<>("g", "b", "K");
-			final var returned = items.add(
-				new List<>());
-
-			assert returned == items;
-			assert new Set<>("g", "b", "K")
-				.equals(items);
-		}
+		assertSame(items1, returned);
+		assertEquals(expected, items1);
 	}
 
-	@Nested
 	@DisplayName(".remove(T)")
-	class RemoveTests {
-		@Test
-		@DisplayName("when item is present, removes item")
-		void removesItemWhenPresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove("2");
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when item is present, removes item;" +
+			"[g, O, e, T, d, f, l]; T;" +
+			"[g, O, e, d, f, l]",
+		"when item is present and is the only item, removes item;" +
+			"[g]; g;" +
+			"[]",
+		"when item is absent, does not remove item;" +
+			"[g, O, e, T, d, f, l]; t;" +
+			"[g, O, e, T, d, f, l]",
+		"when item is null, does nothing;" +
+			"[g, O, e, T, d, f, l]; null;" +
+			"[g, O, e, T, d, f, l]",
+		"when set is empty and item is not null, does nothing;" +
+			"[]; T;" +
+			"[]",
+		"when set is empty and item is null, does nothing;" +
+			"[]; null;" +
+			"[]"
+	}, delimiter = ';', nullValues = "null")
+	void testRemove(String name, @StringMutableSet MutableSet<String> items,
+		String item, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when item is absent, does nothing")
-		void doesNothingWhenAbsent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove("7");
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when item is absent, does nothing")
-		void doesNothingWhenItemNull() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove("7");
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when item is present and is last item, removes item")
-		void removesLastItemWhenPresent() {
-			final var items = new MutableSet<>("7");
-			final var returned = items.remove("7");
-
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when set is empty, does nothing")
-		void doesNothingWhenEmpty() {
-			final var items = new MutableSet<String>();
-			final var returned = items.remove("7");
-
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
+		final var returned = items.remove(item);
+		assertSame(items, returned);
+		assertEquals(expected, items);
 	}
 
-	@Nested
 	@DisplayName(".remove(T...)")
-	class RemoveVarargsTests {
-		@Test
-		@DisplayName("when some items are present, removes present items")
-		void removesItemsWhenSomePresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove("h", "q", "1", "B");
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when all items are present, removes items;" +
+			"[n, M, m, L, I, o, p]; [M, L, I];" +
+			"[n, m, o, p]",
+		"when all items are present and are the only items, removes all items;" +
+			"[n, M, m, L, I, o, p]; [n, M, m, L, I, o, p];" +
+			"[]",
+		"when some items are present, removes present items;" +
+			"[n, M, m, L, I, o, p]; [U, L, N, p];" +
+			"[n, M, m, I, o]",
+		"when all items are absent, does nothing;" +
+			"[n, M, m, L, I, o, p]; [U, P, O, N];" +
+			"[n, M, m, L, I, o, p]",
+		"when some items are null, removes non-null items;" +
+			"[n, M, m, L, I, o, p]; [n, null, M, null, null, p];" +
+			"[m, L, I, o]",
+		"when all items are null, does nothing;" +
+			"[n, M, m, L, I, o, p]; [null, null];" +
+			"[n, M, m, L, I, o, p]",
+		"when items are empty, does nothing;" +
+			"[n, M, m, L, I, o, p]; [];" +
+			"[n, M, m, L, I, o, p]",
+		"when set is empty and all items are not null, does nothing;" +
+			"[]; [M, I, O, P];" +
+			"[]",
+		"when set is empty and some items are null, does nothing;" +
+			"[]; [null, null, P, null];" +
+			"[]",
+		"when set is empty and all items are null, does nothing;" +
+			"[]; [null, null];" +
+			"[]",
+		"when set and items are empty, does nothing;" +
+			"[]; [];" +
+			"[]"
+	}, delimiter = ';', nullValues = "null")
+	void testRemoveVarargs(String name, @StringMutableSet MutableSet<String> items1,
+		@StringArray String[] items2, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("Q", "2")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when all items are present, removes all items")
-		void removesItemsWhenAllPresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove("B", "Q", "1", "2", "h");
-
-			assert returned == items;
-			assert new Set<>()
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when all items are absent, does nothing")
-		void doesNothingWhenAllAbsent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove("7", "4", "G", "b");
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when some items are null, removes non-null items")
-		void ignoresNullItems() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(null, "Q", null, "2");
-
-			assert returned == items;
-			assert new Set<>("B", "1", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNothingWhenItemsEmpty() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove();
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when set is empty, does nothing")
-		void doesNothingWhenEmpty() {
-			final var items = new MutableSet<String>();
-			final var returned = items.remove("B", "Q", "1", "2", "h");
-
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
+		final var returned = items1.remove(items2);
+		assertSame(items1, returned);
+		assertEquals(expected, items1);
 	}
 
-	@Nested
 	@DisplayName(".remove(Collection<T>)")
-	class RemoveCollectionTests {
-		@Test
-		@DisplayName("when some items are present, removes present items")
-		void removesItemsWhenSomePresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>("h", "q", "1", "B"));
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when all items are present, removes items;" +
+			"[n, M, m, L, I, o, p]; [M, L, I];" +
+			"[n, m, o, p]",
+		"when all items are present and are the only items, removes all items;" +
+			"[n, M, m, L, I, o, p]; [n, M, m, L, I, o, p];" +
+			"[]",
+		"when some items are present, removes present items;" +
+			"[n, M, m, L, I, o, p]; [U, L, N, p];" +
+			"[n, M, m, I, o]",
+		"when all items are absent, does nothing;" +
+			"[n, M, m, L, I, o, p]; [U, P, O, N];" +
+			"[n, M, m, L, I, o, p]",
+		"when items are empty, does nothing;" +
+			"[n, M, m, L, I, o, p]; [];" +
+			"[n, M, m, L, I, o, p]",
+		"when set is empty, does nothing;" +
+			"[]; [M, I, O, P];" +
+			"[]",
+		"when set and items are empty, does nothing;" +
+			"[]; [];" +
+			"[]"
+	}, delimiter = ';')
+	void testRemoveCollection(String name, @StringMutableSet MutableSet<String> items1,
+		@StringCollection Collection<String> items2, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("Q", "2")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when all items are present, removes all items")
-		void removesItemsWhenAllPresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>("B", "Q", "1", "2", "h"));
-
-			assert returned == items;
-			assert new Set<>()
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when all items are absent, does nothing")
-		void doesNothingWhenAllAbsent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>("7", "4", "G", "b"));
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNothingWhenItemsEmpty() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new List<>());
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when set is empty, does nothing")
-		void doesNothingWhenEmpty() {
-			final var items = new MutableSet<String>();
-			final var returned = items.remove(
-				new List<>("B", "Q", "1", "2", "h"));
-
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
+		final var returned = items1.remove(items2);
+		assertSame(items1, returned);
+		assertEquals(expected, items1);
 	}
 
-	@Nested
 	@DisplayName(".remove(Iterable<T>)")
-	class RemoveIterableTests {
-		@Test
-		@DisplayName("when some items are present, removes present items")
-		void removesItemsWhenSomePresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				Arrays.asList("h", "q", "1", "B"));
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when all items are present, removes items;" +
+			"[n, M, m, L, I, o, p]; [M, L, I];" +
+			"[n, m, o, p]",
+		"when all items are present and are the only items, removes all items;" +
+			"[n, M, m, L, I, o, p]; [n, M, m, L, I, o, p];" +
+			"[]",
+		"when some items are present, removes present items;" +
+			"[n, M, m, L, I, o, p]; [U, L, N, p];" +
+			"[n, M, m, I, o]",
+		"when all items are absent, does nothing;" +
+			"[n, M, m, L, I, o, p]; [U, P, O, N];" +
+			"[n, M, m, L, I, o, p]",
+		"when some items are null, removes non-null items;" +
+			"[n, M, m, L, I, o, p]; [n, null, M, null, null, p];" +
+			"[m, L, I, o]",
+		"when all items are null, does nothing;" +
+			"[n, M, m, L, I, o, p]; [null, null];" +
+			"[n, M, m, L, I, o, p]",
+		"when items are empty, does nothing;" +
+			"[n, M, m, L, I, o, p]; [];" +
+			"[n, M, m, L, I, o, p]",
+		"when set is empty and all items are not null, does nothing;" +
+			"[]; [M, I, O, P];" +
+			"[]",
+		"when set is empty and some items are null, does nothing;" +
+			"[]; [null, null, P, null];" +
+			"[]",
+		"when set is empty and all items are null, does nothing;" +
+			"[]; [null, null];" +
+			"[]",
+		"when set and items are empty, does nothing;" +
+			"[]; [];" +
+			"[]"
+	}, delimiter = ';', nullValues = "null")
+	void testRemoveIterable(String name, @StringMutableSet MutableSet<String> items1,
+		@StringArray String[] items2, @StringSet Set<String> expected) {
 
-			assert returned == items;
-			assert new Set<>("Q", "2")
-				.equals(items);
-		}
+		final var items3 = Arrays.asList(items2);
+		final var returned = items1.remove(items3);
 
-		@Test
-		@DisplayName("when all items are present, removes all items")
-		void removesItemsWhenAllPresent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				Arrays.asList("B", "Q", "1", "2", "h"));
-
-			assert returned == items;
-			assert new Set<>()
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when all items are absent, does nothing")
-		void doesNothingWhenAllAbsent() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				Arrays.asList("7", "4", "G", "b"));
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when some items are null, removes non-null items")
-		void ignoresNullItems() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				Arrays.asList(null, "Q", null, "2"));
-
-			assert returned == items;
-			assert new Set<>("B", "1", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when items are empty, does nothing")
-		void doesNothingWhenItemsEmpty() {
-			final var items = new MutableSet<>("B", "Q", "1", "2", "h");
-			final var returned = items.remove(
-				new ArrayList<>());
-
-			assert returned == items;
-			assert new Set<>("B", "Q", "1", "2", "h")
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when set is empty, does nothing")
-		void doesNothingWhenEmpty() {
-			final var items = new MutableSet<String>();
-			final var returned = items.remove(
-				Arrays.asList("B", "Q", "1", "2", "h"));
-
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
+		assertSame(items1, returned);
+		assertEquals(expected, items1);
 	}
 
-	@Nested
 	@DisplayName(".removeAll()")
-	class RemoveAllTests {
-		@Test
-		@DisplayName("when set is not empty, removes all items")
-		void removesAllItemsWhenNotEmpty() {
-			final var items = new MutableSet<>("h", "b", "n", "m");
-			final var returned = items.removeAll();
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when set is not empty, removes all items;" +
+			"[t, K, L, s, B]",
+		"when set is empty, does nothing;" +
+			"[]"
+	}, delimiter = ';')
+	void testRemoveAll(String name, @StringMutableSet MutableSet<String> items) {
+		final var returned = items.removeAll();
+		final var expected = new Set<String>();
 
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
-
-		@Test
-		@DisplayName("when set is empty, does nothing")
-		void doesNothingWhenEmpty() {
-			final var items = new MutableSet<String>();
-			final var returned = items.removeAll();
-
-			assert returned == items;
-			assert new Set<String>()
-				.equals(items);
-		}
+		assertSame(items, returned);
+		assertEquals(expected, items);
 	}
 
-	@Nested
 	@DisplayName(".toImmutable()")
-	class ToImmutableTests {
-		@Test
-		@DisplayName("when set is not empty, returns immutable set")
-		void removesAllItemsWhenNotEmpty() {
-			final var items1 = new MutableSet<>("h", "b", "n", "m");
-			final var items2 = items1.toImmutable();
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"when set is not empty, returns items in co.tsyba.core.Set;" +
+			"[g, R, e, A, s]",
+		"when set is empty, returns empty co.tsyba.core.Set;" +
+			"[]"
+	}, delimiter = ';')
+	void testToImmutable(String name, @StringMutableSet MutableSet<String> items) {
+		final var immutable = items.toImmutable();
+		final var klass = immutable.getClass();
 
-			assert Set.class == items2.getClass();
-			assert new Set<>("h", "b", "n", "m")
-				.equals(items2);
+		assertEquals(Set.class, klass);
+		assertEquals(items, immutable);
+	}
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@ConvertWith(StringMutableSet.Converter.class)
+@interface StringMutableSet {
+	@SuppressWarnings("rawtypes")
+	class Converter extends TypedArgumentConverter<String, MutableSet> {
+		protected Converter() {
+			super(String.class, MutableSet.class);
 		}
 
-		@Test
-		@DisplayName("when set is empty, returns empty immutable set")
-		void doesNothingWhenEmpty() {
-			final var items1 = new MutableSet<>();
-			final var items2 = items1.toImmutable();
+		@Override
+		protected MutableSet<String> convert(String s) throws ArgumentConversionException {
+			final var items = new StringArray.Converter()
+				.convert(s);
 
-			assert Set.class == items2.getClass();
-			assert new Set<>()
-				.equals(items2);
+			return new MutableSet<>(items);
 		}
 	}
 }

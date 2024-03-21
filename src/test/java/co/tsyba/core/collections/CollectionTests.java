@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CollectionTests {
 	@DisplayName(".isEmpty()")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns false;" +
 			"[f, T, q, r];" +
 			"false",
 		"when collection is empty, returns true;" +
 			"[];" +
 			"true"
-	})
+	}, delimiter = ';')
 	void testIsEmpty(String name, @StringCollection Collection<String> items,
 		boolean expected) {
 
@@ -38,14 +38,14 @@ public class CollectionTests {
 
 	@DisplayName(".getCount()")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns item count;" +
 			"[b, 5, F, e];" +
 			"4",
 		"when collection is empty, returns 0;" +
 			"[];" +
 			"0"
-	})
+	}, delimiter = ';')
 	void testGetCount(String name, @StringCollection Collection<String> items,
 		int expected) {
 
@@ -55,14 +55,14 @@ public class CollectionTests {
 
 	@DisplayName(".getMinimum(Comparator<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns minimum;" +
 			"[b, L, P, g, V, c];" +
 			"L",
 		"when collection is empty, returns empty optional;" +
 			"[];" +
-			" "
-	})
+			"null"
+	}, delimiter = ';', nullValues = "null")
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	void testGetMinimum(String name, @StringCollection Collection<String> items,
 		@StringOptional Optional<String> expected) {
@@ -73,14 +73,14 @@ public class CollectionTests {
 
 	@DisplayName(".getMaximum(Comparator<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns maximum;" +
 			"[b, L, P, g, V, c];" +
 			"g",
 		"when collection is empty, returns empty optional;" +
 			"[];" +
-			" "
-	})
+			"null"
+	}, delimiter = ';', nullValues = "null")
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	void testGetMaximum(String name, @StringCollection Collection<String> items,
 		@StringOptional Optional<String> expected) {
@@ -91,7 +91,7 @@ public class CollectionTests {
 
 	@DisplayName(".contains(T)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when item is present, returns true;" +
 			"[t, d, 5, V, A]; 5;" +
 			"true",
@@ -101,7 +101,7 @@ public class CollectionTests {
 		"when collection is empty, returns false;" +
 			"[]; 5;" +
 			"false",
-	})
+	}, delimiter = ';')
 	void testContains(String name, @StringCollection Collection<String> items,
 		String item, boolean expected) {
 
@@ -111,7 +111,7 @@ public class CollectionTests {
 
 	@DisplayName(".contains(Collection<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when all items are present, returns true;" +
 			"[t, d, 5, V, A]; [A, d, t];" +
 			"true",
@@ -130,7 +130,7 @@ public class CollectionTests {
 		"when collection and items are empty, returns true;" +
 			"[]; [];" +
 			"true"
-	})
+	}, delimiter = ';')
 	void testContainsCollection(String name, @StringCollection Collection<String> items1,
 		@StringCollection Collection<String> items2, boolean expected) {
 
@@ -140,7 +140,7 @@ public class CollectionTests {
 
 	@DisplayName(".match(Predicate<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when some item matches, returns matched item;" +
 			"[F, V, d, P, a, Q];" +
 			"d",
@@ -149,8 +149,8 @@ public class CollectionTests {
 			" ",
 		"when collection is empty, returns empty optional;" +
 			"[];" +
-			" "
-	})
+			"null"
+	}, delimiter = ';', nullValues = "null")
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	void testMatch(String name, @StringCollection Collection<String> items,
 		@StringOptional Optional<String> expected) {
@@ -165,7 +165,7 @@ public class CollectionTests {
 
 	@DisplayName(".noneMatches(Predicate<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when no item matches, returns true;" +
 			"[K, M, T, S, A];" +
 			"true",
@@ -178,7 +178,7 @@ public class CollectionTests {
 		"when collection is empty, returns true;" +
 			"[];" +
 			"true",
-	})
+	}, delimiter = ';')
 	void testNoneMatches(String name, @StringCollection Collection<String> items,
 		boolean expected) {
 
@@ -192,7 +192,7 @@ public class CollectionTests {
 
 	@DisplayName(".anyMatches(Predicate<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when no item matches, returns false;" +
 			"[Y, P, D, A, S, M, S];" +
 			"false",
@@ -205,7 +205,7 @@ public class CollectionTests {
 		"when collection is empty, returns false;" +
 			"[];" +
 			"false",
-	})
+	}, delimiter = ';')
 	void testAnyMatches(String name, @StringCollection Collection<String> items,
 		boolean expected) {
 
@@ -219,7 +219,7 @@ public class CollectionTests {
 
 	@DisplayName(".eachMatches(Predicate<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when no item matches, returns false;" +
 			"[H, B, S, A];" +
 			"false",
@@ -232,7 +232,7 @@ public class CollectionTests {
 		"when collection is empty, returns true;" +
 			"[];" +
 			"true",
-	})
+	}, delimiter = ';')
 	void testEachMatches(String name, @StringCollection Collection<String> items,
 		boolean expected) {
 
@@ -246,14 +246,14 @@ public class CollectionTests {
 
 	@DisplayName(".sort(Comparator<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns sorted list;" +
 			"[k, M, s, A, 8, d, q];" +
 			"[s, q, k, d, M, A, 8]",
 		"when collection is empty, returns empty list;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testSortComparator(String name, @StringCollection Collection<String> items,
 		@StringList List<String> expected) {
 
@@ -263,14 +263,14 @@ public class CollectionTests {
 
 	@DisplayName(".sort()")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns sorted list;" +
 			"[k, M, s, A, 8, d, q];" +
 			"[8, A, M, d, k, q, s]",
 		"when collection is empty, returns empty list;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testSort(String name, @StringCollection Collection<String> items,
 		@StringList List<String> expected) {
 
@@ -278,19 +278,17 @@ public class CollectionTests {
 		Assertions.assertEquals(expected, sorted);
 	}
 
-	@DisplayName(".<T not Comparable>sort()")
+	@DisplayName(".sort(), where T not Comparable")
 	@Test
 	void testSortNotComparable() {
-		Assertions.assertThrows(RuntimeException.class,
-			() -> {
-				final var collection = new AbstractPredicateCollection<>(
-					String::isEmpty,
-					String::isBlank
-				) {
-				};
-
-				collection.sort();
-			});
+		Assertions.assertThrows(RuntimeException.class, () -> {
+			final var collection = new AbstractPredicateCollection<>(
+				String::isEmpty,
+				String::isBlank
+			) {
+			};
+			collection.sort();
+		});
 	}
 
 	@DisplayName(".shuffle(Random)")
@@ -362,14 +360,14 @@ public class CollectionTests {
 
 	@DisplayName(".iterate(Consumer<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, iterates items;" +
 			"[f, F, e, q, p, L];" +
 			"[f, F, e, q, p, L]",
 		"when collection is empty, does nothing;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testIterate(String name, @StringCollection Collection<String> items,
 		@StringArray String[] expected) {
 
@@ -383,14 +381,14 @@ public class CollectionTests {
 
 	@DisplayName(".combine(R, BiFunction<R, T, R>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, combines items with initial value;" +
 			"[g, E, Q, s, a, B]; B;" +
 			"BgEQsaB",
 		"when collection is empty, returns initial value;" +
 			"[]; A;" +
 			"A"
-	})
+	}, delimiter = ';')
 	void testCombine(String name, @StringCollection Collection<String> items,
 		String initial, String expected) {
 
@@ -403,14 +401,14 @@ public class CollectionTests {
 
 	@DisplayName(".join(String)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, joins items into a string;" +
 			"[g, t, W, q, P, l]; -;" +
 			"g-t-W-q-P-l",
 		"when collection is empty, returns empty string;" +
 			"[]; -;" +
-			" "
-	})
+			"null"
+	}, delimiter = ';', nullValues = "null")
 	void testJoin(String name, @StringCollection Collection<String> items,
 		String separator, String expected) {
 
@@ -424,14 +422,14 @@ public class CollectionTests {
 
 	@DisplayName(".toArray()")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns items array;" +
 			"[T, b, 4, 0, O];" +
 			"[T, b, 4, 0, O]",
 		"when collection is empty, returns empty array;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testToArray(String name, @StringCollection Collection<String> items,
 		@StringArray String[] expected) {
 
@@ -441,14 +439,14 @@ public class CollectionTests {
 
 	@DisplayName(".toArray(Class<? extends T[]>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when collection is not empty, returns items array;" +
 			"[V, b, Q, r, 4, p];" +
 			"[V, b, Q, r, 4, p]",
 		"when collection is empty, returns empty array;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testToArrayClass(String name, @StringCollection Collection<String> items,
 		@StringArray String[] expected) {
 
@@ -510,8 +508,7 @@ public class CollectionTests {
 
 		@Override
 		protected Optional<String> convert(String s) throws ArgumentConversionException {
-			return Optional.ofNullable(s)
-				.filter((s2) -> !s2.equals("null"));
+			return Optional.ofNullable(s);
 		}
 	}
 }

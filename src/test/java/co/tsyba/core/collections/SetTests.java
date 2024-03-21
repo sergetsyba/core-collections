@@ -16,14 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SetTests {
 	@DisplayName("Set(Collection<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when items are not empty, creates set;" +
 			"[g, R, 2, q, P, s];" +
 			"[g, R, 2, q, P, s]",
 		"when items are empty, creates empty set;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testNewCollection(String name, @StringArray String[] items,
 		@StringSet Set<String> expected) {
 
@@ -35,8 +35,8 @@ public class SetTests {
 
 	@DisplayName("Set(T...)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
-		"when no items are null, creates set;" +
+	@CsvSource(value = {
+		"when all items are not null, creates set;" +
 			"[g, R, l, q, P, s, n];" +
 			"[g, R, l, q, P, s, n]",
 		"when some items are null, creates set with non-null items;" +
@@ -48,7 +48,7 @@ public class SetTests {
 		"when items are empty, creates empty set;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testNewVarargs(String name, @StringArray String[] items,
 		@StringSet Set<String> expected) {
 
@@ -58,8 +58,8 @@ public class SetTests {
 
 	@DisplayName("Set(Iterable<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
-		"when no items are null, creates set;" +
+	@CsvSource(value = {
+		"when all items are not null, creates set;" +
 			"[t, y, O, f, A, s];" +
 			"[t, y, O, f, A, s]",
 		"when some items are null, creates set with non-null items;" +
@@ -71,7 +71,7 @@ public class SetTests {
 		"when items are empty, creates empty set;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testNewIterable(String name, @StringArray String[] items,
 		@StringSet Set<String> expected) {
 
@@ -83,14 +83,14 @@ public class SetTests {
 
 	@DisplayName(".getCount()")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when set is not empty, returns item count;" +
 			"[g, b, L, f, s, O, k];" +
 			"7",
 		"when set is empty, returns 0;" +
 			"[];" +
 			"0"
-	})
+	}, delimiter = ';')
 	void testGetCount(String name, @StringSet Set<String> items, int expected) {
 		final var count = items.getCount();
 		assertEquals(expected, count);
@@ -98,7 +98,7 @@ public class SetTests {
 
 	@DisplayName(".contains(T)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when item is present, returns true;" +
 			"[b, K, s, L, m, s, D]; m;" +
 			"true",
@@ -111,7 +111,7 @@ public class SetTests {
 		"when set is empty, returns false;" +
 			"[]; m;" +
 			"false",
-	})
+	}, delimiter = ';')
 	void testContains(String name, @StringSet Set<String> items, String item,
 		boolean expected) {
 
@@ -121,7 +121,7 @@ public class SetTests {
 
 	@DisplayName(".isDisjoint(Set<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when sets are disjoint, returns true;" +
 			"[t, E, q, v, b, 0]; [e, g, 7, T];" +
 			"true",
@@ -131,16 +131,16 @@ public class SetTests {
 		"when sets are equal, returns false;" +
 			"[t, E, q, v, b, 0]; [t, E, q, v, b, 0];" +
 			"false",
-		"when set is empty, returns true;" +
-			"[]; [P, z, E, q];" +
-			"true",
 		"when argument set is empty, returns true;" +
 			"[t, E, q, v, b, 0]; [];" +
 			"true",
-		"when both sets are empty, returns true;" +
+		"when set is empty, returns true;" +
+			"[]; [P, z, E, q];" +
+			"true",
+		"when both set and argument set are empty, returns true;" +
 			"[]; [];" +
 			"true"
-	})
+	}, delimiter = ';')
 	void testIsDisjoint(String name, @StringSet Set<String> items1,
 		@StringSet Set<String> items2, boolean expected) {
 
@@ -150,7 +150,7 @@ public class SetTests {
 
 	@DisplayName(".unite(Set<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when sets are disjoint, returns union set;" +
 			"[t, E, q, v, b, 0]; [e, g, 7, T];" +
 			"[t, E, q, v, b, 0, e, g, 7, T]",
@@ -160,16 +160,16 @@ public class SetTests {
 		"when sets are equal, returns union set;" +
 			"[t, E, q, v, b, 0]; [t, E, q, v, b, 0];" +
 			"[t, E, q, v, b, 0]",
-		"when set is empty, returns union set;" +
-			"[]; [P, z, E, q];" +
-			"[P, z, E, q]",
 		"when argument set is empty, returns union set;" +
 			"[t, E, q, v, b, 0]; [];" +
 			"[t, E, q, v, b, 0]",
-		"when both sets are empty, returns empty set;" +
+		"when set is empty, returns union set;" +
+			"[]; [P, z, E, q];" +
+			"[P, z, E, q]",
+		"when both set and argument set are empty, returns empty set;" +
 			"[]; [];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testUnite(String name, @StringSet Set<String> items1,
 		@StringSet Set<String> items2, @StringSet Set<String> expected) {
 
@@ -179,7 +179,7 @@ public class SetTests {
 
 	@DisplayName(".intersects(Set<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when sets are disjoint, returns false;" +
 			"[t, E, q, v, b, 0]; [e, g, 7, T];" +
 			"false",
@@ -189,16 +189,16 @@ public class SetTests {
 		"when sets are equal, returns true;" +
 			"[t, E, q, v, b, 0]; [t, E, q, v, b, 0];" +
 			"true",
-		"when set is empty, returns false;" +
-			"[]; [P, z, E, q];" +
-			"false",
 		"when argument set is empty, returns false;" +
 			"[t, E, q, v, b, 0]; [];" +
 			"false",
-		"when both sets are empty, returns false;" +
+		"when set is empty, returns false;" +
+			"[]; [P, z, E, q];" +
+			"false",
+		"when both set and argument set are empty, returns false;" +
 			"[]; [];" +
 			"false"
-	})
+	}, delimiter = ';')
 	void testIntersects(String name, @StringSet Set<String> items1,
 		@StringSet Set<String> items2, boolean expected) {
 
@@ -208,7 +208,7 @@ public class SetTests {
 
 	@DisplayName(".intersect(Set<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when sets are disjoint, returns empty set;" +
 			"[t, E, q, v, b, 0]; [e, g, 7, T];" +
 			"[]",
@@ -218,16 +218,16 @@ public class SetTests {
 		"when sets are equal, returns intersection set;" +
 			"[t, E, q, v, b, 0]; [t, E, q, v, b, 0];" +
 			"[t, E, q, v, b, 0]",
-		"when set is empty, returns empty set;" +
-			"[]; [P, z, E, q];" +
-			"[]",
 		"when argument set is empty, returns empty set;" +
 			"[t, E, q, v, b, 0]; [];" +
 			"[]",
-		"when both sets are empty, returns empty set;" +
+		"when set is empty, returns empty set;" +
+			"[]; [P, z, E, q];" +
+			"[]",
+		"when both set and argument set are empty, returns empty set;" +
 			"[]; [];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testIntersect(String name, @StringSet Set<String> items1,
 		@StringSet Set<String> items2, @StringSet Set<String> expected) {
 
@@ -237,7 +237,7 @@ public class SetTests {
 
 	@DisplayName(".subtract(Set<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when sets are disjoint, returns difference set;" +
 			"[t, E, q, v, b, 0]; [e, g, 7, T];" +
 			"[t, E, q, v, b, 0]",
@@ -247,16 +247,16 @@ public class SetTests {
 		"when sets are equal, returns empty set;" +
 			"[t, E, q, v, b, 0]; [t, E, q, v, b, 0];" +
 			"[]",
-		"when set is empty, returns empty set;" +
-			"[]; [P, z, E, q];" +
-			"[]",
 		"when argument set is empty, returns difference set;" +
 			"[t, E, q, v, b, 0]; [];" +
 			"[t, E, q, v, b, 0]",
-		"when both sets are empty, returns empty set;" +
+		"when set is empty, returns empty set;" +
+			"[]; [P, z, E, q];" +
+			"[]",
+		"when both set and argument set are empty, returns empty set;" +
 			"[]; [];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testSubtract(String name, @StringSet Set<String> items1,
 		@StringSet Set<String> items2, @StringSet Set<String> expected) {
 
@@ -266,7 +266,7 @@ public class SetTests {
 
 	@DisplayName(".symmetricSubtract(Set<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when sets are disjoint, returns symmetric difference set;" +
 			"[t, E, q, v, b, 0]; [e, g, 7, T];" +
 			"[t, E, q, v, b, 0, e, g, 7, T]",
@@ -276,16 +276,16 @@ public class SetTests {
 		"when sets are equal, returns empty set;" +
 			"[t, E, q, v, b, 0]; [t, E, q, v, b, 0];" +
 			"[]",
-		"when set is empty, returns symmetric difference set;" +
-			"[]; [P, z, E, q];" +
-			"[P, z, E, q]",
 		"when argument set is empty, returns symmetric difference set;" +
 			"[t, E, q, v, b, 0]; [];" +
 			"[t, E, q, v, b, 0]",
-		"when both sets are empty, returns empty set;" +
+		"when set is empty, returns symmetric difference set;" +
+			"[]; [P, z, E, q];" +
+			"[P, z, E, q]",
+		"when both set and argument set are empty, returns empty set;" +
 			"[]; [];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testSymmetricSubtract(String name, @StringSet Set<String> items1,
 		@StringSet Set<String> items2, @StringSet Set<String> expected) {
 
@@ -295,26 +295,26 @@ public class SetTests {
 
 	@DisplayName(".multiply(Set<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when sets are disjoint, returns product set;" +
 			"[t, E, q]; [e, g];" +
-			"[t/e, t/g, E/e, E/g, q/e, q/g]",
+			"[t:e, t:g, E:e, E:g, q:e, q:g]",
 		"when sets intersect, returns product set;" +
 			"[t, E, q]; [q, E];" +
-			"[t/q, t/E, E/q, E/E, q/q, q/E]",
+			"[t:q, t:E, E:q, E:E, q:q, q:E]",
 		"when sets are equal, returns product set;" +
 			"[t, E, q]; [t, E, q];" +
-			"[t/t, t/E, t/q, E/t, E/E, E/q, q/t, q/E, q/q]",
-		"when set is empty, returns empty set;" +
-			"[]; [P, z, E, q];" +
-			"[]",
+			"[t:t, t:E, t:q, E:t, E:E, E:q, q:t, q:E, q:q]",
 		"when argument set is empty, returns empty set;" +
 			"[t, E, q, v, b, 0]; [];" +
 			"[]",
-		"when both sets are empty, returns empty set;" +
+		"when set is empty, returns empty set;" +
+			"[]; [P, z, E, q];" +
+			"[]",
+		"when both set and argument set are empty, returns empty set;" +
 			"[]; [];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testMultiply(String name, @StringSet Set<String> items1,
 		@StringSet Set<String> items2,
 		@StringPairSet Set<Pair<String, String>> expected) {
@@ -325,17 +325,17 @@ public class SetTests {
 
 	@DisplayName(".filter(Predicate<T>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
-		"when some items match filter, returns filtered items;" +
+	@CsvSource(value = {
+		"when some items match, returns matched items;" +
 			"[r, O, e, Q, s, A, B, P];" +
 			"[r, e, s]",
-		"when no items match filter, returns empty set;" +
+		"when no items match, returns empty set;" +
 			"[R, W, D, L, P];" +
 			"[]",
 		"when set is empty, returns empty items;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testFilter(String name, @StringSet Set<String> items,
 		@StringSet Set<String> expected) {
 
@@ -349,11 +349,11 @@ public class SetTests {
 
 	@DisplayName(".convert(Function<T, R>)")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when set is not empty, returns converted items;" +
 			"[f, R, E, a, A, b, F, L];" +
 			"[f, r, e, a, b, l]",
-		"when some items convert to null, ignores them;" +
+		"when some items convert to null, returns converted non-null items;" +
 			"[f, R, a, B, 2, e, T, 4, 0];" +
 			"[f, r, a, b, e, t]",
 		"when all items convert to null, returns empty set;" +
@@ -362,7 +362,7 @@ public class SetTests {
 		"when set is empty, returns empty set;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testConvert(String name, @StringSet Set<String> items,
 		@StringSet Set<String> expected) {
 
@@ -377,14 +377,14 @@ public class SetTests {
 
 	@DisplayName(".bridge()")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when set is not empty, returns items in java.util.Set;" +
 			"[t, E, a, Q, p, L];" +
 			"[t, E, a, Q, p, L]",
 		"when set is empty, returns empty java.util.Set;" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testBridge(String name, @StringSet Set<String> items,
 		@StringArray String[] expected) {
 
@@ -395,14 +395,14 @@ public class SetTests {
 
 	@DisplayName(".toString()")
 	@ParameterizedTest(name = "{0}")
-	@CsvSource(delimiter = ';', value = {
+	@CsvSource(value = {
 		"when set is not empty, converts to string;" +
 			"[N, g, m, R, e, q];" +
 			"[N, g, m, R, e, q]",
 		"when set is empty, converts to [];" +
 			"[];" +
 			"[]"
-	})
+	}, delimiter = ';')
 	void testToString(String name, @StringSet Set<String> items, String expected) {
 		final var string = items.toString();
 		assertEquals(expected, string);
@@ -442,7 +442,7 @@ public class SetTests {
 			return new StringSet.Converter()
 				.convert(s)
 				.convert((item) -> {
-					final var items = item.split("/");
+					final var items = item.split(":");
 					return new Pair<>(items[0], items[1]);
 				});
 		}

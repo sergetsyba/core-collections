@@ -86,7 +86,9 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	/**
-	 * Removes the specified items from this set, if present. Returns itself.
+	 * Removes any of the specified items present in this set. Returns itself.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
 	 */
 	@SafeVarargs
 	public final MutableSet<T> remove(T... items) {
@@ -100,7 +102,7 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	/**
-	 * Removes the specified items from this set, if present. Returns itself.
+	 * Removes any of the specified items present in this set. Returns itself.
 	 */
 	public MutableSet<T> remove(Collection<T> items) {
 		for (var item : items) {
@@ -112,6 +114,8 @@ public class MutableSet<T> extends Set<T> {
 
 	/**
 	 * Removes the specified items from this set, if present. Returns itself.
+	 * <p>
+	 * Ignores any {@code null} values among the specified items.
 	 */
 	public MutableSet<T> remove(Iterable<T> items) {
 		for (var item : items) {
