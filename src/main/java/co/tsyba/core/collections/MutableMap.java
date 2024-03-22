@@ -3,8 +3,8 @@ package co.tsyba.core.collections;
 public class MutableMap<K, V> extends Map<K, V> {
 	private static final int minimumCapacity = 64;
 
-	MutableMap(RobinHoodHashStore<Entry<K, V>> store) {
-		super(store);
+	MutableMap(Set<Entry<K, V>> store) {
+		super(store.store);
 	}
 
 	/**

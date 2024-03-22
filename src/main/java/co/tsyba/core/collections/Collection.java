@@ -1,18 +1,19 @@
 package co.tsyba.core.collections;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * A container, which allows iteration over its items.
+ * A container, which allows non-destructive iteration over its items.
  * <p>
- * Unlike more general {@link Iterable}, {@link Collection} guarantees iteration will not
- * destructively consume it. Therefore, it can be iterated any number of times. This
- * requirement enables useful operations, which can be based solely on iterability.
+ * Unlike more general {@link Iterable}, {@link Collection} requires that iteration does
+ * not destructively consume it. And so, it can be iterated any number of times.
  * <p>
  * Note, that {@link Collection} does not guarantee that relative item order stays the
  * same in each iteration.
@@ -156,7 +157,75 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	List<T> sort(Comparator<T> comparator);
+	default List<T> sort(Comparator<T> comparator) {
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) toArray();
+		Arrays.sort(items, comparator);
+
+		final var store = new ContiguousArrayStore(items, items.length);
+		return new List<>(store);
+	}
+
+	/**
+	 * Returns items of this collection, ordered according to their natural order, when
+	 * items are {@link Comparable}; otherwise fails with {@link RuntimeException}.
+	 *
+	 * @throws RuntimeException when items of this collection are not {@link Comparable}.
+	 */
+	default List<T> sort() {
+		@SuppressWarnings("unchecked")
+		final var comparator = (Comparator<T>) Comparator.naturalOrder();
+		return sort(comparator);
+	}
+
+	/**
+	 * Returns items of this collection in random order, based on the specified
+	 * {@link Random}.
+	 */
+	default List<T> shuffle(Random random) {
+		final var items = toArray();
+		shuffle(items, random);
+
+		final var store = new ContiguousArrayStore(items, items.length);
+		return new List<>(store);
+	}
+
+	/**
+	 * Returns items of this collection in random order, where randomization is seeded
+	 * from the current system time.
+	 */
+	default List<T> shuffle() {
+		final var time = System.currentTimeMillis();
+		final var random = new Random(time);
+
+		return shuffle(random);
+	}
+
+	/**
+	 * Shuffles the specified items randomly, based on the specified {@link Random}.
+	 *
+	 * <pre>
+	 * Implements in-place version of Fisher-Yates shuffle algorithm.
+	 *
+	 * Sources:
+	 * 1. R. Durstenfeld. "Algorithm 235: Random permutation".
+	 *    Communications of the ACM, vol. 7, July 1964, p. 420.
+	 * 2. D. Knuth. "The Art of Computer Programming" vol. 2.
+	 *    Addison–Wesley, 1969, pp. 139–140, algorithm P.
+	 * </pre>
+	 */
+	private static <T> void shuffle(T[] items, Random random) {
+		// it's more convenient to iterate items backwards for simpler
+		// random index generation
+		for (var index = items.length - 1; index >= 0; --index) {
+			final var randomIndex = random.nextInt(index + 1);
+
+			// swap items at iterated and randomly generated indices
+			final var item = items[index];
+			items[index] = items[randomIndex];
+			items[randomIndex] = item;
+		}
+	}
 
 	/**
 	 * Applies the specified {@link Consumer} to every item of this collection.
@@ -222,13 +291,29 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this {@link Collection} in an array.
+	 * Returns items of this collection in an array.
 	 */
 	default Object[] toArray() {
 		final var count = getCount();
 		final var items = new Object[count];
 		var index = 0;
 
+		for (var item : this) {
+			items[index] = item;
+			++index;
+		}
+
+		return items;
+	}
+
+	/**
+	 * Returns items of this collection in a typed array.
+	 */
+	default T[] toArray(Class<? extends T[]> klass) {
+		final var count = getCount();
+		final var items = Arrays.copyOf(new Object[0], count, klass);
+
+		var index = 0;
 		for (var item : this) {
 			items[index] = item;
 			++index;

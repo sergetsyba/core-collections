@@ -83,7 +83,7 @@ class MutableMapTests {
 
 				assert null == value;
 				assert entries.store
-					.equals(proto);
+					.equals(proto.store);
 			}
 		}
 
@@ -114,7 +114,7 @@ class MutableMapTests {
 
 				assert 9 == value;
 				assert entries.store
-					.equals(proto);
+					.equals(proto.store);
 			}
 
 			@Test
@@ -125,7 +125,7 @@ class MutableMapTests {
 
 				assert null == value;
 				assert entries.store
-					.equals(proto);
+					.equals(proto.store);
 			}
 
 			@Test
@@ -136,7 +136,7 @@ class MutableMapTests {
 
 				assert null == value;
 				assert entries.store
-					.equals(proto);
+					.equals(proto.store);
 			}
 		}
 	}
@@ -185,7 +185,7 @@ class MutableMapTests {
 
 			assert entries == returned;
 			assert entries.store
-				.equals(proto);
+				.equals(proto.store);
 		}
 
 		@Test
@@ -196,7 +196,7 @@ class MutableMapTests {
 
 			assert entries == returned;
 			assert entries.store
-				.equals(proto);
+				.equals(proto.store);
 		}
 	}
 
@@ -521,7 +521,7 @@ class MutableMapTests {
 
 				assert returned == entries;
 				assert entries.store
-					.equals(proto);
+					.equals(proto.store);
 			}
 
 			@Test
