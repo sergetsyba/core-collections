@@ -432,9 +432,8 @@ public class List<T> implements Collection<T> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public T[] toArray() {
-		return (T[]) Arrays.copyOf(store.items, store.itemCount);
+	public Object[] toArray() {
+		return Arrays.copyOf(store.items, store.itemCount);
 	}
 
 	@Override
