@@ -15,6 +15,76 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class MutableSetTests {
+	@DisplayName(".unite(Set<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]; [t, w, e, s]"
+	}, delimiter = ';')
+	void testUnite(String name, @StringMutableSet MutableSet<String> items1,
+		@StringMutableSet MutableSet<String> items2) {
+
+		final var returned = items1.unite(items2);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
+	@DisplayName(".intersect(Set<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]; [t, w, e, s]"
+	}, delimiter = ';')
+	void testIntersect(String name, @StringMutableSet MutableSet<String> items1,
+		@StringMutableSet MutableSet<String> items2) {
+
+		final var returned = items1.intersect(items2);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
+	@DisplayName(".subtract(Set<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]; [t, w, e, s]"
+	}, delimiter = ';')
+	void testSubtract(String name, @StringMutableSet MutableSet<String> items1,
+		@StringMutableSet MutableSet<String> items2) {
+
+		final var returned = items1.subtract(items2);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
+	@DisplayName(".symmetricSubtract(Set<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]; [t, w, e, s]"
+	}, delimiter = ';')
+	void testSymmetricSubtract(String name, @StringMutableSet MutableSet<String> items1,
+		@StringMutableSet MutableSet<String> items2) {
+
+		final var returned = items1.symmetricSubtract(items2);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
+	@DisplayName(".multiply(Set<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]; [t, w, e, s]"
+	}, delimiter = ';')
+	void testMultiply(String name, @StringMutableSet MutableSet<String> items1,
+		@StringMutableSet MutableSet<String> items2) {
+
+		final var returned = items1.multiply(items2);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
 	@DisplayName(".add(T)")
 	@ParameterizedTest(name = "{0}")
 	@CsvSource(value = {
@@ -327,6 +397,42 @@ public class MutableSetTests {
 
 		assertSame(items, returned);
 		assertEquals(expected, items);
+	}
+
+	@DisplayName(".iterate(Consumer<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns itself;" +
+			"[f, r, q, e, a]"
+	}, delimiter = ';')
+	void testIterate(String name, @StringMutableSet MutableSet<String> items) {
+		@SuppressWarnings("ResultOfMethodCallIgnored")
+		final var returned = items.iterate(String::toLowerCase);
+		assertSame(items, returned);
+	}
+
+	@DisplayName(".filter(Predicate<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]"
+	}, delimiter = ';')
+	void testFilter(String name, @StringMutableSet MutableSet<String> items) {
+		final var returned = items.filter(String::isBlank);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
+	@DisplayName(".convert(Function<T, R>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]"
+	}, delimiter = ';')
+	void testConvert(String name, @StringMutableSet MutableSet<String> items) {
+		final var returned = items.convert(String::toLowerCase);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
 	}
 
 	@DisplayName(".toImmutable()")

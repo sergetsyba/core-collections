@@ -1,20 +1,33 @@
 package co.tsyba.core.collections;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
  * An immutable, unordered {@link Collection} of unique items.
  */
-public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
+public class Set<T> implements Collection<T> {
+	RobinHoodHashStore<T> store;
+
+	/**
+	 * Creates a set with the specified item store.
+	 */
+	Set(RobinHoodHashStore<T> store) {
+		this.store = store;
+	}
+
 	/**
 	 * Creates a copy of the specified {@link Collection}.
 	 */
 	public Set(Collection<T> items) {
-		super(items.getCount());
+		this.store = new RobinHoodHashStore<>(
+			items.getCount());
+
 		for (var item : items) {
-			insert(item);
+			this.store.insert(item);
 		}
 	}
 
@@ -25,10 +38,11 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 */
 	@SafeVarargs
 	public Set(T... items) {
-		super(items.length);
+		this.store = new RobinHoodHashStore<>(items.length);
+
 		for (var item : items) {
 			if (item != null) {
-				insert(item);
+				store.insert(item);
 			}
 		}
 	}
@@ -39,24 +53,18 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 * Ignores any {@code null} values among the specified items.
 	 */
 	public Set(Iterable<T> items) {
-		super(64);
+		this.store = new RobinHoodHashStore<>(64);
+
 		for (var item : items) {
 			if (item != null) {
-				insert(item);
+				store.insert(item);
 			}
 		}
 	}
 
-	/**
-	 * Creates a set with the specified item capacity.
-	 */
-	private Set(int capacity) {
-		super(capacity);
-	}
-
 	@Override
 	public int getCount() {
-		return entryCount;
+		return store.entryCount;
 	}
 
 	@Override
@@ -65,7 +73,7 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 			return false;
 		}
 
-		final var index = find(item);
+		final var index = store.find(item);
 		return index > -1;
 	}
 
@@ -89,17 +97,17 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 */
 	public Set<T> unite(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
-		final var union = new Set<T>(capacity);
+		final var store = new RobinHoodHashStore<T>(capacity);
 
 		for (var item : this) {
-			union.insert(item);
+			store.insert(item);
 		}
 		for (var item : set) {
-			union.insert(item);
+			store.insert(item);
 		}
 
-		union.removeExcessCapacity();
-		return union;
+		store.removeExcessCapacity();
+		return new Set<>(store);
 	}
 
 	/**
@@ -122,16 +130,16 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 */
 	public Set<T> intersect(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
-		final var intersection = new Set<T>(capacity);
+		final var store = new RobinHoodHashStore<T>(capacity);
 
 		for (var item : this) {
 			if (set.contains(item)) {
-				intersection.insert(item);
+				store.insert(item);
 			}
 		}
 
-		intersection.removeExcessCapacity();
-		return intersection;
+		store.removeExcessCapacity();
+		return new Set<>(store);
 	}
 
 	/**
@@ -142,16 +150,16 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 */
 	public Set<T> subtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
-		final var difference = new Set<T>(capacity);
+		final var store = new RobinHoodHashStore<T>(capacity);
 
 		for (var item : this) {
 			if (!set.contains(item)) {
-				difference.insert(item);
+				store.insert(item);
 			}
 		}
 
-		difference.removeExcessCapacity();
-		return difference;
+		store.removeExcessCapacity();
+		return new Set<>(store);
 	}
 
 	/**
@@ -163,21 +171,21 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 */
 	public Set<T> symmetricSubtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
-		final var difference = new Set<T>(capacity);
+		final var store = new RobinHoodHashStore<T>(capacity);
 
 		for (var item : this) {
 			if (!set.contains(item)) {
-				difference.insert(item);
+				store.insert(item);
 			}
 		}
 		for (var item : set) {
 			if (!contains(item)) {
-				difference.insert(item);
+				store.insert(item);
 			}
 		}
 
-		difference.removeExcessCapacity();
-		return difference;
+		store.removeExcessCapacity();
+		return new Set<>(store);
 	}
 
 	/**
@@ -188,48 +196,53 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	 */
 	public <R> Set<Pair<T, R>> multiply(Set<R> set) {
 		final var capacity = getCount() * set.getCount();
-		final var product = new Set<Pair<T, R>>(capacity);
+		final var store = new RobinHoodHashStore<Pair<T, R>>(capacity);
 
 		for (var item1 : this) {
 			for (var item2 : set) {
 				final var pair = new Pair<>(item1, item2);
-				product.insert(pair);
+				store.insert(pair);
 			}
 		}
 
-		product.removeExcessCapacity();
-		return product;
+		store.removeExcessCapacity();
+		return new Set<>(store);
+	}
+
+	@Override
+	public Set<T> iterate(Consumer<T> operation) {
+		return (Set<T>) Collection.super.iterate(operation);
 	}
 
 	@Override
 	public Set<T> filter(Predicate<T> condition) {
 		final var itemCount = getCount();
-		final var filtered = new Set<T>(itemCount);
+		final var store = new RobinHoodHashStore<T>(itemCount);
 
 		for (var item : this) {
 			if (condition.test(item)) {
-				filtered.insert(item);
+				store.insert(item);
 			}
 		}
 
-		removeExcessCapacity();
-		return filtered;
+		store.removeExcessCapacity();
+		return new Set<>(store);
 	}
 
 	@Override
 	public <R> Set<R> convert(Function<T, R> converter) {
 		final var itemCount = getCount();
-		final var converted = new Set<R>(itemCount);
+		final var store = new RobinHoodHashStore<R>(itemCount);
 
 		for (var item : this) {
 			final var item2 = converter.apply(item);
 			if (item2 != null) {
-				converted.insert(item2);
+				store.insert(item2);
 			}
 		}
 
-		removeExcessCapacity();
-		return converted;
+		store.removeExcessCapacity();
+		return new Set<>(store);
 	}
 
 	/**
@@ -245,7 +258,30 @@ public class Set<T> extends RobinHoodHashStore<T> implements Collection<T> {
 	}
 
 	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (!(object instanceof Set)) {
+			return false;
+		}
+
+		final var set = (Set<?>) object;
+		return store.equals(set.store);
+	}
+
+	@Override
+	public int hashCode() {
+		return store.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		return "[" + join(", ") + "]";
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return store.iterator();
 	}
 }
