@@ -17,11 +17,10 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	/**
 	 * Creates a map with the specified entries.
 	 * <p>
-	 * Ignores any {@code null} values among the specified entries, as well as entries
-	 * with {@code} null keys or values.
+	 * Ignores any {@code null} values among the specified entries, their keys or values.
 	 * <p>
-	 * When the specified entries contain repeated keys, only the last entry with such key
-	 * ends up in the map.
+	 * When the specified entries contain repeated keys, only the last occurrence of such
+	 * entry ends up in the map.
 	 */
 	@SafeVarargs
 	public Map(Entry<K, V>... entries) {
@@ -36,8 +35,8 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Creates a map with the specified keys and values, matching them by indexes in their
-	 * lists.
+	 * Creates a map with the specified keys and values, pairing them by their position in
+	 * the lists.
 	 * <p>
 	 * When the specified lists differ in item count, extra items in the longer list are
 	 * ignored.
