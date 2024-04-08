@@ -814,7 +814,7 @@ class MapTests {
 			expected = "";
 		}
 
-		final var joined = entries.join(separator1, separator1);
+		final var joined = entries.join(separator1, separator2);
 		assertEquals(expected, joined,
 			format("%s.join(%s, %s)", entries, separator1, separator2));
 	}
