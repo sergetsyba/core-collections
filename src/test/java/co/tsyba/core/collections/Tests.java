@@ -83,9 +83,12 @@ class TestsParameterResolver implements ParameterResolver {
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
 		final var parameter = parameterContext.getParameter();
 		final var index = parameterContext.getIndex();
+		final var value = "null".equals(values[index])
+			? null
+			: values[index];
 
 		return getConverter(parameter)
-			.convert(values[index], parameterContext);
+			.convert(value, parameterContext);
 	}
 
 	private ArgumentConverter getConverter(Parameter parameter) {
