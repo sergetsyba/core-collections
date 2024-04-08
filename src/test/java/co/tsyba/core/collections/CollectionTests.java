@@ -75,7 +75,9 @@ public class CollectionTests {
 			"null"
 	})
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testGetMaximum(Collection<String> items, Optional<String> expected) {
+	void testGetMaximum(@StringCollection Collection<String> items,
+		@StringOptional Optional<String> expected) {
+
 		final var maximum = items.getMaximum(Comparator.naturalOrder());
 		assertEquals(expected, maximum,
 			format("%s.getMaximum()", items));
@@ -362,11 +364,10 @@ public class CollectionTests {
 	@Test
 	void testSortNotComparable() {
 		Assertions.assertThrows(RuntimeException.class, () -> {
-			final var collection = new AbstractPredicateCollection<>(
+			final var collection = new PredicateCollection<>(
 				String::isEmpty,
-				String::isBlank
-			) {
-			};
+				String::isBlank);
+
 			collection.sort();
 		}, "<non comparable items>.sort()");
 	}
@@ -377,9 +378,8 @@ public class CollectionTests {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
 		void testWhenNotEmpty() {
-			Collection<String> items = new AbstractArrayCollection<>(
-				"r", "E", "V", "s", "x", "w", "O", "8") {
-			};
+			Collection<String> items = new ArrayCollection<>(
+				"r", "E", "V", "s", "x", "w", "O", "8");
 
 			final var time = System.currentTimeMillis();
 			final var random = new Random(time);
@@ -387,7 +387,7 @@ public class CollectionTests {
 			// shuffle items 10 times and ensure item order is different after
 			// each shuffle
 			for (var index = 0; index < 10; ++index) {
-				final var shuffled = items.shuffle(random);
+				final Collection<String> shuffled = items.shuffle(random);
 				assertShuffled(shuffled, items,
 					format("%s.shuffle(Random)", items));
 
@@ -398,14 +398,14 @@ public class CollectionTests {
 		@DisplayName("when collection is empty, returns empty list")
 		@Test
 		void testWhenEmpty() {
-			Collection<String> items = new AbstractArrayCollection<>() {
-			};
-
+			final var items = new ArrayCollection<>();
 			final var time = System.currentTimeMillis();
 			final var random = new Random(time);
 
 			final var shuffled = items.shuffle(random);
-			assertEquals(items, shuffled,
+			final var items2 = new List<>(items);
+
+			assertEquals(items2, shuffled,
 				format("%s.shuffle(Random)", items));
 		}
 	}
@@ -416,9 +416,8 @@ public class CollectionTests {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
 		void testWhenNotEmpty() {
-			Collection<String> items = new AbstractArrayCollection<>(
-				"o", "M", "F", "0", "K", "z", "v", "S") {
-			};
+			Collection<String> items = new ArrayCollection<>(
+				"o", "M", "F", "0", "K", "z", "v", "S");
 
 			for (var index = 0; index < 10; ++index) {
 				final var shuffled = items.shuffle();
@@ -432,11 +431,12 @@ public class CollectionTests {
 		@DisplayName("when collection is empty, returns empty list")
 		@Test
 		void testWhenEmpty() {
-			Collection<String> items = new AbstractArrayCollection<>() {
-			};
+			final var items = new ArrayCollection<>();
 
 			final var shuffled = items.shuffle();
-			assertEquals(items, shuffled,
+			final var items2 = new List<>(items);
+
+			assertEquals(items2, shuffled,
 				format("%s.shuffle()", items));
 		}
 	}
@@ -610,17 +610,17 @@ public class CollectionTests {
 			final var items = new StringArray.Converter()
 				.convert(s);
 
-			return new AbstractArrayCollection<>(items) {
+			return new ArrayCollection<>(items) {
 			};
 		}
 	}
 }
 
-abstract class AbstractArrayCollection<T> implements Collection<T> {
+class ArrayCollection<T> implements Collection<T> {
 	final Object[] items;
 
 	@SafeVarargs
-	protected AbstractArrayCollection(T... items) {
+	protected ArrayCollection(T... items) {
 		this.items = items;
 	}
 
@@ -655,11 +655,11 @@ abstract class AbstractArrayCollection<T> implements Collection<T> {
 	}
 }
 
-abstract class AbstractPredicateCollection<T> implements Collection<Predicate<T>> {
+class PredicateCollection<T> implements Collection<Predicate<T>> {
 	final Predicate<T>[] items;
 
 	@SafeVarargs
-	public AbstractPredicateCollection(Predicate<T>... items) {
+	public PredicateCollection(Predicate<T>... items) {
 		this.items = items;
 	}
 
