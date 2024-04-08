@@ -1,5 +1,6 @@
 package co.tsyba.core.collections;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,23 +16,10 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Creates a map with the specified entries.
-	 * <p>
-	 * Ignores any {@code null} values among the specified entries, their keys or values.
-	 * <p>
-	 * When the specified entries contain repeated keys, only the last occurrence of such
-	 * entry ends up in the map.
+	 * Creates a copy of the specified {@link Map}.
 	 */
-	@SafeVarargs
-	public Map(Entry<K, V>... entries) {
-		final var store = new RobinHoodHashStore<Entry<K, V>>(entries.length);
-		for (var entry : entries) {
-			if (entry != null && entry.key != null && entry.value != null) {
-				store.insert(entry);
-			}
-		}
-
-		this.store = store;
+	public Map(Map<K, V> entries) {
+		this(entries.store);
 	}
 
 	/**
@@ -60,10 +48,64 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Creates a copy of the specified {@link Map}.
+	 * Creates a map with the specified entries.
+	 * <p>
+	 * Ignores any {@code null} values among the specified entries, their keys or values.
+	 * <p>
+	 * When the specified entries contain repeated keys, only the last occurrence of such
+	 * entry ends up in the map.
 	 */
-	public Map(Map<K, V> entries) {
-		this(entries.store);
+	@SafeVarargs
+	public Map(Entry<K, V>... entries) {
+		final var store = new RobinHoodHashStore<Entry<K, V>>(entries.length);
+		for (var entry : entries) {
+			if (entry != null && entry.key != null && entry.value != null) {
+				store.insert(entry);
+			}
+		}
+
+		this.store = store;
+	}
+
+	/**
+	 * Creates a map with the specified entries.
+	 * <p>
+	 * Ignores any {@code null} values among the specified entries, their keys or values.
+	 * <p>
+	 * When the specified entries contain repeated keys, only the last occurrence of such
+	 * entry ends up in the map.
+	 */
+	public Map(Iterable<Entry<K, V>> entries) {
+		final var store = new RobinHoodHashStore<Entry<K, V>>(64);
+		for (var entry : entries) {
+			if (entry != null && entry.key != null && entry.value != null) {
+				store.insert(entry);
+			}
+		}
+
+		this.store = store;
+	}
+
+	/**
+	 * Creates a copy of the specified {@link java.util.Map}.
+	 * <p>
+	 * Ignores entries with {@code null} keys or values in the specified
+	 * {@link java.util.Map}.
+	 */
+	public Map(java.util.Map<K, V> entries) {
+		final var entryCount = entries.size();
+		final var store = new RobinHoodHashStore<Entry<K, V>>(entryCount);
+
+		for (var entry : entries.entrySet()) {
+			final var key = entry.getKey();
+			final var value = entry.getValue();
+
+			if (key != null && value != null) {
+				store.insert(new Entry<>(key, value));
+			}
+		}
+
+		this.store = store;
 	}
 
 	/**
@@ -336,6 +378,18 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		}
 
 		return builder.toString();
+	}
+
+	/**
+	 * Returns entries of this map as a {@link java.util.Map}.
+	 */
+	public java.util.Map<K, V> bridge() {
+		final var map = new HashMap<K, V>();
+		for (var entry : this) {
+			map.put(entry.key, entry.value);
+		}
+
+		return map;
 	}
 
 	@Override
