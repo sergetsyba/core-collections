@@ -303,9 +303,8 @@ class MutableMapTests {
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, k, n, Q];" +
 				"[h:e, l:p, L:g, m:e]",
 			"when all entries are absent, does nothing;" +
-				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, k, n, Q];" +
-				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, k, n, Q];" +
-				"[h:e, l:p, L:g, m:e]",
+				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, K, n, q];" +
+				"[h:e, Q:c, k:R, l:p, L:g, m:e]",
 			"when some keys are null, removes non-null present entries;" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, null, null, k, Q];" +
 				"[h:e, l:p, L:g, m:e]",
@@ -366,7 +365,7 @@ class MutableMapTests {
 				"[h:R, b:S, F:s, c:L, P:p]; [p, B, c, h];" +
 				"[b:S, F:s, P:p]",
 			"when all keys are absent, does nothing;" +
-				"[h:R, b:S, F:s, c:L, P:p]; [H, R, s, c];" +
+				"[h:R, b:S, F:s, c:L, P:p]; [H, R, s, C];" +
 				"[h:R, b:S, F:s, c:L, P:p]",
 			"when argument collection is empty, does nothing;" +
 				"[h:R, b:S, F:s, c:L, P:p]; [];" +

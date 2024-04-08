@@ -443,7 +443,7 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 			if (object == this) {
 				return true;
 			}
-			if (object == key) {
+			if (object == key || object.equals(key)) {
 				return true;
 			}
 			if (!(object instanceof Entry)) {
