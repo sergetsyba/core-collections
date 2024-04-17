@@ -10,13 +10,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * A container, which allows non-destructive iteration over its items.
+ * A container, which provides non-destructive iterations over its items.
  * <p>
- * Unlike more general {@link Iterable}, {@link Collection} requires that iteration does
- * not destructively consume it. And so, it can be iterated any number of times.
+ * Unlike a more general {@link Iterable}, {@link Collection} guarantees that an iteration
+ * does not destructively consume it. This property enables unlimited iterations over
+ * {@link Collection}'s items.
  * <p>
- * Note, that {@link Collection} does not guarantee that relative item order stays the
- * same in each iteration.
+ * However, unlike {@link Sequence}, {@link Collection} does not guarantee that relative
+ * item order stays the same in each iteration.
  */
 public interface Collection<T> extends Iterable<T> {
 	/**
