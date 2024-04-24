@@ -1001,16 +1001,16 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when index range is empty, inserts items")
+			@DisplayName("when index range is empty, prepends items")
 			void insertsItemsWhenIndexRangeEmpty() {
 				final var items = new MutableList<>("v", "a", "f", "j");
-				final var range = new IndexRange(2, 2);
+				final var range = new IndexRange();
 				final var returned = items.replace(range, "v", "m");
 
 				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
-						"v", "a", "v", "m", "f", "j"
+						"v", "m", "v", "a", "f", "j"
 					});
 			}
 
@@ -1045,16 +1045,17 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			@Test
-			@DisplayName("when index range coincides with valid range, fails")
+			@DisplayName("when index range is empty, prepends items")
 			void failsWhenIndexRangeCoincidesValidRange() {
+				final var items = new MutableList<String>();
 				final var range = new IndexRange();
-				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange());
+				final var returned = items.replace(range, "v", "m");
 
-				assertThrows(() -> {
-					new MutableList<String>()
-						.replace(range, "G", "v", "Q");
-				}, expected);
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"v", "m"
+					});
 			}
 
 			@Test
@@ -1108,7 +1109,7 @@ class MutableListTests {
 			}
 
 			@Test
-			@DisplayName("when index range is empty, inserts items")
+			@DisplayName("when index range is empty, prepends items")
 			void insertsItemsWhenIndexRangeEmpty() {
 				final var items = new MutableList<>("v", "a", "f", "j");
 				final var range = new IndexRange(2, 2);
@@ -1118,7 +1119,7 @@ class MutableListTests {
 				assertIs(returned, items);
 				assertEquals(items,
 					new String[]{
-						"v", "a", "v", "m", "f", "j"
+						"v", "m", "v", "a", "f", "j"
 					});
 			}
 
@@ -1185,17 +1186,18 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			@Test
-			@DisplayName("when index range coincides with valid range, fails")
+			@DisplayName("when index range is empty, prepends items")
 			void failsWhenIndexRangeCoincidesValidRange() {
+				final var items = new MutableList<String>();
 				final var range = new IndexRange();
-				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange());
+				final var returned = items.replace(range,
+					new List<>("G", "v", "Q"));
 
-				assertThrows(() -> {
-					new MutableList<String>()
-						.replace(range,
-							new List<>("G", "v", "Q"));
-				}, expected);
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+						"G", "v", "Q"
+					});
 			}
 
 			@Test
@@ -1424,22 +1426,22 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		class EmptyListTests {
 			@Test
-			@DisplayName("when index range coincides with valid range, fails")
+			@DisplayName("when index range is empty, does nothing")
 			void failsWhenIndexRangeCoincidesWithValidRange() {
-				final var range = new IndexRange();
-				final var expected = new IndexRangeNotInRangeException(range,
+				final var items = new MutableList<String>();
+				final var returned = items.remove(
 					new IndexRange());
 
-				assertThrows(() -> {
-					new MutableList<>()
-						.remove(range);
-				}, expected);
+				assertIs(returned, items);
+				assertEquals(items,
+					new String[]{
+					});
 			}
 
 			@Test
 			@DisplayName("when index range starts after after valid range, fails")
 			void failsWhenIndexRangeStartsAfterZero() {
-				final var range = new IndexRange(2, 2);
+				final var range = new IndexRange(2, 6);
 				final var expected = new IndexRangeNotInRangeException(range,
 					new IndexRange());
 

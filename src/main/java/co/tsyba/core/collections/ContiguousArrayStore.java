@@ -199,10 +199,11 @@ class ContiguousArrayStore {
 	 * specified store.
 	 */
 	void replace(IndexRange range, ContiguousArrayStore store) {
-		shiftItems(range.end, store.itemCount - range.length);
+		final var count = range.getCount();
+		shiftItems(range.end, store.itemCount - count);
 
 		arraycopy(store.items, 0, items, range.start, store.itemCount);
-		itemCount += store.itemCount - range.length;
+		itemCount += store.itemCount - count;
 	}
 
 	/**
@@ -217,8 +218,9 @@ class ContiguousArrayStore {
 	 * Removes items at the specified index range from this store.
 	 */
 	void remove(IndexRange indexRange) {
-		shiftItems(indexRange.end, -indexRange.length);
-		itemCount -= indexRange.length;
+		final var count = indexRange.getCount();
+		shiftItems(indexRange.end, -count);
+		itemCount -= count;
 	}
 
 	/**

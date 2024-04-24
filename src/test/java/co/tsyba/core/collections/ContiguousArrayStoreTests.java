@@ -861,7 +861,7 @@ class ContiguousArrayStoreTests {
 			}
 
 			@Test
-			@DisplayName("when index range is empty, inserts items")
+			@DisplayName("when index range is empty, prepends items")
 			void insertsItemsWhenIndexRangeEmpty() {
 				final var store1 = new ContiguousArrayStore(
 					new String[]{
@@ -878,7 +878,7 @@ class ContiguousArrayStoreTests {
 				assertItemCount(store1, 6);
 				assertEquals(store1,
 					new String[]{
-						"b", "g", "b", "u", "P", "e", null, null
+						"b", "u", "P", "b", "g", "e", null, null
 					});
 			}
 
@@ -953,7 +953,7 @@ class ContiguousArrayStoreTests {
 			}
 
 			@Test
-			@DisplayName("when index range is empty, expands capacity and inserts items")
+			@DisplayName("when index range is empty, expands capacity and prepends items")
 			void insertsItemsWhenIndexRangeEmpty() {
 				final var store1 = new ContiguousArrayStore(
 					new String[]{
@@ -970,7 +970,7 @@ class ContiguousArrayStoreTests {
 				assertItemCount(store1, 6);
 				assertEquals(store1,
 					new String[]{
-						"b", "g", "b", "u", "P", "e", null, null, null, null, null, null
+						"b", "u", "P", "b", "g", "e", null, null, null, null, null, null
 					});
 			}
 		}

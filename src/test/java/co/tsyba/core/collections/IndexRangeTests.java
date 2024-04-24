@@ -2,321 +2,578 @@ package co.tsyba.core.collections;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.Optional;
+
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class IndexRangeTests {
-	@Nested
 	@DisplayName("IndexRange(int, int)")
-	class ConstructorWithBoundsTests {
-		@Test
-		@DisplayName("creates index range")
-		void createsRange() {
-			final var range = new IndexRange(5, 8);
-			assert 5 == range.start;
-			assert 8 == range.end;
-			assert 3 == range.length;
-		}
-
-		@Test
-		@DisplayName("when end is at start, creates empty range")
-		void createsEmptyRangeWhenEndAtStart() {
-			final var range = new IndexRange(5, 5);
-			assert 5 == range.start;
-			assert 5 == range.end;
-			assert 0 == range.length;
-		}
-
-		@Test
-		@DisplayName("when start is negative, fails")
-		void failsWhenStartNegative() {
+	@Nested
+	class NewStartEndTests {
+		@DisplayName("\uD83D\uDC1D")
+		@Tests({
+			"when start is before end, creates range;" +
+				"5; 8;" +
+				"[5, 8)",
+			"when start is at end, creates empty range;" +
+				"6; 6;" +
+				"[0, 0)",
+			"when start is after end, fails;" +
+				"5; 2;" +
+				"null",
+			"when start is negative, fails;" +
+				"-4; 4;" +
+				"null"
+		})
+		void test(int start, int end, @IntRange IndexRange expected) {
 			try {
-				new IndexRange(-4, 12);
-			} catch (IllegalArgumentException ignored) {
-				return;
+				final var range = new IndexRange(start, end);
+				assertEquals(expected, range,
+					format("new IndexRange(%d, %d)", start, end));
+			} catch (IllegalArgumentException exception) {
+				if (expected != null) {
+					throw exception;
+				}
 			}
-			assert false;
-		}
-
-		@Test
-		@DisplayName("when end is before start, fails")
-		void failsWhenEndBeforeStart() {
-			try {
-				new IndexRange(5, 2);
-			} catch (IllegalArgumentException ignored) {
-				return;
-			}
-			assert false;
 		}
 	}
 
-	@Nested
 	@DisplayName("IndexRange()")
-	class ConstructorTests {
-		@Test
-		@DisplayName("creates empty index range")
-		void createsEmptyRange() {
+	@Nested
+	class NewTests {
+		@DisplayName("\uD83D\uDDFD")
+		@Tests({
+			"creates empty index range;" +
+				"[0, 0)"
+		})
+		void test(@IntRange IndexRange expected) {
 			final var range = new IndexRange();
-			assert 0 == range.start;
-			assert 0 == range.end;
-			assert 0 == range.length;
+			assertEquals(expected, range,
+				"new IndexRange()");
 		}
 	}
 
+	@DisplayName(".getCount()")
 	@Nested
-	@DisplayName(".isEmpty()")
-	class IsEmptyTests {
-		@Test
-		@DisplayName("when index range is empty, returns true")
-		void returnsTrueWhenEmpty() {
-			final var range = new IndexRange();
-			assert range.isEmpty();
-		}
-
-		@Test
-		@DisplayName("when index range is note empty, returns false")
-		void returnsFalseWhenNotEmpty() {
-			final var range = new IndexRange(0, 10);
-			assert !range.isEmpty();
+	class GetCountTests {
+		@DisplayName("\uD83C\uDFDC")
+		@Tests({
+			"when range is not empty, returns length;" +
+				"[9, 16);" +
+				"7",
+			"when range is empty, returns 0;" +
+				"[0, 0);" +
+				"0"
+		})
+		void test(@IntRange IndexRange range, int expected) {
+			final var count = range.getCount();
+			assertEquals(expected, count,
+				format("%s.isEmpty()", range));
 		}
 	}
 
+	@DisplayName(".getIndexRange()")
 	@Nested
+	class GetIndexRangeTests {
+		@DisplayName("\uD83C\uDF37")
+		@Tests({
+			"returns itself;" +
+				"[4, 9)"
+		})
+		void test(@IntRange IndexRange range) {
+			final var returned = range.getIndexRange();
+			assertSame(range, returned,
+				format("%s.getIndexRange()", range));
+		}
+	}
+
 	@DisplayName(".contains(int)")
-	class ContainsIndexTests {
-		private final IndexRange range = new IndexRange(3, 12);
-
-		@Test
-		@DisplayName("when index is within range, returns true")
-		void returnsTrueWhenIndexWithinRange() {
-			assert range.contains(6);
-		}
-
-		@Test
-		@DisplayName("when index is before start, returns false")
-		void returnsFalseWhenIndexBeforeStart() {
-			assert !range.contains(1);
-		}
-
-		@Test
-		@DisplayName("when index is at start, returns true")
-		void returnsTrueWhenIndexAtStart() {
-			assert range.contains(3);
-		}
-
-		@Test
-		@DisplayName("when index is after end, returns false")
-		void returnsFalseWhenIndexAfterEnd() {
-			assert !range.contains(15);
-		}
-
-		@Test
-		@DisplayName("when index is at end, returns false")
-		void returnsFalseWhenIndexAtEnd() {
-			assert !range.contains(12);
+	@Nested
+	class ContainsTests {
+		@DisplayName("\uD83D\uDE8B")
+		@Tests({
+			"when index is before range start, returns false;" +
+				"[2, 9); 0;" +
+				"false",
+			"when index is at range start, returns true;" +
+				"[6, 8); 6;" +
+				"true",
+			"when index is within range, returns true;" +
+				"[4, 9); 6;" +
+				"true",
+			"when index is at range end, returns false;" +
+				"[3, 8); 8;" +
+				"false",
+			"when index is after range end, returns false;" +
+				"[4, 8); 12;" +
+				"false",
+			"when range is empty, returns false;" +
+				"[0, 0); 0;" +
+				"false"
+		})
+		void test(@IntRange IndexRange range, int index, boolean expected) {
+			final var contains = range.contains(index);
+			assertEquals(expected, contains,
+				format("%s.contains(%d)", range, index));
 		}
 	}
 
-	@Nested
 	@DisplayName(".contains(IndexRange)")
-	class ContainsIndexRangeTests {
-		@Nested
-		@DisplayName("when index range is not empty")
-		class NotEmptyIndexRangeTests {
-			private final IndexRange range1 = new IndexRange(5, 18);
-
-			@Test
-			@DisplayName("when argument range starts before range, returns false")
-			void returnsFalseWhenArgRangeStartsBeforeRange() {
-				final var range2 = new IndexRange(2, 9);
-				assert !range1.contains(range2);
-			}
-
-			@Test
-			@DisplayName("when argument range coincides range, returns true")
-			void returnsTrueWhenArgRangeCoincidesRange() {
-				final var range2 = new IndexRange(5, 18);
-				assert range1.contains(range2);
-			}
-
-			@Test
-			@DisplayName("when argument range is within range, returns true")
-			void returnsTrueWhenRangeWithinRange() {
-				final var range2 = new IndexRange(7, 12);
-				assert range1.contains(range2);
-			}
-
-			@Test
-			@DisplayName("when argument range ends after range, returns false")
-			void returnsFalseWhenArgRangeEndsAfterRange() {
-				final var range2 = new IndexRange(9, 19);
-				assert !range1.contains(range2);
-			}
-
-			@Test
-			@DisplayName("when argument range starts after range, returns false")
-			void returnsFalseWhenArgRangeStartsAfterRange() {
-				final var range2 = new IndexRange(20, 22);
-				assert !range1.contains(range2);
-			}
-
-			@Nested
-			@DisplayName("when argument range is empty")
-			class EmptyArgRangeTests {
-				@Test
-				@DisplayName("when argument range starts before range, returns false")
-				void returnsFalseWhenArgRangeStartsBeforeRange() {
-					final var range2 = new IndexRange(2, 2);
-					assert !range1.contains(range2);
-				}
-
-				@Test
-				@DisplayName("when argument range is within range, returns false")
-				void returnsFalseWhenArgRangeWithinRange() {
-					final var range2 = new IndexRange(7, 7);
-					assert range1.contains(range2);
-				}
-
-				@Test
-				@DisplayName("when argument range starts at range end, returns false")
-				void returnsFalseWhenArgRangeStartsAtRangeEnd() {
-					final var range2 = new IndexRange(18, 18);
-					assert !range1.contains(range2);
-				}
-
-				@Test
-				@DisplayName("when argument range starts after range, returns false")
-				void returnsFalseWhenArgRangeStartsAfterRange() {
-					final var range2 = new IndexRange(20, 20);
-					assert !range1.contains(range2);
-				}
-			}
+	@Nested
+	class ContainsIndexRange {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when argument range is before range, returns false;" +
+				"[6, 9); [1, 4);" +
+				"false",
+			"when argument range starts before range, returns false;" +
+				"[6, 9); [4, 7);" +
+				"false",
+			"when argument range starts at range start, returns true;" +
+				"[6, 9); [6, 8);" +
+				"true",
+			"when argument range equals range, returns true;" +
+				"[6, 9); [6, 9);" +
+				"true",
+			"when argument range ends after range, returns false;" +
+				"[6, 9); [7, 11);" +
+				"false",
+			"when argument range is after range, returns false;" +
+				"[6, 9); [12, 17);" +
+				"false",
+			"when argument range is empty, returns true;" +
+				"[6, 9); [0, 0);" +
+				"true"
+		})
+		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			boolean expected) {
+			test(range1, range2, expected);
 		}
 
-		@Nested
-		@DisplayName("when index range is empty")
-		class EmptyIndexRangeTests {
-			private final IndexRange range1 = new IndexRange(3, 3);
+		@DisplayName("when range is empty")
+		@Tests({
+			"when argument range is not empty, returns false;" +
+				"[0, 0); [6, 9);" +
+				"false",
+			"when argument range is empty, returns true;" +
+				"[0, 0); [0, 0);" +
+				"true"
+		})
+		void testEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			boolean expected) {
+			test(range1, range2, expected);
+		}
 
-			@Test
-			@DisplayName("when argument range starts before range, returns false")
-			void returnsFalseWhenArgRangeStartsBeforeRange() {
-				final var range2 = new IndexRange(1, 3);
-				assert !range1.contains(range2);
-			}
+		private void test(IndexRange range1, IndexRange range2, boolean expected) {
+			final var contains = range1.contains(range2);
+			assertEquals(expected, contains,
+				format("%s.contains(%s)", range1, range2));
+		}
+	}
 
-			@Test
-			@DisplayName("when argument range coincides with range, returns false")
-			void returnsFalseWhenArgRangeCoincidesWithRange() {
-				final var range2 = new IndexRange(3, 3);
-				assert !range1.contains(range2);
-			}
+	@DisplayName(".getFirst()")
+	@Nested
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	class GetFirstTests {
+		@DisplayName("\uD83C\uDFC0")
+		@Tests({
+			"when range is not empty, returns start index;" +
+				"[4, 7);" +
+				"4",
+			"when range is empty, returns empty optional;" +
+				"[0, 0);" +
+				"null"
+		})
+		void test(@IntRange IndexRange range, @IntOptional Optional<Integer> expected) {
+			final var first = range.getFirst();
+			assertEquals(expected, first,
+				format("%s.getFirst()", range));
+		}
+	}
 
-			@Test
-			@DisplayName("when argument range ends after range, returns false")
-			void returnsFalseWhenArgRangeEndsAfterRange() {
-				final var range2 = new IndexRange(3, 5);
-				assert !range1.contains(range2);
-			}
+	@DisplayName(".getLast()")
+	@Nested
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	class GetLastTests {
+		@DisplayName("\uD83C\uDF81")
+		@Tests({
+			"when range is not empty, returns index before end;" +
+				"[4, 7);" +
+				"6",
+			"when range is empty, returns empty optional;" +
+				"[0, 0);" +
+				"null"
+		})
+		void test(@IntRange IndexRange range, @IntOptional Optional<Integer> expected) {
+			final var first = range.getLast();
+			assertEquals(expected, first,
+				format("%s.getLast()", range));
+		}
+	}
 
-			@Test
-			@DisplayName("when argument range starts after range, returns false")
-			void returnsFalseWhenArgRangeStartsAfterRange() {
-				final var range2 = new IndexRange(7, 9);
-				assert !range1.contains(range2);
+
+	@DisplayName(".get(Integer)")
+	@Nested
+	class TestGet {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when index is before range start, fails;" +
+				"[4, 8); 2;" +
+				"null",
+			"when index is at range start, returns index;" +
+				"[4, 8); 4;" +
+				"4",
+			"when index is within range, returns index;" +
+				"[4, 8); 6;" +
+				"6",
+			"when index is at range end, fails;" +
+				"[4, 8); 8;" +
+				"null",
+			"when index is after range end, fails;" +
+				"[4, 8); 9;" +
+				"null"
+		})
+		void testNotEmpty(@IntRange IndexRange range, int index, Integer expected) {
+			test(range, index, expected);
+		}
+
+		@DisplayName("when range is empty")
+		@Tests({
+			"when index is before range start, fails;" +
+				"[0, 0); -1;" +
+				"null",
+			"when index is at range start, fails;" +
+				"[0, 0); 0;" +
+				"null",
+			"when index is at range end, fails;" +
+				"[0, 0); 1;" +
+				"null",
+		})
+		void testEmpty(@IntRange IndexRange range, int index, Integer expected) {
+			test(range, index, expected);
+		}
+
+		private void test(IndexRange range, int index, Integer expected1) {
+			try {
+				final var returned = range.get(index);
+				assertEquals(expected1, returned,
+					format("%s.get(%d)", range, index));
+			} catch (IndexNotInRangeException exception) {
+				if (expected1 == null) {
+					final var expected2 = new IndexNotInRangeException(index, range);
+					assertEquals(expected2, exception,
+						format("%s.get(%d)", range, index));
+				} else {
+					throw exception;
+				}
 			}
 		}
 	}
 
+	@DisplayName(".getPrefix(int)")
 	@Nested
+	class GetPrefixTests {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when index is before range start, fails;" +
+				"[2, 9); 1;" +
+				"null",
+			"when index is at range start, returns empty range;" +
+				"[2, 9); 2;" +
+				"[0, 0)",
+			"when index is within range, returns prefix;" +
+				"[2, 9); 4;" +
+				"[2, 4)",
+			"when index is at range end, fails;" +
+				"[2, 9); 9;" +
+				"null",
+			"when index is after range end, fails;" +
+				"[2, 9); 12;" +
+				"null",
+		})
+		void testNotEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected) {
+			test(range, index, expected);
+		}
+
+		@DisplayName("when range is empty")
+		@Tests({
+			"when index is before range, fails;" +
+				"[0, 0); -5;" +
+				"null",
+			"when index is 0, fails;" +
+				"[0, 0); 0;" +
+				"null",
+			"when index is after range end, fails;" +
+				"[0, 0); 5;" +
+				"null",
+		})
+		void testEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected) {
+			test(range, index, expected);
+		}
+
+		private void test(IndexRange range, int index, IndexRange expected1) {
+			try {
+				final var prefix = range.getPrefix(index);
+				assertEquals(expected1, prefix,
+					format("%s.getPrefix(%d)", range, index));
+			} catch (IndexNotInRangeException exception) {
+				if (expected1 == null) {
+					final var expected2 = new IndexNotInRangeException(index, range);
+					assertEquals(expected2, exception,
+						format("%s.getPrefix(%d)", range, index));
+				} else {
+					throw exception;
+				}
+			}
+		}
+	}
+
+	@DisplayName(".getSuffix(int)")
+	@Nested
+	class GetSuffixTests {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when index is before range, fails;" +
+				"[2, 9); 1;" +
+				"null",
+			"when index is at range start, returns range;" +
+				"[2, 9); 2;" +
+				"[2, 9)",
+			"when index is within range, returns suffix;" +
+				"[2, 9); 4;" +
+				"[4, 9)",
+			"when index is at range end, fails;" +
+				"[2, 9); 9;" +
+				"null",
+			"when index is after range end, fails;" +
+				"[2, 9); 12;" +
+				"null",
+		})
+		void testNotEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected) {
+			test(range, index, expected);
+		}
+
+		@DisplayName("when range is empty")
+		@Tests({
+			"when index is before range, fails;" +
+				"[0, 0); -5;" +
+				"null",
+			"when index is 0, fails;" +
+				"[0, 0); 0;" +
+				"null",
+			"when index is after range end, fails;" +
+				"[0, 0); 5;" +
+				"null",
+		})
+		void testEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected) {
+			test(range, index, expected);
+		}
+
+		private void test(IndexRange range, int index, IndexRange expected1) {
+			try {
+				final var prefix = range.getSuffix(index);
+				assertEquals(expected1, prefix,
+					format("%s.getSuffix(%d)", range, index));
+			} catch (IndexNotInRangeException exception) {
+				if (expected1 == null) {
+					final var expected2 = new IndexNotInRangeException(index, range);
+					assertEquals(expected2, exception,
+						format("%s.getSuffix(%d)", range, index));
+				} else {
+					throw exception;
+				}
+			}
+		}
+	}
+
+	@DisplayName(".get(IndexRange)")
+	@Nested
+	class TestGetIndexRange {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when argument range is before range, fails;" +
+				"[6, 9); [1, 4);" +
+				"null",
+			"when argument range starts before range, fails;" +
+				"[6, 9); [4, 7);" +
+				"null",
+			"when argument range starts at range start, returns argument range;" +
+				"[6, 9); [6, 8);" +
+				"[6, 8)",
+			"when argument range equals range, returns argument range;" +
+				"[6, 9); [6, 9);" +
+				"[6, 9)",
+			"when argument range ends after range, fails;" +
+				"[6, 9); [7, 11);" +
+				"null",
+			"when argument range is after range, fails;" +
+				"[6, 9); [12, 17);" +
+				"null",
+			"when argument range is empty, return empty range;" +
+				"[6, 9); [0, 0);" +
+				"[0, 0)"
+		})
+		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			@IntRange IndexRange expected) {
+			test(range1, range2, expected);
+		}
+
+		@DisplayName("when range is empty")
+		@Tests({
+			"when argument range is not empty, fails;" +
+				"[0, 0); [6, 9);" +
+				"null",
+			"when argument range is empty, returns empty range;" +
+				"[0, 0); [0, 0);" +
+				"[0, 0)"
+		})
+		void testEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			@IntRange IndexRange expected) {
+			test(range1, range2, expected);
+		}
+
+		private void test(IndexRange range1, IndexRange range2, IndexRange expected1) {
+			try {
+				final var subrange = range1.get(range2);
+				assertEquals(expected1, subrange,
+					format("%s.get(%s)", range1, range2));
+			} catch (IndexRangeNotInRangeException exception) {
+				if (expected1 == null) {
+					final var expected2 = new IndexRangeNotInRangeException(range2, range1);
+					assertEquals(expected2, exception,
+						format("%s.get(%s)", range1, range2));
+				}
+			}
+		}
+	}
+
+	@DisplayName(".findFirst(Integer)")
+	@Nested
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	class FindFirstTests {
+		@DisplayName("\uD83C\uDF8E")
+		@Tests({
+			"when index is before range start, returns empty optional;" +
+				"[2, 9); 0;" +
+				"null",
+			"when index is at range start, returns index;" +
+				"[6, 8); 6;" +
+				"6",
+			"when index is within range, returns index;" +
+				"[4, 9); 6;" +
+				"6",
+			"when index is at range end, returns empty optional;" +
+				"[3, 8); 8;" +
+				"null",
+			"when index is after range end, returns empty optional;" +
+				"[4, 8); 12;" +
+				"null",
+			"when range is empty, returns empty optional;" +
+				"[0, 0); 0;" +
+				"null"
+		})
+		void test(@IntRange IndexRange range, int item,
+			@IntOptional Optional<Integer> expected) {
+
+			final var index = range.findFirst(item);
+			assertEquals(expected, index,
+				format("%s.findFirst(%d)", range, item));
+		}
+	}
+
 	@DisplayName(".equals(Object)")
+	@Nested
 	class EqualsTests {
-		@Test
-		@DisplayName("when range equals, returns true")
-		void returnsTrueWhenEqual() {
-			final var range1 = new IndexRange(4, 9);
-			final var range2 = new IndexRange(4, 9);
-
-			assert range1.equals(range2);
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when argument range equals, returns true;" +
+				"[4, 8); [4, 8);" +
+				"true",
+			"when argument range start differs, returns false;" +
+				"[4, 8); [4, 6);" +
+				"false",
+			"when argument range end differs, returns false;" +
+				"[4, 8); [3, 8);" +
+				"false",
+			"when argument range in null, returns false;" +
+				"[4, 8); null;" +
+				"false"
+		})
+		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			boolean expected) {
+			test(range1, range2, expected);
 		}
 
-		@Test
-		@DisplayName("when range start differs, returns false")
-		void returnsFalseWhenRangeStartDiffers() {
-			final var range1 = new IndexRange(4, 9);
-			final var range2 = new IndexRange(7, 9);
-
-			assert !range1.equals(range2);
+		@DisplayName("when range is empty")
+		@Tests({
+			"when argument range is empty, returns true;" +
+				"[0, 0); [0, 0);" +
+				"true",
+			"when argument range is not empty, returns false;" +
+				"[0, 0); [0, 6);" +
+				"false",
+			"when argument range in null, returns false;" +
+				"[0, 0); null;" +
+				"false"
+		})
+		void testEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			boolean expected) {
+			test(range1, range2, expected);
 		}
 
-		@Test
-		@DisplayName("when range end differs, returns false")
-		void returnsFalseWhenRangeEndDiffers() {
-			final var range1 = new IndexRange(4, 9);
-			final var range2 = new IndexRange(4, 6);
-
-			assert !range1.equals(range2);
+		private void test(IndexRange range1, IndexRange range2, boolean expected) {
+			final var equals = range1.equals(range2);
+			assertEquals(expected, equals,
+				format("%s.equals(%s)", range1, range2));
 		}
 	}
 
-	@Nested
 	@DisplayName(".toString()")
+	@Nested
 	class ToStringTests {
-		@Test
-		@DisplayName("when index range is not empty, returns string")
-		void returnsStringWhenNotEmpty() {
-			final var range = new IndexRange(5, 17);
+		@DisplayName("\uD83C\uDF41")
+		@Tests({
+			"when range is not empty, returns formatted string;" +
+				"[6, 9);" +
+				"[6, 9)",
+			"when range is empty, returns formatted string;" +
+				"[0, 0);" +
+				"[0, 0)"
+		})
+		void test(@IntRange IndexRange range, String expected) {
 			final var string = range.toString();
-
-			assert "[5, 17)"
-				.equals(string);
-		}
-
-		@Test
-		@DisplayName("when index range is empty, returns string")
-		void returnsStringWhenEmpty() {
-			final var range = new IndexRange();
-			final var string = range.toString();
-
-			assert "[0, 0)"
-				.equals(string);
+			assertEquals(expected, string,
+				format("%s.toString()", range));
 		}
 	}
 
-	@Nested
 	@DisplayName(".iterator()")
+	@Nested
 	class IteratorTests {
-		@Test
-		@DisplayName("returns iterator")
-		void returnsIterator() {
-			final var range = new IndexRange(3, 8);
-			final var indexes = new int[range.length];
-			var i = 0;
-
-			for (var index : range) {
-				indexes[i] = index;
-				++i;
+		@DisplayName("\uD83D\uDE98")
+		@Tests({
+			"when range is not empty, returns index iterator;" +
+				"[2, 6);" +
+				"[2, 3, 4, 5]",
+			"when range is empty, returns empty iterator;" +
+				"[0, 0);" +
+				"[]"
+		})
+		void test(@IntRange IndexRange range, @StringList List<String> expected) {
+			final var iterated = new MutableList<String>();
+			for (var next : range) {
+				iterated.append(Integer.toString(next));
 			}
 
-			assert Arrays.equals(indexes, new int[]{
-				3, 4, 5, 6, 7
-			});
-		}
-
-		@Test
-		@DisplayName("when range is empty, returns empty iterator")
-		void returnsEmptyIteratorWhenRangeEmpty() {
-			final var range = new IndexRange(2, 2);
-			final var indexes = new int[range.length];
-			var i = 0;
-
-			for (var index : range) {
-				indexes[i] = index;
-				++i;
-			}
-
-			assert Arrays.equals(indexes, new int[]{});
+			assertEquals(expected, iterated,
+				format("%s.iterator()", range));
 		}
 	}
 }

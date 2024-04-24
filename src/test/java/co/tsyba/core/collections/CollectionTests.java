@@ -653,6 +653,11 @@ class ArrayCollection<T> implements Collection<T> {
 			}
 		};
 	}
+
+	@Override
+	public String toString() {
+		return "[" + join(", ") + "]";
+	}
 }
 
 class PredicateCollection<T> implements Collection<Predicate<T>> {
