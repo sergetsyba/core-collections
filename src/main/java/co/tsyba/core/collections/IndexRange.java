@@ -3,11 +3,14 @@ package co.tsyba.core.collections;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
- * A semi-open, contiguous range of indexes in a {@link List}.
+ * A semi-open, contiguous range of indexes in a {@link Sequence}.
  */
-public class IndexRange implements Iterable<Integer> {
+public class IndexRange implements Sequence<Integer> {
 	/**
 	 * Start index of this range.
 	 */
@@ -25,6 +28,8 @@ public class IndexRange implements Iterable<Integer> {
 
 	/**
 	 * Creates a new index range with the specified start and end indexes.
+	 * <p>
+	 * When the specified start and end indexes are equal, creates an empty index range.
 	 *
 	 * @throws IllegalArgumentException when the specified start index is negative
 	 * @throws IllegalArgumentException when the specified end index is less than the
@@ -34,50 +39,147 @@ public class IndexRange implements Iterable<Integer> {
 		if (start < 0) {
 			throw new IllegalArgumentException("Cannot create index range with a negative start index: " + start + ".");
 		}
-		if (end < start) {
+		if (start > end) {
 			throw new IllegalArgumentException("Cannot create index range with end index before start index: [" + start + ", " + end + "].");
 		}
 
-		this.start = start;
-		this.end = end;
-		this.length = end - start;
+		if (start == end) {
+			this.start = 0;
+			this.end = 0;
+			this.length = 0;
+		} else {
+			this.start = start;
+			this.end = end;
+			this.length = end - start;
+		}
 	}
 
 	/**
-	 * Create an empty index range.
+	 * Creates an empty index range.
 	 */
 	public IndexRange() {
-		this(0, 0);
+		this.start = 0;
+		this.end = 0;
+		this.length = 0;
 	}
 
-	/**
-	 * Returns {@code true} when this index range is empty; returns {@code false}
-	 * otherwise.
-	 */
-	public boolean isEmpty() {
-		return length == 0;
+	@Override
+	public int getCount() {
+		return end - start;
 	}
 
-	/**
-	 * Returns {@code true} when the specified index is within this index range; returns
-	 * {@code false} otherwise.
-	 */
-	public boolean contains(int index) {
+	@Override
+	public IndexRange getIndexRange() {
+		return this;
+	}
+
+	public boolean contains(Integer index) {
 		return index >= start
 			&& index < end;
 	}
 
 	/**
-	 * Returns {@code true} when the specified {@link IndexRange} is within this index
-	 * range; returns {@code false} otherwise.
+	 * Returns {@code true} when the specified index range is within this index range;
+	 * returns {@code false} otherwise.
 	 * <p>
-	 * When this index range is empty, returns {@code false}, even when the specified
-	 * index range coincides with this one.
+	 * When the specified index range is empty, returns {@code true}.
 	 */
 	public boolean contains(IndexRange range) {
-		return range.start >= start
-			&& range.start < end
-			&& range.end <= end;
+		return range.start == range.end
+			|| start <= range.start && range.end <= end;
+	}
+
+	@Override
+	public Optional<Integer> getFirst() {
+		return isEmpty()
+			? Optional.empty()
+			: Optional.of(start);
+	}
+
+	@Override
+	public Optional<Integer> getLast() {
+		return isEmpty()
+			? Optional.empty()
+			: Optional.of(end - 1);
+	}
+
+	@Override
+	public Integer get(int index) {
+		if (!contains(index)) {
+			throw new IndexNotInRangeException(index, this);
+		}
+
+		return index;
+	}
+
+	@Override
+	public IndexRange getPrefix(int index) {
+		if (!contains(index)) {
+			throw new IndexNotInRangeException(index, this);
+		}
+
+		return new IndexRange(start, index);
+	}
+
+	@Override
+	public IndexRange getSuffix(int index) {
+		if (!contains(index)) {
+			throw new IndexNotInRangeException(index, this);
+		}
+
+		return new IndexRange(index, end);
+	}
+
+	@Override
+	public Sequence<Integer> get(IndexRange range) {
+		if (!contains(range)) {
+			throw new IndexRangeNotInRangeException(range, this);
+		}
+
+		return range;
+	}
+
+	@Override
+	public Optional<Integer> findFirst(Integer item) {
+		return contains(item)
+			? Optional.of(item)
+			: Optional.empty();
+	}
+
+	@Override
+	public Sequence<Integer> reverse() {
+		// todo: implement IndexRange.reverse()
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Sequence<Integer> filter(Predicate<Integer> condition) {
+		return null;
+	}
+
+	@Override
+	public <R> Sequence<R> convert(Function<Integer, R> converter) {
+		return null;
+	}
+
+	@Override
+	public Iterator<Integer> iterator() {
+		return new Iterator<>() {
+			private int index = start;
+
+			@Override
+			public boolean hasNext() {
+				return index < end;
+			}
+
+			@Override
+			public Integer next() {
+				final var next = index;
+				index += 1;
+
+				return next;
+			}
+		};
 	}
 
 	@Override
@@ -102,25 +204,5 @@ public class IndexRange implements Iterable<Integer> {
 	@Override
 	public String toString() {
 		return "[" + start + ", " + end + ")";
-	}
-
-	@Override
-	public Iterator<Integer> iterator() {
-		return new Iterator<>() {
-			private int index = start;
-
-			@Override
-			public boolean hasNext() {
-				return index < end;
-			}
-
-			@Override
-			public Integer next() {
-				final var next = index;
-				index += 1;
-
-				return next;
-			}
-		};
 	}
 }

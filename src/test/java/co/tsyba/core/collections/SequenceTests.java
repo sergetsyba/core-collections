@@ -374,6 +374,10 @@ public class SequenceTests {
 
 		@Override
 		protected IndexRange convert(String s) throws ArgumentConversionException {
+			if (s == null) {
+				return null;
+			}
+
 			final var length = s.length();
 			final var bounds = s.substring(1, length - 1)
 				.split("\\s*,\\s*");
