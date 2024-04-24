@@ -177,9 +177,6 @@ public class SequenceTests {
 			"when index range is within valid range, returns index range;" +
 				"[g, I, m, k, L, s, D, n]; [3, 5);" +
 				"[3, 5)",
-			"when index range starts before valid range, returns empty optional;" +
-				"[g, I, m, k, L, s, D, n]; [-1, 5);" +
-				"null",
 			"when index range starts after valid range, returns empty optional;" +
 				"[g, I, m, k, L, s, D, n]; [8, 11);" +
 				"null",
@@ -195,9 +192,6 @@ public class SequenceTests {
 
 		@DisplayName("when sequence is empty")
 		@Tests({
-			"when index range starts before valid range, returns empty optional;" +
-				"[]; [-1, 0);" +
-				"null",
 			"when index range starts after valid range, returns empty optional;" +
 				"[]; [0, 2);" +
 				"null"

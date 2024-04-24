@@ -497,15 +497,14 @@ public class ListTests {
 			private final List<String> items = new List<>();
 
 			@Test
-			@DisplayName("when index range coincides with valid range, fails")
+			@DisplayName("when index range is empty, returns empty list")
 			void failsWhenIndexRangeCoincidesWithValidRange() {
-				final var range = new IndexRange();
-				final var expected = new IndexRangeNotInRangeException(range,
-					new IndexRange());
+				final var items = new List<String>()
+					.get(new IndexRange());
 
-				assertThrows(() -> {
-					items.get(range);
-				}, expected);
+				assertEquals(items,
+					new String[]{
+					});
 			}
 
 			@Test

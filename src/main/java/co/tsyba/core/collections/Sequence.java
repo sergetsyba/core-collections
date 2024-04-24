@@ -65,8 +65,11 @@ public interface Sequence<T> extends Collection<T> {
 		}
 
 		final var iterator = iterator();
-		for (var index2 : range) {
+		var index2 = range.start;
+
+		while (index2 < index) {
 			iterator.next();
+			++index2;
 		}
 
 		return iterator.next();
