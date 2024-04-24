@@ -162,7 +162,8 @@ public class List<T> implements Collection<T> {
 			throw new IndexRangeNotInRangeException(indexRange, validRange);
 		}
 
-		final var sub = store.get(indexRange.length, indexRange.start, indexRange.end);
+		final var count = indexRange.getCount();
+		final var sub = store.get(count, indexRange.start, indexRange.end);
 		return new List<>(sub);
 	}
 

@@ -22,11 +22,6 @@ public class IndexRange implements Sequence<Integer> {
 	public final int end;
 
 	/**
-	 * Number of indexes in this range.
-	 */
-	public final int length;
-
-	/**
 	 * Creates a new index range with the specified start and end indexes.
 	 * <p>
 	 * When the specified start and end indexes are equal, creates an empty index range.
@@ -46,11 +41,9 @@ public class IndexRange implements Sequence<Integer> {
 		if (start == end) {
 			this.start = 0;
 			this.end = 0;
-			this.length = 0;
 		} else {
 			this.start = start;
 			this.end = end;
-			this.length = end - start;
 		}
 	}
 
@@ -60,7 +53,6 @@ public class IndexRange implements Sequence<Integer> {
 	public IndexRange() {
 		this.start = 0;
 		this.end = 0;
-		this.length = 0;
 	}
 
 	@Override
