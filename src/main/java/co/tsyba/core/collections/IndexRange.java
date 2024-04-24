@@ -138,6 +138,8 @@ public class IndexRange implements Sequence<Integer> {
 			: Optional.empty();
 	}
 
+
+
 	@Override
 	public Sequence<Integer> reverse() {
 		// todo: implement IndexRange.reverse()
@@ -146,12 +148,14 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public Sequence<Integer> filter(Predicate<Integer> condition) {
-		return null;
+		// todo: implement IndexRange.filter(Predicate<Integer>)
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <R> Sequence<R> convert(Function<Integer, R> converter) {
-		return null;
+		// todo: implement IndexRange.convert(Function<Integer, R>)
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
