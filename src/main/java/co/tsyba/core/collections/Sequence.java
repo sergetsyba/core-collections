@@ -3,6 +3,7 @@ package co.tsyba.core.collections;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -105,8 +106,8 @@ public interface Sequence<T> extends Collection<T> {
 	 * Returns an {@link Optional} with the specified index when it is within the valid
 	 * index range of this sequence; returns an empty {@link Optional} otherwise.
 	 * <p>
-	 * This method can be used to safely call index based methods, which would otherwise
-	 * result in an {@link IndexNotInRangeException}.
+	 * This method can be used to safely call index based methods, which may result in an
+	 * {@link IndexNotInRangeException}.
 	 */
 	default Optional<Integer> guard(int index) {
 		final var range = getIndexRange();
@@ -121,8 +122,8 @@ public interface Sequence<T> extends Collection<T> {
 	 * the valid index range of this sequence; returns an empty {@link Optional}
 	 * otherwise.
 	 * <p>
-	 * This method can be used to safely call index range based methods, which would
-	 * otherwise result in an {@link IndexRangeNotInRangeException}.
+	 * This method can be used to safely call index range based methods, which may result
+	 * in an {@link IndexRangeNotInRangeException}.
 	 */
 	default Optional<IndexRange> guard(IndexRange range) {
 		final var validRange = getIndexRange();
@@ -133,6 +134,23 @@ public interface Sequence<T> extends Collection<T> {
 	}
 
 	/**
+	 * Returns the first item in this sequence, which matches the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this sequence matches the specified {@link Predicate} or this
+	 * sequence is empty, returns and empty {@link Optional}.
+	 */
+	default Optional<T> matchFirst(Predicate<T> condition) {
+		for (var item : this) {
+			if (condition.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
 	 * Returns index of the first occurrence of the specified item in this sequence. When
 	 * this item does not occur in this sequence, returns an empty {@link Optional}.
 	 */
@@ -140,6 +158,29 @@ public interface Sequence<T> extends Collection<T> {
 		return findFirst((item2) -> {
 			return item2.equals(item);
 		});
+	}
+
+	/**
+	 * Returns index of the first item, which matches the specified {@link Predicate} in
+	 * this sequence. When no item matches the specified {@link Predicate} in this
+	 * sequence, returns an empty {@link Optional}.
+	 * <p>
+	 * When this sequence is empty, returns an empty {@link Optional}. When the specified
+	 * sequence is empty, returns first valid index of this sequence.
+	 */
+	default Optional<Integer> findFirst(Predicate<T> condition) {
+		final var range = getIndexRange();
+		var index = range.start;
+
+		for (var item : this) {
+			if (condition.test(item)) {
+				return Optional.of(index);
+			} else {
+				++index;
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	/**
@@ -180,27 +221,21 @@ public interface Sequence<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns index of the first item, which matches the specified {@link Predicate} in
-	 * this sequence. When no item matches the specified {@link Predicate} in this
-	 * sequence, returns an empty {@link Optional}.
+	 * Returns indexes of all occurrences of the specified item in this sequence.
 	 * <p>
-	 * When this sequence is empty, returns an empty {@link Optional}. When the specified
-	 * sequence is empty, returns first valid index of this sequence.
+	 * When the specified item does not occur in this sequence, or this sequence is empty,
+	 * returns an empty sequence.
 	 */
-	default Optional<Integer> findFirst(Predicate<T> condition) {
-		final var range = getIndexRange();
-		var index = range.start;
+	Sequence<Integer> find(T item);
 
-		for (var item : this) {
-			if (condition.test(item)) {
-				return Optional.of(index);
-			} else {
-				++index;
-			}
-		}
-
-		return Optional.empty();
-	}
+	/**
+	 * Returns indexes of all occurrences of the specified sequence in this sequence.
+	 * <p>
+	 * When the specified sequence does not occur in this sequence, or this sequence is
+	 * empty, returns an empty sequence. When the specified sequence is empty, returns all
+	 * indexes of this sequence.
+	 */
+	Sequence<Integer> find(Sequence<T> items);
 
 	/**
 	 * Returns items of this sequence in reverse order.
@@ -220,6 +255,12 @@ public interface Sequence<T> extends Collection<T> {
 
 		return this;
 	}
+
+	@Override
+	Sequence<T> filter(Predicate<T> condition);
+
+	@Override
+	<R> Sequence<R> convert(Function<T, R> converter);
 
 	default Iterator<T> iterator(int index) {
 		final var range = getIndexRange();
