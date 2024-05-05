@@ -374,11 +374,11 @@ public class MutableList<T> extends List<T> {
 		return this;
 	}
 
-	@Override
-	public MutableList<T> enumerate(BiConsumer<T, Integer> operation) {
-		super.enumerate(operation);
-		return this;
-	}
+//	@Override
+//	public MutableList<T> enumerate(BiConsumer<T, Integer> operation) {
+//		super.enumerate(operation);
+//		return this;
+//	}
 
 	@Override
 	public MutableList<T> filter(Predicate<T> condition) {

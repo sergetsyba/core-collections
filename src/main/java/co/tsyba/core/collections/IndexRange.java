@@ -1,4 +1,3 @@
-// Created by Serge Tsyba <tsyba@me.com> on Apr 9, 2019.
 package co.tsyba.core.collections;
 
 import java.util.Iterator;
@@ -60,13 +59,9 @@ public class IndexRange implements Sequence<Integer> {
 		return end - start;
 	}
 
-	@Override
-	public IndexRange getIndexRange() {
-		return this;
-	}
-
 	public boolean contains(Integer index) {
-		return index >= start
+		return index != null
+			&& index >= start
 			&& index < end;
 	}
 
@@ -138,7 +133,18 @@ public class IndexRange implements Sequence<Integer> {
 			: Optional.empty();
 	}
 
+	@Override
+	public Sequence<Integer> find(Integer item) {
+		return contains(item)
+			? new List<>(item)
+			: new List<>();
+	}
 
+	@Override
+	public Sequence<Integer> find(Sequence<Integer> items) {
+		// todo: implement IndexRange.find(Sequence<Integer>)
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public Sequence<Integer> reverse() {
@@ -148,14 +154,27 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public Sequence<Integer> filter(Predicate<Integer> condition) {
-		// todo: implement IndexRange.filter(Predicate<Integer>)
-		throw new UnsupportedOperationException();
+		final var store = new ContiguousArrayStore(end - start);
+		for (var index : this) {
+			if (condition.test(index)) {
+				store.append(index);
+			}
+		}
+
+		store.removeExcessCapacity();
+		return new List<>(store);
 	}
 
 	@Override
 	public <R> Sequence<R> convert(Function<Integer, R> converter) {
-		// todo: implement IndexRange.convert(Function<Integer, R>)
-		throw new UnsupportedOperationException();
+		final var store = new ContiguousArrayStore(end - start);
+		for (var index : this) {
+			final var item = converter.apply(index);
+			store.append(item);
+		}
+
+		store.removeExcessCapacity();
+		return new List<>(store);
 	}
 
 	@Override
@@ -202,3 +221,5 @@ public class IndexRange implements Sequence<Integer> {
 		return "[" + start + ", " + end + ")";
 	}
 }
+
+// created on Apr 9, 2019

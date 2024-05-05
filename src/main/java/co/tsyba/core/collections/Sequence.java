@@ -30,11 +30,12 @@ public interface Sequence<T> extends Collection<T> {
 	 * When this sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getFirst() {
-		for (var item : this) {
-			return Optional.of(item);
+		if (isEmpty()) {
+			return Optional.empty();
 		}
 
-		return Optional.empty();
+		final var item = get(0);
+		return Optional.of(item);
 	}
 
 	/**
@@ -43,14 +44,13 @@ public interface Sequence<T> extends Collection<T> {
 	 * When this sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getLast() {
-		final var iterator = iterator();
-		T item = null;
-
-		while (iterator.hasNext()) {
-			item = iterator.next();
+		final var count = getCount();
+		if (count == 0) {
+			return Optional.empty();
 		}
 
-		return Optional.ofNullable(item);
+		final var item = get(count - 1);
+		return Optional.of(item);
 	}
 
 	/**
@@ -60,20 +60,8 @@ public interface Sequence<T> extends Collection<T> {
 	 * range of this sequence
 	 */
 	default T get(int index) {
-		final var range = getIndexRange();
-		if (!range.contains(index)) {
-			throw new IndexNotInRangeException(index, range);
-		}
-
-		final var iterator = iterator();
-		var index2 = range.start;
-
-		while (index2 < index) {
-			iterator.next();
-			++index2;
-		}
-
-		return iterator.next();
+		return iterator(index)
+			.next();
 	}
 
 	/**
