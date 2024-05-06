@@ -58,9 +58,9 @@ public class CollectionTests {
 			"null"
 	})
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testGetMinimum(@StringCollection Collection<String> items,
+	void testGetMin(@StringCollection Collection<String> items,
 		@StringOptional Optional<String> expected) {
-		final var minimum = items.getMinimum(Comparator.naturalOrder());
+		final var minimum = items.getMin(Comparator.naturalOrder());
 		assertEquals(expected, minimum,
 			format("%s.getMinimum()", items));
 	}
@@ -75,10 +75,10 @@ public class CollectionTests {
 			"null"
 	})
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testGetMaximum(@StringCollection Collection<String> items,
+	void testGetMax(@StringCollection Collection<String> items,
 		@StringOptional Optional<String> expected) {
 
-		final var maximum = items.getMaximum(Comparator.naturalOrder());
+		final var maximum = items.getMax(Comparator.naturalOrder());
 		assertEquals(expected, maximum,
 			format("%s.getMaximum()", items));
 	}

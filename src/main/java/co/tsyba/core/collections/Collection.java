@@ -47,7 +47,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
-	default Optional<T> getMinimum(Comparator<T> comparator) {
+	default Optional<T> getMin(Comparator<T> comparator) {
 		final var iterator = iterator();
 		if (!iterator.hasNext()) {
 			return Optional.empty();
@@ -70,7 +70,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
-	default Optional<T> getMaximum(Comparator<T> comparator) {
+	default Optional<T> getMax(Comparator<T> comparator) {
 		final var iterator = iterator();
 		if (!iterator.hasNext()) {
 			return Optional.empty();
