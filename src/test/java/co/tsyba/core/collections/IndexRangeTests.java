@@ -2,17 +2,21 @@ package co.tsyba.core.collections;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 class IndexRangeTests {
 	@DisplayName("IndexRange(int, int)")
 	@Nested
-	class NewStartEndTests {
+	class NewWithStartEndTests {
 		@DisplayName("\uD83D\uDC1D")
 		@Tests({
 			"when start is before end, creates range;" +
@@ -80,20 +84,24 @@ class IndexRangeTests {
 	class GetIndexRangeTests {
 		@DisplayName("\uD83C\uDF37")
 		@Tests({
-			"returns itself;" +
-				"[4, 9)"
+			"when index range is not empty, returns its index range;" +
+				"[4, 9);" +
+				"[0, 5)",
+			"when index range is empty, returns empty range;" +
+				"[0, 0);" +
+				"[0, 0)"
 		})
-		void test(@IntRange IndexRange range) {
+		void test(@IntRange IndexRange range, @IntRange IndexRange expected) {
 			final var returned = range.getIndexRange();
-			assertSame(range, returned,
+			assertEquals(expected, returned,
 				format("%s.getIndexRange()", range));
 		}
 	}
 
-	@DisplayName(".contains(int)")
+	@DisplayName(".contains(Integer)")
 	@Nested
 	class ContainsTests {
-		@DisplayName("\uD83D\uDE8B")
+		@DisplayName("when range is not empty")
 		@Tests({
 			"when index is before range start, returns false;" +
 				"[2, 9); 0;" +
@@ -110,11 +118,34 @@ class IndexRangeTests {
 			"when index is after range end, returns false;" +
 				"[4, 8); 12;" +
 				"false",
-			"when range is empty, returns false;" +
-				"[0, 0); 0;" +
+			"when index is null, returns false;" +
+				"[4, 8); null;" +
 				"false"
 		})
-		void test(@IntRange IndexRange range, int index, boolean expected) {
+		void testNotEmpty(@IntRange IndexRange range, Integer index, boolean expected) {
+			test(range, index, expected);
+		}
+
+		@DisplayName("when range is empty")
+		@Tests({
+			"when index is before range start, returns false;" +
+				"[0, 0); -3;" +
+				"false",
+			"when index is at range start, returns false;" +
+				"[0, 0); 0;" +
+				"false",
+			"when index is after range end, returns false;" +
+				"[0, 0); 1;" +
+				"false",
+			"when index is null, returns false;" +
+				"[0, 0); null;" +
+				"false"
+		})
+		void testEmpty(@IntRange IndexRange range, Integer index, boolean expected) {
+			test(range, index, expected);
+		}
+
+		private void test(IndexRange range, Integer index, boolean expected) {
 			final var contains = range.contains(index);
 			assertEquals(expected, contains,
 				format("%s.contains(%d)", range, index));
@@ -488,6 +519,127 @@ class IndexRangeTests {
 		}
 	}
 
+	@DisplayName(".find(Integer)")
+	@Nested
+	class FindTests {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when index is before range start, returns empty sequence;" +
+				"[4, 9); 2;" +
+				"[]",
+			"when index is at range start, returns index sequence;" +
+				"[4, 9); 4;" +
+				"[4]",
+			"when index is withing range, returns index sequence;" +
+				"[4, 9); 7;" +
+				"[7]",
+			"when index is at range end, returns empty sequence;" +
+				"[4, 9); 9;" +
+				"[]",
+			"when index is after range end, returns empty sequence;" +
+				"[4, 9); 14;" +
+				"[]",
+			"when index is null, returns empty sequence;" +
+				"[4, 9); null;" +
+				"[]"
+		})
+		void testNotEmpty(@IntRange IndexRange range, Integer index,
+			@IntList List<Integer> expected) {
+			test(range, index, expected);
+		}
+
+		@DisplayName("when range is empty")
+		@Tests({
+			"when index is before range start, returns empty sequence;" +
+				"[0, 0); -4;" +
+				"[]",
+			"when index is at range start, returns empty sequence;" +
+				"[0, 0); 0;" +
+				"[]",
+			"when index is after range end, returns empty sequence;" +
+				"[0, 0); 4;" +
+				"[]",
+			"when index is null, returns empty sequence;" +
+				"[0, 0); null;" +
+				"[]"
+		})
+		void testEmpty(@IntRange IndexRange range, Integer index,
+			@IntList List<Integer> expected) {
+			test(range, index, expected);
+		}
+
+		void test(IndexRange range, Integer index, List<Integer> expected) {
+			final var indexes = range.find(index);
+			assertEquals(expected, indexes,
+				format("%s.find(%d)", range, index));
+		}
+	}
+
+	@DisplayName(".find(Sequence<T>)")
+	@Nested
+	class FindSequenceTests {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when sequence is present, returns it index;" +
+				"[3, 9); [5, 6, 7];" +
+				"[2]",
+			"when sequence is absent, returns empty sequence;" +
+				"[3, 9); [7, 8, 9];" +
+				"[]",
+			"when argument sequence is larger, returns empty sequence;" +
+				"[3, 5); [3, 4, 5, 6, 7];" +
+				"[]",
+			"when argument sequence is empty, returns all indexes;" +
+				"[3, 9); [];" +
+				"[0, 1, 2, 3, 4, 5]"
+		})
+		void testNotEmpty(@IntRange IndexRange range, @IntList List<Integer> items,
+			@IntList List<Integer> expected) {
+			test(range, items, expected);
+		}
+
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when argument sequence is not empty, returns empty sequence;" +
+				"[0, 0); [7, 8, 9];" +
+				"[]",
+			"when argument sequence is empty, returns empty sequence;" +
+				"[0, 0); [];" +
+				"[]"
+		})
+		void testEmpty(@IntRange IndexRange range, @IntList List<Integer> items,
+			@IntList List<Integer> expected) {
+			test(range, items, expected);
+		}
+
+		private void test(IndexRange range, Sequence<Integer> items,
+			Sequence<Integer> expected) {
+
+			final var indexes = range.find(items);
+			assertEquals(expected, indexes,
+				format("%s.find(%s)", range, items));
+		}
+	}
+
+	@DisplayName(".filter(Predicate<Integer>)")
+	@Nested
+	class FilterTests {
+		@DisplayName("")
+		@Tests({
+			"when range is not empty, returns matching indexes;" +
+				"[1, 9);" +
+				"[2, 4, 6, 8]",
+			"when range is empty, returns empty sequence;" +
+				"[0, 0);" +
+				"[]"
+		})
+		void test(@IntRange IndexRange range, @IntList List<Integer> expected) {
+			final var matches = range.filter((index) -> index % 2 == 0);
+			assertEquals(expected, matches,
+				format("%s.filter(<is even>)", range));
+		}
+	}
+
 	@DisplayName(".equals(Object)")
 	@Nested
 	class EqualsTests {
@@ -574,6 +726,49 @@ class IndexRangeTests {
 
 			assertEquals(expected, iterated,
 				format("%s.iterator()", range));
+		}
+	}
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@ConvertWith(IntRange.Converter.class)
+@interface IntRange {
+	class Converter extends TypedArgumentConverter<String, IndexRange> {
+		protected Converter() {
+			super(String.class, IndexRange.class);
+		}
+
+		@Override
+		protected IndexRange convert(String s) throws ArgumentConversionException {
+			if (s == null) {
+				return null;
+			}
+
+			final var length = s.length();
+			final var bounds = s.substring(1, length - 1)
+				.split("\\s*,\\s*");
+
+			return new IndexRange(
+				Integer.parseInt(bounds[0]),
+				Integer.parseInt(bounds[1]));
+		}
+	}
+}
+
+@ConvertWith(IntRangeOptional.Converter.class)
+@Retention(RetentionPolicy.RUNTIME)
+@interface IntRangeOptional {
+	@SuppressWarnings("rawtypes")
+	class Converter extends TypedArgumentConverter<String, Optional> {
+		protected Converter() {
+			super(String.class, Optional.class);
+		}
+
+		@Override
+		protected Optional<IndexRange> convert(String s) throws ArgumentConversionException {
+			final var converter = new IntRange.Converter();
+			return Optional.ofNullable(s)
+				.map(converter::convert);
 		}
 	}
 }

@@ -92,7 +92,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@code false} otherwise.
 	 */
 	default boolean contains(T item) {
-		return match((storedItem) -> storedItem.equals(item))
+		return match((item2) -> item2.equals(item))
 			.isPresent();
 	}
 
@@ -108,8 +108,8 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns any item in this collection, which satisfies the specified
 	 * {@link Predicate}.
 	 * <p>
-	 * When this collection is empty or no item in it satisfies the specified
-	 * {@link Predicate}, returns an empty {@link Optional}.
+	 * When no item in this collection satisfies the specified {@link Predicate}, or this
+	 * collection is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> match(Predicate<T> condition) {
 		for (var item : this) {

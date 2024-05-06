@@ -19,56 +19,68 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class SequenceTests {
 	@DisplayName(".getIndexRange()")
-	@Tests({
-		"when sequence is not empty, returns index range;" +
-			"[f, e, Q, e, m, s, d];" +
-			"[0, 7)",
-		"when sequence is empty, returns empty index range;" +
-			"[];" +
-			"[0, 0)"
-	})
-	void testGetIndexRange(@StringSequence Sequence<String> items,
-		@IntRange IndexRange expected) {
+	@Nested
+	class GetIndexRangeTests {
+		@DisplayName("\uD83C\uDFC2")
+		@Tests({
+			"when sequence is not empty, returns index range;" +
+				"[f, e, Q, e, m, s, d];" +
+				"[0, 7)",
+			"when sequence is empty, returns empty index range;" +
+				"[];" +
+				"[0, 0)"
+		})
+		void test(@StringSequence Sequence<String> items,
+			@IntRange IndexRange expected) {
 
-		final var range = items.getIndexRange();
-		assertEquals(expected, range,
-			format("%s.getIndexRange()", items));
+			final var range = items.getIndexRange();
+			assertEquals(expected, range,
+				format("%s.getIndexRange()", items));
+		}
 	}
 
 	@DisplayName(".getFirst()")
-	@Tests({
-		"when sequence is not empty, returns first item;" +
-			"[g, N, k, L, d, S];" +
-			"g",
-		"when sequence is empty, returns empty Optional;" +
-			"[];" +
-			"null"
-	})
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testGetFirst(@StringSequence Sequence<String> items,
-		@StringOptional Optional<String> expected) {
+	@Nested
+	class GetFirstTests {
+		@DisplayName("\uD83C\uDFC4")
+		@Tests({
+			"when sequence is not empty, returns first item;" +
+				"[g, N, k, L, d, S];" +
+				"g",
+			"when sequence is empty, returns empty Optional;" +
+				"[];" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void test(@StringSequence Sequence<String> items,
+			@StringOptional Optional<String> expected) {
 
-		final var item = items.getFirst();
-		assertEquals(expected, item,
-			format("%s.getFirst()", items));
+			final var item = items.getFirst();
+			assertEquals(expected, item,
+				format("%s.getFirst()", items));
+		}
 	}
 
 	@DisplayName(".getLast()")
-	@Tests({
-		"when sequence is not empty, returns last item;" +
-			"[g, N, k, L, d, S];" +
-			"S",
-		"when sequence is empty, returns empty Optional;" +
-			"[];" +
-			"null"
-	})
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testGetLast(@StringSequence Sequence<String> items,
-		@StringOptional Optional<String> expected) {
+	@Nested
+	class GetLastTests {
+		@DisplayName("\uD83D\uDC2C")
+		@Tests({
+			"when sequence is not empty, returns last item;" +
+				"[g, N, k, L, d, S];" +
+				"S",
+			"when sequence is empty, returns empty Optional;" +
+				"[];" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void test(@StringSequence Sequence<String> items,
+			@StringOptional Optional<String> expected) {
 
-		final var item = items.getLast();
-		assertEquals(expected, item,
-			format("%s.getLast()", items));
+			final var item = items.getLast();
+			assertEquals(expected, item,
+				format("%s.getLast()", items));
+		}
 	}
 
 	@DisplayName(".get(int)")
@@ -211,55 +223,95 @@ public class SequenceTests {
 		}
 	}
 
-	@DisplayName(".findFirst(T)")
-	@Tests({
-		"when item is present, returns its index;" +
-			"[j, M, n, K, l, O, p]; l;" +
-			"4",
-		"when item is present multiple times, returns its first index;" +
-			"[j, M, l, K, l, O, l]; l;" +
-			"2",
-		"when item is absent, returns empty optional;" +
-			"[j, M, n, K, l, O, p]; L;" +
-			"null",
-		"when sequence is empty, returns empty optional;" +
-			"[]; l;" +
-			"null"
-	})
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testFindFirst(@StringSequence Sequence<String> items, String item,
-		@IntOptional Optional<Integer> expected) {
+	@DisplayName(".matchFirst(Predicate<T>)")
+	@Nested
+	class MatchFirstTests {
+		@DisplayName("\uD83D\uDEF6")
+		@Tests({
+			"when some item matches, returns matching item;" +
+				"[r, t, g, W, s, a];" +
+				"W",
+			"when several items match, returns first matching item;" +
+				"[r, t, T, S, a, Q];" +
+				"T",
+			"when no item matches, returns empty optional;" +
+				"[g, m, i, s, d, q];" +
+				"null",
+			"when sequence is empty, returns empty optional;" +
+				"[];" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void test(@StringSequence Sequence<String> items,
+			@StringOptional Optional<String> expected) {
 
-		final var index = items.findFirst(item);
-		assertEquals(expected, index,
-			format("%s.findFirst(%s)", items, item));
+			final var matched = items.matchFirst((item) -> {
+				return item.toUpperCase()
+					.equals(item);
+			});
+
+			assertEquals(expected, matched,
+				format("%s.matchFirst(<is uppercase>)", items));
+		}
 	}
 
 	@DisplayName(".findFirst(T)")
-	@Tests({
-		"when item is present, returns its index;" +
-			"[o, k, p, d, s, S, n];" +
-			"5",
-		"when item is present multiple times, returns its first index;" +
-			"[o, k, p, D, s, S, N];" +
-			"3",
-		"when item is absent, returns empty optional;" +
-			"[o, k, p, d, s, s, n];" +
-			"null",
-		"when sequence is empty, returns empty optional;" +
-			"[];" +
-			"null"
-	})
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testFindFirstPredicate(@StringSequence Sequence<String> items,
-		@IntOptional Optional<Integer> expected) {
+	@Nested
+	class FindFirstTests {
+		@DisplayName("\uD83C\uDF5D")
+		@Tests({
+			"when item is present, returns its index;" +
+				"[j, M, n, K, l, O, p]; l;" +
+				"4",
+			"when item is present multiple times, returns its first index;" +
+				"[j, M, l, K, l, O, l]; l;" +
+				"2",
+			"when item is absent, returns empty optional;" +
+				"[j, M, n, K, l, O, p]; L;" +
+				"null",
+			"when sequence is empty, returns empty optional;" +
+				"[]; l;" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void test(@StringSequence Sequence<String> items, String item,
+			@IntOptional Optional<Integer> expected) {
 
-		final var index = items.findFirst((item) ->
-			item.toUpperCase()
-				.equals(item));
+			final var index = items.findFirst(item);
+			assertEquals(expected, index,
+				format("%s.findFirst(%s)", items, item));
+		}
+	}
 
-		assertEquals(expected, index,
-			format("%s.findFirst(<is uppercase>)", items));
+	@DisplayName(".findFirst(Predicate<T>)")
+	@Nested
+	class FindFirstPredicateTests {
+		@DisplayName("\uD83C\uDFDC")
+		@Tests({
+			"when item is present, returns its index;" +
+				"[o, k, p, d, s, S, n];" +
+				"5",
+			"when item is present multiple times, returns its first index;" +
+				"[o, k, p, D, s, S, N];" +
+				"3",
+			"when item is absent, returns empty optional;" +
+				"[o, k, p, d, s, s, n];" +
+				"null",
+			"when sequence is empty, returns empty optional;" +
+				"[];" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void test(@StringSequence Sequence<String> items,
+			@IntOptional Optional<Integer> expected) {
+
+			final var index = items.findFirst((item) ->
+				item.toUpperCase()
+					.equals(item));
+
+			assertEquals(expected, index,
+				format("%s.findFirst(<is uppercase>)", items));
+		}
 	}
 
 	@DisplayName(".findFirst(Sequence<T>)")
@@ -315,27 +367,31 @@ public class SequenceTests {
 	}
 
 	@DisplayName(".enumerate(BiPredicate<Integer, T>)")
-	@Tests({
-		"when sequence is not empty, enumerates items;" +
-			"[g, U, m, I, l, M];" +
-			"[0:g, 1:U, 2:m, 3:I, 4:l, 5:M]",
-		"when sequence is empty, does nothing;" +
-			"[];" +
-			"[]"
-	})
-	void testEnumerate(@StringSequence Sequence<String> items,
-		@StringMap Map<String, String> expected) {
+	@Nested
+	class EnumerateTests {
+		@DisplayName("\uD83C\uDF26")
+		@Tests({
+			"when sequence is not empty, enumerates items;" +
+				"[g, U, m, I, l, M];" +
+				"[0:g, 1:U, 2:m, 3:I, 4:l, 5:M]",
+			"when sequence is empty, does nothing;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringSequence Sequence<String> items,
+			@StringMap Map<String, String> expected) {
 
-		final var enumerated = new MutableMap<Integer, String>();
-		final var returned = items.enumerate(enumerated::set);
+			final var enumerated = new MutableMap<Integer, String>();
+			final var returned = items.enumerate(enumerated::set);
 
-		final var expected2 = expected.convert((key, value) ->
-			new Map.Entry<>(Integer.parseInt(key), value));
+			final var expected2 = expected.convert((key, value) ->
+				new Map.Entry<>(Integer.parseInt(key), value));
 
-		assertSame(items, returned,
-			format("%s.enumerate(BiPredicate<Integer, T>)", items));
-		assertEquals(expected2, enumerated,
-			format("%s.enumerate(BiPredicate<Integer, T>)", items));
+			assertSame(items, returned,
+				format("%s.enumerate(BiPredicate<Integer, T>)", items));
+			assertEquals(expected2, enumerated,
+				format("%s.enumerate(BiPredicate<Integer, T>)", items));
+		}
 	}
 }
 
@@ -358,31 +414,6 @@ public class SequenceTests {
 	}
 }
 
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(IntRange.Converter.class)
-@interface IntRange {
-	class Converter extends TypedArgumentConverter<String, IndexRange> {
-		protected Converter() {
-			super(String.class, IndexRange.class);
-		}
-
-		@Override
-		protected IndexRange convert(String s) throws ArgumentConversionException {
-			if (s == null) {
-				return null;
-			}
-
-			final var length = s.length();
-			final var bounds = s.substring(1, length - 1)
-				.split("\\s*,\\s*");
-
-			return new IndexRange(
-				Integer.parseInt(bounds[0]),
-				Integer.parseInt(bounds[1]));
-		}
-	}
-}
-
 @ConvertWith(IntOptional.Converter.class)
 @Retention(RetentionPolicy.RUNTIME)
 @interface IntOptional {
@@ -396,24 +427,6 @@ public class SequenceTests {
 		protected Optional<Integer> convert(String s) throws ArgumentConversionException {
 			return Optional.ofNullable(s)
 				.map(Integer::parseInt);
-		}
-	}
-}
-
-@ConvertWith(IntRangeOptional.Converter.class)
-@Retention(RetentionPolicy.RUNTIME)
-@interface IntRangeOptional {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Optional> {
-		protected Converter() {
-			super(String.class, Optional.class);
-		}
-
-		@Override
-		protected Optional<IndexRange> convert(String s) throws ArgumentConversionException {
-			final var converter = new IntRange.Converter();
-			return Optional.ofNullable(s)
-				.map(converter::convert);
 		}
 	}
 }
@@ -441,17 +454,27 @@ class ArraySequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public Sequence<Integer> find(T item) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Sequence<Integer> find(Sequence<T> items) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public Sequence<T> reverse() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Collection<T> filter(Predicate<T> condition) {
+	public Sequence<T> filter(Predicate<T> condition) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <R> Collection<R> convert(Function<T, R> converter) {
+	public <R> Sequence<R> convert(Function<T, R> converter) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -1,4 +1,3 @@
-// Created by Serge Tsyba <tsyba@me.com> on Apr 9, 2019.
 package co.tsyba.core.collections;
 
 import java.util.Iterator;
@@ -60,13 +59,9 @@ public class IndexRange implements Sequence<Integer> {
 		return end - start;
 	}
 
-	@Override
-	public IndexRange getIndexRange() {
-		return this;
-	}
-
 	public boolean contains(Integer index) {
-		return index >= start
+		return index != null
+			&& index >= start
 			&& index < end;
 	}
 
@@ -138,7 +133,47 @@ public class IndexRange implements Sequence<Integer> {
 			: Optional.empty();
 	}
 
+	@Override
+	public Sequence<Integer> find(Integer item) {
+		return contains(item)
+			? new List<>(item)
+			: new List<>();
+	}
 
+	@Override
+	public Sequence<Integer> find(Sequence<Integer> items) {
+		final var indexes = new MutableList<Integer>();
+		final var range = getIndexRange();
+
+		for (var index : range) {
+			if (contains(items, index)) {
+				indexes.append(index);
+			}
+		}
+
+		return indexes.toImmutable();
+	}
+
+	/**
+	 * Returns {@code true} when the specified {@link Sequence} occurs at the specified
+	 * index in this list; returns {@code false} otherwise.
+	 */
+	private boolean contains(Sequence<Integer> items, int index) {
+		final var iterator1 = iterator(index);
+		final var iterator2 = items.iterator();
+
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			final var item1 = iterator1.next();
+			final var item2 = iterator2.next();
+
+			if (!item1.equals(item2)) {
+				return false;
+			}
+		}
+
+		// verify all items in the argument sequence have been compared
+		return !iterator2.hasNext();
+	}
 
 	@Override
 	public Sequence<Integer> reverse() {
@@ -148,14 +183,27 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public Sequence<Integer> filter(Predicate<Integer> condition) {
-		// todo: implement IndexRange.filter(Predicate<Integer>)
-		throw new UnsupportedOperationException();
+		final var store = new ContiguousArrayStore(end - start);
+		for (var index : this) {
+			if (condition.test(index)) {
+				store.append(index);
+			}
+		}
+
+		store.removeExcessCapacity();
+		return new List<>(store);
 	}
 
 	@Override
 	public <R> Sequence<R> convert(Function<Integer, R> converter) {
-		// todo: implement IndexRange.convert(Function<Integer, R>)
-		throw new UnsupportedOperationException();
+		final var store = new ContiguousArrayStore(end - start);
+		for (var index : this) {
+			final var item = converter.apply(index);
+			store.append(item);
+		}
+
+		store.removeExcessCapacity();
+		return new List<>(store);
 	}
 
 	@Override
@@ -202,3 +250,5 @@ public class IndexRange implements Sequence<Integer> {
 		return "[" + start + ", " + end + ")";
 	}
 }
+
+// created on Apr 9, 2019

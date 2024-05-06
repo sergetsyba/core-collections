@@ -563,6 +563,10 @@ public class CollectionTests {
 
 		@Override
 		protected String[] convert(String s) throws ArgumentConversionException {
+			if (s == null) {
+				return null;
+			}
+
 			final var substring = s.substring(
 				s.indexOf("[") + 1,
 				s.lastIndexOf("]"));

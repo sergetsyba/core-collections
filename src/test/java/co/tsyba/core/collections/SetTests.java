@@ -448,22 +448,3 @@ public class SetTests {
 		}
 	}
 }
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringList.Converter.class)
-@interface StringList {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, List> {
-		protected Converter() {
-			super(String.class, List.class);
-		}
-
-		@Override
-		protected List<String> convert(String s) throws ArgumentConversionException {
-			final var items = new StringArray.Converter()
-				.convert(s);
-
-			return new List<>(items);
-		}
-	}
-}
