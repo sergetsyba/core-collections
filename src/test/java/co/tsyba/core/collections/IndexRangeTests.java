@@ -591,7 +591,7 @@ class IndexRangeTests {
 				"[]",
 			"when argument sequence is empty, returns all indexes;" +
 				"[3, 9); [];" +
-				"[3, 4, 5, 6, 7, 8]"
+				"[0, 1, 2, 3, 4, 5]"
 		})
 		void testNotEmpty(@IntRange IndexRange range, @IntList List<Integer> items,
 			@IntList List<Integer> expected) {

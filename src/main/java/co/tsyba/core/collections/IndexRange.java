@@ -142,8 +142,37 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public Sequence<Integer> find(Sequence<Integer> items) {
-		// todo: implement IndexRange.find(Sequence<Integer>)
-		throw new UnsupportedOperationException();
+		final var indexes = new MutableList<Integer>();
+		final var range = getIndexRange();
+
+		for (var index : range) {
+			if (contains(items, index)) {
+				indexes.append(index);
+			}
+		}
+
+		return indexes.toImmutable();
+	}
+
+	/**
+	 * Returns {@code true} when the specified {@link Sequence} occurs at the specified
+	 * index in this list; returns {@code false} otherwise.
+	 */
+	private boolean contains(Sequence<Integer> items, int index) {
+		final var iterator1 = iterator(index);
+		final var iterator2 = items.iterator();
+
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			final var item1 = iterator1.next();
+			final var item2 = iterator2.next();
+
+			if (!item1.equals(item2)) {
+				return false;
+			}
+		}
+
+		// verify all items in the argument sequence have been compared
+		return !iterator2.hasNext();
 	}
 
 	@Override
