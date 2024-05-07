@@ -65,6 +65,19 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns the smallest item in this collection, according to the natural order of the
+	 * items.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
+	 */
+	default Optional<T> getMin() {
+		@SuppressWarnings("unchecked")
+		final var comparator = (Comparator<T>) Comparator.naturalOrder();
+		return getMin(comparator);
+	}
+
+	/**
 	 * Returns the largest item in this collection, according to the specified
 	 * {@link Comparator}.
 	 * <p>
@@ -85,6 +98,19 @@ public interface Collection<T> extends Iterable<T> {
 		}
 
 		return Optional.of(maximum);
+	}
+
+	/**
+	 * Returns the largest item in this collection, according to the natural order of the
+	 * items.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
+	 */
+	default Optional<T> getMax() {
+		@SuppressWarnings("unchecked")
+		final var comparator = (Comparator<T>) Comparator.naturalOrder();
+		return getMax(comparator);
 	}
 
 	/**
@@ -168,8 +194,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this collection, ordered according to their natural order, when
-	 * items are {@link Comparable}; otherwise fails with {@link RuntimeException}.
+	 * Returns items of this collection, ordered according to their natural order.
 	 *
 	 * @throws RuntimeException when items of this collection are not {@link Comparable}.
 	 */

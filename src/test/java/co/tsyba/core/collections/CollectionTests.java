@@ -49,40 +49,115 @@ public class CollectionTests {
 	}
 
 	@DisplayName(".getMinimum(Comparator<T>)")
-	@Tests({
-		"when collection is not empty, returns minimum;" +
-			"[b, L, P, g, V, c];" +
-			"L",
-		"when collection is empty, returns empty optional;" +
-			"[];" +
-			"null"
-	})
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testGetMin(@StringCollection Collection<String> items,
-		@StringOptional Optional<String> expected) {
-		final var minimum = items.getMin(Comparator.naturalOrder());
-		assertEquals(expected, minimum,
-			format("%s.getMinimum()", items));
+	@Nested
+	class GetMinComparatorTests {
+		@DisplayName("\uD83D\uDDFF")
+		@Tests({
+			"when collection is not empty, returns minimum;" +
+				"[b, L, P, g, V, c];" +
+				"L",
+			"when collection is empty, returns empty optional;" +
+				"[];" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void testGetMin(@StringCollection Collection<String> items,
+			@StringOptional Optional<String> expected) {
+			final var minimum = items.getMin(Comparator.naturalOrder());
+			assertEquals(expected, minimum,
+				format("%s.getMinimum()", items));
+		}
 	}
 
-	@DisplayName(".getMaximum(Comparator<T>)")
-	@Tests({
-		"when collection is not empty, returns maximum;" +
-			"[b, L, P, g, V, c];" +
-			"g",
-		"when collection is empty, returns empty optional;" +
-			"[];" +
-			"null"
-	})
+	@DisplayName(".getMin()")
+	@Nested
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	void testGetMax(@StringCollection Collection<String> items,
-		@StringOptional Optional<String> expected) {
+	class GetMinTests {
+		@DisplayName("when items are comparable")
+		@Tests({
+			"when collection is not empty, returns minimum;" +
+				"[g, m, t, E, d, A, s];" +
+				"A",
+			"when collection is empty, returns empty optional;" +
+				"[];" +
+				"null"
+		})
+		void testComparable(@StringCollection Collection<String> items,
+			@StringOptional Optional<String> expected) {
 
-		final var maximum = items.getMax(Comparator.naturalOrder());
-		assertEquals(expected, maximum,
-			format("%s.getMaximum()", items));
+			final var min = items.getMin();
+			assertEquals(expected, min,
+				format("%s.getMin()", items));
+		}
+
+		@DisplayName("when items are not comparable")
+		@Tests({
+			"fails with UnsupportedOperationException"
+		})
+		void testNotComparable() {
+			assertThrows(UnsupportedOperationException.class,
+				() -> {
+					new PredicateCollection<>()
+						.getMin();
+				});
+		}
 	}
 
+	@DisplayName(".getMax(Comparator<T>)")
+	@Nested
+	class GetMaxComparatorTests {
+		@DisplayName("\uD83D\uDDBC")
+		@Tests({
+			"when collection is not empty, returns maximum;" +
+				"[b, L, P, g, V, c];" +
+				"g",
+			"when collection is empty, returns empty optional;" +
+				"[];" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void test(@StringCollection Collection<String> items,
+			@StringOptional Optional<String> expected) {
+
+			final var maximum = items.getMax(Comparator.naturalOrder());
+			assertEquals(expected, maximum,
+				format("%s.getMaximum()", items));
+		}
+	}
+
+	@DisplayName(".getMax()")
+	@Nested
+	class GetMaxTests {
+		@DisplayName("when items are comparable")
+		@Tests({
+			"when collection is not empty, returns maximum;" +
+				"[g, m, t, E, d, A, s];" +
+				"t",
+			"when collection is empty, returns empty optional;" +
+				"[];" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void testComparable(@StringCollection Collection<String> items,
+			@StringOptional Optional<String> expected) {
+
+			final var max = items.getMax();
+			assertEquals(expected, max,
+				format("%s.getMax()", items));
+		}
+
+		@DisplayName("when items are not comparable")
+		@Tests({
+			"fails with UnsupportedOperationException"
+		})
+		void testNotComparable() {
+			assertThrows(UnsupportedOperationException.class,
+				() -> {
+					new PredicateCollection<>()
+						.getMax();
+				});
+		}
+	}
 
 	@DisplayName(".contains(T)")
 	@Nested
