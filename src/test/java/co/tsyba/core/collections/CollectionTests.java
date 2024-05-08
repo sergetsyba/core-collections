@@ -241,50 +241,10 @@ public class CollectionTests {
 		}
 	}
 
-	@DisplayName(".match(Predicate<T>)")
-	@Nested
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	class MatchTests {
-		@DisplayName("when collection is not empty")
-		@Tests({
-			"when some item matches, returns matched item;" +
-				"[F, V, d, P, a, Q];" +
-				"d",
-			"when no item matches, returns empty optional;" +
-				"[F, V, D, P, A, Q];" +
-				"null",
-		})
-		void testNotEmpty(@StringCollection Collection<String> items,
-			@StringOptional Optional<String> expected) {
-			test(items, expected);
-		}
-
-		@DisplayName("when collection is empty")
-		@Tests({
-			"returns empty optional;" +
-				"[];" +
-				"null"
-		})
-		void testEmpty(@StringCollection Collection<String> items,
-			@StringOptional Optional<String> expected) {
-			test(items, expected);
-		}
-
-		private void test(Collection<String> items, Optional<String> expected) {
-			final var match = items.match((item) -> {
-				return item.toLowerCase()
-					.equals(item);
-			});
-
-			assertEquals(expected, match,
-				format("%s.match(Predicate<T>)", items));
-		}
-	}
-
 	@DisplayName(".noneMatches(Predicate<T>)")
 	@Nested
 	class NoneMatchesTests {
-		@DisplayName("when collection is not empty")
+		@DisplayName("\uD83D\uDD2C")
 		@Tests({
 			"when no item matches, returns true;" +
 				"[K, M, T, S, A];" +
@@ -294,23 +254,12 @@ public class CollectionTests {
 				"false",
 			"when all items match, returns false;" +
 				"[k, m, t, s, a];" +
-				"false"
-		})
-		void testNotEmpty(@StringCollection Collection<String> items, boolean expected) {
-			test(items, expected);
-		}
-
-		@DisplayName("when collection is empty")
-		@Tests({
-			"returns true;" +
+				"false",
+			"when collection is empty, returns true;" +
 				"[];" +
-				"true",
+				"true"
 		})
-		void testEmpty(@StringCollection Collection<String> items, boolean expected) {
-			test(items, expected);
-		}
-
-		private void test(Collection<String> items, boolean expected) {
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			final var matches = items.noneMatches((item) -> {
 				return item.toLowerCase()
 					.equals(item);
@@ -324,7 +273,7 @@ public class CollectionTests {
 	@DisplayName(".anyMatches(Predicate<T>)")
 	@Nested
 	class AnyMatchesTests {
-		@DisplayName("when collection is not empty")
+		@DisplayName("\uD83D\uDC20")
 		@Tests({
 			"when no item matches, returns false;" +
 				"[Y, P, D, A, S, M, S];" +
@@ -335,22 +284,11 @@ public class CollectionTests {
 			"when all items match, returns true;" +
 				"[y, p, d, a, s, m, s];" +
 				"true",
-		})
-		void testNotEmpty(@StringCollection Collection<String> items, boolean expected) {
-			test(items, expected);
-		}
-
-		@DisplayName("when collection is empty")
-		@Tests({
-			"returns false;" +
+			"when collection is empty, returns false;" +
 				"[];" +
 				"false",
 		})
-		void testEmpty(@StringCollection Collection<String> items, boolean expected) {
-			test(items, expected);
-		}
-
-		private void test(Collection<String> items, boolean expected) {
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			final var matches = items.anyMatches((item) -> {
 				return item.toLowerCase()
 					.equals(item);
@@ -364,7 +302,7 @@ public class CollectionTests {
 	@DisplayName(".eachMatches(Predicate<T>)")
 	@Nested
 	class EachMatchesTests {
-		@DisplayName("when collection is not empty")
+		@DisplayName("\uD83D\uDD2A")
 		@Tests({
 			"when no item matches, returns false;" +
 				"[H, B, S, A];" +
@@ -375,22 +313,11 @@ public class CollectionTests {
 			"when each items match, returns true;" +
 				"[h, b, s, a];" +
 				"true",
-		})
-		void testNotEmpty(@StringCollection Collection<String> items, boolean expected) {
-			test(items, expected);
-		}
-
-		@DisplayName("when collection is empty")
-		@Tests({
-			"returns true;" +
+			"when collection is empty, returns true;" +
 				"[];" +
 				"true",
 		})
-		void testEmpty(@StringCollection Collection<String> items, boolean expected) {
-			test(items, expected);
-		}
-
-		private void test(Collection<String> items, boolean expected) {
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			final var matches = items.eachMatches((item) -> {
 				return item.toLowerCase()
 					.equals(item);
@@ -398,6 +325,35 @@ public class CollectionTests {
 
 			assertEquals(expected, matches,
 				format("%s.eachMatches(Predicate<T>)", items));
+		}
+	}
+
+	@DisplayName(".matchAny(Predicate<T>)")
+	@Nested
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	class MatchAnyTests {
+		@DisplayName("\uD83C\uDF2D")
+		@Tests({
+			"when some item matches, returns matched item;" +
+				"[F, V, d, P, a, Q];" +
+				"d",
+			"when no item matches, returns empty optional;" +
+				"[F, V, D, P, A, Q];" +
+				"null",
+			"when collection is empty, returns empty optional;" +
+				"[];" +
+				"null"
+		})
+		void test(@StringCollection Collection<String> items,
+			@StringOptional Optional<String> expected) {
+
+			final var match = items.matchAny((item) -> {
+				return item.toLowerCase()
+					.equals(item);
+			});
+
+			assertEquals(expected, match,
+				format("%s.match(Predicate<T>)", items));
 		}
 	}
 
@@ -629,6 +585,26 @@ public class CollectionTests {
 }
 
 @Retention(RetentionPolicy.RUNTIME)
+@ConvertWith(StringCollection.Converter.class)
+@interface StringCollection {
+	@SuppressWarnings("rawtypes")
+	class Converter extends TypedArgumentConverter<String, Collection> {
+		protected Converter() {
+			super(String.class, Collection.class);
+		}
+
+		@Override
+		protected Collection<String> convert(String s) throws ArgumentConversionException {
+			final var items = new StringArray.Converter()
+				.convert(s);
+
+			return new ArrayCollection<>(items) {
+			};
+		}
+	}
+}
+
+@Retention(RetentionPolicy.RUNTIME)
 @ConvertWith(StringArray.Converter.class)
 @interface StringArray {
 	class Converter extends TypedArgumentConverter<String, String[]> {
@@ -671,26 +647,6 @@ public class CollectionTests {
 		@Override
 		protected Optional<String> convert(String s) throws ArgumentConversionException {
 			return Optional.ofNullable(s);
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringCollection.Converter.class)
-@interface StringCollection {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Collection> {
-		protected Converter() {
-			super(String.class, Collection.class);
-		}
-
-		@Override
-		protected Collection<String> convert(String s) throws ArgumentConversionException {
-			final var items = new StringArray.Converter()
-				.convert(s);
-
-			return new ArrayCollection<>(items) {
-			};
 		}
 	}
 }

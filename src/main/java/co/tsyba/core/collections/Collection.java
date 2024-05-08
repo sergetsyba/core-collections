@@ -118,7 +118,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@code false} otherwise.
 	 */
 	default boolean contains(T item) {
-		return match((item2) -> item2.equals(item))
+		return matchAny((item2) -> item2.equals(item))
 			.isPresent();
 	}
 
@@ -131,30 +131,13 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns any item in this collection, which satisfies the specified
-	 * {@link Predicate}.
-	 * <p>
-	 * When no item in this collection satisfies the specified {@link Predicate}, or this
-	 * collection is empty, returns an empty {@link Optional}.
-	 */
-	default Optional<T> match(Predicate<T> condition) {
-		for (var item : this) {
-			if (condition.test(item)) {
-				return Optional.of(item);
-			}
-		}
-
-		return Optional.empty();
-	}
-
-	/**
 	 * Returns {@code true} when no item in this collection satisfies the specified
 	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean noneMatches(Predicate<T> condition) {
-		return match(condition)
+		return matchAny(condition)
 			.isEmpty();
 	}
 
@@ -165,7 +148,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code false}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
-		return match(condition)
+		return matchAny(condition)
 			.isPresent();
 	}
 
@@ -176,8 +159,25 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean eachMatches(Predicate<T> condition) {
-		return match((item) -> !condition.test(item))
+		return matchAny((item) -> !condition.test(item))
 			.isEmpty();
+	}
+
+	/**
+	 * Returns any item in this collection, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this collection satisfies the specified {@link Predicate}, or this
+	 * collection is empty, returns an empty {@link Optional}.
+	 */
+	default Optional<T> matchAny(Predicate<T> condition) {
+		for (var item : this) {
+			if (condition.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	/**
