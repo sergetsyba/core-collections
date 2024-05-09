@@ -1,6 +1,7 @@
 package co.tsyba.core.collections;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -11,10 +12,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MutableSetTests {
+	@DisplayName(".getDistinct()")
+	@Nested
+	class GetDistinctTests {
+		@DisplayName("")
+		@Tests({
+			"returns a copy of itself;" +
+				"[g, t, w, s, A, q]"
+		})
+		void test(@StringMutableSet MutableSet<String> items) {
+			final var distinct = items.getDistinct();
+			assertEquals(items, distinct,
+				format("%s.getDistinct()", items));
+			assertNotSame(items, distinct,
+				format("%s.getDistinct()", items));
+		}
+	}
+
 	@DisplayName(".unite(Set<T>)")
 	@ParameterizedTest(name = "{0}")
 	@CsvSource(value = {

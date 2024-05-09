@@ -660,6 +660,11 @@ class ArrayCollection<T> implements Collection<T> {
 	}
 
 	@Override
+	public Collection<T> getDistinct() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public Collection<T> filter(Predicate<T> condition) {
 		throw new UnsupportedOperationException();
 	}
@@ -701,6 +706,11 @@ class PredicateCollection<T> implements Collection<Predicate<T>> {
 	@SafeVarargs
 	public PredicateCollection(Predicate<T>... items) {
 		this.items = items;
+	}
+
+	@Override
+	public Collection<Predicate<T>> getDistinct() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

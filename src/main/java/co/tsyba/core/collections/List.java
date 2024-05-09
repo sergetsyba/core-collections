@@ -142,9 +142,7 @@ public class List<T> implements Sequence<T> {
 		return !iterator2.hasNext();
 	}
 
-	/**
-	 * Returns distinct items in this list.
-	 */
+	@Override
 	public List<T> getDistinct() {
 		final var distinct = new MutableSet<>(this);
 		return new List<>(distinct);

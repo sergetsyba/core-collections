@@ -77,6 +77,11 @@ public class Set<T> implements Collection<T> {
 		return index > -1;
 	}
 
+	@Override
+	public Set<T> getDistinct() {
+		return this;
+	}
+
 	/**
 	 * Returns {@code true} when this set is disjoint from the specified one; returns
 	 * {@code false} otherwise.

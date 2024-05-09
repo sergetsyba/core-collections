@@ -469,6 +469,11 @@ class ArraySequence<T> implements Sequence<T> {
 	}
 
 	@Override
+	public Collection<T> getDistinct() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public Sequence<T> filter(Predicate<T> condition) {
 		throw new UnsupportedOperationException();
 	}
