@@ -189,7 +189,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	default List<T> sort(Comparator<T> comparator) {
+	default Sequence<T> sort(Comparator<T> comparator) {
 		@SuppressWarnings("unchecked")
 		final var items = (T[]) toArray();
 		Arrays.sort(items, comparator);
@@ -203,7 +203,7 @@ public interface Collection<T> extends Iterable<T> {
 	 *
 	 * @throws RuntimeException when items of this collection are not {@link Comparable}.
 	 */
-	default List<T> sort() {
+	default Sequence<T> sort() {
 		@SuppressWarnings("unchecked")
 		final var comparator = (Comparator<T>) Comparator.naturalOrder();
 		return sort(comparator);
@@ -213,7 +213,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection in random order, based on the specified
 	 * {@link Random}.
 	 */
-	default List<T> shuffle(Random random) {
+	default Sequence<T> shuffle(Random random) {
 		final var items = toArray();
 		shuffle(items, random);
 
@@ -225,7 +225,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection in random order, where randomization is seeded
 	 * from the current system time.
 	 */
-	default List<T> shuffle() {
+	default Sequence<T> shuffle() {
 		final var time = System.currentTimeMillis();
 		final var random = new Random(time);
 
