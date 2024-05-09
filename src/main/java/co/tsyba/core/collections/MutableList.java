@@ -2,7 +2,6 @@ package co.tsyba.core.collections;
 
 import java.util.Comparator;
 import java.util.Random;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -346,25 +345,25 @@ public class MutableList<T> extends List<T> {
 
 	@Override
 	public MutableList<T> sort(Comparator<T> comparator) {
-		final var sorted = super.sort(comparator);
+		final var sorted = (List<T>) super.sort(comparator);
 		return new MutableList<>(sorted.store);
 	}
 
 	@Override
 	public List<T> sort() {
-		final var sorted = super.sort();
+		final var sorted = (List<T>) super.sort();
 		return new MutableList<>(sorted.store);
 	}
 
 	@Override
 	public MutableList<T> shuffle(Random random) {
-		final var shuffled = super.shuffle(random);
+		final var shuffled = (List<T>) super.shuffle(random);
 		return new MutableList<>(shuffled.store);
 	}
 
 	@Override
 	public List<T> shuffle() {
-		final var shuffled = super.shuffle();
+		final var shuffled = (List<T>) super.shuffle();
 		return new MutableList<>(shuffled.store);
 	}
 

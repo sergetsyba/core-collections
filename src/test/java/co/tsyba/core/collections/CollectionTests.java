@@ -19,51 +19,60 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CollectionTests {
 	@DisplayName(".isEmpty()")
-	@Tests({
-		"when collection is not empty, returns false;" +
-			"[f, T, q, r];" +
-			"false",
-		"when collection is empty, returns true;" +
-			"[];" +
-			"true"
-	})
-	void testIsEmpty(@StringCollection Collection<?> items, boolean expected) {
-		final var empty = items.isEmpty();
-		assertEquals(expected, empty,
-			format("%s.isEmpty()", items));
+	@Nested
+	class IsEmptyTests {
+		@DisplayName("\uD83C\uDFD4")
+		@Tests({
+			"when collection is not empty, returns false;" +
+				"[f, T, q, r];" +
+				"false",
+			"when collection is empty, returns true;" +
+				"[];" +
+				"true"
+		})
+		void test(@StringCollection Collection<String> items, boolean expected) {
+			final var empty = items.isEmpty();
+			assertEquals(expected, empty,
+				format("%s.isEmpty()", items));
+		}
 	}
 
 	@DisplayName(".getCount()")
-	@Tests({
-		"when collection is not empty, returns item count;" +
-			"[b, 5, F, e];" +
-			"4",
-		"when collection is empty, returns 0;" +
-			"[];" +
-			"0"
-	})
-	void testGetCount(@StringCollection Collection<?> items, int expected) {
-		final var count = items.getCount();
-		assertEquals(expected, count,
-			format("%s.getCount()", items));
+	@Nested
+	class GetCountTests {
+		@Tests({
+			"when collection is not empty, returns item count;" +
+				"[b, 5, F, e];" +
+				"4",
+			"when collection is empty, returns 0;" +
+				"[];" +
+				"0"
+		})
+		void test(@StringCollection Collection<?> items, int expected) {
+			final var count = items.getCount();
+			assertEquals(expected, count,
+				format("%s.getCount()", items));
+		}
 	}
 
-	@DisplayName(".getMinimum(Comparator<T>)")
+
+	@DisplayName(".getMin(Comparator<T>)")
 	@Nested
 	class GetMinComparatorTests {
 		@DisplayName("\uD83D\uDDFF")
 		@Tests({
 			"when collection is not empty, returns minimum;" +
 				"[b, L, P, g, V, c];" +
-				"L",
+				"g",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void testGetMin(@StringCollection Collection<String> items,
+		void test(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
-			final var minimum = items.getMin(Comparator.naturalOrder());
+
+			final var minimum = items.getMin(Comparator.reverseOrder());
 			assertEquals(expected, minimum,
 				format("%s.getMinimum()", items));
 		}
@@ -110,7 +119,7 @@ public class CollectionTests {
 		@Tests({
 			"when collection is not empty, returns maximum;" +
 				"[b, L, P, g, V, c];" +
-				"g",
+				"L",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -119,7 +128,7 @@ public class CollectionTests {
 		void test(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
-			final var maximum = items.getMax(Comparator.naturalOrder());
+			final var maximum = items.getMax(Comparator.reverseOrder());
 			assertEquals(expected, maximum,
 				format("%s.getMaximum()", items));
 		}
@@ -162,7 +171,7 @@ public class CollectionTests {
 	@DisplayName(".contains(T)")
 	@Nested
 	class ContainsTests {
-		@DisplayName("when collection is not empty")
+		@DisplayName("\uD83D\uDC8A")
 		@Tests({
 			"when item is present, returns true;" +
 				"[t, d, 5, V, A]; 5;" +
@@ -172,25 +181,14 @@ public class CollectionTests {
 				"false",
 			"when item is null, returns false;" +
 				"[t, d, 5, V, A]; null;" +
-				"false"
-		})
-		void testNotEmpty(@StringCollection Collection<String> items, String item,
-			boolean expected) {
-			test(items, item, expected);
-		}
-
-		@DisplayName("when collection is empty")
-		@Tests({
+				"false",
 			"when collection is empty, returns false;" +
 				"[]; 5;" +
-				"false",
+				"false"
 		})
-		void testEmpty(@StringCollection Collection<String> items, String item,
+		void test(@StringCollection Collection<String> items, String item,
 			boolean expected) {
-			test(items, item, expected);
-		}
 
-		private void test(Collection<String> items, String item, boolean expected) {
 			final var contains = items.contains(item);
 			assertEquals(expected, contains,
 				format("%s.contains(%s)", items, item));
@@ -358,57 +356,65 @@ public class CollectionTests {
 	}
 
 	@DisplayName(".sort(Comparator<T>)")
-	@Tests({
-		"when collection is not empty, returns sorted list;" +
-			"[k, M, s, A, 8, d, q];" +
-			"[s, q, k, d, M, A, 8]",
-		"when collection is empty, returns empty list;" +
-			"[];" +
-			"[]"
-	})
-	void testSortComparator(@StringCollection Collection<String> items,
-		@StringList List<String> expected) {
+	@Nested
+	class SortComparatorTests {
+		@DisplayName("\uD83C\uDFB3")
+		@Tests({
+			"when collection is not empty, returns sorted list;" +
+				"[k, M, s, A, 8, d, q];" +
+				"[s, q, k, d, M, A, 8]",
+			"when collection is empty, returns empty list;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items,
+			@StringList List<String> expected) {
 
-		final var sorted = items.sort(Comparator.reverseOrder());
-		assertEquals(expected, sorted,
-			format("%s.sort(Comparator<T>)", items));
+			final var sorted = items.sort(Comparator.reverseOrder());
+			assertEquals(expected, sorted,
+				format("%s.sort(Comparator<T>)", items));
+		}
 	}
 
 	@DisplayName(".sort()")
-	@Tests(value = {
-		"when collection is not empty, returns sorted list;" +
-			"[k, M, s, A, 8, d, q];" +
-			"[8, A, M, d, k, q, s]",
-		"when collection is empty, returns empty list;" +
-			"[];" +
-			"[]"
-	})
-	void testSort(@StringCollection Collection<String> items,
-		@StringList List<String> expected) {
+	@Nested
+	class SortTests {
+		@DisplayName("when items are comparable")
+		@Tests(value = {
+			"when collection is not empty, returns sorted list;" +
+				"[k, M, s, A, 8, d, q];" +
+				"[8, A, M, d, k, q, s]",
+			"when collection is empty, returns empty list;" +
+				"[];" +
+				"[]"
+		})
+		void testComparable(@StringCollection Collection<String> items,
+			@StringList List<String> expected) {
 
-		final var sorted = items.sort();
-		Assertions.assertEquals(expected, sorted,
-			format("%s.sort()", items));
-	}
+			final var sorted = items.sort();
+			Assertions.assertEquals(expected, sorted,
+				format("%s.sort()", items));
+		}
 
-	@DisplayName(".sort(), where T not Comparable")
-	@Test
-	void testSortNotComparable() {
-		Assertions.assertThrows(RuntimeException.class, () -> {
-			final var collection = new PredicateCollection<>(
-				String::isEmpty,
-				String::isBlank);
+		@DisplayName("when items are not comparable")
+		@Test
+		void testSortNotComparable() {
+			Assertions.assertThrows(RuntimeException.class, () -> {
+				final var collection = new PredicateCollection<>(
+					String::isEmpty,
+					String::isBlank);
 
-			collection.sort();
-		}, "<non comparable items>.sort()");
+				collection.sort();
+			}, "<non comparable items>.sort()");
+		}
 	}
 
 	@DisplayName(".shuffle(Random)")
 	@Nested
-	class TestShuffleRandom {
+	class ShuffleRandomTests {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
-		void testWhenNotEmpty() {
+		void testNotEmpty() {
 			Collection<String> items = new ArrayCollection<>(
 				"r", "E", "V", "s", "x", "w", "O", "8");
 
@@ -428,7 +434,7 @@ public class CollectionTests {
 
 		@DisplayName("when collection is empty, returns empty list")
 		@Test
-		void testWhenEmpty() {
+		void testEmpty() {
 			final var items = new ArrayCollection<>();
 			final var time = System.currentTimeMillis();
 			final var random = new Random(time);
@@ -443,10 +449,10 @@ public class CollectionTests {
 
 	@DisplayName(".shuffle()")
 	@Nested
-	class TestShuffle {
+	class ShuffleTests {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
-		void testWhenNotEmpty() {
+		void testNotEmpty() {
 			Collection<String> items = new ArrayCollection<>(
 				"o", "M", "F", "0", "K", "z", "v", "S");
 
@@ -461,7 +467,7 @@ public class CollectionTests {
 
 		@DisplayName("when collection is empty, returns empty list")
 		@Test
-		void testWhenEmpty() {
+		void testEmpty() {
 			final var items = new ArrayCollection<>();
 
 			final var shuffled = items.shuffle();
@@ -472,115 +478,131 @@ public class CollectionTests {
 		}
 	}
 
-	@DisplayName(".iterate(Consumer<T>)")
-	@Tests({
-		"when collection is not empty, iterates items;" +
-			"[f, F, e, q, p, L];" +
-			"[f, F, e, q, p, L]",
-		"when collection is empty, does nothing;" +
-			"[];" +
-			"[]"
-	})
-	void testIterate(@StringCollection Collection<String> items,
-		@StringArray String[] expected) {
+	static void assertShuffled(Collection<String> shuffled,
+		Collection<String> unshuffled, String message) {
 
-		final var iterated = new ArrayList<String>();
-		items.iterate(iterated::add);
-
-		assertArrayEquals(expected,
-			iterated.toArray(new String[]{}),
-			format("%s.iterate(Consumer<T>)", items));
-	}
-
-	@DisplayName(".combine(R, BiFunction<R, T, R>)")
-	@Tests({
-		"when collection is not empty, combines items with initial value;" +
-			"[g, E, Q, s, a, B]; B;" +
-			"BgEQsaB",
-		"when collection is empty, returns initial value;" +
-			"[]; A;" +
-			"A"
-	})
-	void testCombine(@StringCollection Collection<String> items, String initial,
-		String expected) {
-
-		final var combined = items.combine(initial,
-			(combined2, item) -> {
-				return combined2 + item;
-			});
-
-		assertEquals(expected, combined,
-			format("%s.combine(%s, BiFunction<R, T, R>)", items, initial));
-	}
-
-	@DisplayName(".join(String)")
-	@Tests({
-		"when collection is not empty, joins items into a string;" +
-			"[g, t, W, q, P, l]; -;" +
-			"g-t-W-q-P-l",
-		"when collection is empty, returns empty string;" +
-			"[]; -;" +
-			"null"
-	})
-	void testJoin(@StringCollection Collection<String> items, String separator,
-		String expected) {
-
-		if (expected == null) {
-			expected = "";
-		}
-
-		final var joined = items.join(separator);
-		assertEquals(expected, joined,
-			format("%s.join(%s)", items, separator));
-	}
-
-	@DisplayName(".toArray()")
-	@Tests({
-		"when collection is not empty, returns items array;" +
-			"[T, b, 4, 0, O];" +
-			"[T, b, 4, 0, O]",
-		"when collection is empty, returns empty array;" +
-			"[];" +
-			"[]"
-	})
-	void testToArray(@StringCollection Collection<String> items,
-		@StringArray String[] expected) {
-
-		final var array = items.toArray();
-		assertArrayEquals(expected, array,
-			format("%s.toArray()", items));
-	}
-
-	@DisplayName(".toArray(Class<? extends T[]>)")
-	@Tests({
-		"when collection is not empty, returns items array;" +
-			"[V, b, Q, r, 4, p];" +
-			"[V, b, Q, r, 4, p]",
-		"when collection is empty, returns empty array;" +
-			"[];" +
-			"[]"
-	})
-	void testToArrayClass(@StringCollection Collection<String> items,
-		@StringArray String[] expected) {
-
-		final var array = items.toArray(String[].class);
-		assertArrayEquals(expected, array,
-			format("%s.toArray(Class<? extends T[]>)", items));
-	}
-
-	static void assertShuffled
-		(Collection<String> shuffled, Collection<String> unshuffled, String message) {
 		final var items1 = shuffled.toArray(String[].class);
 		final var items2 = unshuffled.toArray(String[].class);
-		assertArrayNotEquals(items1, items2);
+		assertFalse(Arrays.equals(items1, items2), message);
 
 		Arrays.sort(items1);
 		Arrays.sort(items2);
 		assertArrayEquals(items1, items2, message);
 	}
 
-	static <T> void assertArrayNotEquals(T[] items1, T[] items2) {
-		assertFalse(Arrays.equals(items1, items2));
+	@DisplayName(".iterate(Consumer<T>)")
+	@Nested
+	class IterateTests {
+		@DisplayName("\uD83D\uDCE5")
+		@Tests({
+			"when collection is not empty, iterates items;" +
+				"[f, F, e, q, p, L];" +
+				"[f, F, e, q, p, L]",
+			"when collection is empty, does nothing;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items,
+			@StringArray String[] expected) {
+
+			final var iterated = new ArrayList<String>();
+			items.iterate(iterated::add);
+
+			assertArrayEquals(expected,
+				iterated.toArray(new String[]{}),
+				format("%s.iterate(Consumer<T>)", items));
+		}
+	}
+
+	@DisplayName(".combine(R, BiFunction<R, T, R>)")
+	@Nested
+	class CombineTests {
+		@DisplayName("\uD83D\uDC53")
+		@Tests({
+			"when collection is not empty, combines items with initial value;" +
+				"[g, E, Q, s, a, B]; B;" +
+				"BgEQsaB",
+			"when collection is empty, returns initial value;" +
+				"[]; A;" +
+				"A"
+		})
+		void test(@StringCollection Collection<String> items, String initial,
+			String expected) {
+
+			final var combined = items.combine(initial,
+				(combined2, item) -> {
+					return combined2 + item;
+				});
+
+			assertEquals(expected, combined,
+				format("%s.combine(%s, BiFunction<R, T, R>)", items, initial));
+		}
+	}
+
+	@DisplayName(".join(String)")
+	@Nested
+	class JoinTests {
+		@DisplayName("\uD83C\uDFF0")
+		@Tests({
+			"when collection is not empty, joins items into a string;" +
+				"[g, t, W, q, P, l]; -;" +
+				"g-t-W-q-P-l",
+			"when collection is empty, returns empty string;" +
+				"[]; -;" +
+				"null"
+		})
+		void test(@StringCollection Collection<String> items, String separator,
+			String expected) {
+
+			if (expected == null) {
+				expected = "";
+			}
+
+			final var joined = items.join(separator);
+			assertEquals(expected, joined,
+				format("%s.join(%s)", items, separator));
+		}
+	}
+
+	@DisplayName(".toArray(Class<? extends T[]>)")
+	@Nested
+	class ToArrayClassTests {
+		@DisplayName("\uD83C\uDFE1")
+		@Tests({
+			"when collection is not empty, returns items array;" +
+				"[V, b, Q, r, 4, p];" +
+				"[V, b, Q, r, 4, p]",
+			"when collection is empty, returns empty array;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items,
+			@StringArray String[] expected) {
+
+			final var array = items.toArray(String[].class);
+			assertArrayEquals(expected, array,
+				format("%s.toArray(Class<? extends T[]>)", items));
+		}
+	}
+
+	@DisplayName(".toArray()")
+	@Nested
+	class ToArrayTests {
+		@Tests({
+			"when collection is not empty, returns items array;" +
+				"[T, b, 4, 0, O];" +
+				"[T, b, 4, 0, O]",
+			"when collection is empty, returns empty array;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items,
+			@StringArray String[] expected) {
+
+			final var array = items.toArray();
+			assertArrayEquals(expected, array,
+				format("%s.toArray()", items));
+		}
 	}
 }
 
