@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class IndexRangeTests {
 	@DisplayName("IndexRange(int, int)")
@@ -618,6 +619,21 @@ class IndexRangeTests {
 			final var indexes = range.find(items);
 			assertEquals(expected, indexes,
 				format("%s.find(%s)", range, items));
+		}
+	}
+
+	@DisplayName(".getDistinct()")
+	@Nested
+	class GetDistinctTests {
+		@DisplayName("\uD83C\uDFC0")
+		@Tests({
+			"returns itself;" +
+				"[4, 9)"
+		})
+		void test(@IntRange IndexRange range) {
+			final var distinct = range.getDistinct();
+			assertSame(range, distinct,
+				format("%s.getDistinct()", range));
 		}
 	}
 

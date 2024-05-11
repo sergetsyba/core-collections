@@ -176,6 +176,11 @@ public class IndexRange implements Sequence<Integer> {
 	}
 
 	@Override
+	public IndexRange getDistinct() {
+		return this;
+	}
+
+	@Override
 	public Sequence<Integer> reverse() {
 		// todo: implement IndexRange.reverse()
 		throw new UnsupportedOperationException();

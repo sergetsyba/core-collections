@@ -47,7 +47,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
-	default Optional<T> getMinimum(Comparator<T> comparator) {
+	default Optional<T> getMin(Comparator<T> comparator) {
 		final var iterator = iterator();
 		if (!iterator.hasNext()) {
 			return Optional.empty();
@@ -65,12 +65,25 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns the smallest item in this collection, according to the natural order of the
+	 * items.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
+	 */
+	default Optional<T> getMin() {
+		@SuppressWarnings("unchecked")
+		final var comparator = (Comparator<T>) Comparator.naturalOrder();
+		return getMin(comparator);
+	}
+
+	/**
 	 * Returns the largest item in this collection, according to the specified
 	 * {@link Comparator}.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
 	 */
-	default Optional<T> getMaximum(Comparator<T> comparator) {
+	default Optional<T> getMax(Comparator<T> comparator) {
 		final var iterator = iterator();
 		if (!iterator.hasNext()) {
 			return Optional.empty();
@@ -88,11 +101,24 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns the largest item in this collection, according to the natural order of the
+	 * items.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
+	 */
+	default Optional<T> getMax() {
+		@SuppressWarnings("unchecked")
+		final var comparator = (Comparator<T>) Comparator.naturalOrder();
+		return getMax(comparator);
+	}
+
+	/**
 	 * Returns {@code true} when this collection contains the specified item; returns
 	 * {@code false} otherwise.
 	 */
 	default boolean contains(T item) {
-		return match((item2) -> item2.equals(item))
+		return matchAny((item2) -> item2.equals(item))
 			.isPresent();
 	}
 
@@ -105,30 +131,13 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns any item in this collection, which satisfies the specified
-	 * {@link Predicate}.
-	 * <p>
-	 * When no item in this collection satisfies the specified {@link Predicate}, or this
-	 * collection is empty, returns an empty {@link Optional}.
-	 */
-	default Optional<T> match(Predicate<T> condition) {
-		for (var item : this) {
-			if (condition.test(item)) {
-				return Optional.of(item);
-			}
-		}
-
-		return Optional.empty();
-	}
-
-	/**
 	 * Returns {@code true} when no item in this collection satisfies the specified
 	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean noneMatches(Predicate<T> condition) {
-		return match(condition)
+		return matchAny(condition)
 			.isEmpty();
 	}
 
@@ -139,7 +148,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code false}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
-		return match(condition)
+		return matchAny(condition)
 			.isPresent();
 	}
 
@@ -150,15 +159,37 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean eachMatches(Predicate<T> condition) {
-		return match((item) -> !condition.test(item))
+		return matchAny((item) -> !condition.test(item))
 			.isEmpty();
 	}
+
+	/**
+	 * Returns any item in this collection, which satisfies the specified
+	 * {@link Predicate}.
+	 * <p>
+	 * When no item in this collection satisfies the specified {@link Predicate}, or this
+	 * collection is empty, returns an empty {@link Optional}.
+	 */
+	default Optional<T> matchAny(Predicate<T> condition) {
+		for (var item : this) {
+			if (condition.test(item)) {
+				return Optional.of(item);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Returns distinct items in this collection.
+	 */
+	Collection<T> getDistinct();
 
 	/**
 	 * Returns items of this collection, ordered according to the specified
 	 * {@link Comparator}.
 	 */
-	default List<T> sort(Comparator<T> comparator) {
+	default Sequence<T> sort(Comparator<T> comparator) {
 		@SuppressWarnings("unchecked")
 		final var items = (T[]) toArray();
 		Arrays.sort(items, comparator);
@@ -168,12 +199,11 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this collection, ordered according to their natural order, when
-	 * items are {@link Comparable}; otherwise fails with {@link RuntimeException}.
+	 * Returns items of this collection, ordered according to their natural order.
 	 *
 	 * @throws RuntimeException when items of this collection are not {@link Comparable}.
 	 */
-	default List<T> sort() {
+	default Sequence<T> sort() {
 		@SuppressWarnings("unchecked")
 		final var comparator = (Comparator<T>) Comparator.naturalOrder();
 		return sort(comparator);
@@ -183,7 +213,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection in random order, based on the specified
 	 * {@link Random}.
 	 */
-	default List<T> shuffle(Random random) {
+	default Sequence<T> shuffle(Random random) {
 		final var items = toArray();
 		shuffle(items, random);
 
@@ -195,7 +225,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection in random order, where randomization is seeded
 	 * from the current system time.
 	 */
-	default List<T> shuffle() {
+	default Sequence<T> shuffle() {
 		final var time = System.currentTimeMillis();
 		final var random = new Random(time);
 

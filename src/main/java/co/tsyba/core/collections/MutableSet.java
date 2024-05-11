@@ -22,6 +22,11 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	@Override
+	public MutableSet<T> getDistinct() {
+		return new MutableSet<>(store);
+	}
+
+	@Override
 	public MutableSet<T> unite(Set<T> set) {
 		final var items = super.unite(set);
 		return new MutableSet<>(items.store);

@@ -1,6 +1,7 @@
 package co.tsyba.core.collections;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -11,7 +12,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class SetTests {
 	@DisplayName("Set(Collection<T>)")
@@ -117,6 +120,21 @@ public class SetTests {
 
 		final var contains = items.contains(item);
 		assertEquals(expected, contains);
+	}
+
+	@DisplayName(".getDistinct()")
+	@Nested
+	class GetDistinctTests {
+		@DisplayName("\uD83D\uDCD7")
+		@Tests({
+			"returns itself;" +
+				"[g, t, w, s, A, q]"
+		})
+		void test(@StringSet Set<String> items) {
+			final var distinct = items.getDistinct();
+			assertSame(items, distinct,
+				format("%s.getDistinct()", items));
+		}
 	}
 
 	@DisplayName(".isDisjoint(Set<T>)")
