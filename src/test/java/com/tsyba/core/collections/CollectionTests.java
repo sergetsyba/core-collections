@@ -30,7 +30,7 @@ public class CollectionTests {
 				"[];" +
 				"true"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items, boolean expected) {
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			final var empty = items.isEmpty();
 			assertEquals(expected, empty,
 				format("%s.isEmpty()", items));
@@ -48,7 +48,7 @@ public class CollectionTests {
 				"[];" +
 				"0"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<?> items, int expected) {
+		void test(@StringCollection Collection<?> items, int expected) {
 			final var count = items.getCount();
 			assertEquals(expected, count,
 				format("%s.getCount()", items));
@@ -69,7 +69,7 @@ public class CollectionTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items,
+		void test(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var minimum = items.getMin(Comparator.reverseOrder());
@@ -91,7 +91,7 @@ public class CollectionTests {
 				"[];" +
 				"null"
 		})
-		void testComparable(@StringCollection com.tsyba.core.collections.Collection<String> items,
+		void testComparable(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var min = items.getMin();
@@ -125,7 +125,7 @@ public class CollectionTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items,
+		void test(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var maximum = items.getMax(Comparator.reverseOrder());
@@ -147,7 +147,7 @@ public class CollectionTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void testComparable(@StringCollection com.tsyba.core.collections.Collection<String> items,
+		void testComparable(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var max = items.getMax();
@@ -186,7 +186,7 @@ public class CollectionTests {
 				"[]; 5;" +
 				"false"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items, String item,
+		void test(@StringCollection Collection<String> items, String item,
 			boolean expected) {
 
 			final var contains = items.contains(item);
@@ -213,8 +213,8 @@ public class CollectionTests {
 				"[Y, f, E, 3]; [];" +
 				"true"
 		})
-		void testNotEmpty(@StringCollection com.tsyba.core.collections.Collection<String> items1,
-			@StringCollection com.tsyba.core.collections.Collection<String> items2, boolean expected) {
+		void testNotEmpty(@StringCollection Collection<String> items1,
+			@StringCollection Collection<String> items2, boolean expected) {
 			test(items1, items2, expected);
 		}
 
@@ -227,12 +227,12 @@ public class CollectionTests {
 				"[]; [];" +
 				"true"
 		})
-		void testEmpty(@StringCollection com.tsyba.core.collections.Collection<String> items1,
-			@StringCollection com.tsyba.core.collections.Collection<String> items2, boolean expected) {
+		void testEmpty(@StringCollection Collection<String> items1,
+			@StringCollection Collection<String> items2, boolean expected) {
 			test(items1, items2, expected);
 		}
 
-		private void test(com.tsyba.core.collections.Collection<String> items1, com.tsyba.core.collections.Collection<String> items2, boolean expected) {
+		private void test(Collection<String> items1, Collection<String> items2, boolean expected) {
 			final var contains = items1.contains(items2);
 			assertEquals(expected, contains,
 				format("%s.contains(%s)", items1, items2));
@@ -257,7 +257,7 @@ public class CollectionTests {
 				"[];" +
 				"true"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items, boolean expected) {
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			final var matches = items.noneMatches((item) -> {
 				return item.toLowerCase()
 					.equals(item);
@@ -286,7 +286,7 @@ public class CollectionTests {
 				"[];" +
 				"false",
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items, boolean expected) {
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			final var matches = items.anyMatches((item) -> {
 				return item.toLowerCase()
 					.equals(item);
@@ -315,7 +315,7 @@ public class CollectionTests {
 				"[];" +
 				"true",
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items, boolean expected) {
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			final var matches = items.eachMatches((item) -> {
 				return item.toLowerCase()
 					.equals(item);
@@ -323,6 +323,35 @@ public class CollectionTests {
 
 			assertEquals(expected, matches,
 				format("%s.eachMatches(Predicate<T>)", items));
+		}
+	}
+
+	@DisplayName(".countMatches(Predicate<T>)")
+	@Nested
+	class CountMatchesTests {
+		@DisplayName("\uD83D\uDC16")
+		@Tests({
+			"when no item matches, returns 0;" +
+				"[t, e, q, s, e, w];" +
+				"0",
+			"when some items match, returns matched item count;" +
+				"[T, e, q, s, E, W];" +
+				"3",
+			"when all items match, returns item count;" +
+				"[T, E, Q, S, E, W];" +
+				"6",
+			"when collection is empty, returns 0;" +
+				"[];" +
+				"0"
+		})
+		void test(@StringCollection Collection<String> items, int expected) {
+			final var count = items.countMatches((item) -> {
+				return item.toUpperCase()
+					.equals(item);
+			});
+
+			assertEquals(expected, count,
+				format("%s.countMatches(<is uppercase>)", items));
 		}
 	}
 
@@ -342,7 +371,7 @@ public class CollectionTests {
 				"[];" +
 				"null"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items,
+		void test(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var match = items.matchAny((item) -> {
@@ -367,8 +396,8 @@ public class CollectionTests {
 				"[];" +
 				"[]"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items,
-			@StringList com.tsyba.core.collections.List<String> expected) {
+		void test(@StringCollection Collection<String> items,
+			@StringList List<String> expected) {
 
 			final var sorted = items.sort(Comparator.reverseOrder());
 			assertEquals(expected, sorted,
@@ -388,8 +417,8 @@ public class CollectionTests {
 				"[];" +
 				"[]"
 		})
-		void testComparable(@StringCollection com.tsyba.core.collections.Collection<String> items,
-			@StringList com.tsyba.core.collections.List<String> expected) {
+		void testComparable(@StringCollection Collection<String> items,
+			@StringList List<String> expected) {
 
 			final var sorted = items.sort();
 			Assertions.assertEquals(expected, sorted,
@@ -415,7 +444,7 @@ public class CollectionTests {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
 		void testNotEmpty() {
-			com.tsyba.core.collections.Collection<String> items = new ArrayCollection<>(
+			Collection<String> items = new ArrayCollection<>(
 				"r", "E", "V", "s", "x", "w", "O", "8");
 
 			final var time = System.currentTimeMillis();
@@ -424,7 +453,7 @@ public class CollectionTests {
 			// shuffle items 10 times and ensure item order is different after
 			// each shuffle
 			for (var index = 0; index < 10; ++index) {
-				final com.tsyba.core.collections.Collection<String> shuffled = items.shuffle(random);
+				final Collection<String> shuffled = items.shuffle(random);
 				assertShuffled(shuffled, items,
 					format("%s.shuffle(Random)", items));
 
@@ -440,7 +469,7 @@ public class CollectionTests {
 			final var random = new Random(time);
 
 			final var shuffled = items.shuffle(random);
-			final var items2 = new com.tsyba.core.collections.List<>(items);
+			final var items2 = new List<>(items);
 
 			assertEquals(items2, shuffled,
 				format("%s.shuffle(Random)", items));
@@ -453,7 +482,7 @@ public class CollectionTests {
 		@Test
 		@DisplayName("when collection is not empty, returns shuffled list")
 		void testNotEmpty() {
-			com.tsyba.core.collections.Collection<String> items = new ArrayCollection<>(
+			Collection<String> items = new ArrayCollection<>(
 				"o", "M", "F", "0", "K", "z", "v", "S");
 
 			for (var index = 0; index < 10; ++index) {
@@ -478,8 +507,8 @@ public class CollectionTests {
 		}
 	}
 
-	static void assertShuffled(com.tsyba.core.collections.Collection<String> shuffled,
-		com.tsyba.core.collections.Collection<String> unshuffled, String message) {
+	static void assertShuffled(Collection<String> shuffled,
+		Collection<String> unshuffled, String message) {
 
 		final var items1 = shuffled.toArray(String[].class);
 		final var items2 = unshuffled.toArray(String[].class);
@@ -502,7 +531,7 @@ public class CollectionTests {
 				"[];" +
 				"[]"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items,
+		void test(@StringCollection Collection<String> items,
 			@StringArray String[] expected) {
 
 			final var iterated = new ArrayList<String>();
@@ -526,7 +555,7 @@ public class CollectionTests {
 				"[]; A;" +
 				"A"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items, String initial,
+		void test(@StringCollection Collection<String> items, String initial,
 			String expected) {
 
 			final var combined = items.combine(initial,
@@ -551,7 +580,7 @@ public class CollectionTests {
 				"[]; -;" +
 				"null"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items, String separator,
+		void test(@StringCollection Collection<String> items, String separator,
 			String expected) {
 
 			if (expected == null) {
@@ -576,7 +605,7 @@ public class CollectionTests {
 				"[];" +
 				"[]"
 		})
-		void test(@StringCollection com.tsyba.core.collections.Collection<String> items,
+		void test(@StringCollection Collection<String> items,
 			@StringArray String[] expected) {
 
 			final var array = items.toArray(String[].class);
@@ -610,13 +639,13 @@ public class CollectionTests {
 @ConvertWith(StringCollection.Converter.class)
 @interface StringCollection {
 	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, com.tsyba.core.collections.Collection> {
+	class Converter extends TypedArgumentConverter<String, Collection> {
 		protected Converter() {
-			super(String.class, com.tsyba.core.collections.Collection.class);
+			super(String.class, Collection.class);
 		}
 
 		@Override
-		protected com.tsyba.core.collections.Collection<String> convert(String s) throws ArgumentConversionException {
+		protected Collection<String> convert(String s) throws ArgumentConversionException {
 			final var items = new StringArray.Converter()
 				.convert(s);
 
@@ -673,7 +702,7 @@ public class CollectionTests {
 	}
 }
 
-class ArrayCollection<T> implements com.tsyba.core.collections.Collection<T> {
+class ArrayCollection<T> implements Collection<T> {
 	final Object[] items;
 
 	@SafeVarargs
@@ -682,17 +711,17 @@ class ArrayCollection<T> implements com.tsyba.core.collections.Collection<T> {
 	}
 
 	@Override
-	public com.tsyba.core.collections.Collection<T> getDistinct() {
+	public Collection<T> getDistinct() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public com.tsyba.core.collections.Collection<T> filter(Predicate<T> condition) {
+	public Collection<T> filter(Predicate<T> condition) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <R> com.tsyba.core.collections.Collection<R> convert(Function<T, R> converter) {
+	public <R> Collection<R> convert(Function<T, R> converter) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -722,7 +751,7 @@ class ArrayCollection<T> implements com.tsyba.core.collections.Collection<T> {
 	}
 }
 
-class PredicateCollection<T> implements com.tsyba.core.collections.Collection<Predicate<T>> {
+class PredicateCollection<T> implements Collection<Predicate<T>> {
 	final Predicate<T>[] items;
 
 	@SafeVarargs
@@ -731,17 +760,17 @@ class PredicateCollection<T> implements com.tsyba.core.collections.Collection<Pr
 	}
 
 	@Override
-	public com.tsyba.core.collections.Collection<Predicate<T>> getDistinct() {
+	public Collection<Predicate<T>> getDistinct() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public com.tsyba.core.collections.Collection<Predicate<T>> filter(Predicate<Predicate<T>> condition) {
+	public Collection<Predicate<T>> filter(Predicate<Predicate<T>> condition) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <R> com.tsyba.core.collections.Collection<R> convert(Function<Predicate<T>, R> converter) {
+	public <R> Collection<R> convert(Function<Predicate<T>, R> converter) {
 		throw new UnsupportedOperationException();
 	}
 
