@@ -164,6 +164,21 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns the number of items in this collection, which satisfies the specified
+	 * {@link Predicate}.
+	 */
+	default int countMatches(Predicate<T> condition) {
+		var count = 0;
+		for (var item : this) {
+			if (condition.test(item)) {
+				count += 1;
+			}
+		}
+
+		return count;
+	}
+
+	/**
 	 * Returns any item in this collection, which satisfies the specified
 	 * {@link Predicate}.
 	 * <p>
