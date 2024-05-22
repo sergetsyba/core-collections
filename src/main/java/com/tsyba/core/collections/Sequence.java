@@ -157,9 +157,7 @@ public interface Sequence<T> extends Collection<T> {
 	 * sequence is empty, returns first valid index of this sequence.
 	 */
 	default Optional<Integer> findFirst(Predicate<T> condition) {
-		final var range = getIndexRange();
-		var index = range.start;
-
+		var index = 0;
 		for (var item : this) {
 			if (condition.test(item)) {
 				return Optional.of(index);
@@ -180,14 +178,11 @@ public interface Sequence<T> extends Collection<T> {
 	 * sequence, unless this sequence is empty as well.
 	 */
 	default Optional<Integer> findFirst(Sequence<T> items) {
-		final var range = getIndexRange();
-		if (range.isEmpty()) {
-			return Optional.empty();
-		}
 		if (items.isEmpty()) {
-			return Optional.of(range.start);
+			return Optional.of(0);
 		}
 
+		final var range = getIndexRange();
 		search:
 		for (var index : range) {
 			final var iterator1 = items.iterator();
@@ -250,20 +245,16 @@ public interface Sequence<T> extends Collection<T> {
 	@Override
 	<R> Sequence<R> convert(Function<T, R> converter);
 
-	default Iterator<T> iterator(int index) {
-		final var range = getIndexRange();
-		if (!range.contains(index)) {
-			throw new IndexNotInRangeException(index, range);
-		}
+	/**
+	 * Returns {@link Iterator}, which starts with item at the specified index.
+	 *
+	 * @throws IndexNotInRangeException when the specified index is out of valid range of
+	 * this sequence
+	 */
+	Iterator<T> iterator(int index);
 
-		final var iterator = iterator();
-		var index2 = range.start;
-
-		while (index2 < index) {
-			iterator.next();
-			++index2;
-		}
-
-		return iterator;
+	@Override
+	default Iterator<T> iterator() {
+		return iterator(0);
 	}
 }

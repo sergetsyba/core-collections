@@ -9,6 +9,8 @@ import org.junit.jupiter.params.converter.TypedArgumentConverter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -158,22 +160,22 @@ class IndexRangeTests {
 	class ContainsIndexRange {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when argument range is before range, returns false;" +
+			"when argument range starts and ends before range start, returns false;" +
 				"[6, 9); [1, 4);" +
 				"false",
-			"when argument range starts before range, returns false;" +
+			"when argument range starts before range start and ends within range, returns false;" +
 				"[6, 9); [4, 7);" +
 				"false",
-			"when argument range starts at range start, returns true;" +
+			"when argument range starts at range start and ends within range, returns true;" +
 				"[6, 9); [6, 8);" +
 				"true",
-			"when argument range equals range, returns true;" +
+			"when argument range coincides with range, returns true;" +
 				"[6, 9); [6, 9);" +
 				"true",
-			"when argument range ends after range, returns false;" +
+			"when argument range starts within range ends after range end, returns false;" +
 				"[6, 9); [7, 11);" +
 				"false",
-			"when argument range is after range, returns false;" +
+			"when argument range starts and ends after range end, returns false;" +
 				"[6, 9); [12, 17);" +
 				"false",
 			"when argument range is empty, returns true;" +
@@ -249,57 +251,60 @@ class IndexRangeTests {
 
 	@DisplayName(".get(Integer)")
 	@Nested
-	class TestGet {
+	class GetTests {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when index is before range start, fails;" +
+			"when index is before valid index range start, fails;" +
+				"[4, 8); -4;" +
+				"null; -4 ∉ [0, 4)",
+			"when index is at valid index range start, returns index;" +
+				"[4, 8); 0;" +
+				"4; null",
+			"when index is within valid index range, returns index;" +
 				"[4, 8); 2;" +
-				"null",
-			"when index is at range start, returns index;" +
+				"6; null",
+			"when index is at valid index range end, fails;" +
 				"[4, 8); 4;" +
-				"4",
-			"when index is within range, returns index;" +
-				"[4, 8); 6;" +
-				"6",
-			"when index is at range end, fails;" +
-				"[4, 8); 8;" +
-				"null",
-			"when index is after range end, fails;" +
+				"null; 4 ∉ [0, 4)",
+			"when index is after valid index range end, fails;" +
 				"[4, 8); 9;" +
-				"null"
+				"null; 9 ∉ [0, 4)"
 		})
-		void testNotEmpty(@IntRange IndexRange range, int index, Integer expected) {
-			test(range, index, expected);
+		void testNotEmpty(@IntRange IndexRange range, int index, Integer expected1,
+			@IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
 		}
 
 		@DisplayName("when range is empty")
 		@Tests({
-			"when index is before range start, fails;" +
+			"when index is before valid index range start, fails;" +
 				"[0, 0); -1;" +
-				"null",
-			"when index is at range start, fails;" +
+				"null; -1 ∉ [0, 0)",
+			"when index is at valid index range start, fails;" +
 				"[0, 0); 0;" +
-				"null",
-			"when index is at range end, fails;" +
+				"null; 0 ∉ [0, 0)",
+			"when index is after valid index range end, fails;" +
 				"[0, 0); 1;" +
-				"null",
+				"null; 1 ∉ [0, 0)",
 		})
-		void testEmpty(@IntRange IndexRange range, int index, Integer expected) {
-			test(range, index, expected);
+		void testEmpty(@IntRange IndexRange range, int index, Integer expected1,
+			@IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
 		}
 
-		private void test(IndexRange range, int index, Integer expected1) {
+		private void test(IndexRange range, int index, Integer expected1,
+			Exception expected2) {
+
 			try {
-				final var returned = range.get(index);
-				assertEquals(expected1, returned,
+				final var value = range.get(index);
+				assertEquals(expected1, value,
 					format("%s.get(%d)", range, index));
-			} catch (IndexNotInRangeException exception) {
-				if (expected1 == null) {
-					final var expected2 = new IndexNotInRangeException(index, range);
+			} catch (Exception exception) {
+				if (expected2 == null) {
+					throw exception;
+				} else {
 					assertEquals(expected2, exception,
 						format("%s.get(%d)", range, index));
-				} else {
-					throw exception;
 				}
 			}
 		}
@@ -310,56 +315,57 @@ class IndexRangeTests {
 	class GetPrefixTests {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when index is before range start, fails;" +
-				"[2, 9); 1;" +
-				"null",
-			"when index is at range start, returns empty range;" +
-				"[2, 9); 2;" +
-				"[0, 0)",
-			"when index is within range, returns prefix;" +
+			"when index is before valid index range start, fails;" +
+				"[2, 9); -1;" +
+				"null; -1 ∉ [0, 7)",
+			"when index is at valid index range start, returns empty range;" +
+				"[2, 9); 0;" +
+				"[0, 0); null",
+			"when index is within valid index range, returns prefix;" +
 				"[2, 9); 4;" +
-				"[2, 4)",
-			"when index is at range end, fails;" +
-				"[2, 9); 9;" +
-				"null",
-			"when index is after range end, fails;" +
+				"[2, 6); null",
+			"when index is at valid index range end, fails;" +
+				"[2, 9); 7;" +
+				"null; 7 ∉ [0, 7)",
+			"when index is after valid index range end, fails;" +
 				"[2, 9); 12;" +
-				"null",
+				"null; 12 ∉ [0, 7)",
 		})
 		void testNotEmpty(@IntRange IndexRange range, int index,
-			@IntRange IndexRange expected) {
-			test(range, index, expected);
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
 		}
 
 		@DisplayName("when range is empty")
 		@Tests({
-			"when index is before range, fails;" +
+			"when index is before valid index range start, fails;" +
 				"[0, 0); -5;" +
-				"null",
-			"when index is 0, fails;" +
+				"null; -5 ∉ [0, 0)",
+			"when index is at valid index range start, fails;" +
 				"[0, 0); 0;" +
-				"null",
-			"when index is after range end, fails;" +
-				"[0, 0); 5;" +
-				"null",
+				"null; 0 ∉ [0, 0)",
+			"when index is after valid index range end, fails;" +
+				"[0, 0); 1;" +
+				"null; 1 ∉ [0, 0)",
 		})
 		void testEmpty(@IntRange IndexRange range, int index,
-			@IntRange IndexRange expected) {
-			test(range, index, expected);
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
 		}
 
-		private void test(IndexRange range, int index, IndexRange expected1) {
+		private void test(IndexRange range, int index, IndexRange expected1,
+			Exception expected2) {
+
 			try {
 				final var prefix = range.getPrefix(index);
 				assertEquals(expected1, prefix,
-					format("%s.getPrefix(%d)", range, index));
-			} catch (IndexNotInRangeException exception) {
-				if (expected1 == null) {
-					final var expected2 = new IndexNotInRangeException(index, range);
-					assertEquals(expected2, exception,
-						format("%s.getPrefix(%d)", range, index));
-				} else {
+					format("%s.get(%d)", range, index));
+			} catch (Exception exception) {
+				if (expected2 == null) {
 					throw exception;
+				} else {
+					assertEquals(expected2, exception,
+						format("%s.get(%d)", range, index));
 				}
 			}
 		}
@@ -370,56 +376,57 @@ class IndexRangeTests {
 	class GetSuffixTests {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when index is before range, fails;" +
-				"[2, 9); 1;" +
-				"null",
-			"when index is at range start, returns range;" +
-				"[2, 9); 2;" +
-				"[2, 9)",
-			"when index is within range, returns suffix;" +
+			"when index is before valid index range start, fails;" +
+				"[2, 9); -1;" +
+				"null; -1 ∉ [0, 7)",
+			"when index is at valid index range start, returns range;" +
+				"[2, 9); 0;" +
+				"[2, 9); null",
+			"when index is within valid index range, returns suffix;" +
 				"[2, 9); 4;" +
-				"[4, 9)",
-			"when index is at range end, fails;" +
-				"[2, 9); 9;" +
-				"null",
-			"when index is after range end, fails;" +
+				"[6, 9); null",
+			"when index is at valid index range end, fails;" +
+				"[2, 9); 7;" +
+				"null; 7 ∉ [0, 7)",
+			"when index is after valid index range end, fails;" +
 				"[2, 9); 12;" +
-				"null",
+				"null; 12 ∉ [0, 7)",
 		})
 		void testNotEmpty(@IntRange IndexRange range, int index,
-			@IntRange IndexRange expected) {
-			test(range, index, expected);
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
 		}
 
 		@DisplayName("when range is empty")
 		@Tests({
-			"when index is before range, fails;" +
+			"when index is before valid index range start, fails;" +
 				"[0, 0); -5;" +
-				"null",
-			"when index is 0, fails;" +
+				"null; -5 ∉ [0, 0)",
+			"when index is at valid index range start, fails;" +
 				"[0, 0); 0;" +
-				"null",
-			"when index is after range end, fails;" +
-				"[0, 0); 5;" +
-				"null",
+				"null; 0 ∉ [0, 0)",
+			"when index is after valid index range end, fails;" +
+				"[0, 0); 1;" +
+				"null; 1 ∉ [0, 0)",
 		})
 		void testEmpty(@IntRange IndexRange range, int index,
-			@IntRange IndexRange expected) {
-			test(range, index, expected);
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
 		}
 
-		private void test(IndexRange range, int index, IndexRange expected1) {
+		private void test(IndexRange range, int index, IndexRange expected1,
+			Exception expected2) {
+
 			try {
-				final var prefix = range.getSuffix(index);
-				assertEquals(expected1, prefix,
-					format("%s.getSuffix(%d)", range, index));
-			} catch (IndexNotInRangeException exception) {
-				if (expected1 == null) {
-					final var expected2 = new IndexNotInRangeException(index, range);
-					assertEquals(expected2, exception,
-						format("%s.getSuffix(%d)", range, index));
-				} else {
+				final var suffix = range.getSuffix(index);
+				assertEquals(expected1, suffix,
+					format("%s.get(%d)", range, index));
+			} catch (Exception exception) {
+				if (expected2 == null) {
 					throw exception;
+				} else {
+					assertEquals(expected2, exception,
+						format("%s.get(%d)", range, index));
 				}
 			}
 		}
@@ -430,55 +437,52 @@ class IndexRangeTests {
 	class TestGetIndexRange {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when argument range is before range, fails;" +
-				"[6, 9); [1, 4);" +
-				"null",
-			"when argument range starts before range, fails;" +
-				"[6, 9); [4, 7);" +
-				"null",
-			"when argument range starts at range start, returns argument range;" +
-				"[6, 9); [6, 8);" +
-				"[6, 8)",
-			"when argument range equals range, returns argument range;" +
+			"when argument range starts at valid index range start and ends within valid index range, returns range;" +
+				"[6, 9); [0, 2);" +
+				"[6, 8); null",
+			"when argument range coincides with valid index range, returns range;" +
+				"[6, 9); [0, 3);" +
+				"[6, 9); null",
+			"when argument range starts within valid index range and ends after valid index range end, fails;" +
+				"[6, 9); [0, 7);" +
+				"null; [0, 7) ⊈ [0, 3)",
+			"when argument range starts and ends after valid index range end, fails;" +
 				"[6, 9); [6, 9);" +
-				"[6, 9)",
-			"when argument range ends after range, fails;" +
-				"[6, 9); [7, 11);" +
-				"null",
-			"when argument range is after range, fails;" +
-				"[6, 9); [12, 17);" +
-				"null",
+				"null; [6, 9) ⊈ [0, 3)",
 			"when argument range is empty, return empty range;" +
 				"[6, 9); [0, 0);" +
-				"[0, 0)"
+				"[0, 0); null"
 		})
 		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
-			@IntRange IndexRange expected) {
-			test(range1, range2, expected);
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
+			test(range1, range2, expected1, expected2);
 		}
 
 		@DisplayName("when range is empty")
 		@Tests({
 			"when argument range is not empty, fails;" +
 				"[0, 0); [6, 9);" +
-				"null",
+				"null; [6, 9) ⊈ [0, 0)",
 			"when argument range is empty, returns empty range;" +
 				"[0, 0); [0, 0);" +
-				"[0, 0)"
+				"[0, 0); null"
 		})
 		void testEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
-			@IntRange IndexRange expected) {
-			test(range1, range2, expected);
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
+			test(range1, range2, expected1, expected2);
 		}
 
-		private void test(IndexRange range1, IndexRange range2, IndexRange expected1) {
+		private void test(IndexRange range1, IndexRange range2,
+			IndexRange expected1, Exception expected2) {
+
 			try {
 				final var subrange = range1.get(range2);
 				assertEquals(expected1, subrange,
 					format("%s.get(%s)", range1, range2));
 			} catch (IndexRangeNotInRangeException exception) {
-				if (expected1 == null) {
-					final var expected2 = new IndexRangeNotInRangeException(range2, range1);
+				if (expected2 == null) {
+					throw exception;
+				} else {
 					assertEquals(expected2, exception,
 						format("%s.get(%s)", range1, range2));
 				}
@@ -495,12 +499,12 @@ class IndexRangeTests {
 			"when index is before range start, returns empty optional;" +
 				"[2, 9); 0;" +
 				"null",
-			"when index is at range start, returns index;" +
+			"when index is at range start, returns its index;" +
 				"[6, 8); 6;" +
-				"6",
-			"when index is within range, returns index;" +
+				"0",
+			"when index is within range, returns its index;" +
 				"[4, 9); 6;" +
-				"6",
+				"2",
 			"when index is at range end, returns empty optional;" +
 				"[3, 8); 8;" +
 				"null",
@@ -528,12 +532,12 @@ class IndexRangeTests {
 			"when index is before range start, returns empty sequence;" +
 				"[4, 9); 2;" +
 				"[]",
-			"when index is at range start, returns index sequence;" +
+			"when index is at range start, returns its index;" +
 				"[4, 9); 4;" +
-				"[4]",
-			"when index is withing range, returns index sequence;" +
+				"[0]",
+			"when index is withing range, returns its index;" +
 				"[4, 9); 7;" +
-				"[7]",
+				"[3]",
 			"when index is at range end, returns empty sequence;" +
 				"[4, 9); 9;" +
 				"[]",
@@ -581,7 +585,7 @@ class IndexRangeTests {
 	class FindSequenceTests {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when sequence is present, returns it index;" +
+			"when sequence is present, returns its index;" +
 				"[3, 9); [5, 6, 7];" +
 				"[2]",
 			"when sequence is absent, returns empty sequence;" +
@@ -670,7 +674,7 @@ class IndexRangeTests {
 			"when argument range end differs, returns false;" +
 				"[4, 8); [3, 8);" +
 				"false",
-			"when argument range in null, returns false;" +
+			"when argument range is null, returns false;" +
 				"[4, 8); null;" +
 				"false"
 		})
@@ -703,6 +707,100 @@ class IndexRangeTests {
 		}
 	}
 
+	@DisplayName(".iterator(int)")
+	@Nested
+	class IteratorIntTests {
+		@DisplayName("when range is not empty")
+		@Tests({
+			"when index is before valid index range start, fails;" +
+				"[2, 6); -2;" +
+				"null; -2 ∉ [0, 4)",
+			"when index is at valid index range start, returns all items iterator;" +
+				"[2, 6); 0;" +
+				"[2, 3, 4, 5]; null",
+			"when index is within valid index range, returns suffix iterator;" +
+				"[2, 6); 2;" +
+				"[4, 5]; null",
+			"when index is at valid index range end, fails;" +
+				"[2, 6); 6;" +
+				"null; 6 ∉ [0, 4)",
+			"when index is after valid index range end, fails;" +
+				"[2, 6); 9;" +
+				"null; 9 ∉ [0, 4)"
+		})
+		void testNotEmpty(@IntRange IndexRange range, int index,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
+		}
+
+		@DisplayName("when range is empty")
+		@Tests({
+			"when index is before valid index range start, fails;" +
+				"[0, 0); -1;" +
+				"null; -1 ∉ [0, 0)",
+			"when index is at valid index range start, fails;" +
+				"[0, 0); 0;" +
+				"null; 0 ∉ [0, 0)",
+			"when index is after valid index range end, fails;" +
+				"[0, 0); 1;" +
+				"null; 1 ∉ [0, 0)"
+		})
+		void testEmpty(@IntRange IndexRange range, int index,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(range, index, expected1, expected2);
+		}
+
+		void test(IndexRange range, int index, List<String> expected1,
+			Exception expected2) {
+
+			try {
+				final var iterator = range.iterator(index);
+				final var iterated = new MutableList<String>();
+				while (iterator.hasNext()) {
+					final var next = iterator.next();
+					iterated.append(Integer.toString(next));
+				}
+
+				assertEquals(expected1, iterated,
+					format("%s.iterator(%d)", range, index));
+			} catch (Exception exception) {
+				if (expected2 == null) {
+					throw exception;
+				} else {
+					assertEquals(expected2, exception,
+						format("%s.iterator(%d)", range, index));
+				}
+			}
+		}
+	}
+
+	@DisplayName(".iterator()")
+	@Nested
+	class IteratorTests {
+		@DisplayName("\uD83D\uDCC1")
+		@Tests({
+			"when range is not empty, iterates values;" +
+				"[3, 7);" +
+				"[3, 4, 5, 6]",
+			"when range is empty, does nothing;" +
+				"[0, 0);" +
+				"[]"
+		})
+		void test(@IntRange IndexRange range, @StringList List<String> expected) {
+			final var iterator = range.iterator();
+			final var iterated = new MutableList<String>();
+			while (iterator.hasNext()) {
+				final var next = iterator.next();
+				iterated.append(Integer.toString(next));
+			}
+
+			assertEquals(expected, iterated,
+				format("%s.iterator()", range));
+		}
+	}
+
 	@DisplayName(".toString()")
 	@Nested
 	class ToStringTests {
@@ -719,29 +817,6 @@ class IndexRangeTests {
 			final var string = range.toString();
 			assertEquals(expected, string,
 				format("%s.toString()", range));
-		}
-	}
-
-	@DisplayName(".iterator()")
-	@Nested
-	class IteratorTests {
-		@DisplayName("\uD83D\uDE98")
-		@Tests({
-			"when range is not empty, returns index iterator;" +
-				"[2, 6);" +
-				"[2, 3, 4, 5]",
-			"when range is empty, returns empty iterator;" +
-				"[0, 0);" +
-				"[]"
-		})
-		void test(@IntRange IndexRange range, @StringList List<String> expected) {
-			final var iterated = new MutableList<String>();
-			for (var next : range) {
-				iterated.append(Integer.toString(next));
-			}
-
-			assertEquals(expected, iterated,
-				format("%s.iterator()", range));
 		}
 	}
 }
@@ -785,6 +860,75 @@ class IndexRangeTests {
 			final var converter = new IntRange.Converter();
 			return Optional.ofNullable(s)
 				.map(converter::convert);
+		}
+	}
+}
+
+@ConvertWith(IndexRangeException.Converter.class)
+@Retention(RetentionPolicy.RUNTIME)
+@interface IndexRangeException {
+	class Converter extends TypedArgumentConverter<String, Exception> {
+		protected Converter() {
+			super(String.class, Exception.class);
+		}
+
+		@Override
+		protected Exception convert(String s) throws ArgumentConversionException {
+			if (s == null) {
+				return null;
+			}
+
+			final var matcher1 = indexRegex.matcher(s);
+			if (matcher1.find()) {
+				return matchIndexNotInRangeException(matcher1);
+			}
+
+			final var matcher2 = indexRangeRegex.matcher(s);
+			if (matcher2.find()) {
+				return matchIndexRangeNotInRangeException(matcher2);
+			}
+
+			throw new ArgumentConversionException(
+				format("Cannot parse %s or %s from %s.",
+					IndexNotInRangeException.class.getName(),
+					IndexRangeNotInRangeException.class.getName(), s));
+		}
+
+		private static final Pattern indexRegex = Pattern
+			.compile("(-?\\d+)" +
+				"\\s*∉\\s*" +
+				"\\[\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)");
+
+		private IndexNotInRangeException matchIndexNotInRangeException(Matcher matcher) {
+			final var index = matcher.group(1);
+			final var start = matcher.group(2);
+			final var end = matcher.group(3);
+
+			return new IndexNotInRangeException(
+				Integer.parseInt(index),
+				new IndexRange(
+					Integer.parseInt(start),
+					Integer.parseInt(end)));
+		}
+
+		private static final Pattern indexRangeRegex = Pattern
+			.compile("\\[\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)" +
+				"\\s*⊈\\s*" +
+				"\\[\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)");
+
+		private IndexRangeNotInRangeException matchIndexRangeNotInRangeException(Matcher matcher) {
+			final var start1 = matcher.group(1);
+			final var end1 = matcher.group(2);
+			final var start2 = matcher.group(3);
+			final var end2 = matcher.group(4);
+
+			return new IndexRangeNotInRangeException(
+				new IndexRange(
+					Integer.parseInt(start1),
+					Integer.parseInt(end1)),
+				new IndexRange(
+					Integer.parseInt(start2),
+					Integer.parseInt(end2)));
 		}
 	}
 }

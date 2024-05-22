@@ -90,47 +90,46 @@ public class SequenceTests {
 		@Tests({
 			"when index is within valid range, returns item at index;" +
 				"[g, B, s, E, q, s, K]; 4;" +
-				"q",
+				"q; null",
 			"when index is before valid range, fails;" +
 				"[g, B, s, E, q, s, K]; -4;" +
-				"null",
+				"null; -4 ∉ [0, 7)",
 			"when index is after valid range, fails;" +
 				"[g, B, s, E, q, s, K]; 12;" +
-				"null"
+				"null; 12 ∉ [0, 7)"
 		})
 		void testNotEmpty(@StringSequence Sequence<String> items, int index,
-			String expected) {
-			test(items, index, expected);
+			String expected1, @IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
 		@DisplayName("when sequence is empty")
 		@Tests({
 			"when index is before valid range, fails;" +
 				"[]; -1;" +
-				"null",
+				"null; -1 ∉ [0, 0)",
 			"when index is after valid range, fails;" +
 				"[]; 0;" +
-				"null"
+				"null; 0 ∉ [0, 0)"
 		})
 		void testEmpty(@StringSequence Sequence<String> items, int index,
-			String expected) {
-			test(items, index, expected);
+			String expected1, @IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
-		private void test(Sequence<String> items, int index, String expected) {
+		private void test(Sequence<String> items, int index, String expected1,
+			Exception expected2) {
+
 			try {
 				final var item = items.get(index);
-				assertEquals(expected, item,
+				assertEquals(expected1, item,
 					format("%s.get(%d)", item, index));
 			} catch (Exception exception) {
-				if (expected == null) {
-					final var expected1 = new IndexNotInRangeException(index,
-						items.getIndexRange());
-
-					assertEquals(expected1, exception,
-						format("%s.get(%d)", items, index));
-				} else {
+				if (expected2 == null) {
 					throw exception;
+				} else {
+					assertEquals(expected2, exception,
+						format("%s.get(%d)", items, index));
 				}
 			}
 		}
@@ -481,6 +480,31 @@ class ArraySequence<T> implements Sequence<T> {
 	@Override
 	public <R> Sequence<R> convert(Function<T, R> converter) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Iterator<T> iterator(int start) {
+		final var range = getIndexRange();
+		if (!range.contains(start)) {
+			throw new IndexNotInRangeException(start, range);
+		}
+
+		return new Iterator<>() {
+			private int index = start;
+
+			@Override
+			public boolean hasNext() {
+				return index < items.length;
+			}
+
+			@Override
+			public T next() {
+				final var next = items[index];
+				++index;
+
+				return next;
+			}
+		};
 	}
 
 	@Override
