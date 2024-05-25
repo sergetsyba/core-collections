@@ -252,9 +252,4 @@ public interface Sequence<T> extends Collection<T> {
 	 * this sequence
 	 */
 	Iterator<T> iterator(int index);
-
-	@Override
-	default Iterator<T> iterator() {
-		return iterator(0);
-	}
 }
