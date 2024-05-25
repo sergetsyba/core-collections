@@ -30,7 +30,7 @@ public class SequenceTests {
 				"[];" +
 				"[0, 0)"
 		})
-		void test(@StringSequence Sequence<String> items,
+		void test(@TestSequence Sequence<String> items,
 			@TestRange IndexRange expected) {
 
 			final var range = items.getIndexRange();
@@ -52,7 +52,7 @@ public class SequenceTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@StringSequence Sequence<String> items,
+		void test(@TestSequence Sequence<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var item = items.getFirst();
@@ -74,7 +74,7 @@ public class SequenceTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@StringSequence Sequence<String> items,
+		void test(@TestSequence Sequence<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var item = items.getLast();
@@ -98,7 +98,7 @@ public class SequenceTests {
 				"[g, B, s, E, q, s, K]; 12;" +
 				"null; 12 ∉ [0, 7)"
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items, int index,
+		void testNotEmpty(@TestSequence Sequence<String> items, int index,
 			String expected1, @IndexRangeException Exception expected2) {
 			test(items, index, expected1, expected2);
 		}
@@ -112,7 +112,7 @@ public class SequenceTests {
 				"[]; 0;" +
 				"null; 0 ∉ [0, 0)"
 		})
-		void testEmpty(@StringSequence Sequence<String> items, int index,
+		void testEmpty(@TestSequence Sequence<String> items, int index,
 			String expected1, @IndexRangeException Exception expected2) {
 			test(items, index, expected1, expected2);
 		}
@@ -151,7 +151,7 @@ public class SequenceTests {
 				"[g, T, s, l, I, o]; 13;" +
 				"null",
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items, int index,
+		void testNotEmpty(@TestSequence Sequence<String> items, int index,
 			@IntOptional Optional<Integer> expected) {
 			test(items, index, expected);
 		}
@@ -165,7 +165,7 @@ public class SequenceTests {
 				"[]; 0;" +
 				"null",
 		})
-		void testEmpty(@StringSequence Sequence<String> items, int index,
+		void testEmpty(@TestSequence Sequence<String> items, int index,
 			@IntOptional Optional<Integer> expected) {
 			test(items, index, expected);
 		}
@@ -195,7 +195,7 @@ public class SequenceTests {
 				"[g, I, m, k, L, s, D, n]; [3, 15);" +
 				"null"
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items,
+		void testNotEmpty(@TestSequence Sequence<String> items,
 			@TestRange IndexRange range,
 			@TestRangeOptional Optional<IndexRange> expected) {
 			test(items, range, expected);
@@ -207,7 +207,7 @@ public class SequenceTests {
 				"[]; [0, 2);" +
 				"null"
 		})
-		void testEmpty(@StringSequence Sequence<String> items,
+		void testEmpty(@TestSequence Sequence<String> items,
 			@TestRange IndexRange range,
 			@TestRangeOptional Optional<IndexRange> expected) {
 			test(items, range, expected);
@@ -241,7 +241,7 @@ public class SequenceTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@StringSequence Sequence<String> items,
+		void test(@TestSequence Sequence<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var matched = items.matchFirst((item) -> {
@@ -273,7 +273,7 @@ public class SequenceTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@StringSequence Sequence<String> items, String item,
+		void test(@TestSequence Sequence<String> items, String item,
 			@IntOptional Optional<Integer> expected) {
 
 			final var index = items.findFirst(item);
@@ -301,7 +301,7 @@ public class SequenceTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@StringSequence Sequence<String> items,
+		void test(@TestSequence Sequence<String> items,
 			@IntOptional Optional<Integer> expected) {
 
 			final var index = items.findFirst((item) ->
@@ -335,8 +335,8 @@ public class SequenceTests {
 				"[u, Y, k, L, m, n, F, s, d]; [];" +
 				"0"
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items1,
-			@StringSequence Sequence<String> items2,
+		void testNotEmpty(@TestSequence Sequence<String> items1,
+			@TestSequence Sequence<String> items2,
 			@IntOptional Optional<Integer> expected) {
 			test(items1, items2, expected);
 		}
@@ -350,8 +350,8 @@ public class SequenceTests {
 				"[]; [];" +
 				"null"
 		})
-		void testEmpty(@StringSequence Sequence<String> items1,
-			@StringSequence Sequence<String> items2,
+		void testEmpty(@TestSequence Sequence<String> items1,
+			@TestSequence Sequence<String> items2,
 			@IntOptional Optional<Integer> expected) {
 			test(items1, items2, expected);
 		}
@@ -377,7 +377,7 @@ public class SequenceTests {
 				"[];" +
 				"[]"
 		})
-		void test(@StringSequence Sequence<String> items,
+		void test(@TestSequence Sequence<String> items,
 			@StringMap Map<String, String> expected) {
 
 			final var enumerated = new MutableMap<Integer, String>();
@@ -395,8 +395,8 @@ public class SequenceTests {
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringSequence.Converter.class)
-@interface StringSequence {
+@ConvertWith(TestSequence.Converter.class)
+@interface TestSequence {
 	@SuppressWarnings("rawtypes")
 	class Converter extends TypedArgumentConverter<String, Sequence> {
 		protected Converter() {
@@ -408,7 +408,72 @@ public class SequenceTests {
 			final var items = new StringArray.Converter()
 				.convert(s);
 
-			return new ArraySequence<>(items);
+			return new Sequence<>() {
+				@Override
+				public Sequence<String> getPrefix(int index) {
+					return null;
+				}
+
+				@Override
+				public Sequence<String> getSuffix(int index) {
+					return null;
+				}
+
+				@Override
+				public Sequence<String> get(IndexRange range) {
+					return null;
+				}
+
+				@Override
+				public Sequence<Integer> find(String item) {
+					return null;
+				}
+
+				@Override
+				public Sequence<Integer> find(Sequence<String> items) {
+					return null;
+				}
+
+				@Override
+				public Collection<String> getDistinct() {
+					return null;
+				}
+
+				@Override
+				public Sequence<String> reverse() {
+					return null;
+				}
+
+				@Override
+				public Sequence<String> filter(Predicate<String> condition) {
+					return null;
+				}
+
+				@Override
+				public <R> Sequence<R> convert(Function<String, R> converter) {
+					return null;
+				}
+
+				@Override
+				public Iterator<String> iterator() {
+					return new Iterator<>() {
+						private int index = 0;
+
+						@Override
+						public boolean hasNext() {
+							return index < items.length;
+						}
+
+						@Override
+						public String next() {
+							final var item = items[index];
+							++index;
+
+							return item;
+						}
+					};
+				}
+			};
 		}
 	}
 }
@@ -427,108 +492,5 @@ public class SequenceTests {
 			return Optional.ofNullable(s)
 				.map(Integer::parseInt);
 		}
-	}
-}
-
-class ArraySequence<T> implements Sequence<T> {
-	private final T[] items;
-
-	ArraySequence(T[] items) {
-		this.items = items;
-	}
-
-	@Override
-	public Sequence<T> getPrefix(int index) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sequence<T> getSuffix(int index) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sequence<T> get(IndexRange range) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sequence<Integer> find(T item) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sequence<Integer> find(Sequence<T> items) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sequence<T> reverse() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Collection<T> getDistinct() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sequence<T> filter(Predicate<T> condition) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public <R> Sequence<R> convert(Function<T, R> converter) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Iterator<T> iterator(int start) {
-		final var range = getIndexRange();
-		if (!range.contains(start)) {
-			throw new IndexNotInRangeException(start, range);
-		}
-
-		return new Iterator<>() {
-			private int index = start;
-
-			@Override
-			public boolean hasNext() {
-				return index < items.length;
-			}
-
-			@Override
-			public T next() {
-				final var next = items[index];
-				++index;
-
-				return next;
-			}
-		};
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return new Iterator<>() {
-			private int index = 0;
-
-			@Override
-			public boolean hasNext() {
-				return index < items.length;
-			}
-
-			@Override
-			public T next() {
-				final var next = items[index];
-				++index;
-
-				return next;
-			}
-		};
-	}
-
-	@Override
-	public String toString() {
-		return "[" + join(", ") + "]";
 	}
 }

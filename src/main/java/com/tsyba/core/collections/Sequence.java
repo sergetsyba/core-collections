@@ -251,5 +251,20 @@ public interface Sequence<T> extends Collection<T> {
 	 * @throws IndexNotInRangeException when the specified index is out of valid range of
 	 * this sequence
 	 */
-	Iterator<T> iterator(int index);
+	default Iterator<T> iterator(int index) {
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
+		final var iterator = iterator();
+		var skip = 0;
+
+		while (skip < index) {
+			iterator.next();
+			++skip;
+		}
+
+		return iterator;
+	}
 }
