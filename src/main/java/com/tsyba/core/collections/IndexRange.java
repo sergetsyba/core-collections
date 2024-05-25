@@ -92,51 +92,55 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public Integer get(int index) {
-		if (!contains(index)) {
-			throw new IndexNotInRangeException(index, this);
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
 		}
 
-		return index;
+		return start + index;
 	}
 
 	@Override
 	public IndexRange getPrefix(int index) {
-		if (!contains(index)) {
-			throw new IndexNotInRangeException(index, this);
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
 		}
 
-		return new IndexRange(start, index);
+		return new IndexRange(start, start + index);
 	}
 
 	@Override
 	public IndexRange getSuffix(int index) {
-		if (!contains(index)) {
-			throw new IndexNotInRangeException(index, this);
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
 		}
 
-		return new IndexRange(index, end);
+		return new IndexRange(start + index, end);
 	}
 
 	@Override
 	public Sequence<Integer> get(IndexRange range) {
-		if (!contains(range)) {
-			throw new IndexRangeNotInRangeException(range, this);
+		final var validRange = getIndexRange();
+		if (!validRange.contains(range)) {
+			throw new IndexRangeNotInRangeException(range, validRange);
 		}
 
-		return range;
+		return new IndexRange(start + range.start, start + range.end);
 	}
 
 	@Override
 	public Optional<Integer> findFirst(Integer item) {
 		return contains(item)
-			? Optional.of(item)
+			? Optional.of(item - start)
 			: Optional.empty();
 	}
 
 	@Override
 	public Sequence<Integer> find(Integer item) {
 		return contains(item)
-			? new List<>(item)
+			? new List<>(item - start)
 			: new List<>();
 	}
 
@@ -212,21 +216,40 @@ public class IndexRange implements Sequence<Integer> {
 	}
 
 	@Override
-	public Iterator<Integer> iterator() {
+	public Iterator<Integer> iterator(int index) {
+		final var range = getIndexRange();
+		if (!range.contains(index)) {
+			throw new IndexNotInRangeException(index, range);
+		}
+
 		return new Iterator<>() {
-			private int index = start;
+			private int next = start + index;
 
 			@Override
 			public boolean hasNext() {
-				return index < end;
+				return next < end;
 			}
 
 			@Override
 			public Integer next() {
-				final var next = index;
-				index += 1;
+				return next++;
+			}
+		};
+	}
 
-				return next;
+	@Override
+	public Iterator<Integer> iterator() {
+		return new Iterator<>() {
+			private int next = start;
+
+			@Override
+			public boolean hasNext() {
+				return next < end;
+			}
+
+			@Override
+			public Integer next() {
+				return next++;
 			}
 		};
 	}

@@ -298,7 +298,7 @@ public class ListTests {
 				"[f, y, R, e, l, k, g, S]; [0, 0);" +
 				"[]"
 		})
-		void testNotEmpty(@StringList List<String> items, @IntRange IndexRange range,
+		void testNotEmpty(@StringList List<String> items, @TestRange IndexRange range,
 			@StringList List<String> expected) {
 			test(items, range, expected);
 		}
@@ -312,7 +312,7 @@ public class ListTests {
 				"[]; [0, 0);" +
 				"[]"
 		})
-		void testEmpty(@StringList List<String> items, @IntRange IndexRange range,
+		void testEmpty(@StringList List<String> items, @TestRange IndexRange range,
 			@StringList List<String> expected) {
 			test(items, range, expected);
 		}
