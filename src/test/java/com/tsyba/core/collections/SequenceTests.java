@@ -31,7 +31,7 @@ public class SequenceTests {
 				"[0, 0)"
 		})
 		void test(@StringSequence Sequence<String> items,
-			@IntRange IndexRange expected) {
+			@TestRange IndexRange expected) {
 
 			final var range = items.getIndexRange();
 			assertEquals(expected, range,
@@ -196,8 +196,8 @@ public class SequenceTests {
 				"null"
 		})
 		void testNotEmpty(@StringSequence Sequence<String> items,
-			@IntRange IndexRange range,
-			@IntRangeOptional Optional<IndexRange> expected) {
+			@TestRange IndexRange range,
+			@TestRangeOptional Optional<IndexRange> expected) {
 			test(items, range, expected);
 		}
 
@@ -208,8 +208,8 @@ public class SequenceTests {
 				"null"
 		})
 		void testEmpty(@StringSequence Sequence<String> items,
-			@IntRange IndexRange range,
-			@IntRangeOptional Optional<IndexRange> expected) {
+			@TestRange IndexRange range,
+			@TestRangeOptional Optional<IndexRange> expected) {
 			test(items, range, expected);
 		}
 
