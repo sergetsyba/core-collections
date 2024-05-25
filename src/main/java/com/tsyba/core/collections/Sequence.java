@@ -178,8 +178,8 @@ public interface Sequence<T> extends Collection<T> {
 	 * sequence, unless this sequence is empty as well.
 	 */
 	default Optional<Integer> findFirst(Sequence<T> items) {
-		if (items.isEmpty()) {
-			return Optional.of(0);
+		if (isEmpty()) {
+			return Optional.empty();
 		}
 
 		final var range = getIndexRange();
