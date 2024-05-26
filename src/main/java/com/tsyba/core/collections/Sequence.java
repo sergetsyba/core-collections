@@ -212,7 +212,7 @@ public interface Sequence<T> extends Collection<T> {
 	 * When the specified item does not occur in this sequence, or this sequence is empty,
 	 * returns an empty sequence.
 	 */
-	Sequence<Integer> find(T item);
+	Sequence<Integer> findAll(T item);
 
 	/**
 	 * Returns indexes of all occurrences of the specified sequence in this sequence.
@@ -221,7 +221,7 @@ public interface Sequence<T> extends Collection<T> {
 	 * empty, returns an empty sequence. When the specified sequence is empty, returns all
 	 * indexes of this sequence.
 	 */
-	Sequence<Integer> find(Sequence<T> items);
+	Sequence<Integer> findAll(Sequence<T> items);
 
 	/**
 	 * Returns items of this sequence in reverse order.

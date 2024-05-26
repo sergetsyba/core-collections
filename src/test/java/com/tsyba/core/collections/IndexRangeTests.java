@@ -491,10 +491,10 @@ class IndexRangeTests {
 		}
 	}
 
-	@DisplayName(".filter(Predicate<Integer>)")
+	@DisplayName(".matchAll(Predicate<Integer>)")
 	@Nested
-	class FilterTests {
-		@DisplayName("")
+	class MatchAllTests {
+		@DisplayName("\uD83D\uDC3F")
 		@Tests({
 			"when range is not empty, returns matching indexes;" +
 				"[1, 9);" +
@@ -506,7 +506,7 @@ class IndexRangeTests {
 		void test(@IntRange IndexRange range, @IntList List<Integer> expected) {
 			final var matches = range.matchAll((index) -> index % 2 == 0);
 			assertEquals(expected, matches,
-				format("%s.filter(<is even>)", range));
+				format("%s.matchAll(<is even>)", range));
 		}
 	}
 
@@ -544,7 +544,7 @@ class IndexRangeTests {
 		}
 	}
 
-	@DisplayName(".find(Integer)")
+	@DisplayName(".findAll(Integer)")
 	@Nested
 	class FindTests {
 		@DisplayName("when range is not empty")
@@ -594,13 +594,13 @@ class IndexRangeTests {
 		}
 
 		void test(IndexRange range, Integer index, List<Integer> expected) {
-			final var indexes = range.find(index);
+			final var indexes = range.findAll(index);
 			assertEquals(expected, indexes,
-				format("%s.find(%d)", range, index));
+				format("%s.findAll(%d)", range, index));
 		}
 	}
 
-	@DisplayName(".find(Sequence<T>)")
+	@DisplayName(".findAll(Sequence<T>)")
 	@Nested
 	class FindSequenceTests {
 		@DisplayName("when range is not empty")
@@ -640,9 +640,9 @@ class IndexRangeTests {
 		private void test(IndexRange range, Sequence<Integer> items,
 			Sequence<Integer> expected) {
 
-			final var indexes = range.find(items);
+			final var indexes = range.findAll(items);
 			assertEquals(expected, indexes,
-				format("%s.find(%s)", range, items));
+				format("%s.findAll(%s)", range, items));
 		}
 	}
 

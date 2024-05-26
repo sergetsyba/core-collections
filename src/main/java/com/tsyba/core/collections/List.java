@@ -97,18 +97,18 @@ public class List<T> implements Sequence<T> {
 
 	@Override
 	public List<T> matchAll(Predicate<T> condition) {
-		final var filtered = new MutableList<T>();
+		final var matches = new MutableList<T>();
 		for (var item : this) {
 			if (condition.test(item)) {
-				filtered.append(item);
+				matches.append(item);
 			}
 		}
 
-		return filtered.toImmutable();
+		return matches.toImmutable();
 	}
 
 	@Override
-	public List<Integer> find(T item) {
+	public List<Integer> findAll(T item) {
 		final var indexes = new MutableList<Integer>();
 		enumerate((index, item2) -> {
 			if (item2.equals(item)) {
@@ -120,7 +120,7 @@ public class List<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Sequence<Integer> find(Sequence<T> items) {
+	public Sequence<Integer> findAll(Sequence<T> items) {
 		final var indexes = new MutableList<Integer>();
 		final var range = getIndexRange();
 

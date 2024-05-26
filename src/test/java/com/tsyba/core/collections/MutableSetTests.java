@@ -20,7 +20,7 @@ public class MutableSetTests {
 	@DisplayName(".getDistinct()")
 	@Nested
 	class GetDistinctTests {
-		@DisplayName("")
+		@DisplayName("\uD83D\uDC5B")
 		@Tests({
 			"returns a copy of itself;" +
 				"[g, t, w, s, A, q]"

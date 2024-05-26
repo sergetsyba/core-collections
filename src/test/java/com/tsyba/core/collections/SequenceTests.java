@@ -414,47 +414,47 @@ public class SequenceTests {
 			return new Sequence<>() {
 				@Override
 				public Sequence<String> getPrefix(int index) {
-					return null;
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public Sequence<String> getSuffix(int index) {
-					return null;
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public Sequence<String> get(IndexRange range) {
-					return null;
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public Sequence<String> matchAll(Predicate<String> condition) {
-					return null;
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
-				public Sequence<Integer> find(String item) {
-					return null;
+				public Sequence<Integer> findAll(String item) {
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
-				public Sequence<Integer> find(Sequence<String> items) {
-					return null;
+				public Sequence<Integer> findAll(Sequence<String> items) {
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public Collection<String> getDistinct() {
-					return null;
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public Sequence<String> reverse() {
-					return null;
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public <R> Sequence<R> convert(Function<String, R> converter) {
-					return null;
+					throw new UnsupportedOperationException();
 				}
 
 				@Override

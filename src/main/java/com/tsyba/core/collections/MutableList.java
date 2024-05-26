@@ -333,8 +333,8 @@ public class MutableList<T> extends List<T> {
 
 	@Override
 	public MutableList<T> matchAll(Predicate<T> condition) {
-		final var filtered = super.matchAll(condition);
-		return new MutableList<>(filtered.store);
+		final var matches = super.matchAll(condition);
+		return new MutableList<>(matches.store);
 	}
 
 	@Override

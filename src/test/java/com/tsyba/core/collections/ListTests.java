@@ -337,9 +337,9 @@ public class ListTests {
 		}
 	}
 
-	@DisplayName(".filter(Predicate<T>)")
+	@DisplayName(".matchAll(Predicate<T>)")
 	@Nested
-	class FilterTests {
+	class MatchAllTests {
 		@DisplayName("\uD83D\uDD31")
 		@Tests({
 			"when some items match, returns matched items;" +
@@ -362,11 +362,11 @@ public class ListTests {
 			});
 
 			assertEquals(expected, matched,
-				format("%s.filter(<is uppercase>)", items));
+				format("%s.matchAll(<is uppercase>)", items));
 		}
 	}
 
-	@DisplayName(".find(T)")
+	@DisplayName(".findAll(T)")
 	@Nested
 	class FindTests {
 		@DisplayName("when list is not empty")
@@ -404,13 +404,13 @@ public class ListTests {
 		}
 
 		private void test(List<String> items, String item, List<Integer> expected) {
-			final var indexes = items.find(item);
+			final var indexes = items.findAll(item);
 			assertEquals(expected, indexes,
-				format("%s.find(%s)", items, item));
+				format("%s.findAll(%s)", items, item));
 		}
 	}
 
-	@DisplayName(".find(Sequence<T>)")
+	@DisplayName(".findAll(Sequence<T>)")
 	@Nested
 	class FindSequenceTests {
 		@DisplayName("when list is not empty")
@@ -453,9 +453,9 @@ public class ListTests {
 		private void test(List<String> items1, List<String> items2,
 			List<Integer> expected) {
 
-			final var indexes = items1.find(items2);
+			final var indexes = items1.findAll(items2);
 			assertEquals(expected, indexes,
-				format("%s.find(%s)", items1, items2));
+				format("%s.findAll(%s)", items1, items2));
 		}
 	}
 

@@ -141,7 +141,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * collection; returns {@code false} otherwise.
 	 */
 	default boolean contains(Collection<T> items) {
-		return items.eachMatches(this::contains);
+		return items.allMatch(this::contains);
 	}
 
 	/**
@@ -151,8 +151,13 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean noneMatches(Predicate<T> condition) {
-		return matchAny(condition)
-			.isEmpty();
+		for (var item : this) {
+			if (condition.test(item)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -162,19 +167,29 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code false}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
-		return matchAny(condition)
-			.isPresent();
+		for (var item : this) {
+			if (condition.test(item)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
-	 * Returns {@code true} when each item of this collection satisfies the specified
+	 * Returns {@code true} when all items of this collection satisfy the specified
 	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this collection is empty, returns {@code true}.
 	 */
-	default boolean eachMatches(Predicate<T> condition) {
-		return matchAny((item) -> !condition.test(item))
-			.isEmpty();
+	default boolean allMatch(Predicate<T> condition) {
+		for (var item : this) {
+			if (!condition.test(item)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -310,7 +325,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * Returns items of this collection, converted by the specified {@link Function}.
 	 * <p>
 	 * When the specified {@link Function} returns {@code null}, the converted value will
-	 * be ignored. Therefore, this method can be used to both filter and convert this
+	 * be ignored. Therefore, this method can be used to both match and convert this
 	 * collection in a single operation.
 	 */
 	<R> Collection<R> convert(Function<T, R> converter);

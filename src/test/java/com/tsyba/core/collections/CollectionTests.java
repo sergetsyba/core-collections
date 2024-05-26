@@ -299,7 +299,7 @@ public class CollectionTests {
 		}
 	}
 
-	@DisplayName(".eachMatches(Predicate<T>)")
+	@DisplayName(".allMatch(Predicate<T>)")
 	@Nested
 	class EachMatchesTests {
 		@DisplayName("\uD83D\uDD2A")
@@ -318,13 +318,13 @@ public class CollectionTests {
 				"true",
 		})
 		void test(@StringCollection Collection<String> items, boolean expected) {
-			final var matches = items.eachMatches((item) -> {
+			final var matches = items.allMatch((item) -> {
 				return item.toLowerCase()
 					.equals(item);
 			});
 
 			assertEquals(expected, matches,
-				format("%s.eachMatches(Predicate<T>)", items));
+				format("%s.allMatch(Predicate<T>)", items));
 		}
 	}
 

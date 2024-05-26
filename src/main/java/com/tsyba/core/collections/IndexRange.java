@@ -151,14 +151,14 @@ public class IndexRange implements Sequence<Integer> {
 	}
 
 	@Override
-	public Sequence<Integer> find(Integer item) {
+	public Sequence<Integer> findAll(Integer item) {
 		return contains(item)
 			? new List<>(item - start)
 			: new List<>();
 	}
 
 	@Override
-	public Sequence<Integer> find(Sequence<Integer> items) {
+	public Sequence<Integer> findAll(Sequence<Integer> items) {
 		final var indexes = new MutableList<Integer>();
 		final var range = getIndexRange();
 
