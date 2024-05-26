@@ -215,12 +215,7 @@ public class Set<T> implements Collection<T> {
 	}
 
 	@Override
-	public Set<T> iterate(Consumer<T> operation) {
-		return (Set<T>) Collection.super.iterate(operation);
-	}
-
-	@Override
-	public Set<T> filter(Predicate<T> condition) {
+	public Set<T> matchAll(Predicate<T> condition) {
 		final var itemCount = getCount();
 		final var store = new RobinHoodHashStore<T>(itemCount);
 
@@ -232,6 +227,11 @@ public class Set<T> implements Collection<T> {
 
 		store.removeExcessCapacity();
 		return new Set<>(store);
+	}
+
+	@Override
+	public Set<T> iterate(Consumer<T> operation) {
+		return (Set<T>) Collection.super.iterate(operation);
 	}
 
 	@Override

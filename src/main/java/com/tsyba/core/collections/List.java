@@ -96,6 +96,18 @@ public class List<T> implements Sequence<T> {
 	}
 
 	@Override
+	public List<T> matchAll(Predicate<T> condition) {
+		final var filtered = new MutableList<T>();
+		for (var item : this) {
+			if (condition.test(item)) {
+				filtered.append(item);
+			}
+		}
+
+		return filtered.toImmutable();
+	}
+
+	@Override
 	public List<Integer> find(T item) {
 		final var indexes = new MutableList<Integer>();
 		enumerate((index, item2) -> {
@@ -162,18 +174,6 @@ public class List<T> implements Sequence<T> {
 	@Override
 	public List<T> enumerate(BiConsumer<Integer, T> operation) {
 		return (List<T>) Sequence.super.enumerate(operation);
-	}
-
-	@Override
-	public List<T> filter(Predicate<T> condition) {
-		final var filtered = new MutableList<T>();
-		for (var item : this) {
-			if (condition.test(item)) {
-				filtered.append(item);
-			}
-		}
-
-		return filtered.toImmutable();
 	}
 
 	@Override

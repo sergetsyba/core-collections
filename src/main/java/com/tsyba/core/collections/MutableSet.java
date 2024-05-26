@@ -175,14 +175,14 @@ public class MutableSet<T> extends Set<T> {
 	}
 
 	@Override
-	public MutableSet<T> iterate(Consumer<T> operation) {
-		return (MutableSet<T>) super.iterate(operation);
+	public MutableSet<T> matchAll(Predicate<T> condition) {
+		final var items = super.matchAll(condition);
+		return new MutableSet<>(items.store);
 	}
 
 	@Override
-	public MutableSet<T> filter(Predicate<T> condition) {
-		final var items = super.filter(condition);
-		return new MutableSet<>(items.store);
+	public MutableSet<T> iterate(Consumer<T> operation) {
+		return (MutableSet<T>) super.iterate(operation);
 	}
 
 	@Override

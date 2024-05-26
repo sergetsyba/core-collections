@@ -417,6 +417,18 @@ public class MutableSetTests {
 		assertEquals(expected, items);
 	}
 
+	@DisplayName(".matchAll(Predicate<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]"
+	}, delimiter = ';')
+	void testFilter(String name, @StringMutableSet MutableSet<String> items) {
+		final var returned = items.matchAll(String::isBlank);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
 	@DisplayName(".iterate(Consumer<T>)")
 	@ParameterizedTest(name = "{0}")
 	@CsvSource(value = {
@@ -427,18 +439,6 @@ public class MutableSetTests {
 		@SuppressWarnings("ResultOfMethodCallIgnored")
 		final var returned = items.iterate(String::toLowerCase);
 		assertSame(items, returned);
-	}
-
-	@DisplayName(".filter(Predicate<T>)")
-	@ParameterizedTest(name = "{0}")
-	@CsvSource(value = {
-		"returns a mutable set;" +
-			"[f, r, q, e, a]"
-	}, delimiter = ';')
-	void testFilter(String name, @StringMutableSet MutableSet<String> items) {
-		final var returned = items.filter(String::isBlank);
-		final var klass = returned.getClass();
-		assertEquals(MutableSet.class, klass);
 	}
 
 	@DisplayName(".convert(Function<T, R>)")

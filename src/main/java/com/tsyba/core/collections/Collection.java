@@ -196,6 +196,12 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
+	 * Returns all items of this collection, which satisfy the specified
+	 * {@link Predicate}.
+	 */
+	Collection<T> matchAll(Predicate<T> condition);
+
+	/**
 	 * Returns distinct items in this collection.
 	 */
 	Collection<T> getDistinct();
@@ -285,11 +291,6 @@ public interface Collection<T> extends Iterable<T> {
 
 		return this;
 	}
-
-	/**
-	 * Returns items of this collection, which satisfy the specified {@link Predicate}.
-	 */
-	Collection<T> filter(Predicate<T> condition);
 
 	/**
 	 * Returns items of this collection, converted by the specified {@link Function}.

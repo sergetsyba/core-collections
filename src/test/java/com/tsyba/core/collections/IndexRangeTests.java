@@ -251,7 +251,7 @@ class IndexRangeTests {
 
 	@DisplayName(".get(Integer)")
 	@Nested
-	class GetTests {
+	class GetAtTests {
 		@DisplayName("when range is not empty")
 		@Tests({
 			"when index is before valid index range start, fails;" +
@@ -434,7 +434,7 @@ class IndexRangeTests {
 
 	@DisplayName(".get(IndexRange)")
 	@Nested
-	class TestGetIndexRange {
+	class GetAtIndexRangeTests {
 		@DisplayName("when range is not empty")
 		@Tests({
 			"when argument range starts at valid index range start and ends within valid index range, returns range;" +
@@ -487,6 +487,25 @@ class IndexRangeTests {
 						format("%s.get(%s)", range1, range2));
 				}
 			}
+		}
+	}
+
+	@DisplayName(".filter(Predicate<Integer>)")
+	@Nested
+	class FilterTests {
+		@DisplayName("")
+		@Tests({
+			"when range is not empty, returns matching indexes;" +
+				"[1, 9);" +
+				"[2, 4, 6, 8]",
+			"when range is empty, returns empty sequence;" +
+				"[0, 0);" +
+				"[]"
+		})
+		void test(@TestRange IndexRange range, @IntList List<Integer> expected) {
+			final var matches = range.matchAll((index) -> index % 2 == 0);
+			assertEquals(expected, matches,
+				format("%s.filter(<is even>)", range));
 		}
 	}
 
@@ -638,25 +657,6 @@ class IndexRangeTests {
 			final var distinct = range.getDistinct();
 			assertSame(range, distinct,
 				format("%s.getDistinct()", range));
-		}
-	}
-
-	@DisplayName(".filter(Predicate<Integer>)")
-	@Nested
-	class FilterTests {
-		@DisplayName("")
-		@Tests({
-			"when range is not empty, returns matching indexes;" +
-				"[1, 9);" +
-				"[2, 4, 6, 8]",
-			"when range is empty, returns empty sequence;" +
-				"[0, 0);" +
-				"[]"
-		})
-		void test(@TestRange IndexRange range, @IntList List<Integer> expected) {
-			final var matches = range.filter((index) -> index % 2 == 0);
-			assertEquals(expected, matches,
-				format("%s.filter(<is even>)", range));
 		}
 	}
 

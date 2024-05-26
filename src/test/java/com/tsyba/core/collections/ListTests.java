@@ -336,6 +336,35 @@ public class ListTests {
 		}
 	}
 
+	@DisplayName(".filter(Predicate<T>)")
+	@Nested
+	class FilterTests {
+		@DisplayName("\uD83D\uDD31")
+		@Tests({
+			"when some items match, returns matched items;" +
+				"[g, R, W, s, A, s, W];" +
+				"[R, W, A, W]",
+			"when all items match, returns matched items;" +
+				"[R, W, A, X, K, S];" +
+				"[R, W, A, X, K, S]",
+			"when no items match, returns empty list;" +
+				"[g, m, k, o, l, m];" +
+				"[]",
+			"when list is empty, returns empty list;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringList List<String> items, @StringList List<String> expected) {
+			final var matched = items.matchAll((item) -> {
+				return item.toUpperCase()
+					.equals(item);
+			});
+
+			assertEquals(expected, matched,
+				format("%s.filter(<is uppercase>)", items));
+		}
+	}
+
 	@DisplayName(".find(T)")
 	@Nested
 	class FindTests {
@@ -467,35 +496,6 @@ public class ListTests {
 			final var reversed = items.reverse();
 			assertEquals(expected, reversed,
 				format("%s.reverse()", items));
-		}
-	}
-
-	@DisplayName(".filter(Predicate<T>)")
-	@Nested
-	class FilterTests {
-		@DisplayName("\uD83D\uDD31")
-		@Tests({
-			"when some items match, returns matched items;" +
-				"[g, R, W, s, A, s, W];" +
-				"[R, W, A, W]",
-			"when all items match, returns matched items;" +
-				"[R, W, A, X, K, S];" +
-				"[R, W, A, X, K, S]",
-			"when no items match, returns empty list;" +
-				"[g, m, k, o, l, m];" +
-				"[]",
-			"when list is empty, returns empty list;" +
-				"[];" +
-				"[]"
-		})
-		void test(@StringList List<String> items, @StringList List<String> expected) {
-			final var matched = items.filter((item) -> {
-				return item.toUpperCase()
-					.equals(item);
-			});
-
-			assertEquals(expected, matched,
-				format("%s.filter(<is uppercase>)", items));
 		}
 	}
 

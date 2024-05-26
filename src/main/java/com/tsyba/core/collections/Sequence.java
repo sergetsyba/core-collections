@@ -138,6 +138,9 @@ public interface Sequence<T> extends Collection<T> {
 		return Optional.empty();
 	}
 
+	@Override
+	Sequence<T> matchAll(Predicate<T> condition);
+
 	/**
 	 * Returns index of the first occurrence of the specified item in this sequence. When
 	 * this item does not occur in this sequence, returns an empty {@link Optional}.
@@ -238,9 +241,6 @@ public interface Sequence<T> extends Collection<T> {
 
 		return this;
 	}
-
-	@Override
-	Sequence<T> filter(Predicate<T> condition);
 
 	@Override
 	<R> Sequence<R> convert(Function<T, R> converter);

@@ -341,7 +341,7 @@ public class SetTests {
 		assertEquals(expected, product);
 	}
 
-	@DisplayName(".filter(Predicate<T>)")
+	@DisplayName(".matchAll(Predicate<T>)")
 	@ParameterizedTest(name = "{0}")
 	@CsvSource(value = {
 		"when some items match, returns matched items;" +
@@ -357,7 +357,7 @@ public class SetTests {
 	void testFilter(String name, @StringSet Set<String> items,
 		@StringSet Set<String> expected) {
 
-		final var filtered = items.filter((item) -> {
+		final var filtered = items.matchAll((item) -> {
 			return item.toLowerCase()
 				.equals(item);
 		});

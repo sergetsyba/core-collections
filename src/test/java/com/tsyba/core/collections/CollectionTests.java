@@ -716,7 +716,7 @@ class ArrayCollection<T> implements Collection<T> {
 	}
 
 	@Override
-	public Collection<T> filter(Predicate<T> condition) {
+	public Collection<T> matchAll(Predicate<T> condition) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -765,7 +765,7 @@ class PredicateCollection<T> implements Collection<Predicate<T>> {
 	}
 
 	@Override
-	public Collection<Predicate<T>> filter(Predicate<Predicate<T>> condition) {
+	public Collection<Predicate<T>> matchAll(Predicate<Predicate<T>> condition) {
 		throw new UnsupportedOperationException();
 	}
 

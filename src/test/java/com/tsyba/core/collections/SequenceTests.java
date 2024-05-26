@@ -425,6 +425,11 @@ public class SequenceTests {
 				}
 
 				@Override
+				public Sequence<String> matchAll(Predicate<String> condition) {
+					return null;
+				}
+
+				@Override
 				public Sequence<Integer> find(String item) {
 					return null;
 				}
@@ -441,11 +446,6 @@ public class SequenceTests {
 
 				@Override
 				public Sequence<String> reverse() {
-					return null;
-				}
-
-				@Override
-				public Sequence<String> filter(Predicate<String> condition) {
 					return null;
 				}
 

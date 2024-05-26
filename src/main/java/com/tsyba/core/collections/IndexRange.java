@@ -131,6 +131,19 @@ public class IndexRange implements Sequence<Integer> {
 	}
 
 	@Override
+	public Sequence<Integer> matchAll(Predicate<Integer> condition) {
+		final var store = new ContiguousArrayStore(end - start);
+		for (var index : this) {
+			if (condition.test(index)) {
+				store.append(index);
+			}
+		}
+
+		store.removeExcessCapacity();
+		return new List<>(store);
+	}
+
+	@Override
 	public Optional<Integer> findFirst(Integer item) {
 		return contains(item)
 			? Optional.of(item - start)
@@ -188,19 +201,6 @@ public class IndexRange implements Sequence<Integer> {
 	public Sequence<Integer> reverse() {
 		// todo: implement IndexRange.reverse()
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sequence<Integer> filter(Predicate<Integer> condition) {
-		final var store = new ContiguousArrayStore(end - start);
-		for (var index : this) {
-			if (condition.test(index)) {
-				store.append(index);
-			}
-		}
-
-		store.removeExcessCapacity();
-		return new List<>(store);
 	}
 
 	@Override
