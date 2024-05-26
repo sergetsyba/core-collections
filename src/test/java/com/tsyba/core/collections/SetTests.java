@@ -100,29 +100,6 @@ public class SetTests {
 		assertEquals(expected, count);
 	}
 
-	@DisplayName(".contains(T)")
-	@ParameterizedTest(name = "{0}")
-	@CsvSource(value = {
-		"when item is present, returns true;" +
-			"[b, K, s, L, m, s, D]; m;" +
-			"true",
-		"when item is absent, returns false;" +
-			"[b, K, s, L, m, s, D]; M;" +
-			"false",
-		"when item is null, returns false;" +
-			"[b, K, s, L, m, s, D]; ;" +
-			"false",
-		"when set is empty, returns false;" +
-			"[]; m;" +
-			"false",
-	}, delimiter = ';')
-	void testContains(String name, @StringSet Set<String> items, String item,
-		boolean expected) {
-
-		final var contains = items.contains(item);
-		assertEquals(expected, contains);
-	}
-
 	@DisplayName(".getDistinct()")
 	@Nested
 	class GetDistinctTests {

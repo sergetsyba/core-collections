@@ -68,16 +68,6 @@ public class Set<T> implements Collection<T> {
 	}
 
 	@Override
-	public boolean contains(T item) {
-		if (item == null) {
-			return false;
-		}
-
-		final var index = store.find(item);
-		return index > -1;
-	}
-
-	@Override
 	public Set<T> getDistinct() {
 		return this;
 	}
@@ -93,6 +83,19 @@ public class Set<T> implements Collection<T> {
 	 */
 	public boolean isDisjoint(Set<T> set) {
 		return noneMatches(set::contains);
+	}
+
+	/**
+	 * Returns {@code true} when this set intersects the specified one; returns
+	 * {@code false} otherwise.
+	 * <p>
+	 * A set intersects another set when they have at least one common item.
+	 * <p>
+	 * When this or the specified set is empty, returns {@code false}, since an empty set
+	 * never intersects another set, including itself.
+	 */
+	public boolean intersects(Set<T> set) {
+		return anyMatches(set::contains);
 	}
 
 	/**
@@ -113,19 +116,6 @@ public class Set<T> implements Collection<T> {
 
 		store.removeExcessCapacity();
 		return new Set<>(store);
-	}
-
-	/**
-	 * Returns {@code true} when this set intersects the specified one; returns
-	 * {@code false} otherwise.
-	 * <p>
-	 * A set intersects another set when they have at least one common item.
-	 * <p>
-	 * When this or the specified set is empty, returns {@code false}, since an empty set
-	 * never intersects another set, including itself.
-	 */
-	public boolean intersects(Set<T> set) {
-		return anyMatches(set::contains);
 	}
 
 	/**
