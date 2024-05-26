@@ -1,5 +1,6 @@
 package com.tsyba.core.collections;
 
+import com.tsyba.core.collections.converter.StringArray;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
@@ -298,7 +299,7 @@ public class ListTests {
 				"[f, y, R, e, l, k, g, S]; [0, 0);" +
 				"[]"
 		})
-		void testNotEmpty(@StringList List<String> items, @TestRange IndexRange range,
+		void testNotEmpty(@StringList List<String> items, @IntRange IndexRange range,
 			@StringList List<String> expected) {
 			test(items, range, expected);
 		}
@@ -312,7 +313,7 @@ public class ListTests {
 				"[]; [0, 0);" +
 				"[]"
 		})
-		void testEmpty(@StringList List<String> items, @TestRange IndexRange range,
+		void testEmpty(@StringList List<String> items, @IntRange IndexRange range,
 			@StringList List<String> expected) {
 			test(items, range, expected);
 		}

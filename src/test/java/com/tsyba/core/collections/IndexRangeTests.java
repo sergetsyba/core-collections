@@ -1,5 +1,6 @@
 package com.tsyba.core.collections;
 
+import com.tsyba.core.collections.converter.IntOptional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
@@ -35,7 +36,7 @@ class IndexRangeTests {
 				"-4; 4;" +
 				"null"
 		})
-		void test(int start, int end, @TestRange IndexRange expected) {
+		void test(int start, int end, @IntRange IndexRange expected) {
 			try {
 				final var range = new IndexRange(start, end);
 				assertEquals(expected, range,
@@ -56,7 +57,7 @@ class IndexRangeTests {
 			"creates empty index range;" +
 				"[0, 0)"
 		})
-		void test(@TestRange IndexRange expected) {
+		void test(@IntRange IndexRange expected) {
 			final var range = new IndexRange();
 			assertEquals(expected, range,
 				"new IndexRange()");
@@ -75,7 +76,7 @@ class IndexRangeTests {
 				"[0, 0);" +
 				"0"
 		})
-		void test(@TestRange IndexRange range, int expected) {
+		void test(@IntRange IndexRange range, int expected) {
 			final var count = range.getCount();
 			assertEquals(expected, count,
 				format("%s.isEmpty()", range));
@@ -94,7 +95,7 @@ class IndexRangeTests {
 				"[0, 0);" +
 				"[0, 0)"
 		})
-		void test(@TestRange IndexRange range, @TestRange IndexRange expected) {
+		void test(@IntRange IndexRange range, @IntRange IndexRange expected) {
 			final var returned = range.getIndexRange();
 			assertEquals(expected, returned,
 				format("%s.getIndexRange()", range));
@@ -125,7 +126,7 @@ class IndexRangeTests {
 				"[4, 8); null;" +
 				"false"
 		})
-		void testNotEmpty(@TestRange IndexRange range, Integer index, boolean expected) {
+		void testNotEmpty(@IntRange IndexRange range, Integer index, boolean expected) {
 			test(range, index, expected);
 		}
 
@@ -144,7 +145,7 @@ class IndexRangeTests {
 				"[0, 0); null;" +
 				"false"
 		})
-		void testEmpty(@TestRange IndexRange range, Integer index, boolean expected) {
+		void testEmpty(@IntRange IndexRange range, Integer index, boolean expected) {
 			test(range, index, expected);
 		}
 
@@ -182,7 +183,7 @@ class IndexRangeTests {
 				"[6, 9); [0, 0);" +
 				"true"
 		})
-		void testNotEmpty(@TestRange IndexRange range1, @TestRange IndexRange range2,
+		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
 			boolean expected) {
 			test(range1, range2, expected);
 		}
@@ -196,7 +197,7 @@ class IndexRangeTests {
 				"[0, 0); [0, 0);" +
 				"true"
 		})
-		void testEmpty(@TestRange IndexRange range1, @TestRange IndexRange range2,
+		void testEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
 			boolean expected) {
 			test(range1, range2, expected);
 		}
@@ -221,7 +222,7 @@ class IndexRangeTests {
 				"[0, 0);" +
 				"null"
 		})
-		void test(@TestRange IndexRange range, @IntOptional Optional<Integer> expected) {
+		void test(@IntRange IndexRange range, @IntOptional Optional<Integer> expected) {
 			final var first = range.getFirst();
 			assertEquals(expected, first,
 				format("%s.getFirst()", range));
@@ -241,7 +242,7 @@ class IndexRangeTests {
 				"[0, 0);" +
 				"null"
 		})
-		void test(@TestRange IndexRange range, @IntOptional Optional<Integer> expected) {
+		void test(@IntRange IndexRange range, @IntOptional Optional<Integer> expected) {
 			final var first = range.getLast();
 			assertEquals(expected, first,
 				format("%s.getLast()", range));
@@ -270,7 +271,7 @@ class IndexRangeTests {
 				"[4, 8); 9;" +
 				"null; 9 ∉ [0, 4)"
 		})
-		void testNotEmpty(@TestRange IndexRange range, int index, Integer expected1,
+		void testNotEmpty(@IntRange IndexRange range, int index, Integer expected1,
 			@IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
 		}
@@ -287,7 +288,7 @@ class IndexRangeTests {
 				"[0, 0); 1;" +
 				"null; 1 ∉ [0, 0)",
 		})
-		void testEmpty(@TestRange IndexRange range, int index, Integer expected1,
+		void testEmpty(@IntRange IndexRange range, int index, Integer expected1,
 			@IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
 		}
@@ -331,8 +332,8 @@ class IndexRangeTests {
 				"[2, 9); 12;" +
 				"null; 12 ∉ [0, 7)",
 		})
-		void testNotEmpty(@TestRange IndexRange range, int index,
-			@TestRange IndexRange expected1, @IndexRangeException Exception expected2) {
+		void testNotEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
 		}
 
@@ -348,8 +349,8 @@ class IndexRangeTests {
 				"[0, 0); 1;" +
 				"null; 1 ∉ [0, 0)",
 		})
-		void testEmpty(@TestRange IndexRange range, int index,
-			@TestRange IndexRange expected1, @IndexRangeException Exception expected2) {
+		void testEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
 		}
 
@@ -392,8 +393,8 @@ class IndexRangeTests {
 				"[2, 9); 12;" +
 				"null; 12 ∉ [0, 7)",
 		})
-		void testNotEmpty(@TestRange IndexRange range, int index,
-			@TestRange IndexRange expected1, @IndexRangeException Exception expected2) {
+		void testNotEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
 		}
 
@@ -409,8 +410,8 @@ class IndexRangeTests {
 				"[0, 0); 1;" +
 				"null; 1 ∉ [0, 0)",
 		})
-		void testEmpty(@TestRange IndexRange range, int index,
-			@TestRange IndexRange expected1, @IndexRangeException Exception expected2) {
+		void testEmpty(@IntRange IndexRange range, int index,
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
 		}
 
@@ -453,8 +454,8 @@ class IndexRangeTests {
 				"[6, 9); [0, 0);" +
 				"[0, 0); null"
 		})
-		void testNotEmpty(@TestRange IndexRange range1, @TestRange IndexRange range2,
-			@TestRange IndexRange expected1, @IndexRangeException Exception expected2) {
+		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
 			test(range1, range2, expected1, expected2);
 		}
 
@@ -467,8 +468,8 @@ class IndexRangeTests {
 				"[0, 0); [0, 0);" +
 				"[0, 0); null"
 		})
-		void testEmpty(@TestRange IndexRange range1, @TestRange IndexRange range2,
-			@TestRange IndexRange expected1, @IndexRangeException Exception expected2) {
+		void testEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
+			@IntRange IndexRange expected1, @IndexRangeException Exception expected2) {
 			test(range1, range2, expected1, expected2);
 		}
 
@@ -502,7 +503,7 @@ class IndexRangeTests {
 				"[0, 0);" +
 				"[]"
 		})
-		void test(@TestRange IndexRange range, @IntList List<Integer> expected) {
+		void test(@IntRange IndexRange range, @IntList List<Integer> expected) {
 			final var matches = range.matchAll((index) -> index % 2 == 0);
 			assertEquals(expected, matches,
 				format("%s.filter(<is even>)", range));
@@ -534,7 +535,7 @@ class IndexRangeTests {
 				"[0, 0); 0;" +
 				"null"
 		})
-		void test(@TestRange IndexRange range, int item,
+		void test(@IntRange IndexRange range, int item,
 			@IntOptional Optional<Integer> expected) {
 
 			final var index = range.findFirst(item);
@@ -567,7 +568,7 @@ class IndexRangeTests {
 				"[4, 9); null;" +
 				"[]"
 		})
-		void testNotEmpty(@TestRange IndexRange range, Integer index,
+		void testNotEmpty(@IntRange IndexRange range, Integer index,
 			@IntList List<Integer> expected) {
 			test(range, index, expected);
 		}
@@ -587,7 +588,7 @@ class IndexRangeTests {
 				"[0, 0); null;" +
 				"[]"
 		})
-		void testEmpty(@TestRange IndexRange range, Integer index,
+		void testEmpty(@IntRange IndexRange range, Integer index,
 			@IntList List<Integer> expected) {
 			test(range, index, expected);
 		}
@@ -617,7 +618,7 @@ class IndexRangeTests {
 				"[3, 9); [];" +
 				"[0, 1, 2, 3, 4, 5]"
 		})
-		void testNotEmpty(@TestRange IndexRange range, @IntList List<Integer> items,
+		void testNotEmpty(@IntRange IndexRange range, @IntList List<Integer> items,
 			@IntList List<Integer> expected) {
 			test(range, items, expected);
 		}
@@ -631,7 +632,7 @@ class IndexRangeTests {
 				"[0, 0); [];" +
 				"[]"
 		})
-		void testEmpty(@TestRange IndexRange range, @IntList List<Integer> items,
+		void testEmpty(@IntRange IndexRange range, @IntList List<Integer> items,
 			@IntList List<Integer> expected) {
 			test(range, items, expected);
 		}
@@ -653,7 +654,7 @@ class IndexRangeTests {
 			"returns itself;" +
 				"[4, 9)"
 		})
-		void test(@TestRange IndexRange range) {
+		void test(@IntRange IndexRange range) {
 			final var distinct = range.getDistinct();
 			assertSame(range, distinct,
 				format("%s.getDistinct()", range));
@@ -678,7 +679,7 @@ class IndexRangeTests {
 				"[4, 8); null;" +
 				"false"
 		})
-		void testNotEmpty(@TestRange IndexRange range1, @TestRange IndexRange range2,
+		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
 			boolean expected) {
 			test(range1, range2, expected);
 		}
@@ -695,7 +696,7 @@ class IndexRangeTests {
 				"[0, 0); null;" +
 				"false"
 		})
-		void testEmpty(@TestRange IndexRange range1, @TestRange IndexRange range2,
+		void testEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
 			boolean expected) {
 			test(range1, range2, expected);
 		}
@@ -728,7 +729,7 @@ class IndexRangeTests {
 				"[2, 6); 9;" +
 				"null; 9 ∉ [0, 4)"
 		})
-		void testNotEmpty(@TestRange IndexRange range, int index,
+		void testNotEmpty(@IntRange IndexRange range, int index,
 			@StringList List<String> expected1,
 			@IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
@@ -746,7 +747,7 @@ class IndexRangeTests {
 				"[0, 0); 1;" +
 				"null; 1 ∉ [0, 0)"
 		})
-		void testEmpty(@TestRange IndexRange range, int index,
+		void testEmpty(@IntRange IndexRange range, int index,
 			@StringList List<String> expected1,
 			@IndexRangeException Exception expected2) {
 			test(range, index, expected1, expected2);
@@ -788,7 +789,7 @@ class IndexRangeTests {
 				"[0, 0);" +
 				"[]"
 		})
-		void test(@TestRange IndexRange range, @StringList List<String> expected) {
+		void test(@IntRange IndexRange range, @StringList List<String> expected) {
 			final var iterator = range.iterator();
 			final var iterated = new MutableList<String>();
 			while (iterator.hasNext()) {
@@ -813,7 +814,7 @@ class IndexRangeTests {
 				"[0, 0);" +
 				"[0, 0)"
 		})
-		void test(@TestRange IndexRange range, String expected) {
+		void test(@IntRange IndexRange range, String expected) {
 			final var string = range.toString();
 			assertEquals(expected, string,
 				format("%s.toString()", range));
@@ -822,8 +823,8 @@ class IndexRangeTests {
 }
 
 @Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(TestRange.Converter.class)
-@interface TestRange {
+@ConvertWith(IntRange.Converter.class)
+@interface IntRange {
 	class Converter extends TypedArgumentConverter<String, IndexRange> {
 		protected Converter() {
 			super(String.class, IndexRange.class);
@@ -846,9 +847,9 @@ class IndexRangeTests {
 	}
 }
 
-@ConvertWith(TestRangeOptional.Converter.class)
+@ConvertWith(IntRangeOptional.Converter.class)
 @Retention(RetentionPolicy.RUNTIME)
-@interface TestRangeOptional {
+@interface IntRangeOptional {
 	@SuppressWarnings("rawtypes")
 	class Converter extends TypedArgumentConverter<String, Optional> {
 		protected Converter() {
@@ -857,7 +858,7 @@ class IndexRangeTests {
 
 		@Override
 		protected Optional<IndexRange> convert(String s) throws ArgumentConversionException {
-			final var converter = new TestRange.Converter();
+			final var converter = new IntRange.Converter();
 			return Optional.ofNullable(s)
 				.map(converter::convert);
 		}

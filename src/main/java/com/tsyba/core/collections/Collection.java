@@ -46,6 +46,9 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@link Comparator}.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
 	 */
 	default Optional<T> getMin(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -53,15 +56,19 @@ public interface Collection<T> extends Iterable<T> {
 			return Optional.empty();
 		}
 
-		var minimum = iterator.next();
+		var min = iterator.next();
+		if (!(min instanceof Comparable)) {
+			throw new UnsupportedOperationException("Collection items are not comparable.");
+		}
+
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
-			if (comparator.compare(minimum, item) > 0) {
-				minimum = item;
+			if (comparator.compare(min, item) > 0) {
+				min = item;
 			}
 		}
 
-		return Optional.of(minimum);
+		return Optional.of(min);
 	}
 
 	/**
@@ -82,6 +89,9 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@link Comparator}.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
 	 */
 	default Optional<T> getMax(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -89,15 +99,19 @@ public interface Collection<T> extends Iterable<T> {
 			return Optional.empty();
 		}
 
-		var maximum = iterator.next();
+		var max = iterator.next();
+		if (!(max instanceof Comparable)) {
+			throw new UnsupportedOperationException("Collection items are not comparable.");
+		}
+
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
-			if (comparator.compare(maximum, item) < 0) {
-				maximum = item;
+			if (comparator.compare(max, item) < 0) {
+				max = item;
 			}
 		}
 
-		return Optional.of(maximum);
+		return Optional.of(max);
 	}
 
 	/**

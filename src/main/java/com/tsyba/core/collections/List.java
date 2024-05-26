@@ -208,23 +208,9 @@ public class List<T> implements Sequence<T> {
 
 	@Override
 	public Iterator<T> iterator(int start) {
-		return new Iterator<>() {
-			private int index = start;
-
-			@Override
-			public boolean hasNext() {
-				return index < store.itemCount;
-			}
-
-			@Override
-			public T next() {
-				@SuppressWarnings("unchecked")
-				final var item = (T) store.items[index];
-				++index;
-
-				return item;
-			}
-		};
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) store.items;
+		return new ArrayIterator<>(items, start);
 	}
 
 	@Override
