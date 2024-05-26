@@ -1,5 +1,7 @@
 package com.tsyba.core.collections;
 
+import com.tsyba.core.collections.converter.StringArray;
+import com.tsyba.core.collections.converter.StringOptional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -106,7 +108,7 @@ public class CollectionTests {
 		void testNotComparable() {
 			assertThrows(UnsupportedOperationException.class,
 				() -> {
-					new PredicateCollection<>()
+					new NonComparableCollection()
 						.getMin();
 				});
 		}
@@ -162,7 +164,7 @@ public class CollectionTests {
 		void testNotComparable() {
 			assertThrows(UnsupportedOperationException.class,
 				() -> {
-					new PredicateCollection<>()
+					new NonComparableCollection()
 						.getMax();
 				});
 		}
@@ -297,7 +299,7 @@ public class CollectionTests {
 		}
 	}
 
-	@DisplayName(".eachMatches(Predicate<T>)")
+	@DisplayName(".allMatch(Predicate<T>)")
 	@Nested
 	class EachMatchesTests {
 		@DisplayName("\uD83D\uDD2A")
@@ -316,13 +318,13 @@ public class CollectionTests {
 				"true",
 		})
 		void test(@StringCollection Collection<String> items, boolean expected) {
-			final var matches = items.eachMatches((item) -> {
+			final var matches = items.allMatch((item) -> {
 				return item.toLowerCase()
 					.equals(item);
 			});
 
 			assertEquals(expected, matches,
-				format("%s.eachMatches(Predicate<T>)", items));
+				format("%s.allMatch(Predicate<T>)", items));
 		}
 	}
 
@@ -429,11 +431,8 @@ public class CollectionTests {
 		@Test
 		void testSortNotComparable() {
 			Assertions.assertThrows(RuntimeException.class, () -> {
-				final var collection = new PredicateCollection<>(
-					String::isEmpty,
-					String::isBlank);
-
-				collection.sort();
+				new NonComparableCollection()
+					.sort();
 			}, "<non comparable items>.sort()");
 		}
 	}
@@ -441,68 +440,36 @@ public class CollectionTests {
 	@DisplayName(".shuffle(Random)")
 	@Nested
 	class ShuffleRandomTests {
-		@Test
-		@DisplayName("when collection is not empty, returns shuffled list")
-		void testNotEmpty() {
-			Collection<String> items = new ArrayCollection<>(
-				"r", "E", "V", "s", "x", "w", "O", "8");
-
-			final var time = System.currentTimeMillis();
-			final var random = new Random(time);
-
-			// shuffle items 10 times and ensure item order is different after
-			// each shuffle
-			for (var index = 0; index < 10; ++index) {
-				final Collection<String> shuffled = items.shuffle(random);
-				assertShuffled(shuffled, items,
-					format("%s.shuffle(Random)", items));
-
-				items = shuffled;
-			}
-		}
-
-		@DisplayName("when collection is empty, returns empty list")
-		@Test
-		void testEmpty() {
-			final var items = new ArrayCollection<>();
+		@DisplayName("\uD83D\uDC90")
+		@Tests({
+			"when collection is not empty, returns items shuffled;" +
+				"[r, E, V, s, x, w,O, 8]",
+			"when collection is empty, returns empty collection;" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items) {
 			final var time = System.currentTimeMillis();
 			final var random = new Random(time);
 
 			final var shuffled = items.shuffle(random);
-			final var items2 = new List<>(items);
-
-			assertEquals(items2, shuffled,
-				format("%s.shuffle(Random)", items));
+			assertShuffled(shuffled, items,
+				format("%s.shuffle()", items));
 		}
 	}
 
 	@DisplayName(".shuffle()")
 	@Nested
 	class ShuffleTests {
-		@Test
-		@DisplayName("when collection is not empty, returns shuffled list")
-		void testNotEmpty() {
-			Collection<String> items = new ArrayCollection<>(
-				"o", "M", "F", "0", "K", "z", "v", "S");
-
-			for (var index = 0; index < 10; ++index) {
-				final var shuffled = items.shuffle();
-				assertShuffled(shuffled, items,
-					format("%s.shuffle()", items));
-
-				items = shuffled;
-			}
-		}
-
-		@DisplayName("when collection is empty, returns empty list")
-		@Test
-		void testEmpty() {
-			final var items = new ArrayCollection<>();
-
+		@DisplayName("\uD83C\uDF16")
+		@Tests({
+			"when collection is not empty, returns items shuffled;" +
+				"[o, M, F, 0, K, z, v, S]",
+			"when collection is empty, returns empty collection;" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items) {
 			final var shuffled = items.shuffle();
-			final var items2 = new List<>(items);
-
-			assertEquals(items2, shuffled,
+			assertShuffled(shuffled, items,
 				format("%s.shuffle()", items));
 		}
 	}
@@ -512,11 +479,15 @@ public class CollectionTests {
 
 		final var items1 = shuffled.toArray(String[].class);
 		final var items2 = unshuffled.toArray(String[].class);
-		assertFalse(Arrays.equals(items1, items2), message);
+		if (items1.length == 0) {
+			assertEquals(0, items2.length);
+		} else {
+			assertFalse(Arrays.equals(items1, items2), message);
 
-		Arrays.sort(items1);
-		Arrays.sort(items2);
-		assertArrayEquals(items1, items2, message);
+			Arrays.sort(items1);
+			Arrays.sort(items2);
+			assertArrayEquals(items1, items2, message);
+		}
 	}
 
 	@DisplayName(".iterate(Consumer<T>)")
@@ -649,134 +620,59 @@ public class CollectionTests {
 			final var items = new StringArray.Converter()
 				.convert(s);
 
-			return new ArrayCollection<>(items) {
+			return new Collection<>() {
+				@Override
+				public Collection<String> getDistinct() {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public Collection<String> matchAll(Predicate<String> condition) {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public <R> Collection<R> convert(Function<String, R> converter) {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public Iterator<String> iterator() {
+					return new ArrayIterator<>(items);
+				}
 			};
 		}
 	}
 }
 
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringArray.Converter.class)
-@interface StringArray {
-	class Converter extends TypedArgumentConverter<String, String[]> {
-		protected Converter() {
-			super(String.class, String[].class);
-		}
+class NonComparableCollection implements Collection<Predicate<?>> {
+	private final Predicate<?>[] items;
 
-		@Override
-		protected String[] convert(String s) throws ArgumentConversionException {
-			if (s == null) {
-				return null;
-			}
-
-			final var substring = s.substring(
-				s.indexOf("[") + 1,
-				s.lastIndexOf("]"));
-
-			if (substring.isBlank()) {
-				return new String[0];
-			} else {
-				final var string = substring.split("\\s*,\\s*");
-
-				return Arrays.stream(string)
-					.filter((item) -> !item.equals("null"))
-					.toArray(String[]::new);
-			}
-		}
-	}
-}
-
-@ConvertWith(StringOptional.Converter.class)
-@Retention(RetentionPolicy.RUNTIME)
-@interface StringOptional {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Optional> {
-		protected Converter() {
-			super(String.class, Optional.class);
-		}
-
-		@Override
-		protected Optional<String> convert(String s) throws ArgumentConversionException {
-			return Optional.ofNullable(s);
-		}
-	}
-}
-
-class ArrayCollection<T> implements Collection<T> {
-	final Object[] items;
-
-	@SafeVarargs
-	protected ArrayCollection(T... items) {
-		this.items = items;
-	}
-
-	@Override
-	public Collection<T> getDistinct() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Collection<T> filter(Predicate<T> condition) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public <R> Collection<R> convert(Function<T, R> converter) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return new Iterator<>() {
-			private int index = 0;
-
-			@Override
-			public boolean hasNext() {
-				return index < items.length;
-			}
-
-			@Override
-			public T next() {
-				@SuppressWarnings("unchecked")
-				var item = (T) items[index];
-				++index;
-				return item;
-			}
+	public NonComparableCollection() {
+		this.items = new Predicate[]{
+			(item) -> ((String) item).isBlank(),
+			(item) -> ((String) item).isEmpty()
 		};
 	}
 
 	@Override
-	public String toString() {
-		return "[" + join(", ") + "]";
-	}
-}
-
-class PredicateCollection<T> implements Collection<Predicate<T>> {
-	final Predicate<T>[] items;
-
-	@SafeVarargs
-	public PredicateCollection(Predicate<T>... items) {
-		this.items = items;
-	}
-
-	@Override
-	public Collection<Predicate<T>> getDistinct() {
+	public Collection<Predicate<?>> matchAll(Predicate<Predicate<?>> condition) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Collection<Predicate<T>> filter(Predicate<Predicate<T>> condition) {
+	public Collection<Predicate<?>> getDistinct() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <R> Collection<R> convert(Function<Predicate<T>, R> converter) {
+	public <R> Collection<R> convert(Function<Predicate<?>, R> converter) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Iterator<Predicate<T>> iterator() {
-		throw new UnsupportedOperationException();
+	public Iterator<Predicate<?>> iterator() {
+		return new ArrayIterator<>(this.items);
 	}
 }
 

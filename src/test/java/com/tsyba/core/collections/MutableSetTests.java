@@ -1,5 +1,6 @@
 package com.tsyba.core.collections;
 
+import com.tsyba.core.collections.converter.StringArray;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +20,7 @@ public class MutableSetTests {
 	@DisplayName(".getDistinct()")
 	@Nested
 	class GetDistinctTests {
-		@DisplayName("")
+		@DisplayName("\uD83D\uDC5B")
 		@Tests({
 			"returns a copy of itself;" +
 				"[g, t, w, s, A, q]"
@@ -417,6 +418,18 @@ public class MutableSetTests {
 		assertEquals(expected, items);
 	}
 
+	@DisplayName(".matchAll(Predicate<T>)")
+	@ParameterizedTest(name = "{0}")
+	@CsvSource(value = {
+		"returns a mutable set;" +
+			"[f, r, q, e, a]"
+	}, delimiter = ';')
+	void testFilter(String name, @StringMutableSet MutableSet<String> items) {
+		final var returned = items.matchAll(String::isBlank);
+		final var klass = returned.getClass();
+		assertEquals(MutableSet.class, klass);
+	}
+
 	@DisplayName(".iterate(Consumer<T>)")
 	@ParameterizedTest(name = "{0}")
 	@CsvSource(value = {
@@ -427,18 +440,6 @@ public class MutableSetTests {
 		@SuppressWarnings("ResultOfMethodCallIgnored")
 		final var returned = items.iterate(String::toLowerCase);
 		assertSame(items, returned);
-	}
-
-	@DisplayName(".filter(Predicate<T>)")
-	@ParameterizedTest(name = "{0}")
-	@CsvSource(value = {
-		"returns a mutable set;" +
-			"[f, r, q, e, a]"
-	}, delimiter = ';')
-	void testFilter(String name, @StringMutableSet MutableSet<String> items) {
-		final var returned = items.filter(String::isBlank);
-		final var klass = returned.getClass();
-		assertEquals(MutableSet.class, klass);
 	}
 
 	@DisplayName(".convert(Function<T, R>)")

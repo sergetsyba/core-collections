@@ -1,5 +1,6 @@
 package com.tsyba.core.collections;
 
+import com.tsyba.core.collections.converter.StringArray;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
@@ -298,7 +299,7 @@ public class ListTests {
 				"[f, y, R, e, l, k, g, S]; [0, 0);" +
 				"[]"
 		})
-		void testNotEmpty(@StringList List<String> items, @TestRange IndexRange range,
+		void testNotEmpty(@StringList List<String> items, @IntRange IndexRange range,
 			@StringList List<String> expected) {
 			test(items, range, expected);
 		}
@@ -312,7 +313,7 @@ public class ListTests {
 				"[]; [0, 0);" +
 				"[]"
 		})
-		void testEmpty(@StringList List<String> items, @TestRange IndexRange range,
+		void testEmpty(@StringList List<String> items, @IntRange IndexRange range,
 			@StringList List<String> expected) {
 			test(items, range, expected);
 		}
@@ -336,7 +337,36 @@ public class ListTests {
 		}
 	}
 
-	@DisplayName(".find(T)")
+	@DisplayName(".matchAll(Predicate<T>)")
+	@Nested
+	class MatchAllTests {
+		@DisplayName("\uD83D\uDD31")
+		@Tests({
+			"when some items match, returns matched items;" +
+				"[g, R, W, s, A, s, W];" +
+				"[R, W, A, W]",
+			"when all items match, returns matched items;" +
+				"[R, W, A, X, K, S];" +
+				"[R, W, A, X, K, S]",
+			"when no items match, returns empty list;" +
+				"[g, m, k, o, l, m];" +
+				"[]",
+			"when list is empty, returns empty list;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringList List<String> items, @StringList List<String> expected) {
+			final var matched = items.matchAll((item) -> {
+				return item.toUpperCase()
+					.equals(item);
+			});
+
+			assertEquals(expected, matched,
+				format("%s.matchAll(<is uppercase>)", items));
+		}
+	}
+
+	@DisplayName(".findAll(T)")
 	@Nested
 	class FindTests {
 		@DisplayName("when list is not empty")
@@ -374,13 +404,13 @@ public class ListTests {
 		}
 
 		private void test(List<String> items, String item, List<Integer> expected) {
-			final var indexes = items.find(item);
+			final var indexes = items.findAll(item);
 			assertEquals(expected, indexes,
-				format("%s.find(%s)", items, item));
+				format("%s.findAll(%s)", items, item));
 		}
 	}
 
-	@DisplayName(".find(Sequence<T>)")
+	@DisplayName(".findAll(Sequence<T>)")
 	@Nested
 	class FindSequenceTests {
 		@DisplayName("when list is not empty")
@@ -423,9 +453,9 @@ public class ListTests {
 		private void test(List<String> items1, List<String> items2,
 			List<Integer> expected) {
 
-			final var indexes = items1.find(items2);
+			final var indexes = items1.findAll(items2);
 			assertEquals(expected, indexes,
-				format("%s.find(%s)", items1, items2));
+				format("%s.findAll(%s)", items1, items2));
 		}
 	}
 
@@ -467,35 +497,6 @@ public class ListTests {
 			final var reversed = items.reverse();
 			assertEquals(expected, reversed,
 				format("%s.reverse()", items));
-		}
-	}
-
-	@DisplayName(".filter(Predicate<T>)")
-	@Nested
-	class FilterTests {
-		@DisplayName("\uD83D\uDD31")
-		@Tests({
-			"when some items match, returns matched items;" +
-				"[g, R, W, s, A, s, W];" +
-				"[R, W, A, W]",
-			"when all items match, returns matched items;" +
-				"[R, W, A, X, K, S];" +
-				"[R, W, A, X, K, S]",
-			"when no items match, returns empty list;" +
-				"[g, m, k, o, l, m];" +
-				"[]",
-			"when list is empty, returns empty list;" +
-				"[];" +
-				"[]"
-		})
-		void test(@StringList List<String> items, @StringList List<String> expected) {
-			final var matched = items.filter((item) -> {
-				return item.toUpperCase()
-					.equals(item);
-			});
-
-			assertEquals(expected, matched,
-				format("%s.filter(<is uppercase>)", items));
 		}
 	}
 

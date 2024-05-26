@@ -1,5 +1,7 @@
 package com.tsyba.core.collections;
 
+import com.tsyba.core.collections.converter.StringArray;
+import com.tsyba.core.collections.converter.StringOptional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.converter.ArgumentConversionException;

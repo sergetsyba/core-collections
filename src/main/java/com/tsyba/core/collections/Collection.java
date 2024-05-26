@@ -46,6 +46,9 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@link Comparator}.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
 	 */
 	default Optional<T> getMin(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -53,15 +56,19 @@ public interface Collection<T> extends Iterable<T> {
 			return Optional.empty();
 		}
 
-		var minimum = iterator.next();
+		var min = iterator.next();
+		if (!(min instanceof Comparable)) {
+			throw new UnsupportedOperationException("Collection items are not comparable.");
+		}
+
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
-			if (comparator.compare(minimum, item) > 0) {
-				minimum = item;
+			if (comparator.compare(min, item) > 0) {
+				min = item;
 			}
 		}
 
-		return Optional.of(minimum);
+		return Optional.of(min);
 	}
 
 	/**
@@ -82,6 +89,9 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@link Comparator}.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
+	 *
+	 * @throws UnsupportedOperationException when items of this collection are not
+	 * {@link Comparable}
 	 */
 	default Optional<T> getMax(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -89,15 +99,19 @@ public interface Collection<T> extends Iterable<T> {
 			return Optional.empty();
 		}
 
-		var maximum = iterator.next();
+		var max = iterator.next();
+		if (!(max instanceof Comparable)) {
+			throw new UnsupportedOperationException("Collection items are not comparable.");
+		}
+
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
-			if (comparator.compare(maximum, item) < 0) {
-				maximum = item;
+			if (comparator.compare(max, item) < 0) {
+				max = item;
 			}
 		}
 
-		return Optional.of(maximum);
+		return Optional.of(max);
 	}
 
 	/**
@@ -127,7 +141,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * collection; returns {@code false} otherwise.
 	 */
 	default boolean contains(Collection<T> items) {
-		return items.eachMatches(this::contains);
+		return items.allMatch(this::contains);
 	}
 
 	/**
@@ -137,8 +151,13 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code true}.
 	 */
 	default boolean noneMatches(Predicate<T> condition) {
-		return matchAny(condition)
-			.isEmpty();
+		for (var item : this) {
+			if (condition.test(item)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -148,19 +167,29 @@ public interface Collection<T> extends Iterable<T> {
 	 * When this collection is empty, returns {@code false}.
 	 */
 	default boolean anyMatches(Predicate<T> condition) {
-		return matchAny(condition)
-			.isPresent();
+		for (var item : this) {
+			if (condition.test(item)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
-	 * Returns {@code true} when each item of this collection satisfies the specified
+	 * Returns {@code true} when all items of this collection satisfy the specified
 	 * {@link Predicate}; returns {@code false} otherwise.
 	 * <p>
 	 * When this collection is empty, returns {@code true}.
 	 */
-	default boolean eachMatches(Predicate<T> condition) {
-		return matchAny((item) -> !condition.test(item))
-			.isEmpty();
+	default boolean allMatch(Predicate<T> condition) {
+		for (var item : this) {
+			if (!condition.test(item)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -194,6 +223,12 @@ public interface Collection<T> extends Iterable<T> {
 
 		return Optional.empty();
 	}
+
+	/**
+	 * Returns all items of this collection, which satisfy the specified
+	 * {@link Predicate}.
+	 */
+	Collection<T> matchAll(Predicate<T> condition);
 
 	/**
 	 * Returns distinct items in this collection.
@@ -287,15 +322,10 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this collection, which satisfy the specified {@link Predicate}.
-	 */
-	Collection<T> filter(Predicate<T> condition);
-
-	/**
 	 * Returns items of this collection, converted by the specified {@link Function}.
 	 * <p>
 	 * When the specified {@link Function} returns {@code null}, the converted value will
-	 * be ignored. Therefore, this method can be used to both filter and convert this
+	 * be ignored. Therefore, this method can be used to both match and convert this
 	 * collection in a single operation.
 	 */
 	<R> Collection<R> convert(Function<T, R> converter);

@@ -96,7 +96,19 @@ public class List<T> implements Sequence<T> {
 	}
 
 	@Override
-	public List<Integer> find(T item) {
+	public List<T> matchAll(Predicate<T> condition) {
+		final var matches = new MutableList<T>();
+		for (var item : this) {
+			if (condition.test(item)) {
+				matches.append(item);
+			}
+		}
+
+		return matches.toImmutable();
+	}
+
+	@Override
+	public List<Integer> findAll(T item) {
 		final var indexes = new MutableList<Integer>();
 		enumerate((index, item2) -> {
 			if (item2.equals(item)) {
@@ -108,7 +120,7 @@ public class List<T> implements Sequence<T> {
 	}
 
 	@Override
-	public Sequence<Integer> find(Sequence<T> items) {
+	public Sequence<Integer> findAll(Sequence<T> items) {
 		final var indexes = new MutableList<Integer>();
 		final var range = getIndexRange();
 
@@ -165,18 +177,6 @@ public class List<T> implements Sequence<T> {
 	}
 
 	@Override
-	public List<T> filter(Predicate<T> condition) {
-		final var filtered = new MutableList<T>();
-		for (var item : this) {
-			if (condition.test(item)) {
-				filtered.append(item);
-			}
-		}
-
-		return filtered.toImmutable();
-	}
-
-	@Override
 	public <R> List<R> convert(Function<T, R> converter) {
 		final var converted = new MutableList<R>();
 		for (var item : this) {
@@ -208,23 +208,9 @@ public class List<T> implements Sequence<T> {
 
 	@Override
 	public Iterator<T> iterator(int start) {
-		return new Iterator<>() {
-			private int index = start;
-
-			@Override
-			public boolean hasNext() {
-				return index < store.itemCount;
-			}
-
-			@Override
-			public T next() {
-				@SuppressWarnings("unchecked")
-				final var item = (T) store.items[index];
-				++index;
-
-				return item;
-			}
-		};
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) store.items;
+		return new ArrayIterator<>(items, start);
 	}
 
 	@Override

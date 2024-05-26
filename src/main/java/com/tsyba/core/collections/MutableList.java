@@ -332,6 +332,12 @@ public class MutableList<T> extends List<T> {
 	}
 
 	@Override
+	public MutableList<T> matchAll(Predicate<T> condition) {
+		final var matches = super.matchAll(condition);
+		return new MutableList<>(matches.store);
+	}
+
+	@Override
 	public MutableList<T> getDistinct() {
 		final var distinct = super.getDistinct();
 		return new MutableList<>(distinct);
@@ -371,18 +377,6 @@ public class MutableList<T> extends List<T> {
 	public MutableList<T> iterate(Consumer<T> operation) {
 		super.iterate(operation);
 		return this;
-	}
-
-//	@Override
-//	public MutableList<T> enumerate(BiConsumer<T, Integer> operation) {
-//		super.enumerate(operation);
-//		return this;
-//	}
-
-	@Override
-	public MutableList<T> filter(Predicate<T> condition) {
-		final var filtered = super.filter(condition);
-		return new MutableList<>(filtered.store);
 	}
 
 	@Override
