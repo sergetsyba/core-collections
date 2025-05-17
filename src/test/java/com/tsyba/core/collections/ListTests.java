@@ -415,13 +415,13 @@ public class ListTests {
 	class FindSequenceTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when sequence is present multiple times, returns its indexes;" +
+			"when argument sequence is present multiple times, returns its indexes;" +
 				"[r, e, Q, s, c, d, e, Q, q, e, Q, f]; [e, Q];" +
 				"[1, 6, 9]",
-			"when sequence is present once, returns its index;" +
+			"when argument sequence is present once, returns its index;" +
 				"[r, e, Q, s, c, d, e, Q, q, e, Q, f]; [e, Q, q];" +
 				"[6]",
-			"when sequence is absent, returns empty sequence;" +
+			"when argument sequence is absent, returns empty sequence;" +
 				"[r, e, Q, s, c, d, e, Q, q, e, Q, f]; [E, Q];" +
 				"[]",
 			"when argument sequence is larger, returns empty sequence;" +
@@ -464,12 +464,15 @@ public class ListTests {
 	class GetDistinctTests {
 		@DisplayName("\uD83C\uDF9F")
 		@Tests({
-			"when some items are duplicate, returns distinct items;" +
+			"when some items are duplicates, returns distinct items;" +
 				"[t, e, r, t, t, r, R, r];" +
 				"[r, R, t, e]",
-			"when all items are distinct, returns distinct items;" +
+			"when no items are duplicates, returns distinct items;" +
 				"[t, m, j, E, d, S, s];" +
 				"[j, d, s, t, m, E, S]",
+			"when all items are duplicates, returns list with a single distinct item;" +
+				"[g, g, g, g, g, g, g];" +
+				"[g]",
 			"when list is empty, returns empty list;" +
 				"[];" +
 				"[]"
