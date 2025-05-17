@@ -50,7 +50,7 @@ public class SequenceTests {
 			"when sequence is not empty, returns first item;" +
 				"[g, N, k, L, d, S];" +
 				"g",
-			"when sequence is empty, returns empty Optional;" +
+			"when sequence is empty, returns empty optional;" +
 				"[];" +
 				"null"
 		})
@@ -72,7 +72,7 @@ public class SequenceTests {
 			"when sequence is not empty, returns last item;" +
 				"[g, N, k, L, d, S];" +
 				"S",
-			"when sequence is empty, returns empty Optional;" +
+			"when sequence is empty, returns empty optional;" +
 				"[];" +
 				"null"
 		})
@@ -322,16 +322,16 @@ public class SequenceTests {
 	class FindFirstSequence {
 		@DisplayName("when sequence is not empty")
 		@Tests({
-			"when sequence is present, returns its index;" +
+			"when argument sequence is present, returns its index;" +
 				"[u, Y, k, L, m, n, F, s, d]; [L, m, n];" +
 				"3",
-			"when sequence is present multiple times, returns its first index;" +
+			"when argument sequence is present multiple times, returns its first index;" +
 				"[u, L, m, n, y, F, L, m, n, g, S]; [L, m, n];" +
 				"1",
-			"when sequence items present in difference order, returns empty optional;" +
+			"when argument sequence items are present in difference order, returns empty optional;" +
 				"[u, Y, k, L, m, n, F, s, d]; [m, L, n];" +
 				"null",
-			"when sequence is absent, returns empty optional;" +
+			"when argument sequence is absent, returns empty optional;" +
 				"[u, Y, k, L, m, n, F, s, d]; [L, m, N];" +
 				"null",
 			"when argument sequence is empty, returns first index;" +
