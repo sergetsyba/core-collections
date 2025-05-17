@@ -101,10 +101,8 @@ public class CollectionTests {
 				format("%s.getMin()", items));
 		}
 
-		@DisplayName("when items are not comparable")
-		@Tests({
-			"fails with UnsupportedOperationException"
-		})
+		@DisplayName("when items are not comparable, fails")
+		@Test
 		void testNotComparable() {
 			assertThrows(UnsupportedOperationException.class,
 				() -> {
@@ -157,10 +155,8 @@ public class CollectionTests {
 				format("%s.getMax()", items));
 		}
 
-		@DisplayName("when items are not comparable")
-		@Tests({
-			"fails with UnsupportedOperationException"
-		})
+		@DisplayName("when items are not comparable, fails")
+		@Test
 		void testNotComparable() {
 			assertThrows(UnsupportedOperationException.class,
 				() -> {
@@ -427,7 +423,7 @@ public class CollectionTests {
 				format("%s.sort()", items));
 		}
 
-		@DisplayName("when items are not comparable")
+		@DisplayName("when items are not comparable, fails")
 		@Test
 		void testSortNotComparable() {
 			Assertions.assertThrows(RuntimeException.class, () -> {
@@ -588,6 +584,7 @@ public class CollectionTests {
 	@DisplayName(".toArray()")
 	@Nested
 	class ToArrayTests {
+		@DisplayName("\uD83E\uDD84")
 		@Tests({
 			"when collection is not empty, returns items array;" +
 				"[T, b, 4, 0, O];" +
