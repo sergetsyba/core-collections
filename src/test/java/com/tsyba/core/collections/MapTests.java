@@ -1,18 +1,10 @@
 package com.tsyba.core.collections;
 
-import com.tsyba.core.collections.converter.StringArray;
-import com.tsyba.core.collections.converter.StringOptional;
+import com.tsyba.core.collections.converter.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -494,7 +486,7 @@ class MapTests {
 	@DisplayName(".anyMatches(BiPredicate<K, V>)")
 	@Nested
 	class AnyMatchesTests {
-		@DisplayName("when map is not empty")
+		@DisplayName("\uD83D\uDC82")
 		@Tests({
 			"when all entries match, returns true;" +
 				"[T:f, E:a, W:q, P:d];" +
@@ -505,22 +497,11 @@ class MapTests {
 			"when no entries match, returns false;" +
 				"[T:F, E:A, W:Q, P:D];" +
 				"false",
-		})
-		void testNotEmpty(@StringMap Map<String, String> entries, boolean expected) {
-			test(entries, expected);
-		}
-
-		@DisplayName("when map is empty")
-		@Tests({
-			"returns false;" +
+			"when map is empty, returns false;" +
 				"[];" +
 				"false"
 		})
-		void testEmpty(@StringMap Map<String, String> entries, boolean expected) {
-			test(entries, expected);
-		}
-
-		private void test(Map<String, String> entries, boolean expected) {
+		void test(@StringMap Map<String, String> entries, boolean expected) {
 			final var matches = entries.anyMatches((key, value) -> {
 				return value.toLowerCase()
 					.equals(value);
@@ -534,7 +515,7 @@ class MapTests {
 	@DisplayName(".noneMatches(BiPredicate<K, V>)")
 	@Nested
 	class NoneMatchesTests {
-		@DisplayName("when map is not empty")
+		@DisplayName("\uD83D\uDC60")
 		@Tests({
 			"when all entries match, returns false;" +
 				"[T:f, E:a, W:q, P:d];" +
@@ -544,23 +525,12 @@ class MapTests {
 				"false",
 			"when no entries match, returns true;" +
 				"[T:F, E:A, W:Q, P:D];" +
-				"true"
-		})
-		void testNotEmpty(@StringMap Map<String, String> entries, boolean expected) {
-			test(entries, expected);
-		}
-
-		@DisplayName("when map is empty")
-		@Tests({
-			"returns true;" +
+				"true",
+			"when map is empty, returns true;" +
 				"[];" +
 				"true"
 		})
-		void testEmpty(@StringMap Map<String, String> entries, boolean expected) {
-			test(entries, expected);
-		}
-
-		private void test(Map<String, String> entries, boolean expected) {
+		void test(@StringMap Map<String, String> entries, boolean expected) {
 			final var matches = entries.noneMatches((key, value) -> {
 				return value.toLowerCase()
 					.equals(value);
@@ -574,7 +544,7 @@ class MapTests {
 	@DisplayName(".allMatch(BiPredicate<K, V>)")
 	@Nested
 	class AllMatchTests {
-		@DisplayName("when map is not empty")
+		@DisplayName("\uD83C\uDFE3")
 		@Tests({
 			"when all entries match, returns true;" +
 				"[T:f, E:a, W:q, P:d];" +
@@ -584,23 +554,12 @@ class MapTests {
 				"false",
 			"when no entries match, returns false;" +
 				"[T:F, E:A, W:Q, P:D];" +
-				"false"
-		})
-		void testNotEmpty(@StringMap Map<String, String> entries, boolean expected) {
-			test(entries, expected);
-		}
-
-		@DisplayName("when map is empty")
-		@Tests({
-			"returns true;" +
+				"false",
+			"when map is empty, returns true;" +
 				"[];" +
 				"true"
 		})
-		void testEmpty(@StringMap Map<String, String> entries, boolean expected) {
-			test(entries, expected);
-		}
-
-		private void test(Map<String, String> entries, boolean expected) {
+		void test(@StringMap Map<String, String> entries, boolean expected) {
 			final var matches = entries.allMatch((key, value) -> {
 				return value.toLowerCase()
 					.equals(value);
@@ -615,32 +574,20 @@ class MapTests {
 	@Nested
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	class TestMatchAny {
-		@DisplayName("when map is not empty")
+		@DisplayName("\uD83C\uDFDE")
 		@Tests({
 			"when some entry matches, returns its value;" +
 				"[T:R, F:D, Q:p, g:c, E:W];" +
 				"p",
 			"when no entry matches, returns empty optional;" +
 				"[T:R, F:D, Q:P, g:C, E:W];" +
-				"null"
-		})
-		void testNotEmpty(@StringMap Map<String, String> entries,
-			@StringOptional Optional<String> expected) {
-			test(entries, expected);
-		}
-
-		@DisplayName("when map is empty")
-		@Tests({
-			"returns empty optional;" +
+				"null",
+			"when map is empty, returns empty optional;" +
 				"[];" +
 				"null"
 		})
-		void testEmpty(@StringMap Map<String, String> entries,
+		void test(@StringMap Map<String, String> entries,
 			@StringOptional Optional<String> expected) {
-			test(entries, expected);
-		}
-
-		private void test(Map<String, String> entries, Optional<String> expected) {
 			final var matches = entries.matchAny((key, value) -> {
 				return value.toLowerCase()
 					.equals(value);
@@ -676,7 +623,7 @@ class MapTests {
 	@DisplayName(".filter(BiPredicate<K, V>)")
 	@Nested
 	class FilterTests {
-		@DisplayName("when map is not empty")
+		@DisplayName("\uD83C\uDF69")
 		@Tests({
 			"when all entries match, returns all entries;" +
 				"[r:R, e:E, p:P, f:F];" +
@@ -686,25 +633,13 @@ class MapTests {
 				"[r:R, f:F]",
 			"when no entries match, returns empty map;" +
 				"[r:Q, e:c, p:L, f:D];" +
-				"[]"
-		})
-		void testNotEmpty(@StringMap Map<String, String> entries,
-			@StringMap Map<String, String> expected) {
-			test(entries, expected);
-		}
-
-		@DisplayName("when map is empty")
-		@Tests({
-			"returns empty map;" +
+				"[]",
+			"when map is empty, returns empty map;" +
 				"[];" +
 				"[]"
 		})
-		void testEmpty(@StringMap Map<String, String> entries,
+		void test(@StringMap Map<String, String> entries,
 			@StringMap Map<String, String> expected) {
-			test(entries, expected);
-		}
-
-		private void test(Map<String, String> entries, Map<String, String> expected) {
 			final var filtered = entries.filter((key, value) -> {
 				return value.toLowerCase()
 					.equals(key);
@@ -718,7 +653,7 @@ class MapTests {
 	@DisplayName(".convert(BiFunction<K, V, Entry<L, W>>)")
 	@Nested
 	class ConvertTests {
-		@DisplayName("when map is not empty")
+		@DisplayName("\uD83D\uDCF9")
 		@Tests({
 			"when all entries convert to not null, returns converted entries;" +
 				"[R:f, S:q, T:k, C:b, O:p];" +
@@ -741,24 +676,13 @@ class MapTests {
 			"when all entry values convert to null, returns empty map;" +
 				"[R:F, S:Q, T:K, C:B, O:P];" +
 				"[]",
-		})
-		void testNotEmpty(@StringMap Map<String, String> entries,
-			@StringMap Map<String, String> expected) {
-			test(entries, expected);
-		}
-
-		@DisplayName("when map is empty")
-		@Tests({
-			"returns empty map;" +
+			"when map is empty, returns empty map;" +
 				"[];" +
 				"[]"
 		})
-		void testEmpty(@StringMap Map<String, String> entries,
+		void test(@StringMap Map<String, String> entries,
 			@StringMap Map<String, String> expected) {
-			test(entries, expected);
-		}
 
-		private void test(Map<String, String> entries, Map<String, String> expected) {
 			final var converted = entries.convert((key1, value1) -> {
 				var key2 = key1.toLowerCase();
 				if (key1.equals(key2)) {
@@ -851,81 +775,5 @@ class MapTests {
 		final var string = entries.toString();
 		assertEquals(expected, string,
 			format("%s.toString()", entries));
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringMap.Converter.class)
-@interface StringMap {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Map> {
-		protected Converter() {
-			super(String.class, Map.class);
-		}
-
-		@Override
-		protected Map<String, String> convert(String s) throws ArgumentConversionException {
-			final var entries = new StringEntryArray.Converter()
-				.convert(s);
-
-			return new Map<>(entries);
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringEntryArray.Converter.class)
-@interface StringEntryArray {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Map.Entry[]> {
-		protected Converter() {
-			super(String.class, Map.Entry[].class);
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		protected Map.Entry<String, String>[] convert(String s) throws ArgumentConversionException {
-			return Arrays.stream(new StringArray.Converter()
-					.convert(s))
-				.filter(Objects::nonNull)
-				.map(this::parseEntry)
-				.toArray(Map.Entry[]::new);
-		}
-
-		private Map.Entry<String, String> parseEntry(String s) {
-			final var parts = s.split("\\s*:\\s*");
-			final var key = "null".equals(parts[0])
-				? null
-				: parts[0];
-			final var value = "null".equals(parts[1])
-				? null
-				: parts[1];
-
-			return new Map.Entry<>(key, value);
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringJavaMap.Converter.class)
-@interface StringJavaMap {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, java.util.Map> {
-		protected Converter() {
-			super(String.class, java.util.Map.class);
-		}
-
-		@Override
-		protected java.util.Map<String, String> convert(String s) throws ArgumentConversionException {
-			final var entries = new StringEntryArray.Converter()
-				.convert(s);
-
-			final var map = new HashMap<String, String>();
-			for (var entry : entries) {
-				map.put(entry.key, entry.value);
-			}
-
-			return map;
-		}
 	}
 }

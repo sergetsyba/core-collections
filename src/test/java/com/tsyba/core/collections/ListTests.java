@@ -1,14 +1,12 @@
 package com.tsyba.core.collections;
 
+import com.tsyba.core.collections.converter.IntList;
 import com.tsyba.core.collections.converter.StringArray;
+import com.tsyba.core.collections.converter.StringCollection;
+import com.tsyba.core.collections.converter.StringList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
 import static java.lang.String.format;
@@ -415,13 +413,13 @@ public class ListTests {
 	class FindSequenceTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when sequence is present multiple times, returns its indexes;" +
+			"when argument sequence is present multiple times, returns its indexes;" +
 				"[r, e, Q, s, c, d, e, Q, q, e, Q, f]; [e, Q];" +
 				"[1, 6, 9]",
-			"when sequence is present once, returns its index;" +
+			"when argument sequence is present once, returns its index;" +
 				"[r, e, Q, s, c, d, e, Q, q, e, Q, f]; [e, Q, q];" +
 				"[6]",
-			"when sequence is absent, returns empty sequence;" +
+			"when argument sequence is absent, returns empty sequence;" +
 				"[r, e, Q, s, c, d, e, Q, q, e, Q, f]; [E, Q];" +
 				"[]",
 			"when argument sequence is larger, returns empty sequence;" +
@@ -464,12 +462,15 @@ public class ListTests {
 	class GetDistinctTests {
 		@DisplayName("\uD83C\uDF9F")
 		@Tests({
-			"when some items are duplicate, returns distinct items;" +
+			"when some items are duplicates, returns distinct items;" +
 				"[t, e, r, t, t, r, R, r];" +
 				"[r, R, t, e]",
-			"when all items are distinct, returns distinct items;" +
+			"when no items are duplicates, returns distinct items;" +
 				"[t, m, j, E, d, S, s];" +
 				"[j, d, s, t, m, E, S]",
+			"when all items are duplicates, returns list with a single distinct item;" +
+				"[g, g, g, g, g, g, g];" +
+				"[g]",
 			"when list is empty, returns empty list;" +
 				"[];" +
 				"[]"
@@ -604,54 +605,6 @@ public class ListTests {
 			final var string = items.toString();
 			assertEquals(expected, string,
 				format("%s.toString()", items));
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringList.Converter.class)
-@interface StringList {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, List> {
-		protected Converter() {
-			super(String.class, List.class);
-		}
-
-		@Override
-		protected List<String> convert(String s) throws ArgumentConversionException {
-			if (s == null) {
-				return null;
-			} else {
-				final var items = new StringArray.Converter()
-					.convert(s);
-
-				return new List<>(items);
-			}
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(IntList.Converter.class)
-@interface IntList {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, List> {
-		protected Converter() {
-			super(String.class, List.class);
-		}
-
-		@Override
-		protected List<Integer> convert(String s) throws ArgumentConversionException {
-			if (s == null) {
-				return null;
-			} else {
-				final var converter = new StringArray.Converter();
-				final var items2 = Arrays.stream(converter.convert(s))
-					.map(Integer::parseInt)
-					.toArray(Integer[]::new);
-
-				return new List<>(items2);
-			}
 		}
 	}
 }

@@ -1,6 +1,8 @@
 package com.tsyba.core.collections;
 
 import com.tsyba.core.collections.converter.StringArray;
+import com.tsyba.core.collections.converter.StringCollection;
+import com.tsyba.core.collections.converter.StringSet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;

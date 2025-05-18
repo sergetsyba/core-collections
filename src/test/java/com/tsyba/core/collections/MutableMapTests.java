@@ -2,14 +2,12 @@ package com.tsyba.core.collections;
 
 
 import com.tsyba.core.collections.converter.StringArray;
+import com.tsyba.core.collections.converter.StringCollection;
+import com.tsyba.core.collections.converter.StringMap;
+import com.tsyba.core.collections.converter.StringMutableMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
 import static java.lang.String.format;
@@ -481,29 +479,10 @@ class MutableMapTests {
 		final var immutable = entries.toImmutable();
 		final var klass = immutable.getClass();
 
-		assertEquals(klass, Map.class,
+		assertEquals(Map.class, klass,
 			format("%s.toImmutable()", entries));
 		assertEquals(expected, entries,
 			format("%s.toImmutable()", entries));
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringMutableMap.Converter.class)
-@interface StringMutableMap {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, MutableMap> {
-		protected Converter() {
-			super(String.class, MutableMap.class);
-		}
-
-		@Override
-		protected MutableMap<String, String> convert(String s) throws ArgumentConversionException {
-			final var entries = new StringEntryArray.Converter()
-				.convert(s);
-
-			return new MutableMap<>(entries);
-		}
 	}
 }
 
