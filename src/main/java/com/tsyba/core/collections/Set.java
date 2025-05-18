@@ -272,7 +272,7 @@ public class Set<T> implements Collection<T> {
 
 	@Override
 	public String toString() {
-		return "[" + join(", ") + "]";
+		return "{" + join(", ") + "}";
 	}
 
 	@Override
