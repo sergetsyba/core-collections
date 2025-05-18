@@ -1,14 +1,12 @@
 package com.tsyba.core.collections;
 
 import com.tsyba.core.collections.converter.StringArray;
+import com.tsyba.core.collections.converter.StringList;
+import com.tsyba.core.collections.converter.StringPairSet;
+import com.tsyba.core.collections.converter.StringSet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
 import static java.lang.String.format;
@@ -529,46 +527,6 @@ public class SetTests {
 			final var string = items.toString();
 			assertEquals(expected, string,
 				format("%s.toString()", items));
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringSet.Converter.class)
-@interface StringSet {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Set> {
-		protected Converter() {
-			super(String.class, Set.class);
-		}
-
-		@Override
-		protected Set<String> convert(String s) throws ArgumentConversionException {
-			final var items = new StringArray.Converter()
-				.convert(s);
-
-			return new Set<>(items);
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringPairSet.Converter.class)
-@interface StringPairSet {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Set> {
-		protected Converter() {
-			super(String.class, Set.class);
-		}
-
-		@Override
-		protected Set<Pair<String, String>> convert(String s) throws ArgumentConversionException {
-			return new StringSet.Converter()
-				.convert(s)
-				.convert((item) -> {
-					final var items = item.split(":");
-					return new Pair<>(items[0], items[1]);
-				});
 		}
 	}
 }

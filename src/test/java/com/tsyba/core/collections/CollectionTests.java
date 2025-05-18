@@ -1,20 +1,12 @@
 package com.tsyba.core.collections;
 
-import com.tsyba.core.collections.converter.StringArray;
-import com.tsyba.core.collections.converter.StringOptional;
+import com.tsyba.core.collections.converter.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
@@ -600,76 +592,6 @@ public class CollectionTests {
 			assertArrayEquals(expected, array,
 				format("%s.toArray()", items));
 		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(StringCollection.Converter.class)
-@interface StringCollection {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Collection> {
-		protected Converter() {
-			super(String.class, Collection.class);
-		}
-
-		@Override
-		protected Collection<String> convert(String s) throws ArgumentConversionException {
-			final var items = new StringArray.Converter()
-				.convert(s);
-
-			return new Collection<>() {
-				@Override
-				public Collection<String> getDistinct() {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public Collection<String> matchAll(Predicate<String> condition) {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public <R> Collection<R> convert(Function<String, R> converter) {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public Iterator<String> iterator() {
-					return new ArrayIterator<>(items);
-				}
-			};
-		}
-	}
-}
-
-class NonComparableCollection implements Collection<Predicate<?>> {
-	private final Predicate<?>[] items;
-
-	public NonComparableCollection() {
-		this.items = new Predicate[]{
-			(item) -> ((String) item).isBlank(),
-			(item) -> ((String) item).isEmpty()
-		};
-	}
-
-	@Override
-	public Collection<Predicate<?>> matchAll(Predicate<Predicate<?>> condition) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Collection<Predicate<?>> getDistinct() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public <R> Collection<R> convert(Function<Predicate<?>, R> converter) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Iterator<Predicate<?>> iterator() {
-		return new ArrayIterator<>(this.items);
 	}
 }
 
