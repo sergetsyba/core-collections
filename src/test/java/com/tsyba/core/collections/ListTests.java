@@ -1,9 +1,6 @@
 package com.tsyba.core.collections;
 
-import com.tsyba.core.collections.converter.IntList;
-import com.tsyba.core.collections.converter.StringArray;
-import com.tsyba.core.collections.converter.StringCollection;
-import com.tsyba.core.collections.converter.StringList;
+import com.tsyba.core.collections.converter.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 
@@ -56,6 +53,7 @@ public class ListTests {
 			@StringList List<String> expected) {
 
 			final var created = new List<>(items);
+
 			assertEquals(expected, created,
 				format("new List<>(%s)", items));
 		}
@@ -82,63 +80,60 @@ public class ListTests {
 
 	@DisplayName(".get(int)")
 	@Nested
-	class GetAtIndexTests {
+	class GetTests {
 		@DisplayName("when list is not empty")
 		@Tests({
 			"when index is before valid range start, fails;" +
 				"[h, s, e, q, s, A]; -1;" +
-				"null",
+				"null; -1 ∉ [0, 6)",
 			"when index is at valid range start, returns first item;" +
 				"[h, s, e, q, s, A]; 0;" +
-				"h",
+				"h; null",
 			"when index is within valid range, returns item at index;" +
 				"[h, s, e, q, s, A]; 4;" +
-				"s",
+				"s; null",
 			"when index is one before valid range end, returns last item;" +
 				"[h, s, e, q, s, A]; 5;" +
-				"A",
+				"A; null",
 			"when index is at valid range end, fails;" +
 				"[h, s, e, q, s, A]; 6;" +
-				"null",
+				"null; 6 ∉ [0, 6)",
 			"when index is after valid range end, fails;" +
 				"[h, s, e, q, s, A]; 8;" +
-				"null"
+				"null; 8 ∉ [0, 6)"
 		})
-		void testNotEmpty(@StringList List<String> items, int index, String expected) {
-			test(items, index, expected);
+		void testListNotEmpty(@StringList List<String> items, int index,
+			String expected1, @IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
 		@DisplayName("when list is empty")
 		@Tests({
 			"when index is before valid range start, fails;" +
 				"[]; -1;" +
-				"null",
+				"null; -1 ∉ [0, 0)",
 			"when index is at valid range start, fails;" +
 				"[]; 0;" +
-				"null",
+				"null; 0 ∉ [0, 0)",
 			"when index is after valid range end, fails;" +
 				"[]; 1;" +
-				"null"
+				"null; 1 ∉ [0, 0)"
 		})
-		void testEmpty(@StringList List<String> items, int index, String expected) {
-			test(items, index, expected);
+		void testListEmpty(@StringList List<String> items, int index,
+			String expected1, @IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
-		private void test(List<String> items, int index, String expected) {
+		private void test(List<String> items, int index, String expected1,
+			Exception expected2) {
+
 			try {
 				final var item = items.get(index);
-				assertEquals(expected, item,
+				assertEquals(expected1, item,
 					format("%s.get(%d)", items, index));
-			} catch (IndexNotInRangeException exception) {
-				if (expected == null) {
-					final var expected2 = new IndexNotInRangeException(index,
-						items.getIndexRange());
-
-					assertEquals(expected2, exception,
-						format("%s.get(%d)", items, index));
-				} else {
-					throw exception;
-				}
+			} catch (Exception exception) {
+				assertEquals(expected2, exception,
+					format("%s.get(%d)", items, index));
 			}
 		}
 	}
@@ -150,60 +145,57 @@ public class ListTests {
 		@Tests({
 			"when index is before valid range start, fails;" +
 				"[g, r, e, Q, e, s, A, c]; -4;" +
-				"null",
+				"null; -4 ∉ [0, 8)",
 			"when index is at valid range start, returns empty list;" +
 				"[g, r, e, Q, e, s, A, c]; 0;" +
-				"[]",
+				"[]; null",
 			"when index is within valid range, returns prefix;" +
 				"[g, r, e, Q, e, s, A, c]; 4;" +
-				"[g, r, e, Q]",
+				"[g, r, e, Q]; null",
 			"when index is one before valid range end, returns prefix;" +
 				"[g, r, e, Q, e, s, A, c]; 7;" +
-				"[g, r, e, Q, e, s, A]",
+				"[g, r, e, Q, e, s, A]; null",
 			"when index is at valid range end, fails;" +
 				"[g, r, e, Q, e, s, A, c]; 8;" +
-				"null",
+				"null; 8 ∉ [0, 8)",
 			"when index is after valid range end, fails;" +
 				"[g, r, e, Q, e, s, A, c]; 11;" +
-				"null"
+				"null; 11 ∉ [0, 8)"
 		})
-		void testNotEmpty(@StringList List<String> items, int index,
-			@StringList List<String> expected) {
-			test(items, index, expected);
+		void testListNotEmpty(@StringList List<String> items, int index,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
 		@DisplayName("when list is empty")
 		@Tests({
 			"when index is before valid range start, fails;" +
 				"[]; -1;" +
-				"null",
+				"null; -1 ∉ [0, 0)",
 			"when index is at valid range start, fails;" +
 				"[]; 0;" +
-				"null",
+				"null; 0 ∉ [0, 0)",
 			"when index is after valid range end, fails;" +
 				"[]; 1;" +
-				"null"
+				"null; 1 ∉ [0, 0)"
 		})
-		void testEmpty(@StringList List<String> items, int index,
-			@StringList List<String> expected) {
-			test(items, index, expected);
+		void testListEmpty(@StringList List<String> items, int index,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
-		private void test(List<String> items, int index, List<String> expected) {
+		private void test(List<String> items, int index, List<String> expected1,
+			Exception expected2) {
+
 			try {
 				final var prefix = items.getPrefix(index);
-				assertEquals(expected, prefix,
+				assertEquals(expected1, prefix,
 					format("%s.getPrefix(%d)", items, index));
-			} catch (IndexNotInRangeException exception) {
-				if (expected == null) {
-					final var expected2 = new IndexNotInRangeException(index,
-						items.getIndexRange());
-
-					assertEquals(expected2, exception,
-						format("%s.getPrefix(%d)", items, index));
-				} else {
-					throw exception;
-				}
+			} catch (Exception exception) {
+				assertEquals(expected2, exception,
+					format("%s.getPrefix(%d)", items, index));
 			}
 		}
 	}
@@ -215,122 +207,116 @@ public class ListTests {
 		@Tests({
 			"when index is before valid range start, fails;" +
 				"[g, r, e, Q, e, s, A, c]; -4;" +
-				"null",
+				"null; -4 ∉ [0, 8)",
 			"when index is at valid range start, returns all items;" +
 				"[g, r, e, Q, e, s, A, c]; 0;" +
-				"[g, r, e, Q, e, s, A, c]",
+				"[g, r, e, Q, e, s, A, c]; null",
 			"when index is within valid range, returns suffix;" +
 				"[g, r, e, Q, e, s, A, c]; 4;" +
-				"[e, s, A, c]",
+				"[e, s, A, c]; null",
 			"when index is one before valid range end, returns suffix;" +
 				"[g, r, e, Q, e, s, A, c]; 7;" +
-				"[c]",
+				"[c]; null",
 			"when index is at valid range end, fails;" +
 				"[g, r, e, Q, e, s, A, c]; 8;" +
-				"null",
+				"null; 8 ∉ [0, 8)",
 			"when index is after valid range end, fails;" +
 				"[g, r, e, Q, e, s, A, c]; 11;" +
-				"null"
+				"null; 11 ∉ [0, 8)"
 		})
-		void testNotEmpty(@StringList List<String> items, int index,
-			@StringList List<String> expected) {
-			test(items, index, expected);
+		void testListNotEmpty(@StringList List<String> items, int index,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
 		@DisplayName("when list is empty")
 		@Tests({
 			"when index is before valid range start, fails;" +
 				"[]; -1;" +
-				"null",
+				"null; -1 ∉ [0, 0)",
 			"when index is at valid range start, fails;" +
 				"[]; 0;" +
-				"null",
+				"null; 0 ∉ [0, 0)",
 			"when index is after valid range end, fails;" +
 				"[]; 1;" +
-				"null"
+				"null; 1 ∉ [0, 0)"
 		})
-		void testEmpty(@StringList List<String> items, int index,
-			@StringList List<String> expected) {
-			test(items, index, expected);
+		void testListEmpty(@StringList List<String> items, int index,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
 		}
 
-		private void test(List<String> items, int index, List<String> expected) {
+		private void test(List<String> items, int index, List<String> expected1,
+			Exception expected2) {
+
 			try {
 				final var prefix = items.getSuffix(index);
-				assertEquals(expected, prefix,
+				assertEquals(expected1, prefix,
 					format("%s.getSuffix(%d)", items, index));
 			} catch (IndexNotInRangeException exception) {
-				if (expected == null) {
-					final var expected2 = new IndexNotInRangeException(index,
-						items.getIndexRange());
-
-					assertEquals(expected2, exception,
-						format("%s.getSuffix(%d)", items, index));
-				} else {
-					throw exception;
-				}
+				assertEquals(expected2, exception,
+					format("%s.getSuffix(%d)", items, index));
 			}
 		}
 	}
 
 	@DisplayName(".get(IndexRange)")
 	@Nested
-	class GetAtIndexRangeTests {
+	class GetWithIndexRangeTests {
 		@DisplayName("when list is not empty")
 		@Tests({
 			"when range starts at valid range start, returns items in range;" +
 				"[f, y, R, e, l, k, g, S]; [0, 4);" +
-				"[f, y, R, e]",
+				"[f, y, R, e]; null",
 			"when range is within valid range, returns items in range;" +
 				"[f, y, R, e, l, k, g, S]; [2, 6);" +
-				"[R, e, l, k]",
+				"[R, e, l, k]; null",
 			"when range ends at valid range end, returns items in range;" +
 				"[f, y, R, e, l, k, g, S]; [6, 8);" +
-				"[g, S]",
+				"[g, S]; null",
 			"when range equals valid range, returns all items;" +
 				"[f, y, R, e, l, k, g, S]; [0, 8);" +
-				"[f, y, R, e, l, k, g, S];",
+				"[f, y, R, e, l, k, g, S]; null",
 			"when range ends after valid range end, fails;" +
 				"[f, y, R, e, l, k, g, S]; [6, 9);" +
-				"null",
+				"null; [6, 9) ⊈ [0, 8)",
 			"when range is empty, returns empty list;" +
 				"[f, y, R, e, l, k, g, S]; [0, 0);" +
-				"[]"
+				"[]; null"
 		})
-		void testNotEmpty(@StringList List<String> items, @IntRange IndexRange range,
-			@StringList List<String> expected) {
-			test(items, range, expected);
+		void testListNotEmpty(@StringList List<String> items, @IntRange IndexRange range,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(items, range, expected1, expected2);
 		}
 
 		@DisplayName("when list is empty")
 		@Tests({
 			"when range is not empty, fails;" +
 				"[]; [0, 1);" +
-				"null",
+				"null; [0, 1) ⊈ [0, 0)",
 			"when range is empty, returns empty list;" +
 				"[]; [0, 0);" +
-				"[]"
+				"[]; null"
 		})
-		void testEmpty(@StringList List<String> items, @IntRange IndexRange range,
-			@StringList List<String> expected) {
-			test(items, range, expected);
+		void testListEmpty(@StringList List<String> items, @IntRange IndexRange range,
+			@StringList List<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(items, range, expected1, expected2);
 		}
 
-		private void test(List<String> items, IndexRange range, List<String> expected) {
+		private void test(List<String> items, IndexRange range, List<String> expected1,
+			Exception expected2) {
+
 			try {
 				final var returned = items.get(range);
-				assertEquals(expected, returned,
+				assertEquals(expected1, returned,
 					format("%s.get(%s)", items, range));
 			} catch (Exception exception) {
-				if (expected == null) {
-					final var expected2 = new IndexRangeNotInRangeException(range,
-						items.getIndexRange());
-
-					assertEquals(expected2, exception,
-						format("%s.get(%s)", items, range));
-				} else {
-					throw exception;
-				}
+				assertEquals(expected2, exception,
+					format("%s.get(%s)", items, range));
 			}
 		}
 	}
@@ -382,7 +368,7 @@ public class ListTests {
 				"[g, R, s, R, s, a, v, R, f]; null;" +
 				"[]"
 		})
-		void testNotEmpty(@StringList List<String> items, String item,
+		void testListNotEmpty(@StringList List<String> items, String item,
 			@IntList List<Integer> expected) {
 			test(items, item, expected);
 		}
@@ -396,7 +382,7 @@ public class ListTests {
 				"[]; null;" +
 				"[]"
 		})
-		void testEmpty(@StringList List<String> items, String item,
+		void testListEmpty(@StringList List<String> items, String item,
 			@IntList List<Integer> expected) {
 			test(items, item, expected);
 		}
@@ -410,7 +396,7 @@ public class ListTests {
 
 	@DisplayName(".findAll(Sequence<T>)")
 	@Nested
-	class FindSequenceTests {
+	class FindWithSequenceTests {
 		@DisplayName("when list is not empty")
 		@Tests({
 			"when argument sequence is present multiple times, returns its indexes;" +
@@ -429,7 +415,7 @@ public class ListTests {
 				"[r, e, Q, s, c, d, e, Q, q, e, Q, f]; [];" +
 				"[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
 		})
-		void testNotEmpty(@StringList List<String> items1,
+		void testListNotEmpty(@StringList List<String> items1,
 			@StringList List<String> items2, @IntList List<Integer> expected) {
 			test(items1, items2, expected);
 		}
@@ -443,7 +429,7 @@ public class ListTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringList List<String> items1,
+		void testListEmpty(@StringList List<String> items1,
 			@StringList List<String> items2, @IntList List<Integer> expected) {
 			test(items1, items2, expected);
 		}
@@ -572,7 +558,7 @@ public class ListTests {
 
 	@DisplayName(".toArray(Class<? extends T[]>)")
 	@Nested
-	class ToArrayClassTests {
+	class ToArrayWithClassTests {
 		@DisplayName("\uD83C\uDF68")
 		@Tests({
 			"when list its not empty, returns items array;" +
