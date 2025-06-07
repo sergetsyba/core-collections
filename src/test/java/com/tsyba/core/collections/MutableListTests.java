@@ -48,7 +48,7 @@ class MutableListTests {
 	class NewWithListTests {
 		@DisplayName("\uD83E\uDD12")
 		@Tests({
-			"when argument list is not empty, creates its copy;" +
+			"when argument list is not empty, creates list with all items;" +
 				"[p, g, F, P, F];" +
 				"[p, g, F, P, F]",
 			"when argument list is empty, creates empty list;" +
@@ -72,49 +72,56 @@ class MutableListTests {
 		@DisplayName("when list is not empty")
 		@Nested
 		class NotEmptyListTests {
-			@DisplayName("when index is within valid range")
+			@DisplayName("when item is not null")
 			@Tests({
-				"when argument item is not null, replaces item at index;" +
-					"[g, E, x, s]; 2; O;" +
-					"[g, E, O, s]; null",
-				"when argument item is null, does nothing;" +
-					"[g, E, x, s]; 2; null;" +
-					"[g, E, x, s]; null"
-			})
-			void testIndexWithinValidRange(@StringMutableList MutableList<String> items,
-				int index, String item,
-				@StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items, index, item, expected1, expected2);
-			}
-
-
-			@DisplayName("when index is before valid range")
-			@Tests({
-				"when argument item is not null, fails;" +
+				"when index is before valid range, fails;" +
 					"[m, f, E, s, a]; -2; O;" +
 					"null; -2 ∉ [0, 5)",
-				"when argument item is null, fails;" +
-					"[i, F, E, s, a, g]; -6; null;" +
-					"null; -6 ∉ [0, 6)"
+				"when index is 0, replaces first item;" +
+					"[g, R, s, a, W]; 0; P;" +
+					"[P, R, s, a, W]; null",
+				"when index is within valid range, replaces item at index;" +
+					"[g, E, x, s]; 2; O;" +
+					"[g, E, O, s]; null",
+				"when index is last valid index, replaces last item;" +
+					"[y, T, r, s, a, A]; 5; g;" +
+					"[y, T, r, s, a, g]; null",
+				"when index is at valid range end, fails;" +
+					"[n, G, s]; 3; T;" +
+					"null; 3 ∉ [0, 3)",
+				"when index is after valid range, fails;" +
+					"[m, M, s, n, a]; 7; B;" +
+					"null; 7 ∉ [0, 5)"
 			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items,
+			void testItemNotNull(@StringMutableList MutableList<String> items,
 				int index, String item,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items, index, item, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when item is null")
 			@Tests({
-				"when argument item is not null, fails;" +
-					"[m, M, s, n, a]; 7; null;" +
-					"null; 7 ∉ [0, 5)",
-				"when argument item is null, fails;" +
+				"when index is before valid range, fails;" +
+					"[i, F, E, s, a, g]; -6; null;" +
+					"null; -6 ∉ [0, 6)",
+				"when index is 0, does nothing;" +
+					"[g, R, s]; 0; null;" +
+					"[g, R, s]; null",
+				"when index is within valid range, does nothing;" +
+					"[g, E, x, s]; 2; null;" +
+					"[g, E, x, s]; null",
+				"when index is last valid index, does nothing;" +
+					"[g, r, A, s, A]; 4; null;" +
+					"[g, r, A, s, A]; null",
+				"when index is at valid range end, fails;" +
+					"[g, V]; 2; null;" +
+					"null; 2 ∉ [0, 2)",
+				"when index is after valid range, fails;" +
 					"[k, f]; 3; null;" +
 					"null; 3 ∉ [0, 2)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items,
+			void testItemNull(@StringMutableList MutableList<String> items,
 				int index, String item,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -125,32 +132,38 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		@Nested
 		class EmptyListTests {
-			@DisplayName("when index is before valid range")
+			@DisplayName("when item is not null")
 			@Tests({
-				"when argument item is not null, fails;" +
-					"[]; -2; I;" +
+				"when index is before valid range, fails;" +
+					"[]; -2; O;" +
 					"null; -2 ∉ [0, 0)",
-				"when argument item is null, fails;" +
-					"[]; -1; null;" +
-					"null; -1 ∉ [0, 0)"
+				"when index is 0, fails;" +
+					"[]; 0; P;" +
+					"null; 0 ∉ [0, 0)",
+				"when index is after valid range, fails;" +
+					"[]; 1; f;" +
+					"null; 1 ∉ [0, 0)"
 			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items,
+			void testItemNotNull(@StringMutableList MutableList<String> items,
 				int index, String item,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items, index, item, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when item is null")
 			@Tests({
-				"when argument item is not null, fails;" +
-					"[]; 0; s;" +
+				"when index is before valid range, fails;" +
+					"[]; -1; null;" +
+					"null; -1 ∉ [0, 0)",
+				"when index is 0, fails;" +
+					"[]; 0; null;" +
 					"null; 0 ∉ [0, 0)",
-				"when argument item is null, fails;" +
-					"[]; 3; null;" +
-					"null; 3 ∉ [0, 0)"
+				"when index is after valid range, fails;" +
+					"[]; 4; null;" +
+					"null; 4 ∉ [0, 0)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items,
+			void testItemNull(@StringMutableList MutableList<String> items,
 				int index, String item,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -375,7 +388,7 @@ class MutableListTests {
 			"when all argument items are null, does nothing;" +
 				"[f, E, Q]; [null, null, null];" +
 				"[f, E, Q]",
-			"when argument array is empty, does nnothing;" +
+			"when argument array is empty, does nothing;" +
 				"[b, R, O]; [];" +
 				"[b, R, O]"
 		})
@@ -396,7 +409,7 @@ class MutableListTests {
 			"when all argument items are null, does nothing;" +
 				"[]; [null, null, null];" +
 				"[]",
-			"when argument array is empty, does nnothing;" +
+			"when argument array is empty, does nothing;" +
 				"[]; [];" +
 				"[]"
 		})
@@ -469,46 +482,55 @@ class MutableListTests {
 		@DisplayName("when list is not empty")
 		@Nested
 		class NotEmptyListTests {
-			@DisplayName("when index is before valid range")
+			@DisplayName("when item is not null")
 			@Tests({
-				"when argument item is not null, fails;" +
+				"when index is before valid range, fails;" +
 					"[r, e, q, P, L, a]; -4; u;" +
 					"null; -4 ∉ [0, 6)",
-				"when argument item is null, fails;" +
-					"[r, P]; -2; null;" +
-					"null; -2 ∉ [0, 2)",
-			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items,
-				int index, String item, @StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items, index, item, expected1, expected2);
-			}
-
-			@DisplayName("when index is within valid range")
-			@Tests({
-				"when argument item is not null, inserts item;" +
+				"when index is 0, prepends item;" +
+					"[g, R, s]; 0; L;" +
+					"[L, g, R, s]; null",
+				"when index is within valid range, inserts item at index;" +
 					"[g, I, K, s, A]; 2; u;" +
 					"[g, I, u, K, s, A]; null",
-				"when argument item is null, does nothing;" +
-					"[g, I, K, s, A]; 2; null;" +
-					"[g, I, K, s, A]; null"
+				"when index is last valid index, inserts item at index;" +
+					"[g, f, s, J, H]; 4; K;" +
+					"[g, f, s, J, K, H]; null",
+				"when index is at valid range end, fails;" +
+					"[b, G, h, n]; 4; N;" +
+					"null; 4 ∉ [0, 4)",
+				"when index is after valid range end, fails;" +
+					"[e, f, Q, s, O, l]; 8; u;" +
+					"null; 8 ∉ [0, 6)"
 			})
-			void testIndexWithinValidRange(@StringMutableList MutableList<String> items,
+			void testItemNotNull(@StringMutableList MutableList<String> items,
 				int index, String item, @StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items, index, item, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when item is null")
 			@Tests({
-				"when argument item is not null, fails;" +
-					"[e, f, Q, s, O, l]; 8; u;" +
-					"null; 8 ∉ [0, 6)",
-				"when argument item is null, fails;" +
+				"when index is before valid range, fails;" +
+					"[r, P]; -2; null;" +
+					"null; -2 ∉ [0, 2)",
+				"when index is 0, does nothing;" +
+					"[p, K, T, s]; 0; null;" +
+					"[p, K, T, s]; null",
+				"when index is within valid range, does nothing;" +
+					"[g, I, K, s, A]; 2; null;" +
+					"[g, I, K, s, A]; null",
+				"when index is last valid index, does nothing;" +
+					"[n, M, l, L, L]; 4; null;" +
+					"[n, M, l, L, L]; null",
+				"when index is at valid range end, fails;" +
+					"[b, F]; 2; null;" +
+					"null; 2 ∉ [0, 2)",
+				"when index is after valid range end, fails;" +
 					"[j, s, Q, s]; 10; null;" +
 					"null; 10 ∉ [0, 4)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items,
+			void testItemNull(@StringMutableList MutableList<String> items,
 				int index, String item, @StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items, index, item, expected1, expected2);
@@ -518,31 +540,37 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		@Nested
 		class EmptyListTests {
-			@DisplayName("when index is before valid range")
+			@DisplayName("when item is not null")
 			@Tests({
-				"when argument item is not null, fails;" +
-					"[]; -1; u;" +
-					"null; -1 ∉ [0, 0)",
-				"when argument item is null, fails;" +
-					"[]; -3; null;" +
-					"null; -3 ∉ [0, 0)",
+				"when index is before valid range, fails;" +
+					"[]; -4; u;" +
+					"null; -4 ∉ [0, 0)",
+				"when index is 0, fails;" +
+					"[]; 0; L;" +
+					"null; 0 ∉ [0, 0)",
+				"when index is after valid range end, fails;" +
+					"[]; 8; u;" +
+					"null; 8 ∉ [0, 0)"
 			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items,
+			void testItemNotNull(@StringMutableList MutableList<String> items,
 				int index, String item, @StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items, index, item, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when item is null")
 			@Tests({
-				"when argument item is not null, fails;" +
-					"[]; 2; u;" +
-					"null; 2 ∉ [0, 0)",
-				"when argument item is null, fails;" +
+				"when index is before valid range, fails;" +
+					"[]; -2; null;" +
+					"null; -2 ∉ [0, 0)",
+				"when index is 0, fails;" +
 					"[]; 0; null;" +
-					"null; 0 ∉ [0, 0)"
+					"null; 0 ∉ [0, 0)",
+				"when index is after valid range end, fails;" +
+					"[]; 10; null;" +
+					"null; 10 ∉ [0, 0)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items,
+			void testItemNull(@StringMutableList MutableList<String> items,
 				int index, String item, @StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items, index, item, expected1, expected2);
@@ -572,69 +600,112 @@ class MutableListTests {
 		@DisplayName("when list is not empty")
 		@Nested
 		class NotEmptyListTests {
-			@DisplayName("when index is before valid range")
+			@DisplayName("when no argument items are null")
 			@Tests({
-				"when no argument items are null, fails;" +
+				"when index is before valid range, fails;" +
 					"[g, U, s, A]; -5; [b, E];" +
 					"null; -5 ∉ [0, 4)",
-				"when some argument items are null, fails;" +
-					"[b, R, s]; -2; [null, b, null, s, W];" +
-					"null; -2 ∉ [0, 3)",
-				"when all argument items are null, fails;" +
-					"[m, I]; -1; [null, null, null, null];" +
-					"null; -1 ∉ [0, 2)",
-				"when argument array is empty, fails;" +
-					"[m, E, s, a, Q]; -4; [];" +
-					"null; -4 ∉ [0, 5)",
-			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items1,
-				int index, @StringArray String[] items2,
-				@StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items1, index, items2, expected1, expected2);
-			}
-
-			@DisplayName("when index is within valid range")
-			@Tests({
-				"when no argument items are null, inserts all items;" +
-					"[v, F, G, h]; 2; [F, F];" +
-					"[v, F, F, F, G, h]; null",
-				"when some argument items are null, inserts non-null items;" +
-					"[b, a, s, R]; 2; [F, null, null, D];" +
-					"[b, a, F, D, s, R]; null",
-				"when all argument items are null, does nothing;" +
-					"[b, a, s, R]; 2; [null, null, null];" +
-					"[b, a, s, R]; null",
-				"when index is 0, prepends items;" +
+				"when index is 0, prepends all items;" +
 					"[b, a, s, R]; 0; [F, F];" +
 					"[F, F, b, a, s, R]; null",
-				"when argument array is empty, does nothing;" +
-					"[r, E, a, s]; 2; [];" +
-					"[r, E, a, s]; null"
+				"when index is within valid range, inserts all items at index;" +
+					"[v, F, G, h]; 2; [F, F];" +
+					"[v, F, F, F, G, h]; null",
+				"when index is last valid index, inserts all items at index;" +
+					"[g, R, t, y, K]; 4; [g];" +
+					"[g, R, t, y, g, K]; null",
+				"when index is at valid range end, fails;" +
+					"[m, e, q, A, s]; 5; [o, s, a];" +
+					"null; 5 ∉ [0, 5)",
+				"when index is after valid range, fails;" +
+					"[g, R, K]; 5; [o, g, b, s];" +
+					"null; 5 ∉ [0, 3)"
 			})
-			void testIndexWithinValidRange(@StringMutableList MutableList<String> items1,
+			void testNoItemsNull(@StringMutableList MutableList<String> items1,
 				int index, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, index, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when some argument items are null")
 			@Tests({
-				"when no argument items are null, fails;" +
-					"[m, e, q, A, s]; 5; [o, s, a];" +
-					"null; 5 ∉ [0, 5)",
-				"when some argument items are null, fails;" +
+				"when index is before valid range, fails;" +
+					"[b, R, s]; -2; [null, b, null, s, W];" +
+					"null; -2 ∉ [0, 3)",
+				"when index is 0, prepends non-null items;" +
+					"[g, R, l, K, m]; 0; [k, null, K, null, null];" +
+					"[k, K, g, R, l, K, m]; null",
+				"when index is within valid range, inserts non-null items at index;" +
+					"[b, a, s, R]; 2; [F, null, null, D];" +
+					"[b, a, F, D, s, R]; null",
+				"when index is last valid index, inserts non-null items at index;" +
+					"[b, N, m]; 2; [k, null, O, g];" +
+					"[b, N, k, O, g, m]; null",
+				"when index is at valid range end, fails;" +
+					"[o]; 1; [null, K, null];" +
+					"null; 1 ∉ [0, 1)",
+				"when index is after valid range, fails;" +
 					"[o, E]; 6; [null, null, w, Q];" +
-					"null; 6 ∉ [0, 2)",
-				"when all argument items are null, fails;" +
-					"[i, s, a, Q]; 12; [null, null];" +
-					"null; 12 ∉ [0, 4)",
-				"when argument array is empty, fails;" +
-					"[o, g, R, e, s, N]; 9; [];" +
-					"null; 9 ∉ [0, 6)",
+					"null; 6 ∉ [0, 2)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items1,
+			void testSomeItemsNull(@StringMutableList MutableList<String> items1,
+				int index, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, index, items2, expected1, expected2);
+			}
+
+			@DisplayName("when all argument items are null")
+			@Tests({
+				"when index is before valid range, fails;" +
+					"[m, I]; -1; [null, null, null, null];" +
+					"null; -1 ∉ [0, 2)",
+				"when index is 0, does nothing;" +
+					"[r, E, t, g]; 0; [null, null];" +
+					"[r, E, t, g]; null",
+				"when index is within valid range, does nothing;" +
+					"[b, a, s, R]; 2; [null, null, null];" +
+					"[b, a, s, R]; null",
+				"when index is last valid index, does nothing;" +
+					"[n, m]; 1; [null];" +
+					"[n, m]; null",
+				"when index is at valid range end, fails;" +
+					"[m, U, s, F, s]; 5; [null, null, null, null];" +
+					"null; 5 ∉ [0, 5)",
+				"when index is after valid range, fails;" +
+					"[i, s, a, Q]; 12; [null, null];" +
+					"null; 12 ∉ [0, 4)"
+			})
+			void testAllItemsNull(@StringMutableList MutableList<String> items1,
+				int index, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, index, items2, expected1, expected2);
+			}
+
+			@DisplayName("when argument array is empty")
+			@Tests({
+				"when index is before valid range, fails;" +
+					"[m, E, s, a, Q]; -4; [];" +
+					"null; -4 ∉ [0, 5)",
+				"when index is 0, does nothing;" +
+					"[j, N, m, J, o]; 0; [];" +
+					"[j, N, m, J, o]; null",
+				"when index is within valid range, does nothing;" +
+					"[r, E, a, s]; 2; [];" +
+					"[r, E, a, s]; null",
+				"when index is last valid index, does nothing;" +
+					"[n, B, e, r]; 3; [];" +
+					"[n, B, e, r]; null",
+				"when index is at valid range end, fails;" +
+					"[b, f]; 2; [];" +
+					"null; 2 ∉ [0, 2)",
+				"when index is after valid range, fails;" +
+					"[o, g, R, e, s, N]; 9; [];" +
+					"null; 9 ∉ [0, 6)"
+			})
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				int index, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -645,44 +716,76 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		@Nested
 		class EmptyListTests {
-			@DisplayName("when index is before valid range")
+			@DisplayName("when no argument items are null")
 			@Tests({
-				"when no argument items are null, fails;" +
-					"[]; -1; [F, D];" +
-					"null; -1 ∉ [0, 0)",
-				"when some argument items are null, fails;" +
-					"[]; -3; [null, s, d, null];" +
-					"null; -3 ∉ [0, 0)",
-				"when all argument items are null, fails;" +
-					"[]; -4; [null, null, null];" +
-					"null; -4 ∉ [0, 0)",
-				"when argument array is empty, fails;" +
-					"[]; -7; [];" +
-					"null; -7 ∉ [0, 0)",
+				"when index is before valid range, fails;" +
+					"[]; -5; [b, E];" +
+					"null; -5 ∉ [0, 0)",
+				"when index is 0, fails;" +
+					"[]; 0; [F, F];" +
+					"null; 0 ∉ [0, 0)",
+				"when index is after valid range, fails;" +
+					"[]; 5; [o, g, b, s];" +
+					"null; 5 ∉ [0, 0)"
 			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items1,
+			void testNoItemsNull(@StringMutableList MutableList<String> items1,
 				int index, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, index, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when some argument items are null")
 			@Tests({
-				"when no argument items are null, fails;" +
-					"[]; 2; [F, D];" +
-					"null; 2 ∉ [0, 0)",
-				"when some argument items are null, fails;" +
-					"[]; 0; [F, null, null, e];" +
+				"when index is before valid range, fails;" +
+					"[]; -4; [null, b, null, s, W];" +
+					"null; -4 ∉ [0, 0)",
+				"when index is 0, fails;" +
+					"[]; 0; [k, null, K, null, null];" +
 					"null; 0 ∉ [0, 0)",
-				"when all argument items are null, fails;" +
-					"[]; 6; [null, null, null];" +
-					"null; 6 ∉ [0, 0)",
-				"when argument array is empty, fails;" +
+				"when index is after valid range, fails;" +
+					"[]; 6; [null, null, w, Q];" +
+					"null; 6 ∉ [0, 0)"
+			})
+			void testSomeItemsNull(@StringMutableList MutableList<String> items1,
+				int index, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, index, items2, expected1, expected2);
+			}
+
+			@DisplayName("when all argument items are null")
+			@Tests({
+				"when index is before valid range, fails;" +
+					"[]; -1; [null, null, null, null];" +
+					"null; -1 ∉ [0, 0)",
+				"when index is 0, fails;" +
+					"[]; 0; [null, null];" +
+					"null; 0 ∉ [0, 0)",
+				"when index is after valid range, fails;" +
+					"[]; 12; [null, null];" +
+					"null; 12 ∉ [0, 0)"
+			})
+			void testAllItemsNull(@StringMutableList MutableList<String> items1,
+				int index, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, index, items2, expected1, expected2);
+			}
+
+			@DisplayName("when argument array is empty")
+			@Tests({
+				"when index is before valid range, fails;" +
+					"[]; -4; [];" +
+					"null; -4 ∉ [0, 0)",
+				"when index is 0, fails;" +
 					"[]; 0; [];" +
 					"null; 0 ∉ [0, 0)",
+				"when index is after valid range, fails;" +
+					"[]; 9; [];" +
+					"null; 9 ∉ [0, 0)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items1,
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				int index, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -716,51 +819,56 @@ class MutableListTests {
 		@DisplayName("when list is not empty")
 		@Nested
 		class NotEmptyListTests {
-			@DisplayName("when index is before valid range")
+			@DisplayName("when argument list is not empty")
 			@Tests({
-				"when argument list is not empty, fails;" +
+				"when index is before valid range, fails;" +
 					"[v, F, G, h]; -2; [F, F];" +
 					"null; -2 ∉ [0, 4)",
-				"when argument list is empty, fails;" +
-					"[v, F, G, h]; -1; [];" +
-					"null; -1 ∉ [0, 4)"
-			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items1,
-				int index, @StringMutableList MutableList<String> items2,
-				@StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items1, index, items2, expected1, expected2);
-			}
-
-			@DisplayName("when index is within valid range")
-			@Tests({
-				"when argument list is not empty, inserts items;" +
-					"[v, F, G, h]; 2; [F, F];" +
-					"[v, F, F, F, G, h]; null",
 				"when index is 0, prepends items;" +
 					"[v, F, G, h]; 0; [F, F];" +
 					"[F, F, v, F, G, h]; null",
-				"when argument list is empty, does nothing;" +
-					"[v, F, G, h]; 1; [];" +
-					"[v, F, G, h]; null"
+				"when index is within valid range, inserts items at index;" +
+					"[v, F, G, h]; 2; [F, F];" +
+					"[v, F, F, F, G, h]; null",
+				"when index is last valid index, inserts items at index;" +
+					"[g, N, m]; 2; [j, N, m];" +
+					"[g, N, j, N, m, m]; null",
+				"when index is at valid range end, fails;" +
+					"[g, e, s, a]; 4; [I];" +
+					"null; 4 ∉ [0, 4)",
+				"when index is after valid range, fails;" +
+					"[v, F, G, h]; 9; [F, F];" +
+					"null; 9 ∉ [0, 4)"
 			})
-			void testIndexWithinValidRange(@StringMutableList MutableList<String> items1,
+			void testItemsNotEmpty(@StringMutableList MutableList<String> items1,
 				int index, @StringMutableList MutableList<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, index, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when argument list is empty")
 			@Tests({
-				"when argument list is not empty, fails;" +
-					"[v, F, G, h]; 9; [F, F];" +
-					"null; 9 ∉ [0, 4)",
-				"when argument list is empty, fails;" +
+				"when index is before valid range, fails;" +
+					"[v, F, G, h]; -1; [];" +
+					"null; -1 ∉ [0, 4)",
+				"when index is 0, does nothing;" +
+					"[m, J, k, P]; 0; [];" +
+					"[m, J, k, P]; null",
+				"when index is within valid range, does nothing;" +
+					"[v, F, G, h]; 1; [];" +
+					"[v, F, G, h]; null",
+				"when index is last valid index, does nothing;" +
+					"[b, g, r]; 2; [];" +
+					"[b, g, r]; null",
+				"when index is at valid range end, fails;" +
+					"[b, R]; 2; [];" +
+					"null; 2 ∉ [0, 2)",
+				"when index is after valid range, fails;" +
 					"[v, F, G, h]; 5; [];" +
 					"null; 5 ∉ [0, 4)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items1,
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				int index, @StringMutableList MutableList<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -771,32 +879,38 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		@Nested
 		class EmptyListTests {
-			@DisplayName("when index is before valid range")
+			@DisplayName("when argument list is not empty")
 			@Tests({
-				"when argument list is not empty, fails;" +
+				"when index is before valid range, fails;" +
 					"[]; -2; [F, F];" +
 					"null; -2 ∉ [0, 0)",
-				"when argument list is empty, fails;" +
-					"[]; 0; [];" +
-					"null; 0 ∉ [0, 0)"
+				"when index is 0, fails;" +
+					"[]; 0; [g, R, s, Q];" +
+					"null; 0 ∉ [0, 0)",
+				"when index is after valid range, fails;" +
+					"[]; 9; [F, F];" +
+					"null; 9 ∉ [0, 0)"
 			})
-			void testIndexBeforeValidRange(@StringMutableList MutableList<String> items1,
+			void testItemsNotEmpty(@StringMutableList MutableList<String> items1,
 				int index, @StringMutableList MutableList<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, index, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index is after valid range")
+			@DisplayName("when argument list is empty")
 			@Tests({
-				"when argument list is not empty, fails;" +
-					"[]; 9; [F, F];" +
-					"null; 9 ∉ [0, 0)",
-				"when argument list is empty, fails;" +
+				"when index is before valid range, fails;" +
+					"[]; -1; [];" +
+					"null; -1 ∉ [0, 0)",
+				"when index is 0, fails;" +
 					"[]; 0; [];" +
-					"null; 0 ∉ [0, 0)"
+					"null; 0 ∉ [0, 0)",
+				"when index is after valid range, fails;" +
+					"[]; 3; [];" +
+					"null; 3 ∉ [0, 0)"
 			})
-			void testIndexAfterValidRange(@StringMutableList MutableList<String> items1,
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				int index, @StringMutableList MutableList<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -828,88 +942,124 @@ class MutableListTests {
 		@DisplayName("when list is not empty")
 		@Nested
 		class NotEmptyListTests {
-			@DisplayName("when index range is within valid range")
+			@DisplayName("when no argument items are null")
 			@Tests({
-				"when no argument items are null, replaces items in range with all items;" +
+				"when index range starts at 0 and ends within valid range, replaces items in range with all argument items;" +
+					"[g, f, R, u, O, l, s]; [0, 4); [n, m];" +
+					"[n, m, O, l, s]; null",
+				"when index range is within valid range, replaces items in range with all argument items;" +
 					"[f, e, q, R, w]; [2, 4); [a, T, f, s];" +
 					"[f, e, a, T, f, s, w]; null",
-				"when some argument items are null, replaces items in range with non-null items;" +
-					"[f, e, q, R, w]; [2, 5); [null, b, null, null, n];" +
-					"[f, e, b, n]; null",
-				"when all argument items are null, removes items in range;" +
-					"[f, e, q, R, w]; [1, 3); [null, null];" +
-					"[f, R, w]; null",
-				"when argument array is empty, removes items in range;" +
-					"[f, e, q, R, w]; [2, 3); [];" +
-					"[f, e, R, w]; null"
-			})
-			void testIndexRangeWithinValidRange(@StringMutableList MutableList<String> items1,
-				@IntRange IndexRange range, @StringArray String[] items2,
-				@StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items1, range, items2, expected1, expected2);
-			}
-
-			@DisplayName("when index range starts within and ends after valid range")
-			@Tests({
-				"when no argument items are null, fails;" +
+				"when index range starts within valid range and ends at valid range end, replaces items in range with all argument items;" +
+					"[b, M, N, s, l]; [2, 5); [g, T, s];" +
+					"[b, M, g, T, s]; null",
+				"when index range equals valid range, replaces all items with all argument items;" +
+					"[g, R, K, I]; [0, 4); [m, N, J];" +
+					"[m, N, J]; null",
+				"when index range starts within valid range and ends after valid range end, fails;" +
 					"[g, s, W, s, a]; [2, 8); [f, L, o];" +
 					"null; [2, 8) ⊈ [0, 5)",
-				"when some argument items are null, fails;" +
-					"[g, s, W, a, O]; [0, 10); [n, null, S, s, null];" +
-					"null; [0, 10) ⊈ [0, 5)",
-				"when all argument items are null, fails;" +
-					"[m, b, s]; [1, 4); [null, null, null];" +
-					"null; [1, 4) ⊈ [0, 3)",
-				"when argument array is empty, fails;" +
-					"[h, f, s, w, W]; [2, 7); [];" +
-					"null; [2, 7) ⊈ [0, 5)"
-			})
-			void testIndexRangeEndsAfterValidRange(@StringMutableList MutableList<String> items1,
-				@IntRange IndexRange range, @StringArray String[] items2,
-				@StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items1, range, items2, expected1, expected2);
-			}
-
-			@DisplayName("when index range starts and ends after valid range")
-			@Tests({
-				"when no argument items are null, fails;" +
+				"when index range is after valid range end, fails;" +
 					"[r, E, s]; [5, 9); [d, s, a];" +
 					"null; [5, 9) ⊈ [0, 3)",
-				"when some argument items are null, fails;" +
-					"[g, v, s, w]; [7, 8); [q, null, t];" +
-					"null; [7, 8) ⊈ [0, 4)",
-				"when all argument items are null, fails;" +
-					"[f, g]; [4, 8); [g, s, w, l, P];" +
-					"null; [4, 8) ⊈ [0, 2)",
-				"when argument array is empty, fails;" +
-					"[e, E, v, s, w]; [5, 7); [];" +
-					"null; [5, 7) ⊈ [0, 5)"
+				"when index range is empty, prepends all argument items;" +
+					"[f, e, q, R, w]; [0, 0); [a, T, f, s];" +
+					"[a, T, f, s, f, e, q, R, w]; null"
 			})
-			void testIndexRangeStartsAfterValidRange(@StringMutableList MutableList<String> items1,
+			void testNoItemsNull(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, range, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index range is empty")
+			@DisplayName("when some argument items are null")
 			@Tests({
-				"when no argument items are null, prepends all items;" +
-					"[f, e, q, R, w]; [0, 0); [a, T, f, s];" +
-					"[a, T, f, s, f, e, q, R, w]; null",
-				"when some argument items are null, prepends non-null items;" +
+				"when index range starts at 0 and ends within valid range, replaces items in range with non-null argument items;" +
+					"[b, G, k, J, o, P]; [0, 5); [K, null, Y, U, null];" +
+					"[K, Y, U, P]; null",
+				"when index range is within valid range, replaces items in range with non-null argument items;" +
+					"[f, e, q, R, w]; [2, 4); [null, b, null, null, n];" +
+					"[f, e, b, n, w]; null",
+				"when index range starts within valid range and ends at valid range end, replaces items in range with non-null argument items;" +
+					"[b, G, s, e, W, l]; [2, 6); [K, m, null, null];" +
+					"[b, G, K, m]; null",
+				"when index range equals valid range, replaces all items with non-null argument items;" +
+					"[r, E]; [0, 2); [null, null, J, null];" +
+					"[J]; null",
+				"when index range starts within valid range and ends after valid range end, fails;" +
+					"[g, s, W, a, O]; [2, 10); [n, null, S, s, null];" +
+					"null; [2, 10) ⊈ [0, 5)",
+				"when index range is after valid range end, fails;" +
+					"[g, v, s, w]; [7, 8); [q, null, t];" +
+					"null; [7, 8) ⊈ [0, 4)",
+				"when index range is empty, prepends non-null argument items;" +
 					"[f, e, q, R, w]; [0, 0); [null, b, null, null, n];" +
-					"[b, n, f, e, q, R, w]; null",
-				"when all argument items are null, does nothing;" +
+					"[b, n, f, e, q, R, w]; null"
+			})
+			void testSomeItemsNull(@StringMutableList MutableList<String> items1,
+				@IntRange IndexRange range, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, range, items2, expected1, expected2);
+			}
+
+			@DisplayName("when all argument items are null")
+			@Tests({
+				"when index range starts at 0 and ends within valid range, removes items in range;" +
+					"[t, R, s, K, n]; [0, 4); [null, null, null];" +
+					"[n]; null",
+				"when index range is within valid range, removes items in range;" +
+					"[f, e, q, R, w]; [1, 3); [null, null];" +
+					"[f, R, w]; null",
+				"when index range starts within valid range and ends at valid range end, removes items in range;" +
+					"[b, n, M, d, F, e]; [3, 6); [null, null];" +
+					"[b, n, M]; null",
+				"when index range equals valid range, removes all items;" +
+					"[n, T, g, J, k]; [0, 5); [null, null, null];" +
+					"[]; null",
+				"when index range starts within valid range and ends after valid range end, fails;" +
+					"[m, b, s]; [1, 4); [null, null, null];" +
+					"null; [1, 4) ⊈ [0, 3)",
+				"when index range is after valid range end, fails;" +
+					"[f, g]; [4, 8); [g, s, w, l, P];" +
+					"null; [4, 8) ⊈ [0, 2)",
+				"when index range is empty, does nothing;" +
 					"[f, e, q, R, w]; [0, 0); [null, null];" +
-					"[f, e, q, R, w]; null",
-				"when argument array is empty, does nothing;" +
+					"[f, e, q, R, w]; null"
+			})
+			void testAllItemsNull(@StringMutableList MutableList<String> items1,
+				@IntRange IndexRange range, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, range, items2, expected1, expected2);
+			}
+
+			@DisplayName("when argument array is empty")
+			@Tests({
+				"when index range starts at 0 and ends within valid range, removes items in range;" +
+					"[g, R, s, a]; [0, 1); [];" +
+					"[R, s, a]; null",
+				"when index range is within valid range, removes items in range;" +
+					"[f, e, q, R, w]; [2, 3); [];" +
+					"[f, e, R, w]; null",
+				"when index range starts within valid range and ends at valid range end, removes items in range;" +
+					"[g, T, s, v, N]; [2, 5); [];" +
+					"[g, T]; null",
+				"when index range equals valid range, removes all items;" +
+					"[t, R, s, b, n, O, h]; [0, 7); [];" +
+					"[]; null",
+				"when index range starts within valid range and ends after valid range end, fails;" +
+					"[h, f, s, w, W]; [2, 7); [];" +
+					"null; [2, 7) ⊈ [0, 5)",
+				"when index range is after valid range end, fails;" +
+					"[e, E, v, s, w]; [5, 7); [];" +
+					"null; [5, 7) ⊈ [0, 5)",
+				"when index range is empty, does nothing;" +
 					"[f, e, q, R, w]; [0, 0); [];" +
 					"[f, e, q, R, w]; null"
 			})
-			void testIndexRangeEmpty(@StringMutableList MutableList<String> items1,
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -920,44 +1070,64 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		@Nested
 		class EmptyListTests {
-			@DisplayName("when index range is not empty")
+			@DisplayName("when no argument items are null")
 			@Tests({
-				"when no argument items are null, fails;" +
+				"when index range is not empty, fails;" +
 					"[]; [0, 3); [a, T, f, s];" +
 					"null; [0, 3) ⊈ [0, 0)",
-				"when some argument items are null, fails;" +
-					"[]; [1, 2); [null, b, null, null, n];" +
-					"null; [1, 2) ⊈ [0, 0)",
-				"when all argument items are null, fails;" +
-					"[]; [0, 1); [null, null];" +
-					"null; [0, 1) ⊈ [0, 0)",
-				"when argument array is empty, fails;" +
-					"[]; [2, 5); [];" +
-					"null; [2, 5) ⊈ [0, 0)"
+				"when index range is empty, prepends all argument items;" +
+					"[]; [0, 0); [a, T, f, s];" +
+					"[a, T, f, s]; null"
 			})
-			void testIndexRangeNotEmpty(@StringMutableList MutableList<String> items1,
+			void testNoItemsNull(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, range, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index range is empty")
+			@DisplayName("when some argument items are null")
 			@Tests({
-				"when no argument items are null, prepends all items;" +
-					"[]; [0, 0); [a, T, f, s];" +
-					"[a, T, f, s]; null",
-				"when some argument items are null, prepends non-null items;" +
+				"when index range is not empty, fails;" +
+					"[]; [1, 2); [null, b, null, null, n];" +
+					"null; [1, 2) ⊈ [0, 0)",
+				"when index range is empty, prepends non-null argument items;" +
 					"[]; [0, 0); [null, b, null, null, n];" +
-					"[b, n]; null",
-				"when all argument items are null, does nothing;" +
+					"[b, n]; null"
+			})
+			void testSomeItemsNull(@StringMutableList MutableList<String> items1,
+				@IntRange IndexRange range, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, range, items2, expected1, expected2);
+			}
+
+			@DisplayName("when all argument items are null")
+			@Tests({
+				"when index range is not empty, fails;" +
+					"[]; [0, 1); [null, null];" +
+					"null; [0, 1) ⊈ [0, 0)",
+				"when index range is empty, does nothing;" +
 					"[]; [0, 0); [null, null];" +
-					"[]; null",
-				"when argument array is empty, does nothing;" +
+					"[]; null"
+			})
+			void testAllItemsNull(@StringMutableList MutableList<String> items1,
+				@IntRange IndexRange range, @StringArray String[] items2,
+				@StringMutableList MutableList<String> expected1,
+				@IndexRangeException Exception expected2) {
+				test(items1, range, items2, expected1, expected2);
+			}
+
+			@DisplayName("when all argument items are null")
+			@Tests({
+				"when index range is not empty, fails;" +
+					"[]; [2, 5); [];" +
+					"null; [2, 5) ⊈ [0, 0)",
+				"when index range is empty, does nothing;" +
 					"[]; [0, 0); [];" +
 					"[]; null"
 			})
-			void testIndexRangeEmpty(@StringMutableList MutableList<String> items1,
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringArray String[] items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -991,64 +1161,62 @@ class MutableListTests {
 		@DisplayName("when list is not empty")
 		@Nested
 		class NotEmptyListTests {
-			@DisplayName("when index range is within valid range")
+			@DisplayName("when argument list is not empty")
 			@Tests({
-				"when argument list is not empty, replaces items in range with all items;" +
+				"when index range starts at 0 and ends within valid range, replaces items in range;" +
+					"[g, t, U, U, j, f]; [0, 3); [v, F];" +
+					"[v, F, U, j, f]; null",
+				"when index range is within valid range, replaces items in range;" +
 					"[h, d, w, a, S, a, b]; [3, 6); [g, d, s, e];" +
 					"[h, d, w, g, d, s, e, b]; null",
-				"when argument list is empty, removes items in range;" +
-					"[n, F, g, s, S, O]; [2, 5); [];" +
-					"[n, F, O]; null"
-			})
-			void testIndexRangeWithinValidRange(@StringMutableList MutableList<String> items1,
-				@IntRange IndexRange range, @StringList List<String> items2,
-				@StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items1, range, items2, expected1, expected2);
-			}
-
-			@DisplayName("when index range starts within, but ends after valid range")
-			@Tests({
-				"when argument list is not empty, fails;" +
+				"when index range equals valid range, replaces all items;" +
+					"[g, R, e, Y]; [0, 4); [A, S];" +
+					"[A, S]; null",
+				"when index range starts within and ends at valid range end, replaces items in range;" +
+					"[n, B, D, D, d, g]; [4, 6); [t, R, E, s];" +
+					"[n, B, D, D, t, R, E, s]; null",
+				"when index range starts within and ends after valid range end, fails;" +
 					"[g, f, s, W, s]; [3, 6); [g, f];" +
 					"null; [3, 6) ⊈ [0, 5)",
-				"when argument list is empty, fails;" +
-					"[f, d, w, s]; [1, 9); [];" +
-					"null; [1, 9) ⊈ [0, 4)"
-			})
-			void testIndexRangeEndsAfterValidRange(@StringMutableList MutableList<String> items1,
-				@IntRange IndexRange range, @StringList List<String> items2,
-				@StringMutableList MutableList<String> expected1,
-				@IndexRangeException Exception expected2) {
-				test(items1, range, items2, expected1, expected2);
-			}
-
-			@DisplayName("when index range starts and ends after valid range")
-			@Tests({
-				"when argument list is not empty, fails;" +
+				"when index range starts and ends after valid range end, fails;" +
 					"[s, f, e]; [3, 6); [p, O, k, J];" +
 					"null; [3, 6) ⊈ [0, 3)",
-				"when argument list is empty, fails;" +
-					"[d, s, a, w]; [6, 8); [];" +
-					"null; [6, 8) ⊈ [0, 4)"
+				"when index range is empty, prepends items;" +
+					"[s, f, e]; [0, 0); [p, O, k, J];" +
+					"[p, O, k, J, s, f, e]; null"
 			})
-			void testIndexRangeStartsAfterValidRange(@StringMutableList MutableList<String> items1,
+			void testItemsNotEmpty(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringList List<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, range, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index range is empty")
+			@DisplayName("when argument list is empty")
 			@Tests({
-				"when argument list is not empty, prepends items;" +
-					"[s, f, e]; [0, 0); [p, O, k, J];" +
-					"[p, O, k, J, s, f, e]; null",
-				"when argument list is empty, does nothing;" +
+				"when index range starts at 0 and ends within valid range, removes items in range;" +
+					"[F, D, t, r]; [0, 2); [];" +
+					"[t, r]; null",
+				"when index range is within valid range, removes items in range;" +
+					"[n, F, g, s, S, O]; [2, 5); [];" +
+					"[n, F, O]; null",
+				"when index range equals valid range, empties list;" +
+					"[y, T, i, o, P, f]; [0, 6); [];" +
+					"[]; null",
+				"when index range starts within and ends at valid range end, removes items in range;" +
+					"[h, T, d, F, b, s]; [5, 6); [];" +
+					"[h, T, d, F, b]; null",
+				"when index range starts within and ends after valid range end, fails;" +
+					"[f, d, w, s]; [1, 9); [];" +
+					"null; [1, 9) ⊈ [0, 4)",
+				"when index range starts and ends after valid range end, fails;" +
+					"[d, s, a, w]; [6, 8); [];" +
+					"null; [6, 8) ⊈ [0, 4)",
+				"when index range is empty, does nothing;" +
 					"[d, s, a, w]; [0, 0); [];" +
 					"[d, s, a,w ]; null"
 			})
-			void testIndexRangeEmpty(@StringMutableList MutableList<String> items1,
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringList List<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -1059,32 +1227,32 @@ class MutableListTests {
 		@DisplayName("when list is empty")
 		@Nested
 		class EmptyListTests {
-			@DisplayName("when index range is not empty")
+			@DisplayName("when argument list is not empty")
 			@Tests({
-				"when argument list is not empty, fails;" +
+				"when index range is not empty, fails;" +
 					"[]; [0, 1); [f, a, S, o];" +
 					"null; [0, 1) ⊈ [0, 0)",
-				"when argument list is empty, fails;" +
-					"[]; [1, 2); [];" +
-					"null; [1, 2) ⊈ [0, 0)"
+				"when index range is empty, prepends items;" +
+					"[]; [0, 0); [f, a, S, o];" +
+					"[f, a, S, o]; null",
 			})
-			void testIndexRangeNotEmpty(@StringMutableList MutableList<String> items1,
+			void testItemsNotEmpty(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringList List<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
 				test(items1, range, items2, expected1, expected2);
 			}
 
-			@DisplayName("when index range is empty")
+			@DisplayName("when argument list is empty")
 			@Tests({
-				"when argument list is not empty, prepends items;" +
-					"[]; [0, 0); [f, a, S, o];" +
-					"[f, a, S, o]; null",
-				"when argument list is empty, does nothing;" +
+				"when index range is not empty, fails;" +
+					"[]; [1, 2); [];" +
+					"null; [1, 2) ⊈ [0, 0)",
+				"when index range is empty, does nothing;" +
 					"[]; [0, 0); [];" +
 					"[]; null"
 			})
-			void testIndexRangeEmpty(@StringMutableList MutableList<String> items1,
+			void testItemsEmpty(@StringMutableList MutableList<String> items1,
 				@IntRange IndexRange range, @StringList List<String> items2,
 				@StringMutableList MutableList<String> expected1,
 				@IndexRangeException Exception expected2) {
@@ -1142,7 +1310,13 @@ class MutableListTests {
 		@Tests({
 			"when list has more than 1 item, removes last item;" +
 				"[g, r, s, A, s];" +
-				"[g, r, s, A]"
+				"[g, r, s, A]",
+			"when list has more than 1 item, empties list;" +
+				"[A];" +
+				"[]",
+			"when list is empty, does nothing;" +
+				"[];" +
+				"[]"
 		})
 		void test(@StringMutableList MutableList<String> items,
 			@StringMutableList MutableList<String> expected) {
@@ -1158,17 +1332,20 @@ class MutableListTests {
 	@DisplayName(".remove(int)")
 	@Nested
 	class RemoveTests {
-		@DisplayName("when list is not empty")
+		@DisplayName("when list has more than 1 item")
 		@Tests({
-			"when index is within valid range, removes item at index;" +
-				"[g, e, A, s, a, T]; 2;" +
-				"[g, e, s, a, T]; null",
-			"when list has 1 item and index is 0, empties list;" +
-				"[g]; 0;" +
-				"[]; null",
 			"when index is before valid range, fails;" +
 				"[g, e, A, s, a, T]; -2;" +
 				"null; -2 ∉ [0, 6)",
+			"when index is 0, removes first item;" +
+				"[n, G, s, a]; 0;" +
+				"[G, s, a]; null",
+			"when index is within valid range, removes item at index;" +
+				"[g, e, A, s, a, T]; 2;" +
+				"[g, e, s, a, T]; null",
+			"when index is last valid index, removes last item;" +
+				"[h, S, d, a]; 3;" +
+				"[h, S, d]; null",
 			"when index is after valid range, fails;" +
 				"[g, e, A, s, a, T]; 7;" +
 				"null; 7 ∉ [0, 6)"
@@ -1179,13 +1356,37 @@ class MutableListTests {
 			test(items, index, expected1, expected2);
 		}
 
+		@DisplayName("when list has 1 item")
+		@Tests({
+			"when index is before valid range, fails;" +
+				"[A]; -2;" +
+				"null; -2 ∉ [0, 1)",
+			"when index is 0, empties list;" +
+				"[g]; 0;" +
+				"[]; null",
+			"when index is 1, fails;" +
+				"[g]; 1;" +
+				"null; 1 ∉ [0, 1)",
+			"when index is after valid range, fails;" +
+				"[g, e, A, s, a, T]; 7;" +
+				"null; 7 ∉ [0, 6)"
+		})
+		void testListHasOneItem(@StringMutableList MutableList<String> items, int index,
+			@StringMutableList MutableList<String> expected1,
+			@IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
+		}
+
 		@DisplayName("when list is empty")
 		@Tests({
 			"when index is before valid range, fails;" +
 				"[]; -2;" +
 				"null; -2 ∉ [0, 0)",
-			"when index is after valid range, fails;" +
+			"when index is 0, fails;" +
 				"[]; 0;" +
+				"null; 0 ∉ [0, 0)",
+			"when index is after valid range, fails;" +
+				"[]; 7;" +
 				"null; 7 ∉ [0, 0)"
 		})
 		void testListEmpty(@StringMutableList MutableList<String> items, int index,
@@ -1216,16 +1417,22 @@ class MutableListTests {
 	class RemoveWithIndexRangeTests {
 		@DisplayName("when list is not empty")
 		@Tests({
+			"when index range starts at 0 and ends within valid range, removes items in range;" +
+				"[b, F, e, a, s]; [0, 2];" +
+				"[e, a, s]; null",
 			"when index range is within valid range, removes items in range;" +
 				"[g, d, e, a, s, a, w, A, s]; [3, 7);" +
 				"[g, d, e, A, s]; null",
-			"when index range is equal to valid range, empties list;" +
+			"when index range starts within and ends at valid range end, removes items in range;" +
+				"[k, V, f, s, S, S]; [3, 6);" +
+				"[k, V, f]; null",
+			"when index range equals valid range, empties list;" +
 				"[g, e, S, d, A, F, S]; [0, 7);" +
 				"[]; null",
-			"when index range starts within, but ends after valid range, fails;" +
+			"when index range starts within valid range and ends after valid range end, fails;" +
 				"[v, R, d, s, S, s]; [3, 8);" +
 				"null; [3, 8) ⊈ [0, 6)",
-			"when index range starts and ends after valid range, fails;" +
+			"when index range starts and ends after valid range end, fails;" +
 				"[g, R, T, W, s]; [8, 9);" +
 				"null; [8, 9) ⊈ [0, 5)",
 			"when index range is empty, does nothing;" +

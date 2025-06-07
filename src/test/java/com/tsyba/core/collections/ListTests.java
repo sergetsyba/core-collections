@@ -16,13 +16,13 @@ public class ListTests {
 	class NewWithVarargsTests {
 		@DisplayName("\uD83D\uDE82")
 		@Tests({
-			"when no items are null, creates list;" +
+			"when no argument items are null, creates list;" +
 				"[d, O, s, R, s];" +
 				"[d, O, s, R, s];",
-			"when some items are null, creates list with non-null items;" +
+			"when some argument items are null, creates list with non-null items;" +
 				"[d, null, null, s, null, s];" +
 				"[d, s, s]",
-			"when all items are null, creates empty list;" +
+			"when all argument items are null, creates empty list;" +
 				"[null, null, null, null];" +
 				"[]",
 			"when argument array is empty, creates empty list;" +
@@ -86,13 +86,13 @@ public class ListTests {
 			"when index is before valid range start, fails;" +
 				"[h, s, e, q, s, A]; -1;" +
 				"null; -1 ∉ [0, 6)",
-			"when index is at valid range start, returns first item;" +
+			"when index is 0, returns first item;" +
 				"[h, s, e, q, s, A]; 0;" +
 				"h; null",
 			"when index is within valid range, returns item at index;" +
 				"[h, s, e, q, s, A]; 4;" +
 				"s; null",
-			"when index is one before valid range end, returns last item;" +
+			"when index is last valid index, returns last item;" +
 				"[h, s, e, q, s, A]; 5;" +
 				"A; null",
 			"when index is at valid range end, fails;" +
@@ -112,7 +112,7 @@ public class ListTests {
 			"when index is before valid range start, fails;" +
 				"[]; -1;" +
 				"null; -1 ∉ [0, 0)",
-			"when index is at valid range start, fails;" +
+			"when index is 0, fails;" +
 				"[]; 0;" +
 				"null; 0 ∉ [0, 0)",
 			"when index is after valid range end, fails;" +
@@ -146,13 +146,13 @@ public class ListTests {
 			"when index is before valid range start, fails;" +
 				"[g, r, e, Q, e, s, A, c]; -4;" +
 				"null; -4 ∉ [0, 8)",
-			"when index is at valid range start, returns empty list;" +
+			"when index is 0, returns empty list;" +
 				"[g, r, e, Q, e, s, A, c]; 0;" +
 				"[]; null",
 			"when index is within valid range, returns prefix;" +
 				"[g, r, e, Q, e, s, A, c]; 4;" +
 				"[g, r, e, Q]; null",
-			"when index is one before valid range end, returns prefix;" +
+			"when index is last valid index, returns prefix;" +
 				"[g, r, e, Q, e, s, A, c]; 7;" +
 				"[g, r, e, Q, e, s, A]; null",
 			"when index is at valid range end, fails;" +
@@ -173,7 +173,7 @@ public class ListTests {
 			"when index is before valid range start, fails;" +
 				"[]; -1;" +
 				"null; -1 ∉ [0, 0)",
-			"when index is at valid range start, fails;" +
+			"when index is 0, fails;" +
 				"[]; 0;" +
 				"null; 0 ∉ [0, 0)",
 			"when index is after valid range end, fails;" +
@@ -208,13 +208,13 @@ public class ListTests {
 			"when index is before valid range start, fails;" +
 				"[g, r, e, Q, e, s, A, c]; -4;" +
 				"null; -4 ∉ [0, 8)",
-			"when index is at valid range start, returns all items;" +
+			"when index is 0, returns all items;" +
 				"[g, r, e, Q, e, s, A, c]; 0;" +
 				"[g, r, e, Q, e, s, A, c]; null",
 			"when index is within valid range, returns suffix;" +
 				"[g, r, e, Q, e, s, A, c]; 4;" +
 				"[e, s, A, c]; null",
-			"when index is one before valid range end, returns suffix;" +
+			"when index is last valid index, returns suffix;" +
 				"[g, r, e, Q, e, s, A, c]; 7;" +
 				"[c]; null",
 			"when index is at valid range end, fails;" +
@@ -267,22 +267,25 @@ public class ListTests {
 	class GetWithIndexRangeTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when range starts at valid range start, returns items in range;" +
+			"when index range starts at 0 and ends within valid range, returns items in range;" +
 				"[f, y, R, e, l, k, g, S]; [0, 4);" +
 				"[f, y, R, e]; null",
-			"when range is within valid range, returns items in range;" +
+			"when index range is within valid range, returns items in range;" +
 				"[f, y, R, e, l, k, g, S]; [2, 6);" +
 				"[R, e, l, k]; null",
-			"when range ends at valid range end, returns items in range;" +
+			"when index range starts within valid range and ends at valid range end, returns items in range;" +
 				"[f, y, R, e, l, k, g, S]; [6, 8);" +
 				"[g, S]; null",
-			"when range equals valid range, returns all items;" +
+			"when index range equals valid range, returns all items;" +
 				"[f, y, R, e, l, k, g, S]; [0, 8);" +
 				"[f, y, R, e, l, k, g, S]; null",
-			"when range ends after valid range end, fails;" +
+			"when index range starts within valid range and ends after valid range end, fails;" +
 				"[f, y, R, e, l, k, g, S]; [6, 9);" +
 				"null; [6, 9) ⊈ [0, 8)",
-			"when range is empty, returns empty list;" +
+			"when index range starts and ends after valid range end, fails;" +
+				"[f, y, R, e, l, k, g, S]; [12, 21);" +
+				"null; [12, 21) ⊈ [0, 8)",
+			"when index range is empty, returns empty list;" +
 				"[f, y, R, e, l, k, g, S]; [0, 0);" +
 				"[]; null"
 		})
@@ -294,10 +297,10 @@ public class ListTests {
 
 		@DisplayName("when list is empty")
 		@Tests({
-			"when range is not empty, fails;" +
+			"when index range is not empty, fails;" +
 				"[]; [0, 1);" +
 				"null; [0, 1) ⊈ [0, 0)",
-			"when range is empty, returns empty list;" +
+			"when index range is empty, returns empty list;" +
 				"[]; [0, 0);" +
 				"[]; null"
 		})
@@ -329,7 +332,7 @@ public class ListTests {
 			"when some items match, returns matched items;" +
 				"[g, R, W, s, A, s, W];" +
 				"[R, W, A, W]",
-			"when all items match, returns matched items;" +
+			"when all items match, returns all items;" +
 				"[R, W, A, X, K, S];" +
 				"[R, W, A, X, K, S]",
 			"when no items match, returns empty list;" +
@@ -355,7 +358,7 @@ public class ListTests {
 	class FindTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when item is present multiple times, returns its indexes;" +
+			"when item is present multiple times, returns all its indexes;" +
 				"[g, R, s, R, s, a, v, R, f]; R;" +
 				"[1, 3, 7]",
 			"when item is present once, returns its index;" +
@@ -451,10 +454,10 @@ public class ListTests {
 			"when some items are duplicates, returns distinct items;" +
 				"[t, e, r, t, t, r, R, r];" +
 				"[r, R, t, e]",
-			"when no items are duplicates, returns distinct items;" +
+			"when no items are duplicates, returns all items;" +
 				"[t, m, j, E, d, S, s];" +
 				"[j, d, s, t, m, E, S]",
-			"when all items are duplicates, returns list with a single distinct item;" +
+			"when all items are duplicates, returns 1 distinct item;" +
 				"[g, g, g, g, g, g, g];" +
 				"[g]",
 			"when list is empty, returns empty list;" +
@@ -523,7 +526,7 @@ public class ListTests {
 	class BridgeTests {
 		@DisplayName("\uD83C\uDF0D")
 		@Tests({
-			"when list is not empty, returns java.util.List;" +
+			"when list is not empty, returns items in java.util.List;" +
 				"[t, b, s, W, q, a, W];" +
 				"[t, b, s, W, q, a, W]",
 			"when list is empty, returns empty java.util.List;" +
@@ -542,7 +545,7 @@ public class ListTests {
 	class ToArrayTests {
 		@DisplayName("\uD83C\uDF68")
 		@Tests({
-			"when list its not empty, returns items array;" +
+			"when list its not empty, returns items in array;" +
 				"[g, b, d, s, s, Q, g];" +
 				"[g, b, d, s, s, Q, g]",
 			"when list is empty, returns empty array;" +
@@ -561,7 +564,7 @@ public class ListTests {
 	class ToArrayWithClassTests {
 		@DisplayName("\uD83C\uDF68")
 		@Tests({
-			"when list its not empty, returns items array;" +
+			"when list its not empty, returns items in array;" +
 				"[h, j, M, f, f, h, Q];" +
 				"[h, j, M, f, f, h, Q]",
 			"when list is empty, returns empty array;" +
