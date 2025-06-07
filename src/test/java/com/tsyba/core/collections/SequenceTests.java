@@ -81,12 +81,21 @@ public class SequenceTests {
 	class GetTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
-			"when index is within valid range, returns item at index;" +
-				"[g, B, s, E, q, s, K]; 4;" +
-				"q; null",
 			"when index is before valid range, fails;" +
 				"[g, B, s, E, q, s, K]; -4;" +
 				"null; -4 ∉ [0, 7)",
+			"when index is 0, returns first item;" +
+				"[b, H, s, O]; 0;" +
+				"b; null",
+			"when index is within valid range, returns item at index;" +
+				"[g, B, s, E, q, s, K]; 4;" +
+				"q; null",
+			"when index is last valid index, returns last item;" +
+				"[m, N, i, O, d, Q]; 5;" +
+				"Q; null",
+			"when index is at valid index range end, fails;" +
+				"[g, R, a]; 3;" +
+				"null; 3 ∉ [0, 3)",
 			"when index is after valid range, fails;" +
 				"[g, B, s, E, q, s, K]; 12;" +
 				"null; 12 ∉ [0, 7)"
@@ -101,9 +110,12 @@ public class SequenceTests {
 			"when index is before valid range, fails;" +
 				"[]; -1;" +
 				"null; -1 ∉ [0, 0)",
-			"when index is after valid range, fails;" +
+			"when index is 0, fails;" +
 				"[]; 0;" +
-				"null; 0 ∉ [0, 0)"
+				"null; 0 ∉ [0, 0)",
+			"when index is after valid range, fails;" +
+				"[]; 3;" +
+				"null; 3 ∉ [0, 0)"
 		})
 		void testSequenceEmpty(@StringSequence Sequence<String> items, int index,
 			String expected1, @IndexRangeException Exception expected2) {
@@ -130,11 +142,20 @@ public class SequenceTests {
 	class GuardTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
+			"when index is before valid range, returns empty optional;" +
+				"[g, T, s, l, I, o]; -3;" +
+				"null",
+			"when index is 0, returns index;" +
+				"[g, T, s, O]; 0;" +
+				"0",
 			"when index is within valid range, returns index;" +
 				"[g, T, s, l, I, o]; 3;" +
 				"3",
-			"when index is before valid range, returns empty optional;" +
-				"[g, T, s, l, I, o]; -3;" +
+			"when index is last valid index, returns index;" +
+				"[g, O, i, J, k]; 4;" +
+				"4;",
+			"when index is at valid range end, returns empty optional;" +
+				"[b, N]; 2;" +
 				"null",
 			"when index is after valid range, returns empty optional;" +
 				"[g, T, s, l, I, o]; 13;" +
@@ -150,9 +171,12 @@ public class SequenceTests {
 			"when index is before valid range, returns empty optional;" +
 				"[]; -1;" +
 				"null",
-			"when index is after valid range, returns empty optional;" +
+			"when index is 0, returns empty optional;" +
 				"[]; 0;" +
 				"null",
+			"when index is after valid range, returns empty optional;" +
+				"[]; 1;" +
+				"null"
 		})
 		void testSequenceEmpty(@StringSequence Sequence<String> items, int index,
 			@IntOptional Optional<Integer> expected) {
@@ -174,15 +198,27 @@ public class SequenceTests {
 	class GuardWithIndexRangeTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
+			"when index range starts at 0 and ends within valid range, returns index range;" +
+				"[b, R, a, s, w]; [0, 2);" +
+				"[0, 2)",
 			"when index range is within valid range, returns index range;" +
 				"[g, I, m, k, L, s, D, n]; [3, 5);" +
 				"[3, 5)",
-			"when index range starts after valid range, returns empty optional;" +
+			"when index range starts within and ends at valid range end, returns index range;" +
+				"[g, R, s, O, p, P]; [2, 6);" +
+				"[2, 6)",
+			"when index range equals valid range, returns index range;" +
+				"[g, R, s, L, P]; [0, 5);" +
+				"[0, 5)",
+			"when index range starts within valid range and ends after valid range end, returns empty optional;" +
+				"[g, I, m, k, L, s, D, n]; [3, 15);" +
+				"null",
+			"when index range starts and ends after valid range end, returns empty optional;" +
 				"[g, I, m, k, L, s, D, n]; [8, 11);" +
 				"null",
-			"when index range ends after valid range, returns empty optional;" +
-				"[g, I, m, k, L, s, D, n]; [3, 15);" +
-				"null"
+			"when index range is empty, returns empty index range;" +
+				"[g, R, s]; [0, 0);" +
+				"[0, 0)"
 		})
 		void testSequenceNotEmpty(@StringSequence Sequence<String> items,
 			@IntRange IndexRange range,
@@ -192,7 +228,10 @@ public class SequenceTests {
 
 		@DisplayName("when sequence is empty")
 		@Tests({
-			"when index range starts after valid range, returns empty optional;" +
+			"when index range is empty, returns empty index range;" +
+				"[]; [0, 0);" +
+				"[0, 0)",
+			"when index range is not empty, returns empty optional;" +
 				"[]; [0, 2);" +
 				"null"
 		})
@@ -320,7 +359,7 @@ public class SequenceTests {
 			"when argument sequence is absent, returns empty optional;" +
 				"[u, Y, k, L, m, n, F, s, d]; [L, m, N];" +
 				"null",
-			"when argument sequence is empty, returns first index;" +
+			"when argument sequence is empty, returns 0;" +
 				"[u, Y, k, L, m, n, F, s, d]; [];" +
 				"0"
 		})
