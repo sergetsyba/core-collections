@@ -52,7 +52,7 @@ public class CollectionTests {
 
 	@DisplayName(".getMin(Comparator<T>)")
 	@Nested
-	class GetMinComparatorTests {
+	class GetMinWithComparatorTests {
 		@DisplayName("\uD83D\uDDFF")
 		@Tests({
 			"when collection is not empty, returns minimum;" +
@@ -85,7 +85,7 @@ public class CollectionTests {
 				"[];" +
 				"null"
 		})
-		void testComparable(@StringCollection Collection<String> items,
+		void testItemsComparable(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var min = items.getMin();
@@ -95,7 +95,7 @@ public class CollectionTests {
 
 		@DisplayName("when items are not comparable, fails")
 		@Test
-		void testNotComparable() {
+		void testItemsNotComparable() {
 			assertThrows(UnsupportedOperationException.class,
 				() -> {
 					new NonComparableCollection()
@@ -106,7 +106,7 @@ public class CollectionTests {
 
 	@DisplayName(".getMax(Comparator<T>)")
 	@Nested
-	class GetMaxComparatorTests {
+	class GetMaxWithComparatorTests {
 		@DisplayName("\uD83D\uDDBC")
 		@Tests({
 			"when collection is not empty, returns maximum;" +
@@ -139,7 +139,7 @@ public class CollectionTests {
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void testComparable(@StringCollection Collection<String> items,
+		void testItemsComparable(@StringCollection Collection<String> items,
 			@StringOptional Optional<String> expected) {
 
 			final var max = items.getMax();
@@ -149,7 +149,7 @@ public class CollectionTests {
 
 		@DisplayName("when items are not comparable, fails")
 		@Test
-		void testNotComparable() {
+		void testItemsNotComparable() {
 			assertThrows(UnsupportedOperationException.class,
 				() -> {
 					new NonComparableCollection()
@@ -187,7 +187,7 @@ public class CollectionTests {
 
 	@DisplayName(".contains(Collection<T>)")
 	@Nested
-	class ContainsCollectionTests {
+	class ContainsWithCollectionTests {
 		@DisplayName("when collection is not empty")
 		@Tests({
 			"when all items are present, returns true;" +
@@ -203,7 +203,7 @@ public class CollectionTests {
 				"[Y, f, E, 3]; [];" +
 				"true"
 		})
-		void testNotEmpty(@StringCollection Collection<String> items1,
+		void testCollectionNotEmpty(@StringCollection Collection<String> items1,
 			@StringCollection Collection<String> items2, boolean expected) {
 			test(items1, items2, expected);
 		}
@@ -217,7 +217,7 @@ public class CollectionTests {
 				"[]; [];" +
 				"true"
 		})
-		void testEmpty(@StringCollection Collection<String> items1,
+		void testCollectionEmpty(@StringCollection Collection<String> items1,
 			@StringCollection Collection<String> items2, boolean expected) {
 			test(items1, items2, expected);
 		}
@@ -376,7 +376,7 @@ public class CollectionTests {
 
 	@DisplayName(".sort(Comparator<T>)")
 	@Nested
-	class SortComparatorTests {
+	class SortWithComparatorTests {
 		@DisplayName("\uD83C\uDFB3")
 		@Tests({
 			"when collection is not empty, returns sorted list;" +
@@ -399,7 +399,7 @@ public class CollectionTests {
 	@Nested
 	class SortTests {
 		@DisplayName("when items are comparable")
-		@Tests(value = {
+		@Tests({
 			"when collection is not empty, returns sorted list;" +
 				"[k, M, s, A, 8, d, q];" +
 				"[8, A, M, d, k, q, s]",
@@ -407,7 +407,7 @@ public class CollectionTests {
 				"[];" +
 				"[]"
 		})
-		void testComparable(@StringCollection Collection<String> items,
+		void testItemsComparable(@StringCollection Collection<String> items,
 			@StringList List<String> expected) {
 
 			final var sorted = items.sort();
@@ -417,7 +417,7 @@ public class CollectionTests {
 
 		@DisplayName("when items are not comparable, fails")
 		@Test
-		void testSortNotComparable() {
+		void testItemsNotComparable() {
 			Assertions.assertThrows(RuntimeException.class, () -> {
 				new NonComparableCollection()
 					.sort();
@@ -427,7 +427,7 @@ public class CollectionTests {
 
 	@DisplayName(".shuffle(Random)")
 	@Nested
-	class ShuffleRandomTests {
+	class ShuffleWithRandomTests {
 		@DisplayName("\uD83D\uDC90")
 		@Tests({
 			"when collection is not empty, returns items shuffled;" +
@@ -554,7 +554,7 @@ public class CollectionTests {
 
 	@DisplayName(".toArray(Class<? extends T[]>)")
 	@Nested
-	class ToArrayClassTests {
+	class ToArrayWithClassTests {
 		@DisplayName("\uD83C\uDFE1")
 		@Tests({
 			"when collection is not empty, returns items array;" +

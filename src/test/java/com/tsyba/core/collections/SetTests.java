@@ -141,7 +141,7 @@ public class SetTests {
 				"[t, E, q, v, b, 0]; [];" +
 				"true"
 		})
-		void testNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			boolean expected) {
 			test(items1, items2, expected);
 		}
@@ -155,7 +155,7 @@ public class SetTests {
 				"[]; [];" +
 				"true"
 		})
-		void testEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			boolean expected) {
 			test(items1, items2, expected);
 		}
@@ -185,7 +185,7 @@ public class SetTests {
 				"[t, E, q, v, b, 0]; [];" +
 				"[t, E, q, v, b, 0]"
 		})
-		void testNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -199,7 +199,7 @@ public class SetTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -229,7 +229,7 @@ public class SetTests {
 				"[t, E, q, v, b, 0]; [];" +
 				"false"
 		})
-		void testNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			boolean expected) {
 			test(items1, items2, expected);
 		}
@@ -243,7 +243,7 @@ public class SetTests {
 				"[]; [];" +
 				"false"
 		})
-		void testEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			boolean expected) {
 			test(items1, items2, expected);
 		}
@@ -273,7 +273,7 @@ public class SetTests {
 				"[t, E, q, v, b, 0]; [];" +
 				"[]"
 		})
-		void testNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -287,7 +287,7 @@ public class SetTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -318,7 +318,7 @@ public class SetTests {
 				"[t, E, q, v, b, 0]; [];" +
 				"[t, E, q, v, b, 0]"
 		})
-		void testNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -332,7 +332,7 @@ public class SetTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -362,7 +362,7 @@ public class SetTests {
 				"[t, E, q, v, b, 0]; [];" +
 				"[t, E, q, v, b, 0]"
 		})
-		void testNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -376,7 +376,7 @@ public class SetTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringSet Set<String> expected) {
 			test(items1, items2, expected);
 		}
@@ -406,7 +406,7 @@ public class SetTests {
 				"[t, E, q, v, b, 0]; [];" +
 				"[]"
 		})
-		void testNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetNotEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringPairSet Set<Pair<String, String>> expected) {
 			test(items1, items2, expected);
 		}
@@ -420,7 +420,7 @@ public class SetTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
+		void testSetEmpty(@StringSet Set<String> items1, @StringSet Set<String> items2,
 			@StringPairSet Set<Pair<String, String>> expected) {
 			test(items1, items2, expected);
 		}

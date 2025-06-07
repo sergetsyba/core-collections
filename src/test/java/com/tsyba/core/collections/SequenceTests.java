@@ -1,9 +1,6 @@
 package com.tsyba.core.collections;
 
-import com.tsyba.core.collections.converter.IntOptional;
-import com.tsyba.core.collections.converter.StringMap;
-import com.tsyba.core.collections.converter.StringOptional;
-import com.tsyba.core.collections.converter.StringSequence;
+import com.tsyba.core.collections.converter.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 
@@ -94,7 +91,7 @@ public class SequenceTests {
 				"[g, B, s, E, q, s, K]; 12;" +
 				"null; 12 ∉ [0, 7)"
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items, int index,
+		void testSequenceNotEmpty(@StringSequence Sequence<String> items, int index,
 			String expected1, @IndexRangeException Exception expected2) {
 			test(items, index, expected1, expected2);
 		}
@@ -108,7 +105,7 @@ public class SequenceTests {
 				"[]; 0;" +
 				"null; 0 ∉ [0, 0)"
 		})
-		void testEmpty(@StringSequence Sequence<String> items, int index,
+		void testSequenceEmpty(@StringSequence Sequence<String> items, int index,
 			String expected1, @IndexRangeException Exception expected2) {
 			test(items, index, expected1, expected2);
 		}
@@ -121,12 +118,8 @@ public class SequenceTests {
 				assertEquals(expected1, item,
 					format("%s.get(%d)", item, index));
 			} catch (Exception exception) {
-				if (expected2 == null) {
-					throw exception;
-				} else {
-					assertEquals(expected2, exception,
-						format("%s.get(%d)", items, index));
-				}
+				assertEquals(expected2, exception,
+					format("%s.get(%d)", items, index));
 			}
 		}
 	}
@@ -147,7 +140,7 @@ public class SequenceTests {
 				"[g, T, s, l, I, o]; 13;" +
 				"null",
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items, int index,
+		void testSequenceNotEmpty(@StringSequence Sequence<String> items, int index,
 			@IntOptional Optional<Integer> expected) {
 			test(items, index, expected);
 		}
@@ -161,7 +154,7 @@ public class SequenceTests {
 				"[]; 0;" +
 				"null",
 		})
-		void testEmpty(@StringSequence Sequence<String> items, int index,
+		void testSequenceEmpty(@StringSequence Sequence<String> items, int index,
 			@IntOptional Optional<Integer> expected) {
 			test(items, index, expected);
 		}
@@ -178,7 +171,7 @@ public class SequenceTests {
 	@DisplayName(".guard(IndexRange)")
 	@Nested
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	class GuardIndexRangeTests {
+	class GuardWithIndexRangeTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
 			"when index range is within valid range, returns index range;" +
@@ -191,7 +184,7 @@ public class SequenceTests {
 				"[g, I, m, k, L, s, D, n]; [3, 15);" +
 				"null"
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items,
+		void testSequenceNotEmpty(@StringSequence Sequence<String> items,
 			@IntRange IndexRange range,
 			@IntRangeOptional Optional<IndexRange> expected) {
 			test(items, range, expected);
@@ -203,7 +196,7 @@ public class SequenceTests {
 				"[]; [0, 2);" +
 				"null"
 		})
-		void testEmpty(@StringSequence Sequence<String> items,
+		void testSequenceEmpty(@StringSequence Sequence<String> items,
 			@IntRange IndexRange range,
 			@IntRangeOptional Optional<IndexRange> expected) {
 			test(items, range, expected);
@@ -280,7 +273,7 @@ public class SequenceTests {
 
 	@DisplayName(".findFirst(Predicate<T>)")
 	@Nested
-	class FindFirstPredicateTests {
+	class FindFirstWithPredicateTests {
 		@DisplayName("\uD83C\uDFDC")
 		@Tests({
 			"when item is present, returns its index;" +
@@ -312,7 +305,7 @@ public class SequenceTests {
 	@DisplayName(".findFirst(Sequence<T>)")
 	@Nested
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	class FindFirstSequence {
+	class FindFirstWithSequence {
 		@DisplayName("when sequence is not empty")
 		@Tests({
 			"when argument sequence is present, returns its index;" +
@@ -331,7 +324,7 @@ public class SequenceTests {
 				"[u, Y, k, L, m, n, F, s, d]; [];" +
 				"0"
 		})
-		void testNotEmpty(@StringSequence Sequence<String> items1,
+		void testSequenceNotEmpty(@StringSequence Sequence<String> items1,
 			@StringSequence Sequence<String> items2,
 			@IntOptional Optional<Integer> expected) {
 			test(items1, items2, expected);
@@ -346,7 +339,7 @@ public class SequenceTests {
 				"[]; [];" +
 				"null"
 		})
-		void testEmpty(@StringSequence Sequence<String> items1,
+		void testSequenceEmpty(@StringSequence Sequence<String> items1,
 			@StringSequence Sequence<String> items2,
 			@IntOptional Optional<Integer> expected) {
 			test(items1, items2, expected);
