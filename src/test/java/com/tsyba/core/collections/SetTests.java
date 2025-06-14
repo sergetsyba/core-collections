@@ -19,9 +19,15 @@ public class SetTests {
 	class NewWithCollectionTests {
 		@DisplayName("\uD83D\uDC96")
 		@Tests({
-			"when argument collection is not empty, creates set with items;" +
+			"when all argument items are distinct, creates set with all argument items;" +
 				"[g, R, 2, q, P, s];" +
 				"[g, R, 2, q, P, s]",
+			"when some argument items are same, creates set with distinct argument items;" +
+				"[g, R, R, f, S, g, R];" +
+				"[g, R, f, S]",
+			"when all argument items are same, creates set with single distinct argument item;" +
+				"[b, b, b, b, b];" +
+				"[b]",
 			"when argument collection is empty, creates empty set;" +
 				"[];" +
 				"[]"
@@ -36,22 +42,63 @@ public class SetTests {
 	@DisplayName("Set(T...)")
 	@Nested
 	class NewWithVarargs {
-		@DisplayName("\uD83D\uDC8C")
+		@DisplayName("when no argument items are null")
 		@Tests({
-			"when no argument items are null, creates set with all items;" +
+			"when all argument items are distinct, creates set with all argument items;" +
 				"[g, R, l, q, P, s, n];" +
 				"[g, R, l, q, P, s, n]",
-			"when some argument items are null, creates set with non-null items;" +
+			"when some argument items are same, creates set with distinct argument items;" +
+				"[g, R, s, g, s, R, R];" +
+				"[g, R, s]",
+			"when all argument items are same, creates set with single distinct argument item;" +
+				"[g, g, g];" +
+				"[g]"
+		})
+		void testNoItemsNull(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when some argument items are null")
+		@Tests({
+			"when all argument items are distinct, creates set with all non-null argument items;" +
 				"[g, null, l, null, P, null, null];" +
 				"[g, l, P]",
-			"when all argument items are null, creates empty set;" +
+			"when some argument items are same, creates set with non-null distinct argument items;" +
+				"[n, null, null, m, null, m, O, null, O];" +
+				"[n, m, O]",
+			"when all argument items are same, creates set with single non-null distinct argument item;" +
+				"[t, null, t, null, null, t];" +
+				"[t]",
+		})
+		void testSomeItemsNull(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when all argument items are null")
+		@Tests({
+			"creates empty set;" +
 				"[null, null, null, null];" +
 				"[]",
-			"when argument array is empty, creates empty set;" +
-				"[];" +
-				"[]"
 		})
-		void test(@StringArray String[] items, @StringSet Set<String> expected) {
+		void testAllItemsNull(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when argument array is empty")
+		@Tests({
+			"creates empty set;" +
+				"[];" +
+				"[]",
+		})
+		void testArgumentArrayEmpty(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		private void test(String[] items, Set<String> expected) {
 			final var set = new Set<>(items);
 			assertEquals(expected, set,
 				format("new Set<>(%s)",
@@ -62,22 +109,63 @@ public class SetTests {
 	@DisplayName("Set(Iterable<T>)")
 	@Nested
 	class NewWithIterable {
-		@DisplayName("\uD83C\uDFCD")
+		@DisplayName("when no argument items are null")
 		@Tests({
-			"when no argument items are null, creates set with all items;" +
-				"[t, y, O, f, A, s];" +
-				"[t, y, O, f, A, s]",
-			"when some argument items are null, creates set with non-null items;" +
-				"[l, null, null, P, null, d, null];" +
-				"[l, P, d]",
-			"when all argument items are null, creates empty set;" +
+			"when all argument items are distinct, creates set with all argument items;" +
+				"[b, R, s, k];" +
+				"[b, R, s, k]",
+			"when some argument items are same, creates set with distinct argument items;" +
+				"[p, k, H, f, f, k, p, k];" +
+				"[p, k, H, f]",
+			"when all argument items are same, creates set with single distinct argument item;" +
+				"[l, l, l, l, l];" +
+				"[l]"
+		})
+		void testNoItemsNull(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when some argument items are null")
+		@Tests({
+			"when all argument items are distinct, creates set with all non-null argument items;" +
+				"[k, null, null, f, e, null, h, j];" +
+				"[k, f, e, h, j]",
+			"when some argument items are same, creates set with non-null distinct argument items;" +
+				"[null, null, R, R, j, R, null, j, O];" +
+				"[R, j, O]",
+			"when all argument items are same, creates set with single non-null distinct argument item;" +
+				"[v, null, v, null, null];" +
+				"[v]",
+		})
+		void testSomeItemsNull(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when all argument items are null")
+		@Tests({
+			"creates empty set;" +
 				"[null, null];" +
 				"[]",
-			"when argument iterable is empty, creates empty set;" +
-				"[];" +
-				"[]"
 		})
-		void test(@StringArray String[] items, @StringSet Set<String> expected) {
+		void testAllItemsNull(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when argument iterable is empty")
+		@Tests({
+			"creates empty set;" +
+				"[];" +
+				"[]",
+		})
+		void testArgumentIterableEmpty(@StringArray String[] items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		private void test(String[] items, Set<String> expected) {
 			final var set = new Set<>(
 				Arrays.asList(items));
 
@@ -464,30 +552,77 @@ public class SetTests {
 	@DisplayName(".convert(Function<T, R>)")
 	@Nested
 	class ConvertTests {
-		@DisplayName("\uD83D\uDCAA")
+		@DisplayName("when no items convert to null")
 		@Tests({
-			"when no items convert to null, returns converted items;" +
-				"[f, R, E, a, A, b, F, L];" +
-				"[f, r, e, a, b, l]",
-			"when some items convert to null, returns converted non-null items;" +
-				"[f, R, a, B, 2, e, T, 4, 0];" +
-				"[f, r, a, b, e, t]",
-			"when all items convert to null, returns empty set;" +
-				"[4, 5, 1, 0];" +
-				"[]",
+			"when all converted items are distinct, returns all converted items;" +
+				"[a, g, d, s, w];" +
+				"[a, g, d, s, w]",
+			"when some converted items are same, returns distinct converted items;" +
+				"[a, u, s, f, i, b];" +
+				"[a, s, f, b]",
+			"when all converted items are same, returns single distinct converted item;" +
+				"[e, i, o, u];" +
+				"[a]",
 			"when set is empty, returns empty set;" +
 				"[];" +
 				"[]"
 		})
-		void test(@StringSet Set<String> items, @StringSet Set<String> expected) {
+		void testNoItemsConvertNull(@StringSet Set<String> items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when some items convert to null")
+		@Tests({
+			"when all converted items are distinct, returns all non-null converted items;" +
+				"[E, g, a, B, O, s];" +
+				"[g, a, s]",
+			"when some converted items are same, returns non-null distinct converted items;" +
+				"[F, D, a, u, g, V, o];" +
+				"[a, g]",
+			"when all converted items are same, returns single non-null distinct converted item;" +
+				"[a, e, G, B, i, K, o];" +
+				"[a]"
+		})
+		void testSomeItemsConvertNull(@StringSet Set<String> items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		@DisplayName("when all items convert to null")
+		@Tests({
+			"returns empty set;" +
+				"[R, W, D, O];" +
+				"[]"
+		})
+		void testAllItemsConvertNull(@StringSet Set<String> items,
+			@StringSet Set<String> expected) {
+			test(items, expected);
+		}
+
+		private void test(Set<String> items, Set<String> expected) {
 			final var converted = items.convert((item) -> {
-				return item.matches("\\d+")
-					? null
-					: item.toLowerCase();
+				// all lowercase vowels convert to a
+				final var isVowel = new Set<>("a", "e", "o", "u", "i")
+					.contains(item);
+
+				if (isVowel) {
+					return "a";
+				}
+
+				// all uppercase letters convert to null
+				final var isUpperCase = item.toUpperCase()
+					.equals(item);
+
+				if (isUpperCase) {
+					return null;
+				}
+
+				return item;
 			});
 
 			assertEquals(expected, converted,
-				format("%s.convert(<to lowercase>)", items));
+				format("%s.convert(Predicate<>)", items));
 		}
 	}
 

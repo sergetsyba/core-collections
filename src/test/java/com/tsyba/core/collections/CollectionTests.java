@@ -163,13 +163,13 @@ public class CollectionTests {
 	class ContainsTests {
 		@DisplayName("\uD83D\uDC8A")
 		@Tests({
-			"when item is present, returns true;" +
+			"when argument item is present, returns true;" +
 				"[t, d, 5, V, A]; 5;" +
 				"true",
-			"when item is absent, returns false;" +
+			"when argument item is absent, returns false;" +
 				"[t, d, 5, V, A]; 7;" +
 				"false",
-			"when item is null, returns false;" +
+			"when argument item is null, returns false;" +
 				"[t, d, 5, V, A]; null;" +
 				"false",
 			"when collection is empty, returns false;" +
@@ -190,13 +190,13 @@ public class CollectionTests {
 	class ContainsWithCollectionTests {
 		@DisplayName("when collection is not empty")
 		@Tests({
-			"when all items are present, returns true;" +
+			"when all argument items are present, returns true;" +
 				"[t, d, 5, V, A]; [A, d, t];" +
 				"true",
-			"when some items are absent, returns false;" +
+			"when some argument items are absent, returns false;" +
 				"[O, P, q]; [P, 0, O];" +
 				"false",
-			"when all items are absent, returns false;" +
+			"when all argument items are absent, returns false;" +
 				"[Y, f, E, 3]; [N, R, P];" +
 				"false",
 			"when argument collection is empty, returns true;" +

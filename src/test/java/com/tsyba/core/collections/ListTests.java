@@ -16,10 +16,10 @@ public class ListTests {
 	class NewWithVarargsTests {
 		@DisplayName("\uD83D\uDE82")
 		@Tests({
-			"when no argument items are null, creates list;" +
+			"when no argument items are null, creates list with all argument items;" +
 				"[d, O, s, R, s];" +
 				"[d, O, s, R, s];",
-			"when some argument items are null, creates list with non-null items;" +
+			"when some argument items are null, creates list with non-null argument items;" +
 				"[d, null, null, s, null, s];" +
 				"[d, s, s]",
 			"when all argument items are null, creates empty list;" +
@@ -42,7 +42,7 @@ public class ListTests {
 	class NewWithCollectionTests {
 		@DisplayName("\uD83C\uDF4B")
 		@Tests({
-			"when argument collection is not empty, creates list;" +
+			"when argument collection is not empty, creates list with argument items;" +
 				"[h, m, I, k, m, m];" +
 				"[h, m, I, k, m, m]",
 			"when argument collection is empty, creates empty list;" +
@@ -451,13 +451,13 @@ public class ListTests {
 	class GetDistinctTests {
 		@DisplayName("\uD83C\uDF9F")
 		@Tests({
-			"when some items are duplicates, returns distinct items;" +
-				"[t, e, r, t, t, r, R, r];" +
-				"[r, R, t, e]",
-			"when no items are duplicates, returns all items;" +
+			"when all items are distinct, returns all items;" +
 				"[t, m, j, E, d, S, s];" +
 				"[j, d, s, t, m, E, S]",
-			"when all items are duplicates, returns 1 distinct item;" +
+			"when some items are same, returns distinct items;" +
+				"[t, e, r, t, t, r, R, r];" +
+				"[r, R, t, e]",
+			"when all items are distinct, returns single distinct item;" +
 				"[g, g, g, g, g, g, g];" +
 				"[g]",
 			"when list is empty, returns empty list;" +
@@ -476,7 +476,7 @@ public class ListTests {
 	class ReverseTests {
 		@DisplayName("\uD83D\uDC58")
 		@Tests({
-			"when list is not empty, returns its items in reverse order;" +
+			"when list is not empty, returns its all items in reverse order;" +
 				"[t, g, s, W, s, a, Q];" +
 				"[Q, a, s, W, s, g, t]",
 			"when list is empty, returns empty list;" +
@@ -495,7 +495,7 @@ public class ListTests {
 	class ConvertTests {
 		@DisplayName("\uD83C\uDF5A")
 		@Tests({
-			"when no items convert to null, returns converted items;" +
+			"when no items convert to null, returns all converted items;" +
 				"[g, s, s, a, b, w];" +
 				"[G, S, S, A, B, W]",
 			"when some items convert to null, returns non-null converted items;" +
@@ -526,7 +526,7 @@ public class ListTests {
 	class BridgeTests {
 		@DisplayName("\uD83C\uDF0D")
 		@Tests({
-			"when list is not empty, returns items in java.util.List;" +
+			"when list is not empty, returns all items in java.util.List;" +
 				"[t, b, s, W, q, a, W];" +
 				"[t, b, s, W, q, a, W]",
 			"when list is empty, returns empty java.util.List;" +
@@ -545,7 +545,7 @@ public class ListTests {
 	class ToArrayTests {
 		@DisplayName("\uD83C\uDF68")
 		@Tests({
-			"when list its not empty, returns items in array;" +
+			"when list its not empty, returns all items in array;" +
 				"[g, b, d, s, s, Q, g];" +
 				"[g, b, d, s, s, Q, g]",
 			"when list is empty, returns empty array;" +
@@ -564,7 +564,7 @@ public class ListTests {
 	class ToArrayWithClassTests {
 		@DisplayName("\uD83C\uDF68")
 		@Tests({
-			"when list its not empty, returns items in array;" +
+			"when list its not empty, returns all items in array;" +
 				"[h, j, M, f, f, h, Q];" +
 				"[h, j, M, f, f, h, Q]",
 			"when list is empty, returns empty array;" +

@@ -23,7 +23,7 @@ public class MutableSet<T> extends Set<T> {
 
 	@Override
 	public MutableSet<T> getDistinct() {
-		return new MutableSet<>(store);
+		return this;
 	}
 
 	@Override

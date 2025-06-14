@@ -287,13 +287,13 @@ public class SequenceTests {
 	class FindFirstTests {
 		@DisplayName("\uD83C\uDF5D")
 		@Tests({
-			"when item is present, returns its index;" +
+			"when argument item is present, returns its index;" +
 				"[j, M, n, K, l, O, p]; l;" +
 				"4",
-			"when item is present multiple times, returns its first index;" +
+			"when argument item is present multiple times, returns its first index;" +
 				"[j, M, l, K, l, O, l]; l;" +
 				"2",
-			"when item is absent, returns empty optional;" +
+			"when argument item is absent, returns empty optional;" +
 				"[j, M, n, K, l, O, p]; L;" +
 				"null",
 			"when sequence is empty, returns empty optional;" +
@@ -315,13 +315,13 @@ public class SequenceTests {
 	class FindFirstWithPredicateTests {
 		@DisplayName("\uD83C\uDFDC")
 		@Tests({
-			"when item is present, returns its index;" +
+			"when argument item is present, returns its index;" +
 				"[o, k, p, d, s, S, n];" +
 				"5",
-			"when item is present multiple times, returns its first index;" +
+			"when argument item is present multiple times, returns its first index;" +
 				"[o, k, p, D, s, S, N];" +
 				"3",
-			"when item is absent, returns empty optional;" +
+			"when argument item is absent, returns empty optional;" +
 				"[o, k, p, d, s, s, n];" +
 				"null",
 			"when sequence is empty, returns empty optional;" +
