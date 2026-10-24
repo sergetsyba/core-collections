@@ -13,8 +13,8 @@ import java.util.function.Predicate;
  * A container, which provides non-destructive iterations over its items.
  * <p>
  * Unlike a more general {@link Iterable}, {@link Collection} guarantees that an iteration
- * does not destructively consume it. This property enables unlimited iterations over
- * {@link Collection}'s items.
+ * does not destructively consume it. This property lets {@link Collection} have unlimited
+ * iterations over its items.
  * <p>
  * However, unlike {@link Sequence}, {@link Collection} does not guarantee that relative
  * item order stays the same in each iteration.
@@ -46,9 +46,6 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@link Comparator}.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
-	 *
-	 * @throws UnsupportedOperationException when items of this collection are not
-	 * {@link Comparable}
 	 */
 	default Optional<T> getMin(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -57,10 +54,6 @@ public interface Collection<T> extends Iterable<T> {
 		}
 
 		var min = iterator.next();
-		if (!(min instanceof Comparable)) {
-			throw new UnsupportedOperationException("Collection items are not comparable.");
-		}
-
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
 			if (comparator.compare(min, item) > 0) {
@@ -74,9 +67,11 @@ public interface Collection<T> extends Iterable<T> {
 	/**
 	 * Returns the smallest item in this collection, according to the natural order of the
 	 * items.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
 	 *
-	 * @throws UnsupportedOperationException when items of this collection are not
-	 * {@link Comparable}
+	 * @throws RuntimeException when items of this collection are not {@link Comparable},
+	 * unless this collection is empty or has a single item
 	 */
 	default Optional<T> getMin() {
 		@SuppressWarnings("unchecked")
@@ -89,9 +84,6 @@ public interface Collection<T> extends Iterable<T> {
 	 * {@link Comparator}.
 	 * <p>
 	 * When this collection is empty, returns an empty {@link Optional}.
-	 *
-	 * @throws UnsupportedOperationException when items of this collection are not
-	 * {@link Comparable}
 	 */
 	default Optional<T> getMax(Comparator<T> comparator) {
 		final var iterator = iterator();
@@ -100,10 +92,6 @@ public interface Collection<T> extends Iterable<T> {
 		}
 
 		var max = iterator.next();
-		if (!(max instanceof Comparable)) {
-			throw new UnsupportedOperationException("Collection items are not comparable.");
-		}
-
 		while (iterator.hasNext()) {
 			final var item = iterator.next();
 			if (comparator.compare(max, item) < 0) {
@@ -117,9 +105,11 @@ public interface Collection<T> extends Iterable<T> {
 	/**
 	 * Returns the largest item in this collection, according to the natural order of the
 	 * items.
+	 * <p>
+	 * When this collection is empty, returns an empty {@link Optional}.
 	 *
-	 * @throws UnsupportedOperationException when items of this collection are not
-	 * {@link Comparable}
+	 * @throws RuntimeException when items of this collection are not {@link Comparable},
+	 * unless this collection is empty or has a single item
 	 */
 	default Optional<T> getMax() {
 		@SuppressWarnings("unchecked")
@@ -130,6 +120,8 @@ public interface Collection<T> extends Iterable<T> {
 	/**
 	 * Returns {@code true} when this collection contains the specified item; returns
 	 * {@code false} otherwise.
+	 * <p>
+	 * When the specified item is {@code null}, returns {@code false}.
 	 */
 	default boolean contains(T item) {
 		return matchAny((item2) -> item2.equals(item))
@@ -193,7 +185,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns the number of items in this collection, which satisfies the specified
+	 * Returns the number of items in this collection, that satisfy the specified
 	 * {@link Predicate}.
 	 */
 	default int countMatches(Predicate<T> condition) {
@@ -208,7 +200,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns any item in this collection, which satisfies the specified
+	 * Returns any item in this collection, that satisfies the specified
 	 * {@link Predicate}.
 	 * <p>
 	 * When no item in this collection satisfies the specified {@link Predicate}, or this
@@ -225,7 +217,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns all items of this collection, which satisfy the specified
+	 * Returns all items of this collection, that satisfy the specified
 	 * {@link Predicate}.
 	 */
 	Collection<T> matchAll(Predicate<T> condition);
@@ -251,7 +243,8 @@ public interface Collection<T> extends Iterable<T> {
 	/**
 	 * Returns items of this collection, ordered according to their natural order.
 	 *
-	 * @throws RuntimeException when items of this collection are not {@link Comparable}.
+	 * @throws RuntimeException when items of this collection are not {@link Comparable},
+	 * unless this collection is empty or has a single item
 	 */
 	default Sequence<T> sort() {
 		@SuppressWarnings("unchecked")
@@ -334,6 +327,8 @@ public interface Collection<T> extends Iterable<T> {
 	 * Combines this collection into a single value by applying the specified
 	 * {@link BiFunction} to every item and an intermediate combination, using the
 	 * specified value as a starting point.
+	 * <p>
+	 * When this collection is empty, returns the specified initial value.
 	 */
 	default <R> R combine(R initial, BiFunction<R, T, R> combiner) {
 		var combination = initial;
@@ -383,7 +378,7 @@ public interface Collection<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Returns items of this collection in a typed array.
+	 * Returns items of this collection in an array of the specified type.
 	 */
 	default T[] toArray(Class<? extends T[]> klass) {
 		final var count = getCount();

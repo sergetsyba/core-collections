@@ -1,7 +1,6 @@
 package com.tsyba.core.collections;
 
 import com.tsyba.core.collections.converter.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,7 @@ import java.util.*;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CollectionTests {
+class CollectionTests {
 	@DisplayName(".isEmpty()")
 	@Nested
 	class IsEmptyTests {
@@ -49,15 +48,17 @@ public class CollectionTests {
 		}
 	}
 
-
 	@DisplayName(".getMin(Comparator<T>)")
 	@Nested
-	class GetMinWithComparatorTests {
+	class GetMinComparatorTests {
 		@DisplayName("\uD83D\uDDFF")
 		@Tests({
-			"when collection is not empty, returns minimum;" +
+			"when collection is not empty, returns minimum item according to comparator;" +
 				"[b, L, P, g, V, c];" +
 				"g",
+			"when collection has single item, returns item;" +
+				"[y];" +
+				"y",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -68,7 +69,23 @@ public class CollectionTests {
 
 			final var minimum = items.getMin(Comparator.reverseOrder());
 			assertEquals(expected, minimum,
-				format("%s.getMinimum()", items));
+				format("%s.getMin(Comparator<T>)", items));
+		}
+
+		@DisplayName("when items are not comparable, returns minimum item according to comparator")
+		@Test
+		void testItemsNotComparable() {
+			final var items = new NonComparableCollection(
+				new Object(),
+				new Object(),
+				new Object());
+
+			final var first = items.iterator()
+				.next();
+
+			final var minimum = items.getMin((item1, item2) -> 0);
+			assertSame(first, minimum.get(),
+				format("%s.getMin(Comparator<T>)", items));
 		}
 	}
 
@@ -78,9 +95,12 @@ public class CollectionTests {
 	class GetMinTests {
 		@DisplayName("when items are comparable")
 		@Tests({
-			"when collection is not empty, returns minimum;" +
+			"when collection is not empty, returns minimum item;" +
 				"[g, m, t, E, d, A, s];" +
 				"A",
+			"when collection has single item, returns item;" +
+				"[Q];" +
+				"Q",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -96,22 +116,29 @@ public class CollectionTests {
 		@DisplayName("when items are not comparable, fails")
 		@Test
 		void testItemsNotComparable() {
-			assertThrows(UnsupportedOperationException.class,
+			final var items = new NonComparableCollection(
+				new Object(),
+				new Object(),
+				new Object());
+
+			assertThrows(RuntimeException.class,
 				() -> {
-					new NonComparableCollection()
-						.getMin();
-				});
+					items.getMin();
+				}, format("%s.getMin()", items));
 		}
 	}
 
 	@DisplayName(".getMax(Comparator<T>)")
 	@Nested
-	class GetMaxWithComparatorTests {
+	class GetMaxComparatorTests {
 		@DisplayName("\uD83D\uDDBC")
 		@Tests({
-			"when collection is not empty, returns maximum;" +
-				"[b, L, P, g, V, c];" +
-				"L",
+			"when collection is not empty, returns maximum item according to comparator;" +
+				"[n, e, v, R, t, m, D];" +
+				"D",
+			"when collection has single item, returns item;" +
+				"[p];" +
+				"p",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -122,7 +149,23 @@ public class CollectionTests {
 
 			final var maximum = items.getMax(Comparator.reverseOrder());
 			assertEquals(expected, maximum,
-				format("%s.getMaximum()", items));
+				format("%s.getMax(Comparator<T>)", items));
+		}
+
+		@DisplayName("when items are not comparable, returns maximum item according to comparator")
+		@Test
+		void testItemsNotComparable() {
+			final var items = new NonComparableCollection(
+				new Object(),
+				new Object(),
+				new Object());
+
+			final var first = items.iterator()
+				.next();
+
+			final var maximum = items.getMax((item1, item2) -> 0);
+			assertSame(first, maximum.get(),
+				format("%s.getMax(Comparator<T>)", items));
 		}
 	}
 
@@ -131,9 +174,12 @@ public class CollectionTests {
 	class GetMaxTests {
 		@DisplayName("when items are comparable")
 		@Tests({
-			"when collection is not empty, returns maximum;" +
-				"[g, m, t, E, d, A, s];" +
-				"t",
+			"when collection is not empty, returns maximum item;" +
+				"[h, W, o, k, C, z];" +
+				"z",
+			"when collection has single item, returns item;" +
+				"[M];" +
+				"M",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -150,11 +196,15 @@ public class CollectionTests {
 		@DisplayName("when items are not comparable, fails")
 		@Test
 		void testItemsNotComparable() {
-			assertThrows(UnsupportedOperationException.class,
+			final var items = new NonComparableCollection(
+				new Object(),
+				new Object(),
+				new Object());
+
+			assertThrows(RuntimeException.class,
 				() -> {
-					new NonComparableCollection()
-						.getMax();
-				});
+					items.getMax();
+				}, format("%s.getMax()", items));
 		}
 	}
 
@@ -164,16 +214,16 @@ public class CollectionTests {
 		@DisplayName("\uD83D\uDC8A")
 		@Tests({
 			"when argument item is present, returns true;" +
-				"[t, d, 5, V, A]; 5;" +
+				"[h, Y, 3, w, R]; 3;" +
 				"true",
 			"when argument item is absent, returns false;" +
-				"[t, d, 5, V, A]; 7;" +
+				"[k, 7, Z, n, B]; q;" +
 				"false",
 			"when argument item is null, returns false;" +
-				"[t, d, 5, V, A]; null;" +
+				"[x, E, 9, s, M]; null;" +
 				"false",
 			"when collection is empty, returns false;" +
-				"[]; 5;" +
+				"[]; 4;" +
 				"false"
 		})
 		void test(@StringCollection Collection<String> items, String item,
@@ -187,20 +237,20 @@ public class CollectionTests {
 
 	@DisplayName(".contains(Collection<T>)")
 	@Nested
-	class ContainsWithCollectionTests {
+	class ContainsCollectionTests {
 		@DisplayName("when collection is not empty")
 		@Tests({
 			"when all argument items are present, returns true;" +
-				"[t, d, 5, V, A]; [A, d, t];" +
+				"[x, R, 7, m, K]; [m, 7, x, R];" +
 				"true",
 			"when some argument items are absent, returns false;" +
-				"[O, P, q]; [P, 0, O];" +
+				"[w, G, 4, r]; [G, 0, w, Q];" +
 				"false",
 			"when all argument items are absent, returns false;" +
-				"[Y, f, E, 3]; [N, R, P];" +
+				"[B, v, 6, T]; [N, c, E, 5];" +
 				"false",
 			"when argument collection is empty, returns true;" +
-				"[Y, f, E, 3]; [];" +
+				"[L, 8, y, D]; [];" +
 				"true"
 		})
 		void testCollectionNotEmpty(@StringCollection Collection<String> items1,
@@ -211,7 +261,7 @@ public class CollectionTests {
 		@DisplayName("when collection is empty")
 		@Tests({
 			"when argument collection is not empty, returns false;" +
-				"[]; [A, d, t];" +
+				"[]; [p, 2, W, n];" +
 				"false",
 			"when argument collection is empty, returns true;" +
 				"[]; [];" +
@@ -235,13 +285,13 @@ public class CollectionTests {
 		@DisplayName("\uD83D\uDD2C")
 		@Tests({
 			"when no item matches, returns true;" +
-				"[K, M, T, S, A];" +
+				"[R, X, B, E, M];" +
 				"true",
 			"when some item matches, returns false;" +
-				"[K, m, t, S, a];" +
+				"[Q, w, Z, k, F];" +
 				"false",
 			"when all items match, returns false;" +
-				"[k, m, t, s, a];" +
+				"[h, y, c, s, p];" +
 				"false",
 			"when collection is empty, returns true;" +
 				"[];" +
@@ -264,13 +314,13 @@ public class CollectionTests {
 		@DisplayName("\uD83D\uDC20")
 		@Tests({
 			"when no item matches, returns false;" +
-				"[Y, P, D, A, S, M, S];" +
+				"[Q, Z, E, T, U];" +
 				"false",
 			"when some item matches, returns true;" +
-				"[Y, P, d, a, S, M, S];" +
+				"[G, o, R, n, W];" +
 				"true",
 			"when all items match, returns true;" +
-				"[y, p, d, a, s, m, s];" +
+				"[m, x, f, k, r];" +
 				"true",
 			"when collection is empty, returns false;" +
 				"[];" +
@@ -289,17 +339,17 @@ public class CollectionTests {
 
 	@DisplayName(".allMatch(Predicate<T>)")
 	@Nested
-	class EachMatchesTests {
+	class AllMatchTests {
 		@DisplayName("\uD83D\uDD2A")
 		@Tests({
 			"when no item matches, returns false;" +
-				"[H, B, S, A];" +
+				"[C, N, W, Y];" +
 				"false",
 			"when some item matches, returns false;" +
-				"[H, b, S, a];" +
+				"[J, q, V, r];" +
 				"false",
-			"when each items match, returns true;" +
-				"[h, b, s, a];" +
+			"when all items match, returns true;" +
+				"[u, b, z, h];" +
 				"true",
 			"when collection is empty, returns true;" +
 				"[];" +
@@ -322,13 +372,13 @@ public class CollectionTests {
 		@DisplayName("\uD83D\uDC16")
 		@Tests({
 			"when no item matches, returns 0;" +
-				"[t, e, q, s, e, w];" +
+				"[n, u, y, c, f, p];" +
 				"0",
 			"when some items match, returns matched item count;" +
-				"[T, e, q, s, E, W];" +
+				"[R, e, O, b, W, g];" +
 				"3",
 			"when all items match, returns item count;" +
-				"[T, E, Q, S, E, W];" +
+				"[D, K, X, M, J, H];" +
 				"6",
 			"when collection is empty, returns 0;" +
 				"[];" +
@@ -352,10 +402,10 @@ public class CollectionTests {
 		@DisplayName("\uD83C\uDF2D")
 		@Tests({
 			"when some item matches, returns matched item;" +
-				"[F, V, d, P, a, Q];" +
-				"d",
+				"[K, M, y, R, w, B];" +
+				"y",
 			"when no item matches, returns empty optional;" +
-				"[F, V, D, P, A, Q];" +
+				"[K, T, G, Z, X, C];" +
 				"null",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
@@ -370,19 +420,25 @@ public class CollectionTests {
 			});
 
 			assertEquals(expected, match,
-				format("%s.match(Predicate<T>)", items));
+				format("%s.matchAny(Predicate<T>)", items));
 		}
 	}
 
 	@DisplayName(".sort(Comparator<T>)")
 	@Nested
-	class SortWithComparatorTests {
+	class SortComparatorTests {
 		@DisplayName("\uD83C\uDFB3")
 		@Tests({
-			"when collection is not empty, returns sorted list;" +
+			"when collection is not empty, returns items ordered according to comparator;" +
 				"[k, M, s, A, 8, d, q];" +
 				"[s, q, k, d, M, A, 8]",
-			"when collection is empty, returns empty list;" +
+			"when collection has duplicate items, returns items ordered according to comparator;" +
+				"[b, a, b, A];" +
+				"[b, b, a, A]",
+			"when collection has single item, returns copy;" +
+				"[c];" +
+				"[c]",
+			"when collection is empty, returns empty copy;" +
 				"[];" +
 				"[]"
 		})
@@ -393,6 +449,25 @@ public class CollectionTests {
 			assertEquals(expected, sorted,
 				format("%s.sort(Comparator<T>)", items));
 		}
+
+		@DisplayName("when items are not comparable, returns items ordered according to comparator")
+		@Test
+		void testItemsNotComparable() {
+			final var items = new NonComparableCollection(
+				new Object(),
+				new Object(),
+				new Object());
+
+			final var sorted = items.sort((item1, item2) -> 0);
+			final var iterator = items.iterator();
+
+			for (var item : sorted) {
+				assertSame(iterator.next(), item,
+					format("%s.sort(Comparator<T>)", items));
+			}
+			assertFalse(iterator.hasNext(),
+				format("%s.sort(Comparator<T>)", items));
+		}
 	}
 
 	@DisplayName(".sort()")
@@ -400,10 +475,16 @@ public class CollectionTests {
 	class SortTests {
 		@DisplayName("when items are comparable")
 		@Tests({
-			"when collection is not empty, returns sorted list;" +
-				"[k, M, s, A, 8, d, q];" +
-				"[8, A, M, d, k, q, s]",
-			"when collection is empty, returns empty list;" +
+			"when collection is not empty, returns items ordered naturally;" +
+				"[n, W, e, 9, k, R];" +
+				"[9, R, W, e, k, n]",
+			"when collection has duplicate items, returns items ordered naturally;" +
+				"[d, p, d, m];" +
+				"[d, d, m, p]",
+			"when collection has single item, returns copy;" +
+				"[g];" +
+				"[g]",
+			"when collection is empty, returns empty copy;" +
 				"[];" +
 				"[]"
 		})
@@ -411,17 +492,23 @@ public class CollectionTests {
 			@StringList List<String> expected) {
 
 			final var sorted = items.sort();
-			Assertions.assertEquals(expected, sorted,
+			assertEquals(expected, sorted,
+				format("%s.sort()", items));
+			assertNotSame(items, sorted,
 				format("%s.sort()", items));
 		}
 
 		@DisplayName("when items are not comparable, fails")
 		@Test
 		void testItemsNotComparable() {
-			Assertions.assertThrows(RuntimeException.class, () -> {
-				new NonComparableCollection()
-					.sort();
-			}, "<non comparable items>.sort()");
+			final var items = new NonComparableCollection(
+				new Object(),
+				new Object(),
+				new Object());
+
+			assertThrows(RuntimeException.class, () -> {
+				items.sort();
+			}, format("%s.sort()", items));
 		}
 	}
 
@@ -432,7 +519,7 @@ public class CollectionTests {
 		@Tests({
 			"when collection is not empty, returns items shuffled;" +
 				"[r, E, V, s, x, w,O, 8]",
-			"when collection is empty, returns empty collection;" +
+			"when collection is empty, returns empty copy;" +
 				"[]"
 		})
 		void test(@StringCollection Collection<String> items) {
@@ -441,6 +528,8 @@ public class CollectionTests {
 
 			final var shuffled = items.shuffle(random);
 			assertShuffled(shuffled, items,
+				format("%s.shuffle()", items));
+			assertNotSame(shuffled, items,
 				format("%s.shuffle()", items));
 		}
 	}
@@ -452,12 +541,14 @@ public class CollectionTests {
 		@Tests({
 			"when collection is not empty, returns items shuffled;" +
 				"[o, M, F, 0, K, z, v, S]",
-			"when collection is empty, returns empty collection;" +
+			"when collection is empty, returns empty copy;" +
 				"[]"
 		})
 		void test(@StringCollection Collection<String> items) {
 			final var shuffled = items.shuffle();
 			assertShuffled(shuffled, items,
+				format("%s.shuffle()", items));
+			assertNotSame(shuffled, items,
 				format("%s.shuffle()", items));
 		}
 	}
@@ -493,11 +584,13 @@ public class CollectionTests {
 		void test(@StringCollection Collection<String> items,
 			@StringArray String[] expected) {
 
-			final var iterated = new ArrayList<String>();
-			items.iterate(iterated::add);
+			final var items2 = new ArrayList<String>();
+			final var returned = items.iterate(items2::add);
 
+			assertSame(items, returned,
+				format("%s.iterate(Consumer<T>) returns itself", items));
 			assertArrayEquals(expected,
-				iterated.toArray(new String[]{}),
+				items2.toArray(new String[]{}),
 				format("%s.iterate(Consumer<T>)", items));
 		}
 	}
@@ -535,6 +628,9 @@ public class CollectionTests {
 			"when collection is not empty, joins items into a string;" +
 				"[g, t, W, q, P, l]; -;" +
 				"g-t-W-q-P-l",
+			"when collection has single item, returns item string;" +
+				"[h]; -;" +
+				"h",
 			"when collection is empty, returns empty string;" +
 				"[]; -;" +
 				"null"
@@ -554,7 +650,7 @@ public class CollectionTests {
 
 	@DisplayName(".toArray(Class<? extends T[]>)")
 	@Nested
-	class ToArrayWithClassTests {
+	class ToArrayClassTests {
 		@DisplayName("\uD83C\uDFE1")
 		@Tests({
 			"when collection is not empty, returns items array;" +
