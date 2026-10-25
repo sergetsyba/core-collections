@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
@@ -435,7 +436,7 @@ class CollectionTests {
 			"when collection has duplicate items, returns items ordered according to comparator;" +
 				"[b, a, b, A];" +
 				"[b, b, a, A]",
-			"when collection has single item, returns copy;" +
+			"when collection has single item, returns its copy;" +
 				"[c];" +
 				"[c]",
 			"when collection is empty, returns empty copy;" +
@@ -481,7 +482,7 @@ class CollectionTests {
 			"when collection has duplicate items, returns items ordered naturally;" +
 				"[d, p, d, m];" +
 				"[d, d, m, p]",
-			"when collection has single item, returns copy;" +
+			"when collection has single item, returns its copy;" +
 				"[g];" +
 				"[g]",
 			"when collection is empty, returns empty copy;" +
@@ -512,60 +513,98 @@ class CollectionTests {
 		}
 	}
 
-	@DisplayName(".shuffle(Random)")
-	@Nested
-	class ShuffleWithRandomTests {
-		@DisplayName("\uD83D\uDC90")
-		@Tests({
-			"when collection is not empty, returns items shuffled;" +
-				"[r, E, V, s, x, w,O, 8]",
-			"when collection is empty, returns empty copy;" +
-				"[]"
-		})
-		void test(@StringCollection Collection<String> items) {
-			final var time = System.currentTimeMillis();
-			final var random = new Random(time);
-
-			final var shuffled = items.shuffle(random);
-			assertShuffled(shuffled, items,
-				format("%s.shuffle()", items));
-			assertNotSame(shuffled, items,
-				format("%s.shuffle()", items));
-		}
-	}
-
 	@DisplayName(".shuffle()")
 	@Nested
 	class ShuffleTests {
-		@DisplayName("\uD83C\uDF16")
+		@DisplayName("\uD83C\uDFAE")
 		@Tests({
-			"when collection is not empty, returns items shuffled;" +
-				"[o, M, F, 0, K, z, v, S]",
+			"when collection is not empty, returns shuffled copy;" +
+				"[t, R, 4, e, W, 9, A]",
+			"when collection has duplicate items, returns shuffled copy;" +
+				"[h, M, h, 6, s, K]",
+			"when collection has single item, returns its copy;" +
+				"[b]",
 			"when collection is empty, returns empty copy;" +
 				"[]"
 		})
 		void test(@StringCollection Collection<String> items) {
-			final var shuffled = items.shuffle();
-			assertShuffled(shuffled, items,
+			final var shuffled = assertShuffles(items,
+				Collection::shuffle,
 				format("%s.shuffle()", items));
-			assertNotSame(shuffled, items,
+
+			assertNotSame(items, shuffled,
 				format("%s.shuffle()", items));
 		}
 	}
 
-	static void assertShuffled(Collection<String> shuffled,
-		Collection<String> unshuffled, String message) {
+	@DisplayName(".shuffle(Random)")
+	@Nested
+	class ShuffleRandomTests {
+		@DisplayName("\uD83C\uDFB2")
+		@Tests({
+			"when collection is not empty, returns shuffled copy;" +
+				"[c, 8, U, r, F, 2, k]",
+			"when collection has duplicate items, returns shuffled copy;" +
+				"[n, E, n, 3, q, D]",
+			"when collection has single item, returns its copy;" +
+				"[Y]",
+			"when collection is empty, returns empty copy;" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items) {
+			final var random = new Random();
+			final var shuffled = assertShuffles(items,
+				items2 -> items2.shuffle(random),
+				format("%s.shuffle(Random)", items));
 
-		final var items1 = shuffled.toArray(String[].class);
-		final var items2 = unshuffled.toArray(String[].class);
-		if (items1.length == 0) {
-			assertEquals(0, items2.length);
+			assertNotSame(items, shuffled,
+				format("%s.shuffle(Random)", items));
+		}
+	}
+
+	private static Collection<String> assertShuffles(Collection<String> items,
+		Function<Collection<String>, Collection<String>> shuffle, String message) {
+
+		final var random = new Random();
+		for (var attempt = 0; attempt < 100; ++attempt) {
+			final var shuffled = shuffle.apply(items);
+			final var isShuffled = isArrayShuffled(
+				items.toArray(String[].class),
+				shuffled.toArray(String[].class));
+
+			if (isShuffled) {
+				return shuffled;
+			} else {
+				try {
+					// wait for the next millisecond with a random pause, so the next
+					// shuffle has a different time seed
+					final var time = System.currentTimeMillis();
+					do {
+						Thread.sleep(random.nextInt(100));
+					} while (System.currentTimeMillis() == time);
+				} catch (InterruptedException exception) {
+					fail(message);
+				}
+			}
+		}
+
+		return fail(message);
+	}
+
+	private static boolean isArrayShuffled(String[] shuffled, String[] original) {
+		final var equals = Arrays.equals(shuffled, original);
+		if (shuffled.length < 2) {
+			return equals;
 		} else {
-			assertFalse(Arrays.equals(items1, items2), message);
-
-			Arrays.sort(items1);
-			Arrays.sort(items2);
-			assertArrayEquals(items1, items2, message);
+			// copy arrays
+			shuffled = Arrays.copyOf(shuffled, shuffled.length);
+			original = Arrays.copyOf(original, original.length);
+			// sort arrays
+			Arrays.sort(shuffled);
+			Arrays.sort(original);
+			// verify arrays are not equal before sort, but are equal after
+			return !equals
+				&& Arrays.equals(shuffled, original);
 		}
 	}
 
