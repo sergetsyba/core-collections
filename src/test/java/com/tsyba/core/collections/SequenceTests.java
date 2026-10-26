@@ -216,9 +216,12 @@ public class SequenceTests {
 			"when index range starts and ends after valid range end, returns empty optional;" +
 				"[g, I, m, k, L, s, D, n]; [8, 11);" +
 				"null",
-			"when index range is empty, returns empty index range;" +
+			"when index range is empty and starts within valid range, returns empty index range;" +
 				"[g, R, s]; [0, 0);" +
-				"[0, 0)"
+				"[0, 0)",
+			"when index range is empty and starts after valid range, returns empty optional;" +
+				"[j, N, y, S, s]; [7, 7);" +
+				"null"
 		})
 		void testSequenceNotEmpty(@StringSequence Sequence<String> items,
 			@IntRange IndexRange range,
@@ -228,9 +231,12 @@ public class SequenceTests {
 
 		@DisplayName("when sequence is empty")
 		@Tests({
-			"when index range is empty, returns empty index range;" +
+			"when index range is empty and starts at 0, returns empty index range;" +
 				"[]; [0, 0);" +
 				"[0, 0)",
+			"when index range is empty and starts after valid range, returns empty optional;" +
+				"[]; [2, 2);" +
+				"null",
 			"when index range is not empty, returns empty optional;" +
 				"[]; [0, 2);" +
 				"null"
@@ -356,6 +362,12 @@ public class SequenceTests {
 			"when argument sequence items are present in difference order, returns empty optional;" +
 				"[u, Y, k, L, m, n, F, s, d]; [m, L, n];" +
 				"null",
+			"when argument sequence partially matches but is shorter, returns empty optional;" +
+				"[d, G, s, E, f]; [E, f, x];" +
+				"null",
+			"when argument sequence partially matches but is longer, returns empty optional;" +
+				"[m, N, o]; [m, N, o, p];" +
+				"null",
 			"when argument sequence is absent, returns empty optional;" +
 				"[u, Y, k, L, m, n, F, s, d]; [L, m, N];" +
 				"null",
@@ -366,7 +378,10 @@ public class SequenceTests {
 		void testSequenceNotEmpty(@StringSequence Sequence<String> items1,
 			@StringSequence Sequence<String> items2,
 			@IntOptional Optional<Integer> expected) {
-			test(items1, items2, expected);
+
+			final var index = items1.findFirst(items2);
+			assertEquals(expected, index,
+				format("%s.findFirst(%s)", items1, items2));
 		}
 
 		@DisplayName("when sequence is empty")
@@ -381,11 +396,6 @@ public class SequenceTests {
 		void testSequenceEmpty(@StringSequence Sequence<String> items1,
 			@StringSequence Sequence<String> items2,
 			@IntOptional Optional<Integer> expected) {
-			test(items1, items2, expected);
-		}
-
-		private void test(Sequence<String> items1, Sequence<String> items2,
-			Optional<Integer> expected) {
 
 			final var index = items1.findFirst(items2);
 			assertEquals(expected, index,
