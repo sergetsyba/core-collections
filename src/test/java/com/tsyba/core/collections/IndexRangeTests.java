@@ -180,9 +180,15 @@ class IndexRangeTests {
 			"when argument range starts and ends after range end, returns false;" +
 				"[6, 9); [12, 17);" +
 				"false",
-			"when argument range is empty, returns true;" +
+			"when argument range is empty and starts within range, returns true;" +
+				"[6, 9); [7, 7);" +
+				"true",
+			"when argument range is empty and starts before range start, returns false;" +
 				"[6, 9); [0, 0);" +
-				"true"
+				"false",
+			"when argument range is empty and starts after range end, returns false;" +
+				"[6, 9); [12, 12);" +
+				"false"
 		})
 		void testNotEmpty(@IntRange IndexRange range1, @IntRange IndexRange range2,
 			boolean expected) {

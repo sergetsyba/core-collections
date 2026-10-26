@@ -68,12 +68,10 @@ public class IndexRange implements Sequence<Integer> {
 	/**
 	 * Returns {@code true} when the specified index range is within this index range;
 	 * returns {@code false} otherwise.
-	 * <p>
-	 * When the specified index range is empty, returns {@code true}.
 	 */
 	public boolean contains(IndexRange range) {
-		return range.start == range.end
-			|| start <= range.start && range.end <= end;
+		return start <= range.start
+			&& range.end <= end;
 	}
 
 	@Override
