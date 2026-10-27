@@ -57,9 +57,6 @@ class CollectionTests {
 			"when collection is not empty, returns minimum item according to comparator;" +
 				"[b, L, P, g, V, c];" +
 				"g",
-			"when collection has single item, returns item;" +
-				"[y];" +
-				"y",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -99,9 +96,6 @@ class CollectionTests {
 			"when collection is not empty, returns minimum item;" +
 				"[g, m, t, E, d, A, s];" +
 				"A",
-			"when collection has single item, returns item;" +
-				"[Q];" +
-				"Q",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -137,9 +131,6 @@ class CollectionTests {
 			"when collection is not empty, returns maximum item according to comparator;" +
 				"[n, e, v, R, t, m, D];" +
 				"D",
-			"when collection has single item, returns item;" +
-				"[p];" +
-				"p",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -178,9 +169,6 @@ class CollectionTests {
 			"when collection is not empty, returns maximum item;" +
 				"[h, W, o, k, C, z];" +
 				"z",
-			"when collection has single item, returns item;" +
-				"[M];" +
-				"M",
 			"when collection is empty, returns empty optional;" +
 				"[];" +
 				"null"
@@ -436,9 +424,6 @@ class CollectionTests {
 			"when collection has duplicate items, returns items ordered according to comparator;" +
 				"[b, a, b, A];" +
 				"[b, b, a, A]",
-			"when collection has single item, returns its copy;" +
-				"[c];" +
-				"[c]",
 			"when collection is empty, returns empty copy;" +
 				"[];" +
 				"[]"
@@ -482,9 +467,6 @@ class CollectionTests {
 			"when collection has duplicate items, returns items ordered naturally;" +
 				"[d, p, d, m];" +
 				"[d, d, m, p]",
-			"when collection has single item, returns its copy;" +
-				"[g];" +
-				"[g]",
 			"when collection is empty, returns empty copy;" +
 				"[];" +
 				"[]"

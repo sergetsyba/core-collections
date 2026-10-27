@@ -4,21 +4,21 @@ import com.tsyba.core.collections.converter.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SequenceTests {
+class SequenceTests {
 	@DisplayName(".getIndexRange()")
 	@Nested
 	class GetIndexRangeTests {
 		@DisplayName("\uD83C\uDFC2")
 		@Tests({
 			"when sequence is not empty, returns index range;" +
-				"[f, e, Q, e, m, s, d];" +
-				"[0, 7)",
+				"[q, W, e, R, t, y];" +
+				"[0, 6)",
 			"when sequence is empty, returns empty index range;" +
 				"[];" +
 				"[0, 0)"
@@ -78,17 +78,17 @@ public class SequenceTests {
 
 	@DisplayName(".get(int)")
 	@Nested
-	class GetTests {
+	class GetIntTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
 			"when index is before valid range, fails;" +
-				"[g, B, s, E, q, s, K]; -4;" +
+				"[w, E, i, r, d, S, T]; -4;" +
 				"null; -4 ∉ [0, 7)",
 			"when index is 0, returns first item;" +
 				"[b, H, s, O]; 0;" +
 				"b; null",
 			"when index is within valid range, returns item at index;" +
-				"[g, B, s, E, q, s, K]; 4;" +
+				"[g, B, s, E, q, a, K]; 4;" +
 				"q; null",
 			"when index is last valid index, returns last item;" +
 				"[m, N, i, O, d, Q]; 5;" +
@@ -97,8 +97,8 @@ public class SequenceTests {
 				"[g, R, a]; 3;" +
 				"null; 3 ∉ [0, 3)",
 			"when index is after valid range, fails;" +
-				"[g, B, s, E, q, s, K]; 12;" +
-				"null; 12 ∉ [0, 7)"
+				"[n, M, e, i, r, D, s, X]; 12;" +
+				"null; 12 ∉ [0, 8)"
 		})
 		void testSequenceNotEmpty(@StringSequence Sequence<String> items, int index,
 			String expected1, @IndexRangeException Exception expected2) {
@@ -128,7 +128,7 @@ public class SequenceTests {
 			try {
 				final var item = items.get(index);
 				assertEquals(expected1, item,
-					format("%s.get(%d)", item, index));
+					format("%s.get(%d)", items, index));
 			} catch (Exception exception) {
 				assertEquals(expected2, exception,
 					format("%s.get(%d)", items, index));
@@ -143,22 +143,22 @@ public class SequenceTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
 			"when index is before valid range, returns empty optional;" +
-				"[g, T, s, l, I, o]; -3;" +
+				"[n, M, u, r, T, e]; -3;" +
 				"null",
 			"when index is 0, returns index;" +
 				"[g, T, s, O]; 0;" +
 				"0",
 			"when index is within valid range, returns index;" +
-				"[g, T, s, l, I, o]; 3;" +
+				"[w, E, i, r, d, S, T]; 3;" +
 				"3",
 			"when index is last valid index, returns index;" +
 				"[g, O, i, J, k]; 4;" +
-				"4;",
+				"4",
 			"when index is at valid range end, returns empty optional;" +
 				"[b, N]; 2;" +
 				"null",
 			"when index is after valid range, returns empty optional;" +
-				"[g, T, s, l, I, o]; 13;" +
+				"[q, U, i, c, r, E, t]; 13;" +
 				"null",
 		})
 		void testSequenceNotEmpty(@StringSequence Sequence<String> items, int index,
@@ -195,7 +195,7 @@ public class SequenceTests {
 	@DisplayName(".guard(IndexRange)")
 	@Nested
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	class GuardWithIndexRangeTests {
+	class GuardIndexRangeTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
 			"when index range starts at 0 and ends within valid range, returns index range;" +
@@ -211,14 +211,20 @@ public class SequenceTests {
 				"[g, R, s, L, P]; [0, 5);" +
 				"[0, 5)",
 			"when index range starts within valid range and ends after valid range end, returns empty optional;" +
-				"[g, I, m, k, L, s, D, n]; [3, 15);" +
+				"[y, U, k, e, r, T, s, W, n]; [3, 15);" +
 				"null",
 			"when index range starts and ends after valid range end, returns empty optional;" +
-				"[g, I, m, k, L, s, D, n]; [8, 11);" +
+				"[j, O, w, e, r, T, b, N]; [8, 11);" +
+				"null",
+			"when index range starts before valid range, returns empty optional;" +
+				"[p, E, r, f, E, t]; [-1, 2);" +
 				"null",
 			"when index range is empty and starts within valid range, returns empty index range;" +
 				"[g, R, s]; [0, 0);" +
 				"[0, 0)",
+			"when index range is empty and starts at valid range end, returns index range;" +
+				"[t, r, A, w]; [4, 4);" +
+				"[4, 4)",
 			"when index range is empty and starts after valid range, returns empty optional;" +
 				"[j, N, y, S, s]; [7, 7);" +
 				"null"
@@ -318,7 +324,7 @@ public class SequenceTests {
 
 	@DisplayName(".findFirst(Predicate<T>)")
 	@Nested
-	class FindFirstWithPredicateTests {
+	class FindFirstPredicateTests {
 		@DisplayName("\uD83C\uDFDC")
 		@Tests({
 			"when argument item is present, returns its index;" +
@@ -328,7 +334,7 @@ public class SequenceTests {
 				"[o, k, p, D, s, S, N];" +
 				"3",
 			"when argument item is absent, returns empty optional;" +
-				"[o, k, p, d, s, s, n];" +
+				"[o, k, p, d, q, s, n];" +
 				"null",
 			"when sequence is empty, returns empty optional;" +
 				"[];" +
@@ -350,7 +356,7 @@ public class SequenceTests {
 	@DisplayName(".findFirst(Sequence<T>)")
 	@Nested
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	class FindFirstWithSequence {
+	class FindFirstSequenceTests {
 		@DisplayName("when sequence is not empty")
 		@Tests({
 			"when argument sequence is present, returns its index;" +
@@ -360,19 +366,19 @@ public class SequenceTests {
 				"[u, L, m, n, y, F, L, m, n, g, S]; [L, m, n];" +
 				"1",
 			"when argument sequence items are present in difference order, returns empty optional;" +
-				"[u, Y, k, L, m, n, F, s, d]; [m, L, n];" +
+				"[e, Q, w, r, T, s, d, m]; [r, T, d];" +
 				"null",
-			"when argument sequence partially matches but is shorter, returns empty optional;" +
+			"when argument sequence partially matches at last valid index but is shorter, returns empty optional;" +
 				"[d, G, s, E, f]; [E, f, x];" +
 				"null",
-			"when argument sequence partially matches but is longer, returns empty optional;" +
+			"when argument sequence starts matching but is longer, returns empty optional;" +
 				"[m, N, o]; [m, N, o, p];" +
 				"null",
 			"when argument sequence is absent, returns empty optional;" +
-				"[u, Y, k, L, m, n, F, s, d]; [L, m, N];" +
+				"[h, Y, k, L, m, n, F, s, d]; [L, m, N];" +
 				"null",
 			"when argument sequence is empty, returns 0;" +
-				"[u, Y, k, L, m, n, F, s, d]; [];" +
+				"[q, U, i, c, r, E, t]; [];" +
 				"0"
 		})
 		void testSequenceNotEmpty(@StringSequence Sequence<String> items1,
@@ -403,7 +409,7 @@ public class SequenceTests {
 		}
 	}
 
-	@DisplayName(".enumerate(BiPredicate<Integer, T>)")
+	@DisplayName(".enumerate(BiConsumer<Integer, T>)")
 	@Nested
 	class EnumerateTests {
 		@DisplayName("\uD83C\uDF26")
@@ -425,9 +431,72 @@ public class SequenceTests {
 				new Map.Entry<>(Integer.parseInt(key), value));
 
 			assertSame(items, returned,
-				format("%s.enumerate(BiPredicate<Integer, T>)", items));
+				format("%s.enumerate(BiConsumer<Integer, T>)", items));
 			assertEquals(expected2, enumerated,
-				format("%s.enumerate(BiPredicate<Integer, T>)", items));
+				format("%s.enumerate(BiConsumer<Integer, T>)", items));
+		}
+	}
+
+	@DisplayName(".iterator(int)")
+	@Nested
+	class IteratorIntTests {
+		@DisplayName("when sequence is not empty")
+		@Tests({
+			"when index is 0, iterates all items;" +
+				"[q, U, i, c, R]; 0;" +
+				"[q, U, i, c, R]; null",
+			"when index is within valid range, iterates remaining items;" +
+				"[w, E, i, r, d, S]; 2;" +
+				"[i, r, d, S]; null",
+			"when index is last valid index, iterates last item;" +
+				"[y, U, k, e, R]; 4;" +
+				"[R]; null",
+			"when index is before valid range, fails;" +
+				"[n, M, u, r, T]; -2;" +
+				"null; -2 ∉ [0, 5)",
+			"when index is at valid index range end, fails;" +
+				"[c, B, x, a, p]; 5;" +
+				"null; 5 ∉ [0, 5)",
+			"when index is after valid range, fails;" +
+				"[z, O, e, h, K, n]; 12;" +
+				"null; 12 ∉ [0, 6)"
+		})
+		void testSequenceNotEmpty(@StringSequence Sequence<String> items, int index,
+			@StringArray String[] expected1, @IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
+		}
+
+		@DisplayName("when sequence is empty")
+		@Tests({
+			"when index is before valid range, fails;" +
+				"[]; -1;" +
+				"null; -1 ∉ [0, 0)",
+			"when index is 0, fails;" +
+				"[]; 0;" +
+				"null; 0 ∉ [0, 0)",
+			"when index is after valid range, fails;" +
+				"[]; 3;" +
+				"null; 3 ∉ [0, 0)"
+		})
+		void testSequenceEmpty(@StringSequence Sequence<String> items, int index,
+			@StringArray String[] expected1, @IndexRangeException Exception expected2) {
+			test(items, index, expected1, expected2);
+		}
+
+		private void test(Sequence<String> items, int index, String[] expected1,
+			Exception expected2) {
+
+			try {
+				final var iterated = new ArrayList<String>();
+				final var iterator = items.iterator(index);
+				iterator.forEachRemaining(iterated::add);
+
+				assertArrayEquals(expected1, iterated.toArray(new String[]{}),
+					format("%s.iterator(%d)", items, index));
+			} catch (Exception exception) {
+				assertEquals(expected2, exception,
+					format("%s.iterator(%d)", items, index));
+			}
 		}
 	}
 }
