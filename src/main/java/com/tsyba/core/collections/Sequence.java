@@ -10,14 +10,14 @@ import java.util.function.Predicate;
  * A container, which provides repeatable, non-destructive iterations over its items and
  * preserves relative item order in each iteration.
  * <p>
- * Unlike a more generic {@link Collection}, a {@link Sequence} guarantees its items
+ * Unlike a more general {@link Collection}, a {@link Sequence} guarantees its items
  * appear in the same relative order in each iteration, unless the {@link Sequence} is
  * modified. This property enables access to each item individually via a non-negative
  * positional index.
  */
 public interface Sequence<T> extends Collection<T> {
 	/**
-	 * Returns valid index range of this sequence.
+	 * Returns the valid index range of this sequence.
 	 */
 	default IndexRange getIndexRange() {
 		final var count = getCount();
@@ -57,7 +57,7 @@ public interface Sequence<T> extends Collection<T> {
 	/**
 	 * Returns item at the specified index in this sequence.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid index
+	 * @throws IndexNotInRangeException when the specified index is out of the valid index
 	 * range of this sequence
 	 */
 	default T get(int index) {
@@ -78,8 +78,8 @@ public interface Sequence<T> extends Collection<T> {
 	 * Returns items from the one at the specified index up to the last one in this
 	 * sequence.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of the valid range
-	 * of this index
+	 * @throws IndexNotInRangeException when the specified index is out of the valid index
+	 * range of this sequence
 	 */
 	Sequence<T> getSuffix(int index);
 
@@ -123,11 +123,11 @@ public interface Sequence<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns the first item in this sequence, which matches the specified
+	 * Returns the first item in this sequence, that matches the specified
 	 * {@link Predicate}.
 	 * <p>
 	 * When no item in this sequence matches the specified {@link Predicate} or this
-	 * sequence is empty, returns and empty {@link Optional}.
+	 * sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> matchFirst(Predicate<T> condition) {
 		for (var item : this) {
@@ -143,8 +143,9 @@ public interface Sequence<T> extends Collection<T> {
 	Sequence<T> matchAll(Predicate<T> condition);
 
 	/**
-	 * Returns index of the first occurrence of the specified item in this sequence. When
-	 * this item does not occur in this sequence, returns an empty {@link Optional}.
+	 * Returns the index of the first occurrence of the specified item in this sequence.
+	 * When the specified item does not occur in this sequence, returns an empty
+	 * {@link Optional}.
 	 */
 	default Optional<Integer> findFirst(T item) {
 		return findFirst((item2) -> {
@@ -153,12 +154,9 @@ public interface Sequence<T> extends Collection<T> {
 	}
 
 	/**
-	 * Returns index of the first item, which matches the specified {@link Predicate} in
-	 * this sequence. When no item matches the specified {@link Predicate} in this
+	 * Returns the index of the first item, that matches the specified {@link Predicate}
+	 * in this sequence. When no item matches the specified {@link Predicate} in this
 	 * sequence, returns an empty {@link Optional}.
-	 * <p>
-	 * When this sequence is empty, returns an empty {@link Optional}. When the specified
-	 * sequence is empty, returns first valid index of this sequence.
 	 */
 	default Optional<Integer> findFirst(Predicate<T> condition) {
 		var index = 0;
@@ -233,8 +231,9 @@ public interface Sequence<T> extends Collection<T> {
 	Sequence<T> reverse();
 
 	/**
-	 * Applies the specified {@link BiConsumer} to each item and its index. Returns
-	 * itself.
+	 * Applies the specified {@link BiConsumer} to each index and its item.
+	 *
+	 * @return itself
 	 */
 	default Sequence<T> enumerate(BiConsumer<Integer, T> consumer) {
 		var index = 0;
@@ -250,10 +249,10 @@ public interface Sequence<T> extends Collection<T> {
 	<R> Sequence<R> convert(Function<T, R> converter);
 
 	/**
-	 * Returns {@link Iterator}, which starts with item at the specified index.
+	 * Returns an {@link Iterator}, which starts with the item at the specified index.
 	 *
-	 * @throws IndexNotInRangeException when the specified index is out of valid range of
-	 * this sequence
+	 * @throws IndexNotInRangeException when the specified index is out of the valid index
+	 * range of this sequence
 	 */
 	default Iterator<T> iterator(int index) {
 		final var range = getIndexRange();
