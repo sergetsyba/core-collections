@@ -30,9 +30,8 @@ public @interface StringArray {
 				return new String[0];
 			} else {
 				final var string = substring.split("\\s*,\\s*");
-
 				return Arrays.stream(string)
-					.filter((item) -> !item.equals("null"))
+					.map((item) -> "null".equals(item) ? null : item)
 					.toArray(String[]::new);
 			}
 		}
