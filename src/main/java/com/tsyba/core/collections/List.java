@@ -40,7 +40,10 @@ public class List<T> implements Sequence<T> {
 	 */
 	public List(Collection<T> items) {
 		final var array = items.toArray();
-		this.store = new ContiguousArrayStore(array);
+		final var store = ContiguousArrayStore.compact(array);
+		store.removeExcessCapacity();
+
+		this.store = store;
 	}
 
 	@Override

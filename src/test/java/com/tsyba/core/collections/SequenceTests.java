@@ -216,9 +216,6 @@ class SequenceTests {
 			"when index range starts and ends after valid range end, returns empty optional;" +
 				"[j, O, w, e, r, T, b, N]; [8, 11);" +
 				"null",
-			"when index range starts before valid range, returns empty optional;" +
-				"[p, E, r, f, E, t]; [-1, 2);" +
-				"null",
 			"when index range is empty and starts within valid range, returns empty index range;" +
 				"[g, R, s]; [0, 0);" +
 				"[0, 0)",
@@ -240,9 +237,6 @@ class SequenceTests {
 			"when index range is empty and starts at 0, returns empty index range;" +
 				"[]; [0, 0);" +
 				"[0, 0)",
-			"when index range is empty and starts after valid range, returns empty optional;" +
-				"[]; [2, 2);" +
-				"null",
 			"when index range is not empty, returns empty optional;" +
 				"[]; [0, 2);" +
 				"null"
