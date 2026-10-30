@@ -211,6 +211,11 @@ public class List<T> implements Sequence<T> {
 
 	@Override
 	public Iterator<T> iterator(int start) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(start)) {
+			throw new IndexNotInRangeException(start, validRange);
+		}
+
 		@SuppressWarnings("unchecked")
 		final var items = (T[]) store.items;
 		return new ArrayIterator<>(items, start);
@@ -218,7 +223,9 @@ public class List<T> implements Sequence<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return iterator(0);
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) store.items;
+		return new ArrayIterator<>(items, 0);
 	}
 
 	@Override
