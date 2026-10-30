@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * An immutable {@link Sequence}, which provides efficient, random-access to its items.
+ * An immutable {@link Sequence}, which provides efficient, random access to its items.
  */
 public class List<T> implements Sequence<T> {
 	ContiguousArrayStore store;
@@ -37,6 +37,9 @@ public class List<T> implements Sequence<T> {
 
 	/**
 	 * Creates a copy of the specified {@link Collection}.
+	 * <p>
+	 * Ignores any {@code null} values among the items of the specified
+	 * {@link Collection}.
 	 */
 	public List(Collection<T> items) {
 		final var array = items.toArray();

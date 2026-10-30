@@ -140,7 +140,7 @@ class ListTests {
 				final var item = items.get(index);
 				assertEquals(expected1, item,
 					format("%s.get(%d)", items, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				assertEquals(expected2, exception,
 					format("%s.get(%d)", items, index));
 			}
@@ -202,7 +202,7 @@ class ListTests {
 				final var prefix = items.getPrefix(index);
 				assertEquals(expected1, prefix,
 					format("%s.getPrefix(%d)", items, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				assertEquals(expected2, exception,
 					format("%s.getPrefix(%d)", items, index));
 			}
@@ -223,7 +223,7 @@ class ListTests {
 			"when index is within valid range, returns suffix;" +
 				"[n, k, o, p, d, X, r, D]; 4;" +
 				"[d, X, r, D]; null",
-			"when index is last valid index, returns last item;" +
+			"when index is last valid index, returns suffix with last item;" +
 				"[2, I, L, P, o, b, 1, A]; 7;" +
 				"[A]; null",
 			"when index is at valid index range end, fails;" +
@@ -264,7 +264,7 @@ class ListTests {
 				final var suffix = items.getSuffix(index);
 				assertEquals(expected1, suffix,
 					format("%s.getSuffix(%d)", items, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				assertEquals(expected2, exception,
 					format("%s.getSuffix(%d)", items, index));
 			}
@@ -294,7 +294,7 @@ class ListTests {
 			"when index range starts and ends after valid range end, fails;" +
 				"[X, r, 4, G, H, j, l, b]; [12, 21);" +
 				"null; [12, 21) ⊈ [0, 8)",
-			"when index range is empty and starts at 0, returns empty list;" +
+			"when index range is empty, returns empty list;" +
 				"[T, o, E, 2, Y, W, 8, A]; [0, 0);" +
 				"[]; null"
 		})
@@ -309,7 +309,7 @@ class ListTests {
 			"when index range is not empty, fails;" +
 				"[]; [0, 1);" +
 				"null; [0, 1) ⊈ [0, 0)",
-			"when index range is empty and starts at 0, returns empty list;" +
+			"when index range is empty, returns empty list;" +
 				"[]; [0, 0);" +
 				"[]; null"
 		})
@@ -326,7 +326,7 @@ class ListTests {
 				final var returned = items.get(range);
 				assertEquals(expected1, returned,
 					format("%s.get(%s)", items, range));
-			} catch (Exception exception) {
+			} catch (IndexRangeNotInRangeException exception) {
 				assertEquals(expected2, exception,
 					format("%s.get(%s)", items, range));
 			}
@@ -682,7 +682,7 @@ class ListTests {
 				assertArrayEquals(expected1,
 					iterated.toArray(new String[]{}),
 					format("%s.iterator(%d)", items, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				assertEquals(expected2, exception,
 					format("%s.iterator(%d)", items, index));
 			}
