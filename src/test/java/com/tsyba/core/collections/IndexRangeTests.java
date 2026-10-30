@@ -630,7 +630,7 @@ class IndexRangeTests {
 			test(range, items, expected);
 		}
 
-		@DisplayName("when range is not empty")
+		@DisplayName("when range is empty")
 		@Tests({
 			"when argument sequence is not empty, returns empty sequence;" +
 				"[0, 0); [7, 8, 9];" +
@@ -666,6 +666,12 @@ class IndexRangeTests {
 			assertSame(range, distinct,
 				format("%s.getDistinct()", range));
 		}
+	}
+
+	@DisplayName(".reverse()")
+	@Nested
+	class ReverseTests {
+		// TODO: implement IndexRange.reverse() tests
 	}
 
 	@DisplayName(".equals(Object)")
