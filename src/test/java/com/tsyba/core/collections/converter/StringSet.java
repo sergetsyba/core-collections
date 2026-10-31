@@ -19,10 +19,14 @@ public @interface StringSet {
 
 		@Override
 		protected Set<String> convert(String s) throws ArgumentConversionException {
-			final var items = new StringArray.Converter()
-				.convert(s);
+			if (s == null) {
+				return null;
+			} else {
+				final var items = new StringArray.Converter()
+					.convert(s);
 
-			return new Set<>(items);
+				return new Set<>(items);
+			}
 		}
 	}
 }
