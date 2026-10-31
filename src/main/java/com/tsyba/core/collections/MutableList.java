@@ -9,8 +9,7 @@ import java.util.function.Predicate;
 import static com.tsyba.core.collections.ContiguousArrayStore.compact;
 
 /**
- * A mutable, sequential {@link Collection}, which provides efficient, randomized access
- * to its items.
+ * A mutable {@link Sequence}, which provides efficient, random access to its items.
  */
 public class MutableList<T> extends List<T> {
 	static final int minimumCapacity = 64;
@@ -342,7 +341,7 @@ public class MutableList<T> extends List<T> {
 	@Override
 	public MutableList<T> getDistinct() {
 		final var distinct = super.getDistinct();
-		return new MutableList<>(distinct);
+		return new MutableList<>(distinct.store);
 	}
 
 	@Override
