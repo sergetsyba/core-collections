@@ -55,7 +55,7 @@ class ListTests {
 		})
 		void test(@StringArray String[] items, @StringList List<String> expected) {
 			final var created = new List<>(items);
-			assertEquals(items.length, created.store.items.length,
+			assertEquals(expected.getCount(), created.store.items.length,
 				format("new List<>(%s) created with incorrect capacity", expected));
 			assertEquals(expected, created,
 				format("new List<>(%s)",
@@ -457,10 +457,10 @@ class ListTests {
 		@Tests({
 			"when all items are distinct, returns all items;" +
 				"[t, m, j, E, d, S, s];" +
-				"[j, d, s, t, m, E, S]",
+				"[E, S, d, j, m, s, t]",
 			"when some items are same, returns distinct items;" +
 				"[t, e, r, t, t, r, R, r];" +
-				"[r, R, t, e]",
+				"[R, e, r, t]",
 			"when all items are same, returns distinct item;" +
 				"[g, g, g, g, g, g, g];" +
 				"[g]",

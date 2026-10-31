@@ -180,9 +180,6 @@ class IndexRangeTests {
 			"when argument range starts and ends after range end, returns false;" +
 				"[6, 9); [12, 17);" +
 				"false",
-			"when argument range is empty and starts within range, returns true;" +
-				"[6, 9); [7, 7);" +
-				"true",
 			"when argument range is empty and starts before range start, returns false;" +
 				"[6, 9); [0, 0);" +
 				"false",

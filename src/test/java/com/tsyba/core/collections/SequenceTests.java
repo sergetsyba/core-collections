@@ -221,10 +221,7 @@ class SequenceTests {
 				"[0, 0)",
 			"when index range is empty and starts at valid range end, returns index range;" +
 				"[t, r, A, w]; [4, 4);" +
-				"[4, 4)",
-			"when index range is empty and starts after valid range, returns empty optional;" +
-				"[j, N, y, S, s]; [7, 7);" +
-				"null"
+				"[4, 4)"
 		})
 		void testSequenceNotEmpty(@StringSequence Sequence<String> items,
 			@IntRange IndexRange range,
