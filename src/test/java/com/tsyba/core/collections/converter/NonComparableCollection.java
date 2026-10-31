@@ -7,34 +7,36 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class NonComparableCollection implements Collection<Predicate<?>> {
-	private final Predicate<?>[] items;
+public class NonComparableCollection implements Collection<Object> {
+	private final Object[] items;
 
-	public NonComparableCollection() {
-		this.items = new Predicate[]{
-			(item) -> ((String) item).isBlank(),
-			(item) -> ((String) item).isEmpty()
-		};
+	public NonComparableCollection(Object... items) {
+		this.items = items;
 	}
 
 	@Override
-	public Collection<Predicate<?>> matchAll(Predicate<Predicate<?>> condition) {
+	public Collection<Object> matchAll(Predicate<Object> condition) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Collection<Predicate<?>> getDistinct() {
+	public Collection<Object> getDistinct() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <R> Collection<R> convert(Function<Predicate<?>, R> converter) {
+	public <R> Collection<R> convert(Function<Object, R> converter) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Iterator<Predicate<?>> iterator() {
+	public Iterator<Object> iterator() {
 		return Arrays.asList(items)
 			.iterator();
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(items);
 	}
 }

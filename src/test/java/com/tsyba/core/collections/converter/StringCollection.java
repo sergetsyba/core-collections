@@ -47,6 +47,11 @@ public @interface StringCollection {
 					return Arrays.asList(items)
 						.iterator();
 				}
+
+				@Override
+				public String toString() {
+					return Arrays.toString(items);
+				}
 			};
 		}
 	}

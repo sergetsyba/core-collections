@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * An immutable {@link Sequence}, which provides efficient, random-access to its items.
+ * An immutable {@link Sequence}, which provides efficient, random access to its items.
  */
 public class List<T> implements Sequence<T> {
 	ContiguousArrayStore store;
@@ -17,6 +17,16 @@ public class List<T> implements Sequence<T> {
 		this.store = store;
 	}
 
+	/**
+	 * Creates a copy of the specified items.
+	 */
+	List(Collection<T> items) {
+		final var store = new ContiguousArrayStore(items.toArray());
+		store.removeExcessCapacity();
+
+		this.store = store;
+	}
+	
 	/**
 	 * Creates a list with the specified items.
 	 * <p>
@@ -33,14 +43,6 @@ public class List<T> implements Sequence<T> {
 
 		store.removeExcessCapacity();
 		this.store = store;
-	}
-
-	/**
-	 * Creates a copy of the specified {@link Collection}.
-	 */
-	public List(Collection<T> items) {
-		final var array = items.toArray();
-		this.store = new ContiguousArrayStore(array);
 	}
 
 	@Override
@@ -208,6 +210,11 @@ public class List<T> implements Sequence<T> {
 
 	@Override
 	public Iterator<T> iterator(int start) {
+		final var validRange = getIndexRange();
+		if (!validRange.contains(start)) {
+			throw new IndexNotInRangeException(start, validRange);
+		}
+
 		@SuppressWarnings("unchecked")
 		final var items = (T[]) store.items;
 		return new ArrayIterator<>(items, start);
@@ -215,7 +222,9 @@ public class List<T> implements Sequence<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return iterator(0);
+		@SuppressWarnings("unchecked")
+		final var items = (T[]) store.items;
+		return new ArrayIterator<>(items, 0);
 	}
 
 	@Override

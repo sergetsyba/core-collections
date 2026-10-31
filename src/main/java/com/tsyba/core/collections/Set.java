@@ -20,18 +20,6 @@ public class Set<T> implements Collection<T> {
 	}
 
 	/**
-	 * Creates a copy of the specified {@link Collection}.
-	 */
-	public Set(Collection<T> items) {
-		this.store = new RobinHoodHashStore<>(
-			items.getCount());
-
-		for (var item : items) {
-			this.store.insert(item);
-		}
-	}
-
-	/**
 	 * Creates a set with the specified items.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
@@ -67,6 +55,9 @@ public class Set<T> implements Collection<T> {
 		return store.entryCount;
 	}
 
+	/**
+	 * Returns itself.
+	 */
 	@Override
 	public Set<T> getDistinct() {
 		return this;
@@ -78,8 +69,8 @@ public class Set<T> implements Collection<T> {
 	 * <p>
 	 * Two sets are disjoint when they don't contain any common items.
 	 * <p>
-	 * When this or the specified set is empty, returns {@code false}, since an empty set
-	 * is disjoint from all other sets, including itself.
+	 * When this or the specified set is empty, returns {@code true}, since an empty set
+	 * is disjoint from any set, including another empty set.
 	 */
 	public boolean isDisjoint(Set<T> set) {
 		return noneMatches(set::contains);
@@ -92,7 +83,7 @@ public class Set<T> implements Collection<T> {
 	 * A set intersects another set when they have at least one common item.
 	 * <p>
 	 * When this or the specified set is empty, returns {@code false}, since an empty set
-	 * never intersects another set, including itself.
+	 * never intersects any set, including another empty set.
 	 */
 	public boolean intersects(Set<T> set) {
 		return anyMatches(set::contains);
@@ -101,7 +92,7 @@ public class Set<T> implements Collection<T> {
 	/**
 	 * Returns union (A∪B) of this set and the specified one.
 	 * <p>
-	 * A union of two sets contains all (distinct) items from both sets.
+	 * A union of two sets contains items from both sets.
 	 */
 	public Set<T> unite(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -121,7 +112,7 @@ public class Set<T> implements Collection<T> {
 	/**
 	 * Returns intersection (A∩B) of this set and the specified one.
 	 * <p>
-	 * An intersection of two sets contains all of their common items.
+	 * An intersection of two sets contains their common items.
 	 */
 	public Set<T> intersect(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -138,10 +129,10 @@ public class Set<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns difference (A\B) of this set from the specified one.
+	 * Returns difference (A\B) of this set and the specified one.
 	 * <p>
-	 * A difference of a set from another set contains all items from the first set,
-	 * except those, which are common with the other set.
+	 * A difference of two sets contains items from the first set, except those
+	 * common with the second set.
 	 */
 	public Set<T> subtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -158,11 +149,11 @@ public class Set<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) between this set and the specified
+	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) of this set and the specified
 	 * one.
 	 * <p>
-	 * A symmetric difference of a set with another set contains all (distinct) items from
-	 * both sets, except those, which are common between them.
+	 * A symmetric difference of two sets contains items from both sets, except those
+	 * common between them.
 	 */
 	public Set<T> symmetricSubtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -186,8 +177,7 @@ public class Set<T> implements Collection<T> {
 	/**
 	 * Returns cartesian product (A×B) of this set and the specified one.
 	 * <p>
-	 * A cartesian product contains all possible (distinct) pairs of items from both
-	 * sets.
+	 * A cartesian product contains all possible pairs of items from both sets.
 	 */
 	public <R> Set<Pair<T, R>> multiply(Set<R> set) {
 		final var capacity = getCount() * set.getCount();

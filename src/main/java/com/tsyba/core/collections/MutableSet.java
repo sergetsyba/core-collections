@@ -13,17 +13,13 @@ public class MutableSet<T> extends Set<T> {
 		super(items);
 	}
 
-	public MutableSet(Collection<T> items) {
-		super(items);
-	}
-
 	public MutableSet(Iterable<T> items) {
 		super(items);
 	}
 
 	@Override
 	public MutableSet<T> getDistinct() {
-		return new MutableSet<>(store);
+		return this;
 	}
 
 	@Override
@@ -87,17 +83,6 @@ public class MutableSet<T> extends Set<T> {
 
 	/**
 	 * Adds the specified items to this set. Returns itself.
-	 */
-	public MutableSet<T> add(Collection<T> items) {
-		for (var item : items) {
-			store.insert(item);
-		}
-
-		return this;
-	}
-
-	/**
-	 * Adds the specified items to this set. Returns itself.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
 	 */
@@ -135,17 +120,6 @@ public class MutableSet<T> extends Set<T> {
 			if (item != null) {
 				store.delete(item);
 			}
-		}
-
-		return this;
-	}
-
-	/**
-	 * Removes any of the specified items present in this set. Returns itself.
-	 */
-	public MutableSet<T> remove(Collection<T> items) {
-		for (var item : items) {
-			store.delete(item);
 		}
 
 		return this;

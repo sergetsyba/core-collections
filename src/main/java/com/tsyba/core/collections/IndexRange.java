@@ -23,7 +23,8 @@ public class IndexRange implements Sequence<Integer> {
 	/**
 	 * Creates a new index range with the specified start and end indexes.
 	 * <p>
-	 * When the specified start and end indexes are equal, creates an empty index range.
+	 * When the specified start and end indexes are equal, creates an empty index range,
+	 * which always defaults to [0, 0).
 	 *
 	 * @throws IllegalArgumentException when the specified start index is negative
 	 * @throws IllegalArgumentException when the specified end index is less than the
@@ -59,6 +60,10 @@ public class IndexRange implements Sequence<Integer> {
 		return end - start;
 	}
 
+	/**
+	 * Returns {@code true} when the specified index is within this index range; returns
+	 * {@code false} otherwise.
+	 */
 	public boolean contains(Integer index) {
 		return index != null
 			&& index >= start
@@ -68,12 +73,10 @@ public class IndexRange implements Sequence<Integer> {
 	/**
 	 * Returns {@code true} when the specified index range is within this index range;
 	 * returns {@code false} otherwise.
-	 * <p>
-	 * When the specified index range is empty, returns {@code true}.
 	 */
 	public boolean contains(IndexRange range) {
-		return range.start == range.end
-			|| start <= range.start && range.end <= end;
+		return start <= range.start
+			&& range.end <= end;
 	}
 
 	@Override

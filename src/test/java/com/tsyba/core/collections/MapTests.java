@@ -139,7 +139,7 @@ class MapTests {
 	}
 
 	@DisplayName("Map(java.util.Map<K, V>)")
-	@Tests(value = {
+	@Tests({
 		"when all entries are not null, creates map;" +
 			"[g:R, s:Q, c:B, l:r];" +
 			"[g:R, s:Q, c:B, l:r]",
@@ -162,7 +162,7 @@ class MapTests {
 	}
 
 	@DisplayName(".isEmpty()")
-	@Tests(value = {
+	@Tests({
 		"when map is not empty, returns false;" +
 			"[j:Y, o:P, m:K];" +
 			"false",
@@ -215,7 +215,7 @@ class MapTests {
 				"[k:V, e:R, k:K, s:S, b:L]; null; null;" +
 				"false"
 		})
-		void testNotEmpty(@StringMap Map<String, String> entries, String key,
+		void testMapNotEmpty(@StringMap Map<String, String> entries, String key,
 			String value, boolean expected) {
 			test(entries, key, value, expected);
 		}
@@ -235,7 +235,7 @@ class MapTests {
 				"[]; null; null;" +
 				"false"
 		})
-		void testEmpty(@StringMap Map<String, String> entries, String key,
+		void testMapEmpty(@StringMap Map<String, String> entries, String key,
 			String value, boolean expected) {
 			test(entries, key, value, expected);
 		}
@@ -276,7 +276,7 @@ class MapTests {
 				"[k:R, T:b, B:L, R:E]; [];" +
 				"true"
 		})
-		void testNotEmpty(@StringMap Map<String, String> entries1,
+		void testMapNotEmpty(@StringMap Map<String, String> entries1,
 			@StringMap Map<String, String> entries2, boolean expected) {
 			test(entries1, entries2, expected);
 		}
@@ -290,7 +290,7 @@ class MapTests {
 				"[]; [];" +
 				"true"
 		})
-		void testEmpty(@StringMap Map<String, String> entries1,
+		void testMapEmpty(@StringMap Map<String, String> entries1,
 			@StringMap Map<String, String> entries2, boolean expected) {
 			test(entries1, entries2, expected);
 		}
@@ -354,7 +354,7 @@ class MapTests {
 				"[J:n, R:s, O:n, v:Y, p:L]; null;" +
 				"null"
 		})
-		void testNotEmpty(@StringMap Map<String, String> entries, String key,
+		void testMapNotEmpty(@StringMap Map<String, String> entries, String key,
 			@StringOptional Optional<String> expected) {
 			test(entries, key, expected);
 		}
@@ -368,7 +368,7 @@ class MapTests {
 				"[]; null;" +
 				"null"
 		})
-		void testEmpty(@StringMap Map<String, String> entries, String key,
+		void testMapEmpty(@StringMap Map<String, String> entries, String key,
 			@StringOptional Optional<String> expected) {
 			test(entries, key, expected);
 		}
@@ -406,7 +406,7 @@ class MapTests {
 				"[J:k, M:M, n:d, E:P, H:s]; [];" +
 				"[]"
 		})
-		void testNotEmpty(@StringMap Map<String, String> entries,
+		void testMapNotEmpty(@StringMap Map<String, String> entries,
 			@StringArray String[] keys, @StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
 		}
@@ -420,7 +420,7 @@ class MapTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringMap Map<String, String> entries,
+		void testMapEmpty(@StringMap Map<String, String> entries,
 			@StringArray String[] keys, @StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
 		}
@@ -453,7 +453,7 @@ class MapTests {
 				"[U:R, d:E, g:A, a:K, V:x]; [];" +
 				"[]"
 		})
-		void testNotEmpty(@StringMap Map<String, String> entries,
+		void testMapNotEmpty(@StringMap Map<String, String> entries,
 			@StringCollection Collection<String> keys,
 			@StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
@@ -468,7 +468,7 @@ class MapTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringMap Map<String, String> entries,
+		void testMapEmpty(@StringMap Map<String, String> entries,
 			@StringCollection Collection<String> keys,
 			@StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
@@ -571,31 +571,27 @@ class MapTests {
 	}
 
 	@DisplayName(".matchAny(BiPredicate<K, V>)")
-	@Nested
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	class TestMatchAny {
-		@DisplayName("\uD83C\uDFDE")
-		@Tests({
-			"when some entry matches, returns its value;" +
-				"[T:R, F:D, Q:p, g:c, E:W];" +
-				"p",
-			"when no entry matches, returns empty optional;" +
-				"[T:R, F:D, Q:P, g:C, E:W];" +
-				"null",
-			"when map is empty, returns empty optional;" +
-				"[];" +
-				"null"
-		})
-		void test(@StringMap Map<String, String> entries,
-			@StringOptional Optional<String> expected) {
-			final var matches = entries.matchAny((key, value) -> {
-				return value.toLowerCase()
-					.equals(value);
-			});
+	@Tests({
+		"when some entry matches, returns its value;" +
+			"[T:R, F:D, Q:p, g:c, E:W];" +
+			"p",
+		"when no entry matches, returns empty optional;" +
+			"[T:R, F:D, Q:P, g:C, E:W];" +
+			"null",
+		"when map is empty, returns empty optional;" +
+			"[];" +
+			"null"
+	})
+	void testMatchAny(@StringMap Map<String, String> entries,
+		@StringOptional Optional<String> expected) {
+		final var matches = entries.matchAny((key, value) -> {
+			return value.toLowerCase()
+				.equals(value);
+		});
 
-			assertEquals(expected, matches,
-				format("%s.matchAny(BiPredicate<K, V>)", entries));
-		}
+		assertEquals(expected, matches,
+			format("%s.matchAny(BiPredicate<K, V>)", entries));
 	}
 
 	@DisplayName(".iterate(BiConsumer<K, V>)")
