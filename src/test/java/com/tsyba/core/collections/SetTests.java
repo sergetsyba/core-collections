@@ -19,13 +19,13 @@ class SetTests {
 	class NewCollectionTests {
 		@DisplayName("when no argument items are null")
 		@Tests({
-			"when all argument items are distinct, creates set with argument items;" +
+			"when all argument items are distinct, creates set with all items;" +
 				"[I, o, J, v, 3, A];" +
 				"[I, o, J, v, 3, A]",
-			"when some argument items are same, creates set with distinct argument items;" +
+			"when some argument items are same, creates set with distinct items;" +
 				"[Y, c, Y, U, H, c, Y];" +
 				"[Y, c, U, H]",
-			"when all argument items are same, creates set with distinct argument item;" +
+			"when all argument items are same, creates set with distinct item;" +
 				"[k, k, k, k, k];" +
 				"[k]"
 		})
@@ -36,13 +36,13 @@ class SetTests {
 
 		@DisplayName("when some argument items are null")
 		@Tests({
-			"when all non-null argument items are distinct, creates set with non-null argument items;" +
+			"when all non-null argument items are distinct, creates set with all non-null items;" +
 				"[f, b, null, null, s, j, null];" +
 				"[f, b, s, j]",
-			"when some non-null argument items are same, creates set with distinct non-null argument items;" +
+			"when some non-null argument items are same, creates set with distinct non-null items;" +
 				"[I, null, 7, null, A, null, A, I];" +
 				"[I, 7, A]",
-			"when all non-null argument items are same, creates set with distinct non-null argument item;" +
+			"when all non-null argument items are same, creates set with distinct non-null item;" +
 				"[t, t, t, null, null, null];" +
 				"[t]"
 		})
@@ -85,13 +85,13 @@ class SetTests {
 	class NewVarargsTests {
 		@DisplayName("when no argument items are null")
 		@Tests({
-			"when all argument items are distinct, creates set with argument items;" +
+			"when all argument items are distinct, creates set with all items;" +
 				"[P, 4, j, O, l, a];" +
 				"[P, 4, j, O, l, a]",
-			"when some argument items are same, creates set with distinct argument items;" +
+			"when some argument items are same, creates set with distinct items;" +
 				"[e, 6, l, D, e, 6, l];" +
 				"[e, 6, l, D]",
-			"when all argument items are same, creates set with distinct argument item;" +
+			"when all argument items are same, creates set with distinct item;" +
 				"[p, p, p, p, p];" +
 				"[p]"
 		})
@@ -102,13 +102,13 @@ class SetTests {
 
 		@DisplayName("when some argument items are null")
 		@Tests({
-			"when all non-null argument items are distinct, creates set with non-null argument items;" +
+			"when all non-null argument items are distinct, creates set with all non-null items;" +
 				"[e, Z, 6, null, null, null, F];" +
 				"[e, Z, 6, F]",
-			"when some non-null argument items are same, creates set with distinct non-null argument items;" +
+			"when some non-null argument items are same, creates set with distinct non-null items;" +
 				"[null, null, j, 5, j, d, null, d];" +
 				"[j, 5, d]",
-			"when all non-null argument items are same, creates set with distinct non-null argument item;" +
+			"when all non-null argument items are same, creates set with distinct non-null item;" +
 				"[n, n, null, n, null, null];" +
 				"[n]"
 		})
@@ -152,13 +152,13 @@ class SetTests {
 	class NewIterableTests {
 		@DisplayName("when no argument items are null")
 		@Tests({
-			"when all argument items are distinct, creates set with argument items;" +
+			"when all argument items are distinct, creates set with all items;" +
 				"[o, W, u, g, 2, r];" +
 				"[o, W, u, g, 2, r]",
-			"when some argument items are same, creates set with distinct argument items;" +
+			"when some argument items are same, creates set with distinct items;" +
 				"[q, 5, 1, L, q, L, 5];" +
 				"[q, 5, 1, L]",
-			"when all argument items are same, creates set with distinct argument item;" +
+			"when all argument items are same, creates set with distinct item;" +
 				"[E, E, E, E, E];" +
 				"[E]"
 		})
@@ -169,13 +169,13 @@ class SetTests {
 
 		@DisplayName("when some argument items are null")
 		@Tests({
-			"when all non-null argument items are distinct, creates set with non-null argument items;" +
+			"when all non-null argument items are distinct, creates set with all non-null items;" +
 				"[null, null, D, null, j, v, 0];" +
 				"[D, j, v, 0]",
-			"when some non-null argument items are same, creates set with distinct non-null argument items;" +
+			"when some non-null argument items are same, creates set with distinct non-null items;" +
 				"[s, null, S, s, S, 1, null, null];" +
 				"[s, S, 1]",
-			"when all non-null argument items are same, creates set with distinct non-null argument item;" +
+			"when all non-null argument items are same, creates set with distinct non-null item;" +
 				"[null, null, N, null, N, N];" +
 				"[N]"
 		})
@@ -619,7 +619,7 @@ class SetTests {
 	class ConvertTests {
 		@DisplayName("when no items convert to null")
 		@Tests({
-			"when all converted items are distinct, returns converted items;" +
+			"when all converted items are distinct, returns all converted items;" +
 				"[g, p, z, h, n, y];" +
 				"[g, p, z, h, n, y]",
 			"when some converted items are same, returns distinct converted items;" +
@@ -636,7 +636,7 @@ class SetTests {
 
 		@DisplayName("when some items convert to null")
 		@Tests({
-			"when all non-null converted items are distinct, returns non-null converted items;" +
+			"when all non-null converted items are distinct, returns all non-null converted items;" +
 				"[q, R, N, n, W, d];" +
 				"[q, n, d]",
 			"when some non-null converted items are same, returns distinct non-null converted items;" +

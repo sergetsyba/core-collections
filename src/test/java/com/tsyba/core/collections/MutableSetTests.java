@@ -13,21 +13,38 @@ import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class MutableSetTests {
+class MutableSetTests {
+	@DisplayName(".getDistinct()")
+	@Nested
+	class GetDistinctTests {
+		@DisplayName("\uD83C\uDF52")
+		@Tests({
+			"when set is not empty, returns itself;" +
+				"[w, 4, K, p, 9]",
+			"when set is empty, returns itself;" +
+				"[]"
+		})
+		void test(@StringMutableSet MutableSet<String> items) {
+			final var distinct = items.getDistinct();
+			assertSame(items, distinct,
+				format("%s.getDistinct()", items));
+		}
+	}
+
 	@DisplayName(".add(T)")
 	@Nested
 	class AddTests {
 		@DisplayName("when argument item is not null")
 		@Tests({
-			"when argument item is absent, adds argument item;" +
-				"[g, e, Q, s, A, m]; P;" +
-				"[g, e, Q, s, A, m, P]",
+			"when argument item is absent, adds item;" +
+				"[c, F, 8, m, Q]; k;" +
+				"[c, F, 8, m, Q, k]",
 			"when argument item is present, does nothing;" +
-				"[g, e, Q, s, A, m]; Q;" +
-				"[g, e, Q, s, A, m]",
-			"when set is empty, adds argument item;" +
-				"[]; V;" +
-				"[V]",
+				"[y, 3, N, d, r]; N;" +
+				"[y, 3, N, d, r]",
+			"when set is empty, adds item;" +
+				"[]; e;" +
+				"[e]"
 		})
 		void testItemNotNull(@StringMutableSet MutableSet<String> items, String item,
 			@StringMutableSet MutableSet<String> expected) {
@@ -37,8 +54,8 @@ public class MutableSetTests {
 		@DisplayName("when argument item is null")
 		@Tests({
 			"when set is not empty, does nothing;" +
-				"[b, M, L, s, P]; null;" +
-				"[b, M, L, s, P]",
+				"[G, v, 7, L, b]; null;" +
+				"[G, v, 7, L, b]",
 			"when set is empty, does nothing;" +
 				"[]; null;" +
 				"[]"
@@ -61,24 +78,24 @@ public class MutableSetTests {
 
 	@DisplayName(".add(T...)")
 	@Nested
-	class AddWithVarargsTests {
+	class AddVarargsTests {
 		@DisplayName("when no argument items are null")
 		@Nested
 		class NoItemsNullTests {
 			@DisplayName("when all argument items are distinct")
 			@Tests({
-				"when all argument items are absent, adds all argument items;" +
-					"[e, P, z, q, r, s]; [k, O, v, w];" +
-					"[e, P, z, q, r, s, k, O, v, w]",
-				"when some argument items are present, adds absent argument items;" +
-					"[t, Y, v, b]; [Y, c, t, d];" +
-					"[t, Y, v, b, c, d]",
+				"when all argument items are absent, adds all items;" +
+					"[x, 5, j, T]; [B, q, 2, v];" +
+					"[x, 5, j, T, B, q, 2, v]",
+				"when some argument items are present, adds absent items;" +
+					"[h, D, 4, s, K]; [K, m, h, 9];" +
+					"[h, D, 4, s, K, m, 9]",
 				"when all argument items are present, does nothing;" +
-					"[x, K, m, P, w]; [K, m, P];" +
-					"[x, K, m, P, w]",
-				"when set is empty, adds all argument items;" +
-					"[]; [M, I, O, P];" +
-					"[M, I, O, P]",
+					"[F, z, 1, R, u]; [z, F, u];" +
+					"[F, z, 1, R, u]",
+				"when set is empty, adds all items;" +
+					"[]; [M, x, 7, e];" +
+					"[M, x, 7, e]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -88,18 +105,18 @@ public class MutableSetTests {
 
 			@DisplayName("when some argument items are same")
 			@Tests({
-				"when all argument items are absent, adds all distinct argument items;" +
-					"[e, P, z, q, r, s]; [k, k, O, k, v, k];" +
-					"[e, P, z, q, r, s, k, O, v]",
-				"when some argument items are present, adds absent distinct argument items;" +
-					"[d, F, s, t]; [f, d, S, t, d, d, d, f];" +
-					"[d, F, s, t, f, S]",
+				"when all argument items are absent, adds all distinct items;" +
+					"[p, 9, E, c]; [d, d, W, 2];" +
+					"[p, 9, E, c, d, W, 2]",
+				"when some argument items are present, adds absent distinct items;" +
+					"[6, t, C, f]; [f, f, k, 6];" +
+					"[6, t, C, f, k]",
 				"when all argument items are present, does nothing;" +
-					"[m, g, v, h, I]; [g, m, I, g, g, m];" +
-					"[m, g, v, h, I]",
-				"when set is empty, adds all distinct argument items;" +
-					"[]; [y, a, Y, b, y, C, y, y];" +
-					"[y, a, Y, b, C]"
+					"[Q, 2, n, J]; [n, v, v, n];" +
+					"[Q, 2, n, J]",
+				"when set is empty, adds all distinct items;" +
+					"[]; [L, q, q, 8];" +
+					"[L, q, 8]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -109,15 +126,15 @@ public class MutableSetTests {
 
 			@DisplayName("when all argument items are same")
 			@Tests({
-				"when all argument items are absent, adds distinct absent argument item;" +
-					"[r, l, f, H]; [g, g, g];" +
-					"[r, l, f, H, g]",
+				"when all argument items are absent, adds distinct item;" +
+					"[s, H, 0, m]; [B, B, B];" +
+					"[s, H, 0, m, B]",
 				"when all argument items are present, does nothing;" +
-					"[u, I, o, C, q, r, s]; [C, C];" +
-					"[u, I, o, C, q, r, s]",
-				"when set is empty, adds distinct absent argument item;" +
-					"[]; [D, D, D, D, D];" +
-					"[D]"
+					"[r, 5, P, a]; [P, P];" +
+					"[r, 5, P, a]",
+				"when set is empty, adds distinct item;" +
+					"[]; [g, g, g];" +
+					"[x]"
 			})
 			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -131,18 +148,18 @@ public class MutableSetTests {
 		class SomeItemsNullTests {
 			@DisplayName("when all non-null argument items are distinct")
 			@Tests({
-				"when all argument items are absent, adds all non-null argument items;" +
-					"[v, N, g]; [null, f, R, null, null];" +
-					"[v, N, g, f, R]",
-				"when some argument items are present, adds absent non-null argument items;" +
-					"[v, N, g]; [G, null, N, null, v];" +
-					"[v, N, g, G]",
+				"when all argument items are absent, adds all non-null items;" +
+					"[k, y, 4, D]; [null, V, null, 2];" +
+					"[k, y, 4, D, V, 2]",
+				"when some argument items are present, adds absent non-null items;" +
+					"[B, e, 7, w]; [e, null, T, null, B];" +
+					"[B, e, 7, w, T]",
 				"when all argument items are present, does nothing;" +
-					"[v, N, g]; [N, null, g, null, v, null, null];" +
-					"[v, N, g]",
-				"when set is empty, adds all non-null argument items;" +
-					"[]; [null, j, null, null, E];" +
-					"[j, E]"
+					"[m, 8, C, j, N]; [null, N, null, m, 8];" +
+					"[m, 8, C, j, N]",
+				"when set is empty, adds all non-null items;" +
+					"[]; [null, r, null, W, 9];" +
+					"[r, W, 9]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -152,20 +169,38 @@ public class MutableSetTests {
 
 			@DisplayName("when some non-null argument items are same")
 			@Tests({
-				"when all argument items are absent, adds all distinct non-null argument items;" +
-					"[f, t, P, l, Q]; [p, null, null, p, F, null, F];" +
-					"[f, t, P, l, Q, p, F]",
-				"when some argument items are present, adds absent distinct non-null argument items;" +
-					"[f, t, P, l, Q]; [null, t, T, null, T, null, f];" +
-					"[f, t, P, l, Q, T]",
+				"when all argument items are absent, adds all distinct non-null items;" +
+					"[f, 3, Y, d]; [null, Z, null, Z, 9];" +
+					"[f, 3, Y, d, Z, 9]",
+				"when some argument items are present, adds absent distinct non-null items;" +
+					"[H, o, 6, l]; [o, null, null, S, o];" +
+					"[H, o, 6, l, S]",
 				"when all argument items are present, does nothing;" +
-					"[f, t, P, l, Q]; [null, null, Q, Q, null, Q, l, null];" +
-					"[f, t, P, l, Q]",
-				"when set is empty, adds all distinct non-null argument items;" +
-					"[]; [b, null, null, j, null, j, n, n, null];" +
-					"[b, j, n]"
+					"[t, G, 0, p]; [null, G, t, null, t];" +
+					"[t, G, 0, p]",
+				"when set is empty, adds all distinct non-null items;" +
+					"[]; [b, null, null, J, b, null];" +
+					"[b, J]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
+				@StringArray String[] items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
+
+			@DisplayName("when all non-null argument items are same")
+			@Tests({
+				"when all argument items are absent, adds distinct non-null item;" +
+					"[Q, x, 5, k]; [null, E, null, E, E];" +
+					"[Q, x, 5, k, E]",
+				"when all argument items are present, does nothing;" +
+					"[v, 2, M, 8]; [M, M, null, null];" +
+					"[v, 2, M, 8]",
+				"when set is empty, adds distinct non-null item;" +
+					"[]; [null, y, null, y, y];" +
+					"[y]"
+			})
+			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
 				@StringMutableSet MutableSet<String> expected) {
 				test(items1, items2, expected);
@@ -175,13 +210,13 @@ public class MutableSetTests {
 		@DisplayName("when all argument items are null")
 		@Nested
 		class AllItemsNullTests {
-			@DisplayName("\uD83D\uDC62")
+			@DisplayName("\uD83D\uDCA4")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[t, R, s, b]; [null, null, null];" +
-					"[t, R, s, b]",
+					"[u, 1, Z, 5]; [null, null, null, null, null];" +
+					"[u, 1, Z, 5]",
 				"when set is empty, does nothing;" +
-					"[]; [null, null];" +
+					"[]; [null, null, null];" +
 					"[]"
 			})
 			void testAllItemsNull(@StringMutableSet MutableSet<String> items1,
@@ -194,11 +229,11 @@ public class MutableSetTests {
 		@DisplayName("when argument array is empty")
 		@Nested
 		class ArgumentArrayEmptyTests {
-			@DisplayName("\uD83C\uDFB4")
+			@DisplayName("\uD83D\uDCEC")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[t, R, s, b]; [];" +
-					"[t, R, s, b]",
+					"[q, V, 3, i, L]; [];" +
+					"[q, V, 3, i, L]",
 				"when set is empty, does nothing;" +
 					"[]; [];" +
 					"[]"
@@ -225,72 +260,159 @@ public class MutableSetTests {
 
 	@DisplayName(".add(Collection<T>)")
 	@Nested
-	class AddWithCollectionTests {
-		@DisplayName("when all argument items are distinct")
-		@Tests({
-			"when all argument items are absent, adds all argument items;" +
-				"[g, R, s, k, b]; [v, l];" +
-				"[g, R, s, k, b, v, l]",
-			"when some argument items are present, adds absent argument items;" +
-				"[v, f, s, W, a]; [v, s, r, E];" +
-				"[v, f, s, W, a, r, E]",
-			"when all argument items are present, does nothing;" +
-				"[f, R, u, I]; [I, u, f];" +
-				"[f, R, u, I]",
-			"when set is empty, adds all argument items;" +
-				"[]; [b, K, O, p, l];" +
-				"[b, K, O, p, l]"
-		})
-		void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
-			@StringCollection Collection<String> items2,
-			@StringMutableSet MutableSet<String> expected) {
-			test(items1, items2, expected);
+	class AddCollectionTests {
+		@DisplayName("when no argument items are null")
+		@Nested
+		class NoItemsNullTests {
+			@DisplayName("when all argument items are distinct")
+			@Tests({
+				"when all argument items are absent, adds all items;" +
+					"[o, 4, X, k]; [d, 9, R, y];" +
+					"[o, 4, X, k, d, 9, R, y]",
+				"when some argument items are present, adds absent items;" +
+					"[m, F, 6, b, 2]; [b, T, m, 2];" +
+					"[m, F, 6, b, 2, T]",
+				"when all argument items are present, does nothing;" +
+					"[c, 8, J, v, h]; [J, v, c];" +
+					"[c, 8, J, v, h]",
+				"when set is empty, adds all items;" +
+					"[]; [K, r, 5, e];" +
+					"[K, r, 5, e]"
+			})
+			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
+				@StringCollection Collection<String> items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
+
+			@DisplayName("when some argument items are same")
+			@Tests({
+				"when all argument items are absent, adds all distinct items;" +
+					"[E, 0, s, N]; [w, w, Q, w];" +
+					"[E, 0, s, N, w, Q]",
+				"when some argument items are present, adds absent distinct items;" +
+					"[l, 7, U, f]; [U, U, j, l];" +
+					"[l, 7, U, f, j]",
+				"when all argument items are present, does nothing;" +
+					"[p, 3, B, z]; [z, p, z, p];" +
+					"[p, 3, B, z]",
+				"when set is empty, adds all distinct items;" +
+					"[]; [H, n, n, 0];" +
+					"[H, n, 0]"
+			})
+			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
+				@StringCollection Collection<String> items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
+
+			@DisplayName("when all argument items are same")
+			@Tests({
+				"when all argument items are absent, adds distinct item;" +
+					"[g, 1, M, x]; [C, C, C];" +
+					"[g, 1, M, x, C]",
+				"when all argument items are present, does nothing;" +
+					"[a, 9, D, q]; [a, a];" +
+					"[a, 9, D, q]",
+				"when set is empty, adds distinct item;" +
+					"[]; [t, t, t];" +
+					"[i]"
+			})
+			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
+				@StringCollection Collection<String> items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
 		}
 
-		@DisplayName("when some argument items are same")
-		@Tests({
-			"when all argument items are absent, adds all distinct argument items;" +
-				"[b, F, r, s]; [h, K, l, K, h, h];" +
-				"[b, F, r, s, h, K, l]",
-			"when some argument items are present, adds absent distinct argument items;" +
-				"[f, R, s]; [R, k, L, R, s, R];" +
-				"[f, R, s, k, L]",
-			"when all argument items are present, does nothing;" +
-				"[r, S, v, b]; [b, S, S, b, S];" +
-				"[r, S, v, b]",
-			"when set is empty, adds all distinct argument items;" +
-				"[]; [R, s, a, s, a, s];" +
-				"[R, s, a]"
-		})
-		void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
-			@StringCollection Collection<String> items2,
-			@StringMutableSet MutableSet<String> expected) {
-			test(items1, items2, expected);
+		@DisplayName("when some argument items are null")
+		@Nested
+		class SomeItemsNullTests {
+			@DisplayName("when all non-null argument items are distinct")
+			@Tests({
+				"when all argument items are absent, adds all non-null items;" +
+					"[y, 2, W, k]; [null, G, null, 4];" +
+					"[y, 2, W, k, G, 4]",
+				"when some argument items are present, adds absent non-null items;" +
+					"[o, 9, P, c]; [9, null, E, null, o];" +
+					"[o, 9, P, c, E]",
+				"when all argument items are present, does nothing;" +
+					"[V, 5, i, m, A]; [null, A, null, m, V];" +
+					"[V, 5, i, m, A]",
+				"when set is empty, adds all non-null items;" +
+					"[]; [null, p, null, Z, 3];" +
+					"[p, Z, 3]"
+			})
+			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
+				@StringCollection Collection<String> items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
+
+			@DisplayName("when some non-null argument items are same")
+			@Tests({
+				"when all argument items are absent, adds all distinct non-null items;" +
+					"[d, 8, L, s]; [null, b, null, b, R];" +
+					"[d, 8, L, s, b, R]",
+				"when some argument items are present, adds absent distinct non-null items;" +
+					"[u, 0, X, n]; [n, null, null, F, n];" +
+					"[u, 0, X, n, F]",
+				"when all argument items are present, does nothing;" +
+					"[S, 6, w, j]; [null, j, S, null, S];" +
+					"[S, 6, w, j]",
+				"when set is empty, adds all distinct non-null items;" +
+					"[]; [r, null, null, K, r, null];" +
+					"[r, K]"
+			})
+			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
+				@StringCollection Collection<String> items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
+
+			@DisplayName("when all non-null argument items are same")
+			@Tests({
+				"when all argument items are absent, adds distinct non-null item;" +
+					"[h, 7, Y, e]; [null, M, null, M, M];" +
+					"[h, 7, Y, e, M]",
+				"when all argument items are present, does nothing;" +
+					"[T, 1, g, q]; [q, q, null, null];" +
+					"[T, 1, g, q]",
+				"when set is empty, adds distinct non-null item;" +
+					"[]; [null, v, null, v, v];" +
+					"[v]"
+			})
+			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
+				@StringCollection Collection<String> items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
 		}
 
-		@DisplayName("when all argument items are same")
-		@Tests({
-			"when all argument items are absent, adds single distinct argument item;" +
-				"[r, E, a, b, k]; [o, o, o, o];" +
-				"[r, E, a, b, k, o]; [o]",
-			"when all argument items are present, does nothing;" +
-				"[g, H, t, u]; [H, H];" +
-				"[g, H, t, u]",
-			"when set is empty, adds single distinct argument item;" +
-				"[]; [k, k, k];" +
-				"[k]"
-		})
-		void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
-			@StringCollection Collection<String> items2,
-			@StringMutableSet MutableSet<String> expected) {
-			test(items1, items2, expected);
+		@DisplayName("when all argument items are null")
+		@Nested
+		class AllItemsNullTests {
+			@DisplayName("\uD83E\uDDFD")
+			@Tests({
+				"when set is not empty, does nothing;" +
+					"[l, 4, B, x]; [null, null, null, null, null, null];" +
+					"[l, 4, B, x]",
+				"when set is empty, does nothing;" +
+					"[]; [null, null, null, null];" +
+					"[]"
+			})
+			void testAllItemsNull(@StringMutableSet MutableSet<String> items1,
+				@StringCollection Collection<String> items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
 		}
 
 		@DisplayName("when argument collection is empty")
 		@Tests({
 			"when set is not empty, does nothing;" +
-				"[b, N, K, O, p]; [];" +
-				"[b, N, K, O, p]",
+				"[k, 0, U, z, 9]; [];" +
+				"[k, 0, U, z, 9]",
 			"when set is empty, does nothing;" +
 				"[]; [];" +
 				"[]"
@@ -314,24 +436,24 @@ public class MutableSetTests {
 
 	@DisplayName(".add(Iterable<T>)")
 	@Nested
-	class AddWithIterableTests {
+	class AddIterableTests {
 		@DisplayName("when no argument items are null")
 		@Nested
 		class NoItemsNullTests {
 			@DisplayName("when all argument items are distinct")
 			@Tests({
-				"when all argument items are absent, adds all argument items;" +
-					"[x, K, m, P, w]; [N, q, r];" +
-					"[x, K, m, P, w, N, q, r]",
-				"when some argument items are present, adds absent argument items;" +
-					"[t, Y]; [Y, c, t, d, v, e];" +
-					"[t, Y, c, d, v, e]",
+				"when all argument items are absent, adds all items;" +
+					"[y, 7, R, e]; [m, K, 2, d];" +
+					"[y, 7, R, e, m, K, 2, d]",
+				"when some argument items are present, adds absent items;" +
+					"[w, 4, N, b, s]; [s, C, w, 4];" +
+					"[w, 4, N, b, s, C]",
 				"when all argument items are present, does nothing;" +
-					"[s, W, l, M, p, k]; [M, s, W, l];" +
-					"[s, W, l, M, p, k]",
-				"when set is empty, adds all argument items;" +
-					"[]; [f, R, t, X, q, z];" +
-					"[f, R, t, X, q, z]"
+					"[h, 9, F, p, k]; [p, h, k];" +
+					"[h, 9, F, p, k]",
+				"when set is empty, adds all items;" +
+					"[]; [D, 4, i, s];" +
+					"[D, 4, i, s]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -341,18 +463,18 @@ public class MutableSetTests {
 
 			@DisplayName("when some argument items are same")
 			@Tests({
-				"when all argument items are absent, adds all distinct argument items;" +
-					"[b, G, v, h, J]; [g, m, I, g, g, m];" +
-					"[b, G, v, h, J, g, m, I]",
-				"when some argument items are present, adds absent distinct argument items;" +
-					"[d, F]; [f, d, S, t, d, d, d, f];" +
-					"[d, F, f, S, t]",
+				"when all argument items are absent, adds all distinct items;" +
+					"[j, 1, V, c]; [x, x, 6, x];" +
+					"[j, 1, V, c, x, 6]",
+				"when some argument items are present, adds absent distinct items;" +
+					"[E, 5, t, n]; [t, 5, E, t];" +
+					"[E, 5, t, n]",
 				"when all argument items are present, does nothing;" +
-					"[e, P, z, q, r, s]; [P, z, z, P, P, r];" +
-					"[e, P, z, q, r, s]",
-				"when set is empty, adds all distinct argument items;" +
-					"[]; [y, a, Y, b, y, C, y, y];" +
-					"[y, a, Y, b, C]"
+					"[q, 0, M, z]; [M, z, M, q];" +
+					"[q, 0, M, z]",
+				"when set is empty, adds all distinct items;" +
+					"[]; [b, Y, b, 2];" +
+					"[b, Y, 2]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -362,15 +484,15 @@ public class MutableSetTests {
 
 			@DisplayName("when all argument items are same")
 			@Tests({
-				"when all argument items are absent, adds single distinct argument item;" +
-					"[u, I, o, p, q, r, s]; [C, C];" +
-					"[u, I, o, p, q, r, s, C]",
+				"when all argument items are absent, adds distinct item;" +
+					"[f, 3, P, g]; [L, L, L];" +
+					"[f, 3, P, g, L]",
 				"when all argument items are present, does nothing;" +
-					"[g, H]; [g, g, g];" +
-					"[g, H]",
-				"when set is empty, adds single distinct argument item;" +
-					"[]; [D, D, D, D, D];" +
-					"[D]"
+					"[u, 8, T, a]; [u, u];" +
+					"[u, 8, T, a]",
+				"when set is empty, adds distinct item;" +
+					"[]; [n, n, n];" +
+					"[o]"
 			})
 			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -384,18 +506,18 @@ public class MutableSetTests {
 		class SomeItemsNullTests {
 			@DisplayName("when all non-null argument items are distinct")
 			@Tests({
-				"when all argument items are absent, adds all non-null argument items;" +
-					"[j, M]; [null, R, s, null, null, t];" +
-					"[j, M, R, s, t]",
-				"when some argument items are present, adds absent non-null argument items;" +
-					"[l, N, q, r, s, t]; [r, null, N, null, L, null, s];" +
-					"[l, N, q, r, s, t, L]",
+				"when all argument items are absent, adds all non-null items;" +
+					"[r, 6, H, x]; [null, c, null, 1];" +
+					"[r, 6, H, x, c, 1]",
+				"when some argument items are present, adds absent non-null items;" +
+					"[P, 8, d, k]; [d, null, J, null, P];" +
+					"[P, 8, d, k, J]",
 				"when all argument items are present, does nothing;" +
-					"[m, O]; [O, null, m, null, null, null];" +
-					"[m, O]",
-				"when set is empty, adds all non-null argument items;" +
-					"[]; [null, T, null, null, u, V, null];" +
-					"[T, u, V]"
+					"[m, 2, X, w, 4]; [null, w, null, m, 2];" +
+					"[m, 2, X, w, 4]",
+				"when set is empty, adds all non-null items;" +
+					"[]; [null, a, null, K, 0];" +
+					"[a, K, 0]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
@@ -405,20 +527,38 @@ public class MutableSetTests {
 
 			@DisplayName("when some non-null argument items are same")
 			@Tests({
-				"when all argument items are absent, adds all distinct non-null argument items;" +
-					"[n, P, s, w, x]; [W, null, null, W, X, null, X, y];" +
-					"[n, P, s, w, x, W, X, y]",
-				"when some argument items are present, adds absent distinct non-null argument items;" +
-					"[o, Q]; [null, Q, v, null, v, null, o, w, v];" +
-					"[o, Q, v, w]",
+				"when all argument items are absent, adds all distinct non-null items;" +
+					"[A, 0, f, 9]; [null, e, null, e, U];" +
+					"[A, 0, f, 9, e, U]",
+				"when some argument items are present, adds absent distinct non-null items;" +
+					"[s, 7, i, h]; [i, null, null, R, i];" +
+					"[s, 7, i, h, R]",
 				"when all argument items are present, does nothing;" +
-					"[p, R, u, v, w, x, y]; [null, null, R, R, null, R, p, null, u];" +
-					"[p, R, u, v, w, x, y]",
-				"when set is empty, adds all distinct non-null argument items;" +
-					"[]; [x, null, null, y, null, y, Z, Z, null, a];" +
-					"[x, y, Z, a]"
+					"[V, 3, p, G]; [null, G, V, null, V];" +
+					"[V, 3, p, G]",
+				"when set is empty, adds all distinct non-null items;" +
+					"[]; [W, null, null, j, W, null];" +
+					"[W, j]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
+				@StringArray String[] items2,
+				@StringMutableSet MutableSet<String> expected) {
+				test(items1, items2, expected);
+			}
+
+			@DisplayName("when all non-null argument items are same")
+			@Tests({
+				"when all argument items are absent, adds distinct non-null item;" +
+					"[l, 5, Z, b]; [null, R, null, R, R];" +
+					"[l, 5, Z, b, R]",
+				"when all argument items are present, does nothing;" +
+					"[T, 6, y, q]; [y, y, null, null];" +
+					"[T, 6, y, q]",
+				"when set is empty, adds distinct non-null item;" +
+					"[]; [null, u, null, u, u];" +
+					"[u]"
+			})
+			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
 				@StringMutableSet MutableSet<String> expected) {
 				test(items1, items2, expected);
@@ -428,13 +568,13 @@ public class MutableSetTests {
 		@DisplayName("when all argument items are null")
 		@Nested
 		class AllItemsNullTests {
-			@DisplayName("\uD83D\uDC62")
+			@DisplayName("\uD83E\uDDCA")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[q, S, v, w, x, y, z]; [null, null, null, null];" +
-					"[q, S, v, w, x, y, z]",
+					"[g, 9, S, v]; [null, null, null, null, null, null, null, null];" +
+					"[g, 9, S, v]",
 				"when set is empty, does nothing;" +
-					"[]; [null, null, null];" +
+					"[]; [null, null, null, null, null, null, null, null, null];" +
 					"[]"
 			})
 			void testAllItemsNull(@StringMutableSet MutableSet<String> items1,
@@ -447,11 +587,11 @@ public class MutableSetTests {
 		@DisplayName("when argument iterable is empty")
 		@Nested
 		class ArgumentIterableEmptyTests {
-			@DisplayName("\uD83C\uDF54")
+			@DisplayName("\uD83D\uDD2D")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[h, R, s, b]; [];" +
-					"[h, R, s, b]",
+					"[F, 1, e, 8, N]; [];" +
+					"[F, 1, e, 8, N]",
 				"when set is empty, does nothing;" +
 					"[]; [];" +
 					"[]"
@@ -483,14 +623,14 @@ public class MutableSetTests {
 	class RemoveTests {
 		@DisplayName("when argument item is not null")
 		@Tests({
-			"when argument item is present, removes argument item;" +
-				"[g, R, s, B, n]; R;" +
-				"[g, s, B, n]",
+			"when argument item is present, removes item;" +
+				"[y, 4, B, k, 7]; k;" +
+				"[y, 4, B, 7]",
 			"when argument item is absent, does nothing;" +
-				"[g, R, s, B, n]; O;" +
-				"[g, R, s, B, n]",
+				"[c, 0, H, p]; x;" +
+				"[c, 0, H, p]",
 			"when set is empty, does nothing;" +
-				"[]; R;" +
+				"[]; d;" +
 				"[]"
 		})
 		void testItemNotNull(@StringMutableSet MutableSet<String> items, String item,
@@ -501,8 +641,8 @@ public class MutableSetTests {
 		@DisplayName("when argument item is null")
 		@Tests({
 			"when set is not empty, does nothing;" +
-				"[g, M, n, I]; null;" +
-				"[g, M, n, I]",
+				"[n, 3, E, s, W]; null;" +
+				"[n, 3, E, s, W]",
 			"when set is empty, does nothing;" +
 				"[]; null;" +
 				"[]"
@@ -525,26 +665,26 @@ public class MutableSetTests {
 
 	@DisplayName(".remove(T...)")
 	@Nested
-	class RemoveWithVarargsTests {
+	class RemoveVarargsTests {
 		@DisplayName("when no argument items are null")
 		@Nested
 		class NoItemsNullTests {
 			@DisplayName("when all argument items are distinct")
 			@Tests({
-				"when all argument items are present, removes all argument items;" +
-					"[h, F, D, n, v, s]; [n, F, s, D];" +
-					"[h, v]",
-				"when some argument items are present, removes present argument items;" +
-					"[h, K, m, d, S]; [r, E, K, S, h];" +
-					"[m, d]",
+				"when all argument items are present, removes all items;" +
+					"[z, 4, K, 9, s, M]; [K, 4, M];" +
+					"[z, 9, s]",
+				"when some argument items are present, removes present items;" +
+					"[j, B, 2, e, 7]; [e, R, 2, j];" +
+					"[B, 7]",
 				"when all argument items are absent, does nothing;" +
-					"[b, R, s, k]; [P, o, L, d];" +
-					"[b, R, s, k]",
-				"when argument array contains all items, removes all items;" +
-					"[b, e, s, F, g]; [s, g, F, e, f, W, b];" +
+					"[y, 5, P, d, C]; [m, 8, W];" +
+					"[y, 5, P, d, C]",
+				"when argument array contains all set items, removes all items;" +
+					"[t, 6, z]; [z, t, H, 6];" +
 					"[]",
 				"when set is empty, does nothing;" +
-					"[]; [r, E, s, a, q];" +
+					"[]; [k, 3, J];" +
 					"[]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
@@ -555,20 +695,20 @@ public class MutableSetTests {
 
 			@DisplayName("when some argument items are same")
 			@Tests({
-				"when all argument items are present, removes all distinct argument items;" +
-					"[b, F, s]; [F, b, b, b, F];" +
-					"[s]",
-				"when some argument items are present, removes distinct present argument items;" +
-					"[t, R, l, K, s]; [y, U, y, y, t, l, l, K, l];" +
-					"[R, s]",
+				"when all argument items are present, removes all distinct items;" +
+					"[w, N, 0, f]; [N, N, f, 0];" +
+					"[w]",
+				"when some argument items are present, removes present distinct items;" +
+					"[G, q, 4, U, b]; [q, T, q, b];" +
+					"[G, 4, U]",
 				"when all argument items are absent, does nothing;" +
-					"[e, a, s, t]; [u, I, k, v];" +
-					"[e, a, s, t]",
-				"when argument array contains all items, removes all items;" +
-					"[f, R]; [R, h, m, R, f, f, R, m];" +
+					"[x, 2, h, V]; [c, c, c, c];" +
+					"[x, 2, h, V]",
+				"when argument array contains all set items, removes all items;" +
+					"[r, 1, Z]; [Z, Z, r, 1, 1];" +
 					"[]",
 				"when set is empty, does nothing;" +
-					"[]; [b, n, b, h, h, b];" +
+					"[]; [s, s, 4, s];" +
 					"[]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -579,14 +719,14 @@ public class MutableSetTests {
 
 			@DisplayName("when all argument items are same")
 			@Tests({
-				"when all argument items are present, removes single distinct argument item;" +
-					"[r, f, q, w]; [r, r, r];" +
-					"[f, q, w]",
+				"when all argument items are present, removes distinct item;" +
+					"[o, 9, D, l]; [D, D, D];" +
+					"[o, 9, l]",
 				"when all argument items are absent, does nothing;" +
-					"[r, f, q, w]; [R, R, R, R];" +
-					"[r, f, q, w]",
+					"[n, 5, F]; [Q, Q, Q];" +
+					"[n, 5, F]",
 				"when set is empty, does nothing;" +
-					"[]; [r, r, r];" +
+					"[]; [I, I];" +
 					"[]"
 			})
 			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -601,17 +741,17 @@ public class MutableSetTests {
 		class SomeItemsNullTests {
 			@DisplayName("when all non-null argument items are distinct")
 			@Tests({
-				"when all argument items are present, removes all non-null present argument items;" +
-					"[b, E, s, f]; [s, null, E, null, null];" +
-					"[b, f]",
-				"when some argument items are present, removes non-null present  argument items;" +
-					"[f, h, G, l]; [b, O, null, h, null, e, q, null];" +
-					"[f, G, l]",
+				"when all argument items are present, removes all non-null items;" +
+					"[u, 5, W, a, q]; [W, null, a, null];" +
+					"[u, 5, q]",
+				"when some argument items are present, removes present non-null items;" +
+					"[l, 8, D, k]; [null, D, null, F, l];" +
+					"[8, k]",
 				"when all argument items are absent, does nothing;" +
-					"[b, r]; [null, f, null, E, null];" +
-					"[b, r]",
+					"[P, 3, x, v]; [null, j, null, 1];" +
+					"[P, 3, x, v]",
 				"when set is empty, does nothing;" +
-					"[]; [null, t, null, O, d];" +
+					"[]; [null, A, null, 2];" +
 					"[]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
@@ -622,17 +762,17 @@ public class MutableSetTests {
 
 			@DisplayName("when some non-null argument items are same")
 			@Tests({
-				"when all argument items are present, removes all non-null distinct argument items;" +
-					"[b, I, j, D]; [null, b, null, j, null, null];" +
-					"[I, D]",
-				"when some argument items are present, removes non-null distinct present argument items;" +
-					"[b, F, d, a]; [null, r, I, null, F, b, null];" +
-					"[d, a]",
+				"when all argument items are present, removes all distinct non-null items;" +
+					"[T, 6, i, e]; [i, null, e, i];" +
+					"[T, 6]",
+				"when some argument items are present, removes present distinct non-null items;" +
+					"[m, 0, X, b]; [null, b, null, X, C];" +
+					"[m, 0]",
 				"when all argument items are absent, does nothing;" +
-					"[u, I, l, k]; [null, G, m, n, null];" +
-					"[u, I, l, k]",
+					"[y, 4, N, p]; [null, h, null, h];" +
+					"[y, 4, N, p]",
 				"when set is empty, does nothing;" +
-					"[]; [b, null, e];" +
+					"[]; [V, null, V, null];" +
 					"[]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -643,14 +783,14 @@ public class MutableSetTests {
 
 			@DisplayName("when all non-null argument items are same")
 			@Tests({
-				"when all argument items are present, removes single non-null distinct argument item;" +
-					"[b, D, s, f]; [f, null, null, null, f];" +
-					"[b, D, s]",
+				"when all argument items are present, removes distinct non-null item;" +
+					"[J, 7, d, S]; [S, null, null, S];" +
+					"[J, 7, d]",
 				"when all argument items are absent, does nothing;" +
-					"[b, n, m]; [null, V, V, null];" +
-					"[b, n, m]",
+					"[G, 1, z]; [null, q, null, q];" +
+					"[G, 1, z]",
 				"when set is empty, does nothing;" +
-					"[]; [T, null, T, T];" +
+					"[]; [null, o, o, null];" +
 					"[]"
 			})
 			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -660,16 +800,16 @@ public class MutableSetTests {
 			}
 		}
 
-		@DisplayName("when all arguments items are null")
+		@DisplayName("when all argument items are null")
 		@Nested
 		class AllItemsNullTests {
-			@DisplayName("\uD83D\uDCA6")
+			@DisplayName("\uD83D\uDCA5")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[n, J, k, f, d]; [null, null, null];" +
-					"[n, J, k, f, d]",
+					"[t, 9, f, E]; [null, null, null, null, null, null, null];" +
+					"[t, 9, f, E]",
 				"when set is empty, does nothing;" +
-					"[]; [null, null];" +
+					"[]; [null, null, null, null, null, null, null, null, null, null];" +
 					"[]"
 			})
 			void testAllItemsNull(@StringMutableSet MutableSet<String> items1,
@@ -682,13 +822,13 @@ public class MutableSetTests {
 		@DisplayName("when argument array is empty")
 		@Nested
 		class ArgumentArrayEmptyTests {
-			@DisplayName("\uD83D\uDCA6")
+			@DisplayName("\uD83D\uDCA8")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[b, N, m, J]; [];" +
-					"[b, N, m, J]",
+					"[R, 2, c, w, 5]; [];" +
+					"[R, 2, c, w, 5]",
 				"when set is empty, does nothing;" +
-					"[]; [null, null];" +
+					"[]; [];" +
 					"[]"
 			})
 			void testArgumentArrayEmpty(@StringMutableSet MutableSet<String> items1,
@@ -702,118 +842,37 @@ public class MutableSetTests {
 			MutableSet<String> expected) {
 
 			final var returned = items1.remove(items2);
-			assertSame(items1, returned, format("%s.remove(%s)",
-				items1, Arrays.toString(items2)));
-			assertEquals(expected, returned, format("%s.remove(%s)",
-				items1, Arrays.toString(items2)));
-		}
-	}
-
-	@DisplayName(".remove(Collection<T>)")
-	@Nested
-	class RemoveWithCollectionTests {
-		@DisplayName("when all argument items are distinct")
-		@Tests({
-			"when all argument items are present, removes all argument items;" +
-				"[x, K, m, P, w]; [K, m, P];" +
-				"[x, w]",
-			"when some argument items are present, removes present argument items;" +
-				"[t, Y, v, b]; [Y, c, t, d];" +
-				"[v, b]",
-			"when all argument items are absent, does nothing;" +
-				"[s, W, l, M, p, k]; [q, r, n];" +
-				"[s, W, l, M, p, k]",
-			"when set is empty, does nothing;" +
-				"[]; [f, R, t];" +
-				"[]"
-		})
-		void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
-			@StringCollection Collection<String> items2,
-			@StringMutableSet MutableSet<String> expected) {
-			test(items1, items2, expected);
-		}
-
-		@DisplayName("when some argument items are same")
-		@Tests({
-			"when all argument items are present, removes all distinct argument items;" +
-				"[m, g, v, h, I]; [g, m, I, g, g, m];" +
-				"[v, h]",
-			"when some argument items are present, removes present distinct argument items;" +
-				"[d, F, s, t]; [f, d, S, t, d, d, d, f];" +
-				"[F, s]",
-			"when set is empty, does nothing;" +
-				"[]; [y, a, Y, b, y, C, y, y];" +
-				"[]"
-		})
-		void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
-			@StringCollection Collection<String> items2,
-			@StringMutableSet MutableSet<String> expected) {
-			test(items1, items2, expected);
-		}
-
-		@DisplayName("when all argument items are same")
-		@Tests({
-			"when all argument items are present, removes single distinct argument item;" +
-				"[u, I, o, C, q, r, s]; [C, C];" +
-				"[u, I, o, q, r, s]",
-			"when all argument items are absent, does nothing;" +
-				"[r, l, f, H]; [g, g, g];" +
-				"[r, l, f, H]",
-			"when set is empty, does nothing;" +
-				"[]; [D, D, D, D, D];" +
-				"[]"
-		})
-		void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
-			@StringCollection Collection<String> items2,
-			@StringMutableSet MutableSet<String> expected) {
-			test(items1, items2, expected);
-		}
-
-		@DisplayName("when argument collection is empty")
-		@Tests({
-			"when set is not empty, does nothing;" +
-				"[o, R, g, T]; [];" +
-				"[o, R, g, T]",
-			"when set is empty, does nothing;" +
-				"[]; [];" +
-				"[]",
-		})
-		void testArgumentCollectionEmpty(@StringMutableSet MutableSet<String> items1,
-			@StringCollection Collection<String> items2,
-			@StringMutableSet MutableSet<String> expected) {
-			test(items1, items2, expected);
-		}
-
-		private void test(MutableSet<String> items1, Collection<String> items2,
-			MutableSet<String> expected) {
-
-			final var returned = items1.remove(items2);
 			assertSame(items1, returned,
-				format("%s.remove(%s)", items1, items2));
+				format("%s.remove(%s)", items1,
+					Arrays.toString(items2)));
 			assertEquals(expected, items1,
-				format("%s.remove(%s)", items1, items2));
+				format("%s.remove(%s)", items1,
+					Arrays.toString(items2)));
 		}
 	}
 
 	@DisplayName(".remove(Iterable<T>)")
 	@Nested
-	class RemoveWithIterableTests {
+	class RemoveIterableTests {
 		@DisplayName("when no argument items are null")
 		@Nested
 		class NoItemsNullTests {
 			@DisplayName("when all argument items are distinct")
 			@Tests({
-				"when all argument items are present, removes all argument items;" +
-					"[m, n, J, K, f]; [m, J];" +
-					"[n, K, f]",
-				"when some argument items are present, removes present argument items;" +
-					"[n, M, m, L, I, o, p]; [U, L, N, p];" +
-					"[n, M, m, I, o]",
+				"when all argument items are present, removes all items;" +
+					"[n, 4, Y, j, 0]; [Y, 4, j];" +
+					"[n, 0]",
+				"when some argument items are present, removes present items;" +
+					"[z, 7, F, k]; [k, s, 7, z];" +
+					"[F]",
 				"when all argument items are absent, does nothing;" +
-					"[e, v, b]; [U, P, O, N];" +
-					"[e, v, b]",
+					"[q, 1, B, m]; [h, 8, L];" +
+					"[q, 1, B, m]",
+				"when argument iterable contains all set items, removes all items;" +
+					"[e, 5, T]; [T, e, G, 5];" +
+					"[]",
 				"when set is empty, does nothing;" +
-					"[]; [M, I, O, P];" +
+					"[]; [a, 9, w];" +
 					"[]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
@@ -824,17 +883,20 @@ public class MutableSetTests {
 
 			@DisplayName("when some argument items are same")
 			@Tests({
-				"when all argument items are present, removes all distinct argument items;" +
-					"[m, g, v, h, I]; [g, m, I, g, g, m];" +
-					"[v, h]",
-				"when some argument items are present, removes present distinct argument items;" +
-					"[d, F, s, t]; [f, d, S, t, d, d, d, f];" +
-					"[F, s]",
+				"when all argument items are present, removes all distinct items;" +
+					"[d, P, 3, x]; [P, P, x, 3];" +
+					"[d]",
+				"when some argument items are present, removes present distinct items;" +
+					"[O, v, 6, C]; [v, U, v, C];" +
+					"[O, 6]",
 				"when all argument items are absent, does nothing;" +
-					"[e, P, z, q, r, s]; [k, k, O, k, v, k];" +
-					"[e, P, z, q, r, s]",
+					"[i, 2, r, N]; [g, g, g, g];" +
+					"[i, 2, r, N]",
+				"when argument iterable contains all set items, removes all items;" +
+					"[p, 8, X]; [X, X, p, 8, 8];" +
+					"[]",
 				"when set is empty, does nothing;" +
-					"[]; [y, a, Y, b, y, C, y, y];" +
+					"[]; [M, M, 1, M];" +
 					"[]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -845,14 +907,14 @@ public class MutableSetTests {
 
 			@DisplayName("when all argument items are same")
 			@Tests({
-				"when all argument items are present, removes single distinct argument item;" +
-					"[u, I, o, C, q, r, s]; [C, C];" +
-					"[u, I, o, q, r, s]",
+				"when all argument items are present, removes distinct item;" +
+					"[b, 0, W, c]; [W, W, W];" +
+					"[b, 0, c]",
 				"when all argument items are absent, does nothing;" +
-					"[r, l, f, H]; [g, g, g];" +
-					"[r, l, f, H]",
+					"[y, 3, K]; [P, P, P];" +
+					"[y, 3, K]",
 				"when set is empty, does nothing;" +
-					"[]; [D, D, D, D, D];" +
+					"[]; [h, h];" +
 					"[]"
 			})
 			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -867,17 +929,17 @@ public class MutableSetTests {
 		class SomeItemsNullTests {
 			@DisplayName("when all non-null argument items are distinct")
 			@Tests({
-				"when all argument items are present, removes all non-null argument items;" +
-					"[j, N, k, L, I]; [N, null, L, null, I];" +
-					"[j, k]",
-				"when some argument items are present, removes present non-null argument items;" +
-					"[g, H, m, L, p]; [null, L, G, null, p];" +
-					"[g, H, m]",
+				"when all argument items are present, removes all non-null items;" +
+					"[s, 6, H, t, f]; [H, null, t, null];" +
+					"[s, 6, f]",
+				"when some argument items are present, removes present non-null items;" +
+					"[o, 9, V, m]; [null, V, null, R, o];" +
+					"[m]",
 				"when all argument items are absent, does nothing;" +
-					"[q, R, s, t, u]; [V, null, W, null, X];" +
-					"[q, R, s, t, u]",
+					"[l, 2, A, p]; [null, k, null, 4];" +
+					"[l, 2, A, p]",
 				"when set is empty, does nothing;" +
-					"[]; [M, null, I, null, O];" +
+					"[]; [null, G, null, 8];" +
 					"[]"
 			})
 			void testAllItemsDistinct(@StringMutableSet MutableSet<String> items1,
@@ -886,19 +948,19 @@ public class MutableSetTests {
 				test(items1, items2, expected);
 			}
 
-			@DisplayName("when some argument items are same")
+			@DisplayName("when some non-null argument items are same")
 			@Tests({
-				"when all argument items are present, removes all non-null distinct argument items;" +
-					"[m, g, v, h, I]; [g, null, m, I, g, null, m];" +
-					"[v, h]",
-				"when some argument items are present, removes present non-null distinct argument items;" +
-					"[d, F, s, t]; [null, d, S, t, t, t, d, null, f];" +
-					"[F, s]",
+				"when all argument items are present, removes all distinct non-null items;" +
+					"[Z, 5, j, q]; [j, null, q, j];" +
+					"[Z, 5]",
+				"when some argument items are present, removes present distinct non-null items;" +
+					"[h, 7, e, x]; [null, x, null, e, D];" +
+					"[h, 7]",
 				"when all argument items are absent, does nothing;" +
-					"[e, P, z, q, r, s]; [k, null, k, O, k, null, v, O, O];" +
-					"[e, P, z, q, r, s]",
+					"[w, 0, J, n]; [null, b, null, b];" +
+					"[w, 0, J, n]",
 				"when set is empty, does nothing;" +
-					"[]; [y, null, Y, b, y, null, C, Y, Y];" +
+					"[]; [E, null, E, null];" +
 					"[]"
 			})
 			void testSomeItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -907,16 +969,16 @@ public class MutableSetTests {
 				test(items1, items2, expected);
 			}
 
-			@DisplayName("when all argument items are same")
+			@DisplayName("when all non-null argument items are same")
 			@Tests({
-				"when all argument items are present, removes single non-null distinct argument item;" +
-					"[u, I, o, C, q, r, s]; [C, null, C];" +
-					"[u, I, o, q, r, s]",
+				"when all argument items are present, removes distinct non-null item;" +
+					"[c, 4, S, y]; [4, null, null, 4];" +
+					"[c, S, y]",
 				"when all argument items are absent, does nothing;" +
-					"[r, l, f, H]; [g, null, g, g];" +
-					"[r, l, f, H]",
+					"[M, 1, d]; [null, f, null, f];" +
+					"[M, 1, d]",
 				"when set is empty, does nothing;" +
-					"[]; [D, null, D, D, null];" +
+					"[]; [null, i, i, null];" +
 					"[]"
 			})
 			void testAllItemsSame(@StringMutableSet MutableSet<String> items1,
@@ -929,11 +991,11 @@ public class MutableSetTests {
 		@DisplayName("when all argument items are null")
 		@Nested
 		class AllItemsNullTests {
-			@DisplayName("\uD83D\uDECF")
+			@DisplayName("\uD83D\uDCB0")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[b, V, c]; [null, null];" +
-					"[b, V, c]",
+					"[r, 6, N, u]; [null, null, null, null, null, null, null, null, null, null, null];" +
+					"[r, 6, N, u]",
 				"when set is empty, does nothing;" +
 					"[]; [null, null];" +
 					"[]"
@@ -948,11 +1010,11 @@ public class MutableSetTests {
 		@DisplayName("when argument iterable is empty")
 		@Nested
 		class ArgumentIterableEmptyTests {
-			@DisplayName("\uD83D\uDCB4")
+			@DisplayName("\uD83E\uDDF4")
 			@Tests({
 				"when set is not empty, does nothing;" +
-					"[r, E, v, K, O]; [];" +
-					"[r, E, v, K, O]",
+					"[K, 3, x, b, 1]; [];" +
+					"[K, 3, x, b, 1]",
 				"when set is empty, does nothing;" +
 					"[]; [];" +
 					"[]"
@@ -982,9 +1044,10 @@ public class MutableSetTests {
 	@DisplayName(".removeAll()")
 	@Nested
 	class RemoveAllTests {
+		@DisplayName("\uD83E\uDDF9")
 		@Tests({
-			"when set is not empty, removes all items;" +
-				"[t, K, L, s, B];" +
+			"when set is not empty, removes items;" +
+				"[v, 9, z, L, 3];" +
 				"[]",
 			"when set is empty, does nothing;" +
 				"[];" +
@@ -1004,10 +1067,11 @@ public class MutableSetTests {
 	@DisplayName(".toImmutable()")
 	@Nested
 	class ToImmutableTests {
+		@DisplayName("\uD83D\uDD12")
 		@Tests({
-			"when set is not empty, returns all items in immutable set;" +
-				"[g, R, e, A, s];" +
-				"[g, R, e, A, s]",
+			"when set is not empty, returns items in immutable set;" +
+				"[n, 5, Y, t, 7];" +
+				"[n, 5, Y, t, 7]",
 			"when set is empty, returns empty immutable set;" +
 				"[];" +
 				"[]"

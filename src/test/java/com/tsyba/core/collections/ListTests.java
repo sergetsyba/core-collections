@@ -17,10 +17,10 @@ class ListTests {
 	class NewVarargsTests {
 		@DisplayName("\uD83D\uDE82")
 		@Tests({
-			"when no argument items are null, creates list with all argument items;" +
+			"when no argument items are null, creates list with all items;" +
 				"[A, k, Z, e, j];" +
 				"[A, k, Z, e, j]",
-			"when some argument items are null, creates list with non-null argument items;" +
+			"when some argument items are null, creates list with non-null items;" +
 				"[g, null, null, T, null, q];" +
 				"[g, T, q]",
 			"when all argument items are null, creates empty list;" +
@@ -43,13 +43,13 @@ class ListTests {
 	class NewCollectionTests {
 		@DisplayName("\uD83C\uDF4B")
 		@Tests({
-			"when no argument items are null, creates list with all argument items;" +
+			"when no argument items are null, creates list with all items;" +
 				"[f, V, h, Z, C, 8];" +
 				"[f, V, h, Z, C, 8]",
-			"when some argument items are null, creates list with non-null argument items;" +
+			"when some argument items are null, creates list with non-null items;" +
 				"[w, h, null, K, m, null, s, z];" +
 				"[w, h, K, m, s, z]",
-			"when argument collection starts with a null, creates list with non-null argument items;" +
+			"when argument collection starts with a null, creates list with non-null items;" +
 				"[null, y, R, b];" +
 				"[y, R, b]",
 			"when all argument items are null, creates empty list;" +
@@ -341,7 +341,7 @@ class ListTests {
 			"when some items match, returns matching items;" +
 				"[g, R, k, W, m, T];" +
 				"[R, W, T]",
-			"when all items match, returns all items;" +
+			"when all items match, returns matching items;" +
 				"[F, B, N, U, Z, Y];" +
 				"[F, B, N, U, Z, Y]",
 			"when no items match, returns empty list;" +
@@ -367,7 +367,7 @@ class ListTests {
 	class FindAllTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when argument item is present multiple times, returns all its indexes;" +
+			"when argument item is present multiple times, returns its indexes;" +
 				"[c, M, e, M, k, w, M, p]; M;" +
 				"[1, 3, 6]",
 			"when argument item is present once, returns its index;" +
@@ -466,7 +466,7 @@ class ListTests {
 			"when some items are same, returns distinct items;" +
 				"[t, e, r, t, t, r, R, r];" +
 				"[r, R, t, e]",
-			"when all items are same, returns single distinct item;" +
+			"when all items are same, returns distinct item;" +
 				"[g, g, g, g, g, g, g];" +
 				"[g]",
 			"when list is empty, returns empty list;" +
@@ -485,7 +485,7 @@ class ListTests {
 	class ReverseTests {
 		@DisplayName("\uD83D\uDC58")
 		@Tests({
-			"when list is not empty, returns all its items in reverse order;" +
+			"when list is not empty, returns items in reverse order;" +
 				"[x, 9, 3, Z, 0, K, h];" +
 				"[h, K, 0, Z, 3, 9, x]",
 			"when list is empty, returns empty list;" +
@@ -588,7 +588,7 @@ class ListTests {
 	class BridgeTests {
 		@DisplayName("\uD83C\uDF0D")
 		@Tests({
-			"when list is not empty, returns all items in java.util.List;" +
+			"when list is not empty, returns items in java.util.List;" +
 				"[A, g, 9, 2, C, R, H];" +
 				"[A, g, 9, 2, C, R, H]",
 			"when list is empty, returns empty java.util.List;" +
@@ -607,10 +607,10 @@ class ListTests {
 	class IteratorTests {
 		@DisplayName("\uD83E\uDDF2")
 		@Tests({
-			"when list is not empty, iterates all items;" +
+			"when list is not empty, iterates items;" +
 				"[H, P, F, l, R, 5];" +
 				"[H, P, F, l, R, 5]",
-			"when list is empty, iterates no items;" +
+			"when list is empty, does nothing;" +
 				"[];" +
 				"[]"
 		})
@@ -694,7 +694,7 @@ class ListTests {
 	class ToArrayTests {
 		@DisplayName("\uD83C\uDF68")
 		@Tests({
-			"when list is not empty, returns all items in array;" +
+			"when list is not empty, returns items in array;" +
 				"[n, L, 8, F, S, 6, o];" +
 				"[n, L, 8, F, S, 6, o]",
 			"when list is empty, returns empty array;" +
@@ -713,7 +713,7 @@ class ListTests {
 	class ToArrayClassTests {
 		@DisplayName("\uD83E\uDDFA")
 		@Tests({
-			"when list is not empty, returns all items in array;" +
+			"when list is not empty, returns items in array;" +
 				"[j, w, u, T, F, 5, M];" +
 				"[j, w, u, T, F, 5, M]",
 			"when list is empty, returns empty array;" +
