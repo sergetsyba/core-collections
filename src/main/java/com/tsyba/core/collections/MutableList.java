@@ -20,6 +20,16 @@ public class MutableList<T> extends List<T> {
 	}
 
 	/**
+	 * Creates a copy of the specified items.
+	 */
+	MutableList(Collection<T> items) {
+		this(new ContiguousArrayStore(
+			Math.max(items.getCount(), minimumCapacity)));
+
+		items.forEach(this::append);
+	}
+
+	/**
 	 * Creates a list with the specified items.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
@@ -30,16 +40,6 @@ public class MutableList<T> extends List<T> {
 			Math.max(items.length, minimumCapacity)));
 
 		append(items);
-	}
-
-	/**
-	 * Creates a copy of the specified items.
-	 */
-	public MutableList(Collection<T> items) {
-		this(new ContiguousArrayStore(
-			Math.max(items.getCount(), minimumCapacity)));
-
-		items.forEach(this::append);
 	}
 
 	@Override

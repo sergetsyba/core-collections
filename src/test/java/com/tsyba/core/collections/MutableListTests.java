@@ -14,15 +14,38 @@ import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MutableListTests {
+	@DisplayName("MutableList(Collection<T>)")
+	@Nested
+	class NewWithListTests {
+		@DisplayName("\uD83E\uDD12")
+		@Tests({
+			"when argument list is not empty, creates list with items;" +
+				"[p, g, F, P, F];" +
+				"[p, g, F, P, F]",
+			"when argument list is empty, creates empty list;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringList List<String> items,
+			@StringMutableList MutableList<String> expected) {
+
+			final var created = new MutableList<>(items);
+			assertEquals(minimumCapacity, created.store.items.length,
+				format("new MutableList<>(%s) created with incorrect capacity", expected));
+			assertEquals(expected, created,
+				format("new MutableList<>(%s)", items));
+		}
+	}
+
 	@DisplayName("MutableList(T...)")
 	@Nested
 	class NewWithVarargsTests {
 		@DisplayName("\uD83D\uDC57")
 		@Tests({
-			"when no argument items are null, creates list with all argument items;" +
+			"when no argument items are null, creates list with all items;" +
 				"[b, d, Q, P, G];" +
 				"[b, d, Q, P, G]",
-			"when some argument items are null, creates list with non-null argument items;" +
+			"when some argument items are null, creates list with non-null items;" +
 				"[null, B, null, null, G, null];" +
 				"[B, G]",
 			"when all argument items are null, creates empty list;" +
@@ -40,29 +63,6 @@ class MutableListTests {
 				format("new MutableList<>(%s) created with incorrect capacity", expected));
 			assertEquals(expected, created,
 				format("new MutableList<>(%s)", Arrays.toString(items)));
-		}
-	}
-
-	@DisplayName("MutableList(List<T>)")
-	@Nested
-	class NewWithListTests {
-		@DisplayName("\uD83E\uDD12")
-		@Tests({
-			"when argument list is not empty, creates list with all argument items;" +
-				"[p, g, F, P, F];" +
-				"[p, g, F, P, F]",
-			"when argument list is empty, creates empty list;" +
-				"[];" +
-				"[]"
-		})
-		void test(@StringList List<String> items,
-			@StringMutableList MutableList<String> expected) {
-
-			final var created = new MutableList<>(items);
-			assertEquals(minimumCapacity, created.store.items.length,
-				format("new MutableList<>(%s) created with incorrect capacity", expected));
-			assertEquals(expected, created,
-				format("new MutableList<>(%s)", items));
 		}
 	}
 
@@ -193,7 +193,7 @@ class MutableListTests {
 	class PrependTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when argument item is not null, prepends argument item;" +
+			"when argument item is not null, prepends item;" +
 				"[v, B, f]; g;" +
 				"[g, v, B, f]",
 			"when argument item is null, does nothing;" +
@@ -207,7 +207,7 @@ class MutableListTests {
 
 		@DisplayName("when list is empty")
 		@Tests({
-			"when argument item is not null, prepends argument item;" +
+			"when argument item is not null, prepends item;" +
 				"[]; g;" +
 				"[g]",
 			"when argument item is null, does nothing;" +
@@ -235,10 +235,10 @@ class MutableListTests {
 	class PrependWithVarargsTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when no argument items are null, prepends all argument items;" +
+			"when no argument items are null, prepends all items;" +
 				"[h, V, d]; [n, M];" +
 				"[n, M, h, V, d]",
-			"when some argument items are null, prepends non-null argument items;" +
+			"when some argument items are null, prepends non-null items;" +
 				"[g, H]; [null, n, null, null, O, null];" +
 				"[n, O, g, H]",
 			"when all argument items are null, does nothing;" +
@@ -256,10 +256,10 @@ class MutableListTests {
 
 		@DisplayName("when list is empty")
 		@Tests({
-			"when no argument items are null, prepends all argument items;" +
+			"when no argument items are null, prepends all items;" +
 				"[]; [n, M];" +
 				"[n, M]",
-			"when some argument items are null, prepends non-null argument items;" +
+			"when some argument items are null, prepends non-null items;" +
 				"[]; [null, n, null, null, O, null];" +
 				"[n, O]",
 			"when all argument items are null, does nothing;" +
@@ -293,7 +293,7 @@ class MutableListTests {
 	class PrependWithListTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when argument list is not empty, prepends all argument items;" +
+			"when argument list is not empty, prepends items;" +
 				"[G, f]; [F, F, a];" +
 				"[F, F, a, G, f]",
 			"when argument list is empty, does nothing;" +
@@ -308,7 +308,7 @@ class MutableListTests {
 
 		@DisplayName("when list is empty")
 		@Tests({
-			"when argument list is not empty, prepends all argument items;" +
+			"when argument list is not empty, prepends items;" +
 				"[]; [V, Q, P];" +
 				"[V, Q, P]",
 			"when argument list is empty, does nothing;" +
@@ -337,7 +337,7 @@ class MutableListTests {
 	class AppendTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when argument item is not null, appends argument item;" +
+			"when argument item is not null, appends item;" +
 				"[v, b, f]; g;" +
 				"[v, b, f, g]",
 			"when argument item is null, does nothing;" +
@@ -351,7 +351,7 @@ class MutableListTests {
 
 		@DisplayName("when list is empty")
 		@Tests({
-			"when argument item is not null, appends argument item;" +
+			"when argument item is not null, appends item;" +
 				"[]; g;" +
 				"[g]",
 			"when argument item is null, does nothing;" +
@@ -379,10 +379,10 @@ class MutableListTests {
 	class AppendWithVarargsTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when no argument are null, appends all argument items;" +
+			"when no argument items are null, appends all items;" +
 				"[h, V, d]; [n, M];" +
 				"[h, V, d, n, M]",
-			"when some argument items are null, appends non-null argument items;" +
+			"when some argument items are null, appends non-null items;" +
 				"[g, H]; [null, n, null, null, O, null];" +
 				"[g, H, n, O]",
 			"when all argument items are null, does nothing;" +
@@ -400,10 +400,10 @@ class MutableListTests {
 
 		@DisplayName("when list is empty")
 		@Tests({
-			"when no argument are null, appends all argument items;" +
+			"when no argument items are null, appends all items;" +
 				"[]; [n, M];" +
 				"[n, M]",
-			"when some argument items are null, appends non-null argument items;" +
+			"when some argument items are null, appends non-null items;" +
 				"[]; [null, n, null, null, O, null];" +
 				"[n, O]",
 			"when all argument items are null, does nothing;" +
@@ -437,7 +437,7 @@ class MutableListTests {
 	class AppendWithListTests {
 		@DisplayName("when list is not empty")
 		@Tests({
-			"when argument list is not empty, appends all argument items;" +
+			"when argument list is not empty, appends items;" +
 				"[G, f]; [F, F, a];" +
 				"[G, f, F, F, a]",
 			"when argument list is empty, does nothing;" +
@@ -452,7 +452,7 @@ class MutableListTests {
 
 		@DisplayName("when list is empty")
 		@Tests({
-			"when argument list is not empty, appends all argument items;" +
+			"when argument list is not empty, appends items;" +
 				"[]; [F, F, a];" +
 				"[F, F, a]",
 			"when argument list is empty, does nothing;" +
@@ -490,10 +490,10 @@ class MutableListTests {
 				"when index is 0, prepends item;" +
 					"[g, R, s]; 0; L;" +
 					"[L, g, R, s]; null",
-				"when index is within valid range, inserts argument item at index;" +
+				"when index is within valid range, inserts item at index;" +
 					"[g, I, K, s, A]; 2; u;" +
 					"[g, I, u, K, s, A]; null",
-				"when index is last valid index, inserts argument item at index;" +
+				"when index is last valid index, inserts item at index;" +
 					"[g, f, s, J, H]; 4; K;" +
 					"[g, f, s, J, K, H]; null",
 				"when index is at valid range end, fails;" +
@@ -608,10 +608,10 @@ class MutableListTests {
 				"when index is 0, prepends all items;" +
 					"[b, a, s, R]; 0; [F, F];" +
 					"[F, F, b, a, s, R]; null",
-				"when index is within valid range, inserts all argument items at index;" +
+				"when index is within valid range, inserts items at index;" +
 					"[v, F, G, h]; 2; [F, F];" +
 					"[v, F, F, F, G, h]; null",
-				"when index is last valid index, inserts all argument items at index;" +
+				"when index is last valid index, inserts items at index;" +
 					"[g, R, t, y, K]; 4; [g];" +
 					"[g, R, t, y, g, K]; null",
 				"when index is at valid range end, fails;" +
@@ -633,13 +633,13 @@ class MutableListTests {
 				"when index is before valid range, fails;" +
 					"[b, R, s]; -2; [null, b, null, s, W];" +
 					"null; -2 ∉ [0, 3)",
-				"when index is 0, prepends non-null argument items;" +
+				"when index is 0, prepends non-null items;" +
 					"[g, R, l, K, m]; 0; [k, null, K, null, null];" +
 					"[k, K, g, R, l, K, m]; null",
-				"when index is within valid range, inserts non-null argument items at index;" +
+				"when index is within valid range, inserts non-null items at index;" +
 					"[b, a, s, R]; 2; [F, null, null, D];" +
 					"[b, a, F, D, s, R]; null",
-				"when index is last valid index, inserts non-null argument items at index;" +
+				"when index is last valid index, inserts non-null items at index;" +
 					"[b, N, m]; 2; [k, null, O, g];" +
 					"[b, N, k, O, g, m]; null",
 				"when index is at valid range end, fails;" +
@@ -827,10 +827,10 @@ class MutableListTests {
 				"when index is 0, prepends items;" +
 					"[v, F, G, h]; 0; [F, F];" +
 					"[F, F, v, F, G, h]; null",
-				"when index is within valid range, inserts argument items at index;" +
+				"when index is within valid range, inserts items at index;" +
 					"[v, F, G, h]; 2; [F, F];" +
 					"[v, F, F, F, G, h]; null",
-				"when index is last valid index, inserts argument items at index;" +
+				"when index is last valid index, inserts items at index;" +
 					"[g, N, m]; 2; [j, N, m];" +
 					"[g, N, j, N, m, m]; null",
 				"when index is at valid range end, fails;" +
@@ -944,16 +944,16 @@ class MutableListTests {
 		class NotEmptyListTests {
 			@DisplayName("when no argument items are null")
 			@Tests({
-				"when index range starts at 0 and ends within valid range, replaces items in range with all argument items;" +
+				"when index range starts at 0 and ends within valid range, replaces items in range with items;" +
 					"[g, f, R, u, O, l, s]; [0, 4); [n, m];" +
 					"[n, m, O, l, s]; null",
-				"when index range is within valid range, replaces items in range with all argument items;" +
+				"when index range is within valid range, replaces items in range with items;" +
 					"[f, e, q, R, w]; [2, 4); [a, T, f, s];" +
 					"[f, e, a, T, f, s, w]; null",
-				"when index range starts within valid range and ends at valid range end, replaces items in range with all argument items;" +
+				"when index range starts within valid range and ends at valid range end, replaces items in range with items;" +
 					"[b, M, N, s, l]; [2, 5); [g, T, s];" +
 					"[b, M, g, T, s]; null",
-				"when index range equals valid range, replaces all items with all argument items;" +
+				"when index range equals valid range, replaces items with items;" +
 					"[g, R, K, I]; [0, 4); [m, N, J];" +
 					"[m, N, J]; null",
 				"when index range starts within valid range and ends after valid range end, fails;" +
@@ -962,7 +962,7 @@ class MutableListTests {
 				"when index range is after valid range end, fails;" +
 					"[r, E, s]; [5, 9); [d, s, a];" +
 					"null; [5, 9) ⊈ [0, 3)",
-				"when index range is empty, prepends all argument items;" +
+				"when index range is empty, prepends items;" +
 					"[f, e, q, R, w]; [0, 0); [a, T, f, s];" +
 					"[a, T, f, s, f, e, q, R, w]; null"
 			})
@@ -975,16 +975,16 @@ class MutableListTests {
 
 			@DisplayName("when some argument items are null")
 			@Tests({
-				"when index range starts at 0 and ends within valid range, replaces items in range with non-null argument items;" +
+				"when index range starts at 0 and ends within valid range, replaces items in range with non-null items;" +
 					"[b, G, k, J, o, P]; [0, 5); [K, null, Y, U, null];" +
 					"[K, Y, U, P]; null",
-				"when index range is within valid range, replaces items in range with non-null argument items;" +
+				"when index range is within valid range, replaces items in range with non-null items;" +
 					"[f, e, q, R, w]; [2, 4); [null, b, null, null, n];" +
 					"[f, e, b, n, w]; null",
-				"when index range starts within valid range and ends at valid range end, replaces items in range with non-null argument items;" +
+				"when index range starts within valid range and ends at valid range end, replaces items in range with non-null items;" +
 					"[b, G, s, e, W, l]; [2, 6); [K, m, null, null];" +
 					"[b, G, K, m]; null",
-				"when index range equals valid range, replaces all items with non-null argument items;" +
+				"when index range equals valid range, replaces items with non-null items;" +
 					"[r, E]; [0, 2); [null, null, J, null];" +
 					"[J]; null",
 				"when index range starts within valid range and ends after valid range end, fails;" +
@@ -993,7 +993,7 @@ class MutableListTests {
 				"when index range is after valid range end, fails;" +
 					"[g, v, s, w]; [7, 8); [q, null, t];" +
 					"null; [7, 8) ⊈ [0, 4)",
-				"when index range is empty, prepends non-null argument items;" +
+				"when index range is empty, prepends non-null items;" +
 					"[f, e, q, R, w]; [0, 0); [null, b, null, null, n];" +
 					"[b, n, f, e, q, R, w]; null"
 			})
@@ -1075,7 +1075,7 @@ class MutableListTests {
 				"when index range is not empty, fails;" +
 					"[]; [0, 3); [a, T, f, s];" +
 					"null; [0, 3) ⊈ [0, 0)",
-				"when index range is empty, prepends all argument items;" +
+				"when index range is empty, prepends items;" +
 					"[]; [0, 0); [a, T, f, s];" +
 					"[a, T, f, s]; null"
 			})
@@ -1091,7 +1091,7 @@ class MutableListTests {
 				"when index range is not empty, fails;" +
 					"[]; [1, 2); [null, b, null, null, n];" +
 					"null; [1, 2) ⊈ [0, 0)",
-				"when index range is empty, prepends non-null argument items;" +
+				"when index range is empty, prepends non-null items;" +
 					"[]; [0, 0); [null, b, null, null, n];" +
 					"[b, n]; null"
 			})
@@ -1507,7 +1507,7 @@ class MutableListTests {
 	class ToImmutableTests {
 		@DisplayName("\uD83D\uDE93")
 		@Tests({
-			"when list is not empty, returns all items in immutable list;" +
+			"when list is not empty, returns items in immutable list;" +
 				"[v, m, K, l];" +
 				"[v, m, K, l]",
 			"when list is empty, returns empty immutable list;" +

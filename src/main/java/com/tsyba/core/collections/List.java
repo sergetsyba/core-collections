@@ -18,6 +18,16 @@ public class List<T> implements Sequence<T> {
 	}
 
 	/**
+	 * Creates a copy of the specified items.
+	 */
+	List(Collection<T> items) {
+		final var store = new ContiguousArrayStore(items.toArray());
+		store.removeExcessCapacity();
+
+		this.store = store;
+	}
+	
+	/**
 	 * Creates a list with the specified items.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.
@@ -32,20 +42,6 @@ public class List<T> implements Sequence<T> {
 		}
 
 		store.removeExcessCapacity();
-		this.store = store;
-	}
-
-	/**
-	 * Creates a copy of the specified {@link Collection}.
-	 * <p>
-	 * Ignores any {@code null} values among the items of the specified
-	 * {@link Collection}.
-	 */
-	public List(Collection<T> items) {
-		final var array = items.toArray();
-		final var store = ContiguousArrayStore.compact(array);
-		store.removeExcessCapacity();
-
 		this.store = store;
 	}
 

@@ -12,6 +12,29 @@ import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ListTests {
+	@DisplayName("List(Collection<T>)")
+	@Nested
+	class NewCollectionTests {
+		@DisplayName("\uD83C\uDF4B")
+		@Tests({
+			"when argument collection is not empty, creates list with items;" +
+				"[f, V, h, Z, C, 8];" +
+				"[f, V, h, Z, C, 8]",
+			"when argument collection is empty, creates empty list;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringCollection Collection<String> items,
+			@StringList List<String> expected) {
+
+			final var created = new List<>(items);
+			assertEquals(items.getCount(), created.store.items.length,
+				format("new List<>(%s) created with incorrect capacity", expected));
+			assertEquals(expected, created,
+				format("new List<>(%s)", items));
+		}
+	}
+
 	@DisplayName("List(T...)")
 	@Nested
 	class NewVarargsTests {
@@ -32,39 +55,11 @@ class ListTests {
 		})
 		void test(@StringArray String[] items, @StringList List<String> expected) {
 			final var created = new List<>(items);
+			assertEquals(items.length, created.store.items.length,
+				format("new List<>(%s) created with incorrect capacity", expected));
 			assertEquals(expected, created,
 				format("new List<>(%s)",
 					Arrays.toString(items)));
-		}
-	}
-
-	@DisplayName("List(Collection<T>)")
-	@Nested
-	class NewCollectionTests {
-		@DisplayName("\uD83C\uDF4B")
-		@Tests({
-			"when no argument items are null, creates list with all items;" +
-				"[f, V, h, Z, C, 8];" +
-				"[f, V, h, Z, C, 8]",
-			"when some argument items are null, creates list with non-null items;" +
-				"[w, h, null, K, m, null, s, z];" +
-				"[w, h, K, m, s, z]",
-			"when argument collection starts with a null, creates list with non-null items;" +
-				"[null, y, R, b];" +
-				"[y, R, b]",
-			"when all argument items are null, creates empty list;" +
-				"[null, null, null, null, null];" +
-				"[]",
-			"when argument collection is empty, creates empty list;" +
-				"[];" +
-				"[]"
-		})
-		void test(@StringCollection Collection<String> items,
-			@StringList List<String> expected) {
-
-			final var created = new List<>(items);
-			assertEquals(expected, created,
-				format("new List<>(%s)", items));
 		}
 	}
 
