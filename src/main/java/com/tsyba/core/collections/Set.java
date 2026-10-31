@@ -21,13 +21,18 @@ public class Set<T> implements Collection<T> {
 
 	/**
 	 * Creates a copy of the specified {@link Collection}.
+	 * <p>
+	 * Ignores any {@code null} values among the items of the specified
+	 * {@link Collection}.
 	 */
 	public Set(Collection<T> items) {
 		this.store = new RobinHoodHashStore<>(
 			items.getCount());
 
 		for (var item : items) {
-			this.store.insert(item);
+			if (item != null) {
+				this.store.insert(item);
+			}
 		}
 	}
 
@@ -67,6 +72,9 @@ public class Set<T> implements Collection<T> {
 		return store.entryCount;
 	}
 
+	/**
+	 * Returns itself.
+	 */
 	@Override
 	public Set<T> getDistinct() {
 		return this;
@@ -78,8 +86,8 @@ public class Set<T> implements Collection<T> {
 	 * <p>
 	 * Two sets are disjoint when they don't contain any common items.
 	 * <p>
-	 * When this or the specified set is empty, returns {@code false}, since an empty set
-	 * is disjoint from all other sets, including itself.
+	 * When this or the specified set is empty, returns {@code true}, since an empty set
+	 * is disjoint from any set, including another empty set.
 	 */
 	public boolean isDisjoint(Set<T> set) {
 		return noneMatches(set::contains);
@@ -92,7 +100,7 @@ public class Set<T> implements Collection<T> {
 	 * A set intersects another set when they have at least one common item.
 	 * <p>
 	 * When this or the specified set is empty, returns {@code false}, since an empty set
-	 * never intersects another set, including itself.
+	 * never intersects any set, including another empty set.
 	 */
 	public boolean intersects(Set<T> set) {
 		return anyMatches(set::contains);
