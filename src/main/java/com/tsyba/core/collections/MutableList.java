@@ -74,8 +74,10 @@ public class MutableList<T> extends List<T> {
 		if (!range.contains(index)) {
 			throw new IndexNotInRangeException(index, range);
 		}
+		if (item != null) {
+			store.items[index] = item;
+		}
 
-		store.items[index] = item;
 		return this;
 	}
 
