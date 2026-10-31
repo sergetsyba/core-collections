@@ -947,7 +947,7 @@ class MutableListTests {
 			@Tests({
 				"when index range starts at 0 and ends within valid range, replaces items in range with items;" +
 					"[g, f, R, u, 4, O, l]; [0, 4); [8, q, y];" +
-					"[8, q, y, O, l]; null",
+					"[8, q, y, 4, O, l]; null",
 				"when index range is within valid range, replaces items in range with items;" +
 					"[f, e, q, R, 6, w, Z]; [2, 4); [a, T, 3, s, m];" +
 					"[f, e, a, T, 3, s, m, 6, w, Z]; null",
@@ -978,7 +978,7 @@ class MutableListTests {
 			@Tests({
 				"when index range starts at 0 and ends within valid range, replaces items in range with non-null items;" +
 					"[b, G, k, J, 6, o, P]; [0, 5); [K, null, Y, U, null, 3];" +
-					"[K, Y, U, 3, P]; null",
+					"[K, Y, U, 3, o, P]; null",
 				"when index range is within valid range, replaces items in range with non-null items;" +
 					"[f, e, q, R, 5, w, H]; [2, 4); [null, b, null, null, n, 7];" +
 					"[f, e, b, n, 7, 5, w, H]; null",
@@ -1009,7 +1009,7 @@ class MutableListTests {
 			@Tests({
 				"when index range starts at 0 and ends within valid range, removes items in range;" +
 					"[t, R, s, K, 5, n, 9]; [0, 4); [null, null, null];" +
-					"[n, 9]; null",
+					"[5, n, 9]; null",
 				"when index range is within valid range, removes items in range;" +
 					"[f, e, q, R, 7, w, 3]; [1, 3); [null, null, null];" +
 					"[f, R, 7, w, 3]; null",
@@ -1020,8 +1020,8 @@ class MutableListTests {
 					"[n, T, g, 6, J, k]; [0, 6); [null, null, null, null];" +
 					"[]; null",
 				"when index range starts within valid range and ends after valid range end, fails;" +
-					"[m, b, 8, s, 1]; [1, 4); [null, null, null];" +
-					"null; [1, 4) ⊈ [0, 5)",
+					"[m, b, 8, s, 1]; [1, 7); [null, null, null];" +
+					"null; [1, 7) ⊈ [0, 5)",
 				"when index range is after valid range end, fails;" +
 					"[f, g, 9, y]; [4, 8); [q, s, 3, w, l, P];" +
 					"null; [4, 8) ⊈ [0, 4)",
@@ -1166,10 +1166,10 @@ class MutableListTests {
 			@Tests({
 				"when index range starts at 0 and ends within valid range, replaces items in range;" +
 					"[g, t, U, 5, U, j, f]; [0, 3); [v, 7, F, K];" +
-					"[v, 7, F, K, U, j, f]; null",
+					"[v, 7, F, K, 5, U, j, f]; null",
 				"when index range is within valid range, replaces items in range;" +
 					"[h, d, w, 1, a, S, 9, b]; [3, 6); [g, N, 2, s, e];" +
-					"[h, d, w, g, N, 2, s, e, b]; null",
+					"[h, d, w, g, N, 2, s, e, 9, b]; null",
 				"when index range equals valid range, replaces all items;" +
 					"[g, R, e, 4, Y]; [0, 5); [A, 8, S];" +
 					"[A, 8, S]; null",
@@ -1177,8 +1177,8 @@ class MutableListTests {
 					"[n, B, D, 6, d, g]; [4, 6); [t, R, E, s, 3];" +
 					"[n, B, D, 6, t, R, E, s, 3]; null",
 				"when index range starts within and ends after valid range end, fails;" +
-					"[g, f, s, W, 5, s]; [3, 6); [q, y, 8, f];" +
-					"null; [3, 6) ⊈ [0, 6)",
+					"[g, f, s, W, 5, s]; [3, 7); [q, y, 8, f];" +
+					"null; [3, 7) ⊈ [0, 6)",
 				"when index range starts and ends after valid range end, fails;" +
 					"[s, f, e, 1]; [3, 6); [p, O, 7, k, J];" +
 					"null; [3, 6) ⊈ [0, 4)",
@@ -1206,7 +1206,7 @@ class MutableListTests {
 					"[]; null",
 				"when index range starts within and ends at valid range end, removes items in range;" +
 					"[h, T, d, F, 3, b, s]; [5, 7); [];" +
-					"[h, T, d, F, 3, b]; null",
+					"[h, T, d, F, 3]; null",
 				"when index range starts within and ends after valid range end, fails;" +
 					"[f, d, w, 8, s]; [1, 9); [];" +
 					"null; [1, 9) ⊈ [0, 5)",
