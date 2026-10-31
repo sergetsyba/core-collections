@@ -792,18 +792,28 @@ class ListTests {
 		@DisplayName("\uD83C\uDF69")
 		@Tests({
 			"when lists are equal, returns equal hash codes;" +
-				"[b, 2, 0, X, F, S]; [b, 2, 0, X, F, S]",
-			"when lists are equal and one is created from a collection with some null items, returns equal hash codes;" +
-				"[v, k, y, T]; [v, k, y, T, null]",
-			"when lists are equal and one is created from a collection with all null items, returns equal hash codes;" +
-				"[]; [null, null, null, null, null, null]"
+				"[q, W, 6, r, T, v]; [q, W, 6, r, T, v];" +
+				"true",
+			"when lists differ, returns different hash codes;" +
+				"[Z, n, 4, K, s]; [Z, n, 4, K, s, m, Q];" +
+				"false",
+			"when one list is empty, returns different hash codes;" +
+				"[]; [E, p, 7, c, a];" +
+				"false",
+			"when lists are empty, returns equal hash codes;" +
+				"[]; [];" +
+				"true"
 		})
-		void test(@StringList List<String> items1,
-			@StringCollection Collection<String> items2) {
+		void test(@StringList List<String> items1, @StringList List<String> items2,
+			boolean expected) {
 
-			final var items3 = new List<>(items2);
-			assertEquals(items1.hashCode(), items3.hashCode(),
-				format("%s.hashCode()", items3));
+			if (expected) {
+				assertEquals(items1.hashCode(), items2.hashCode(),
+					format("%s.hashCode(), %s.hashCode()", items1, items2));
+			} else {
+				assertNotEquals(items1.hashCode(), items2.hashCode(),
+					format("%s.hashCode(), %s.hashCode()", items1, items2));
+			}
 		}
 	}
 

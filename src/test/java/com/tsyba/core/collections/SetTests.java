@@ -11,8 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SetTests {
 	@DisplayName("Set(Collection<T>)")
@@ -807,20 +806,28 @@ class SetTests {
 		@DisplayName("\uD83C\uDF6F")
 		@Tests({
 			"when sets are equal, returns equal hash codes;" +
-				"[b, q, w, T, e, h]; [b, q, w, T, e, h]",
+				"[b, q, w, T, e, h]; [b, q, w, T, e, h];" +
+				"true",
 			"when sets differ, returns different hash codes;" +
-				"[H, N, n, K, B]; [H, N, n, K, B, q, v]",
+				"[H, N, n, K, B]; [H, N, n, K, B, q, v];" +
+				"false",
 			"when one set is empty, returns different hash codes;" +
-				"[]; [x, R, o, d, k]",
+				"[]; [x, R, o, d, k];" +
+				"false",
 			"when sets are empty, returns equal hash codes;" +
-				"[]; []"
+				"[]; [];" +
+				"true"
 		})
-		void test(@StringSet Set<String> items1,
-			@StringCollection Collection<String> items2) {
+		void test(@StringSet Set<String> items1, @StringSet Set<String> items2,
+			boolean expected) {
 
-			final var items3 = new Set<>((Iterable<String>) items2);
-			assertEquals(items1.hashCode(), items3.hashCode(),
-				format("%s.hashCode(), %s.hashCode()", items1, items3));
+			if (expected) {
+				assertEquals(items1.hashCode(), items2.hashCode(),
+					format("%s.hashCode(), %s.hashCode()", items1, items2));
+			} else {
+				assertNotEquals(items1.hashCode(), items2.hashCode(),
+					format("%s.hashCode(), %s.hashCode()", items1, items2));
+			}
 		}
 	}
 
