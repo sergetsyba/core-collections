@@ -20,23 +20,6 @@ public class Set<T> implements Collection<T> {
 	}
 
 	/**
-	 * Creates a copy of the specified {@link Collection}.
-	 * <p>
-	 * Ignores any {@code null} values among the items of the specified
-	 * {@link Collection}.
-	 */
-	public Set(Collection<T> items) {
-		this.store = new RobinHoodHashStore<>(
-			items.getCount());
-
-		for (var item : items) {
-			if (item != null) {
-				this.store.insert(item);
-			}
-		}
-	}
-
-	/**
 	 * Creates a set with the specified items.
 	 * <p>
 	 * Ignores any {@code null} values among the specified items.

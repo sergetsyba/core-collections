@@ -1,7 +1,6 @@
 package com.tsyba.core.collections;
 
 import com.tsyba.core.collections.converter.StringArray;
-import com.tsyba.core.collections.converter.StringCollection;
 import com.tsyba.core.collections.converter.StringPairSet;
 import com.tsyba.core.collections.converter.StringSet;
 import org.junit.jupiter.api.DisplayName;
@@ -14,72 +13,6 @@ import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SetTests {
-	@DisplayName("Set(Collection<T>)")
-	@Nested
-	class NewCollectionTests {
-		@DisplayName("when no argument items are null")
-		@Tests({
-			"when all argument items are distinct, creates set with all items;" +
-				"[I, o, J, v, 3, A];" +
-				"[I, o, J, v, 3, A]",
-			"when some argument items are same, creates set with distinct items;" +
-				"[Y, c, Y, U, H, c, Y];" +
-				"[Y, c, U, H]",
-			"when all argument items are same, creates set with distinct item;" +
-				"[k, k, k, k, k];" +
-				"[k]"
-		})
-		void testNoItemsNull(@StringCollection Collection<String> items,
-			@StringSet Set<String> expected) {
-			test(items, expected);
-		}
-
-		@DisplayName("when some argument items are null")
-		@Tests({
-			"when all non-null argument items are distinct, creates set with all non-null items;" +
-				"[f, b, null, null, s, j, null];" +
-				"[f, b, s, j]",
-			"when some non-null argument items are same, creates set with distinct non-null items;" +
-				"[I, null, 7, null, A, null, A, I];" +
-				"[I, 7, A]",
-			"when all non-null argument items are same, creates set with distinct non-null item;" +
-				"[t, t, t, null, null, null];" +
-				"[t]"
-		})
-		void testSomeItemsNull(@StringCollection Collection<String> items,
-			@StringSet Set<String> expected) {
-			test(items, expected);
-		}
-
-		@DisplayName("when all argument items are null")
-		@Tests({
-			"creates empty set;" +
-				"[null, null, null, null, null, null, null];" +
-				"[]"
-		})
-		void testAllItemsNull(@StringCollection Collection<String> items,
-			@StringSet Set<String> expected) {
-			test(items, expected);
-		}
-
-		@DisplayName("when argument collection is empty")
-		@Tests({
-			"creates empty set;" +
-				"[];" +
-				"[]"
-		})
-		void testItemsEmpty(@StringCollection Collection<String> items,
-			@StringSet Set<String> expected) {
-			test(items, expected);
-		}
-
-		private void test(Collection<String> items, Set<String> expected) {
-			final var set = new Set<>(items);
-			assertEquals(expected, set,
-				format("new Set<>(%s)", items));
-		}
-	}
-
 	@DisplayName("Set(T...)")
 	@Nested
 	class NewVarargsTests {
