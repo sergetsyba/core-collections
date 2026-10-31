@@ -109,7 +109,7 @@ public class Set<T> implements Collection<T> {
 	/**
 	 * Returns union (A∪B) of this set and the specified one.
 	 * <p>
-	 * A union of two sets contains all (distinct) items from both sets.
+	 * A union of two sets contains items from both sets.
 	 */
 	public Set<T> unite(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -129,7 +129,7 @@ public class Set<T> implements Collection<T> {
 	/**
 	 * Returns intersection (A∩B) of this set and the specified one.
 	 * <p>
-	 * An intersection of two sets contains all of their common items.
+	 * An intersection of two sets contains their common items.
 	 */
 	public Set<T> intersect(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -146,10 +146,10 @@ public class Set<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns difference (A\B) of this set from the specified one.
+	 * Returns difference (A\B) of this set and the specified one.
 	 * <p>
-	 * A difference of a set from another set contains all items from the first set,
-	 * except those, which are common with the other set.
+	 * A difference of two sets contains items from the first set, except those
+	 * common with the second set.
 	 */
 	public Set<T> subtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -166,11 +166,11 @@ public class Set<T> implements Collection<T> {
 	}
 
 	/**
-	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) between this set and the specified
+	 * Returns symmetric difference (AΔB = (A\B)∪(B\A)) of this set and the specified
 	 * one.
 	 * <p>
-	 * A symmetric difference of a set with another set contains all (distinct) items from
-	 * both sets, except those, which are common between them.
+	 * A symmetric difference of two sets contains items from both sets, except those
+	 * common between them.
 	 */
 	public Set<T> symmetricSubtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -194,8 +194,7 @@ public class Set<T> implements Collection<T> {
 	/**
 	 * Returns cartesian product (A×B) of this set and the specified one.
 	 * <p>
-	 * A cartesian product contains all possible (distinct) pairs of items from both
-	 * sets.
+	 * A cartesian product contains all possible pairs of items from both sets.
 	 */
 	public <R> Set<Pair<T, R>> multiply(Set<R> set) {
 		final var capacity = getCount() * set.getCount();
