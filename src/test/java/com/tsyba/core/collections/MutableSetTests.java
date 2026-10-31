@@ -237,7 +237,7 @@ class MutableSetTests {
 					"[]; [];" +
 					"[]"
 			})
-			void testArgumentArrayEmpty(@StringMutableSet MutableSet<String> items1,
+			void testItemsEmpty(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
 				@StringMutableSet MutableSet<String> expected) {
 				test(items1, items2, expected);
@@ -419,7 +419,7 @@ class MutableSetTests {
 					"[]; [];" +
 					"[]"
 			})
-			void testArgumentIterableEmpty(@StringMutableSet MutableSet<String> items1,
+			void testItemsEmpty(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
 				@StringMutableSet MutableSet<String> expected) {
 				test(items1, items2, expected);
@@ -654,7 +654,7 @@ class MutableSetTests {
 					"[]; [];" +
 					"[]"
 			})
-			void testArgumentArrayEmpty(@StringMutableSet MutableSet<String> items1,
+			void testItemsEmpty(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
 				@StringMutableSet MutableSet<String> expected) {
 				test(items1, items2, expected);
@@ -842,7 +842,7 @@ class MutableSetTests {
 					"[]; [];" +
 					"[]"
 			})
-			void testArgumentIterableEmpty(@StringMutableSet MutableSet<String> items1,
+			void testItemsEmpty(@StringMutableSet MutableSet<String> items1,
 				@StringArray String[] items2,
 				@StringMutableSet MutableSet<String> expected) {
 				test(items1, items2, expected);
