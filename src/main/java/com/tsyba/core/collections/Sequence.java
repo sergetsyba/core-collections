@@ -45,12 +45,16 @@ public interface Sequence<T> extends Collection<T> {
 	 * When this sequence is empty, returns an empty {@link Optional}.
 	 */
 	default Optional<T> getLast() {
-		final var count = getCount();
-		if (count == 0) {
+		final var iterator = iterator();
+		if (!iterator.hasNext()) {
 			return Optional.empty();
 		}
 
-		final var item = get(count - 1);
+		T item;
+		do {
+			item = iterator.next();
+		} while (iterator.hasNext());
+
 		return Optional.of(item);
 	}
 

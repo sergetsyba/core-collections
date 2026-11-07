@@ -26,7 +26,7 @@ public class List<T> implements Sequence<T> {
 
 		this.store = store;
 	}
-	
+
 	/**
 	 * Creates a list with the specified items.
 	 * <p>
