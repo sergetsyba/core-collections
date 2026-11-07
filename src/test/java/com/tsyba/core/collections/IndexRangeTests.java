@@ -70,7 +70,7 @@ class IndexRangeTests {
 	class GetCountTests {
 		@DisplayName("\uD83C\uDFDC")
 		@Tests({
-			"when range is not empty, returns length;" +
+			"when range is not empty, returns item count;" +
 				"[9, 16);" +
 				"7",
 			"when range is empty, returns 0;" +
@@ -92,7 +92,7 @@ class IndexRangeTests {
 			"when index range is not empty, returns its index range;" +
 				"[4, 9);" +
 				"[0, 5)",
-			"when index range is empty, returns empty range;" +
+			"when index range is empty, returns empty index range;" +
 				"[0, 0);" +
 				"[0, 0)"
 		})
@@ -219,7 +219,7 @@ class IndexRangeTests {
 	class GetFirstTests {
 		@DisplayName("\uD83C\uDFC0")
 		@Tests({
-			"when range is not empty, returns start index;" +
+			"when range is not empty, returns first item;" +
 				"[4, 7);" +
 				"4",
 			"when range is empty, returns empty optional;" +
@@ -239,7 +239,7 @@ class IndexRangeTests {
 	class GetLastTests {
 		@DisplayName("\uD83C\uDF81")
 		@Tests({
-			"when range is not empty, returns index before end;" +
+			"when range is not empty, returns last item;" +
 				"[4, 7);" +
 				"6",
 			"when range is empty, returns empty optional;" +
@@ -262,10 +262,10 @@ class IndexRangeTests {
 			"when index is before valid index range start, fails;" +
 				"[4, 8); -4;" +
 				"null; -4 ∉ [0, 4)",
-			"when index is at valid index range start, returns index;" +
+			"when index is at valid index range start, returns item at index;" +
 				"[4, 8); 0;" +
 				"4; null",
-			"when index is within valid index range, returns index;" +
+			"when index is within valid index range, returns item at index;" +
 				"[4, 8); 2;" +
 				"6; null",
 			"when index is at valid index range end, fails;" +
@@ -323,7 +323,7 @@ class IndexRangeTests {
 			"when index is before valid index range start, fails;" +
 				"[2, 9); -1;" +
 				"null; -1 ∉ [0, 7)",
-			"when index is at valid index range start, returns empty range;" +
+			"when index is at valid index range start, returns empty prefix;" +
 				"[2, 9); 0;" +
 				"[0, 0); null",
 			"when index is within valid index range, returns prefix;" +
@@ -384,7 +384,7 @@ class IndexRangeTests {
 			"when index is before valid index range start, fails;" +
 				"[2, 9); -1;" +
 				"null; -1 ∉ [0, 7)",
-			"when index is at valid index range start, returns range;" +
+			"when index is at valid index range start, returns suffix;" +
 				"[2, 9); 0;" +
 				"[2, 9); null",
 			"when index is within valid index range, returns suffix;" +
@@ -442,13 +442,13 @@ class IndexRangeTests {
 	class GetAtIndexRangeTests {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when argument range starts at valid index range start and ends within valid index range, returns range;" +
+			"when argument range starts at 0 and ends within valid index range, returns items in range;" +
 				"[6, 9); [0, 2);" +
 				"[6, 8); null",
-			"when argument range coincides with valid index range, returns range;" +
+			"when argument range equals valid index range, returns items in range;" +
 				"[6, 9); [0, 3);" +
 				"[6, 9); null",
-			"when argument range starts within valid index range and ends after valid index range end, fails;" +
+			"when argument range starts within and ends after valid index range end, fails;" +
 				"[6, 9); [0, 7);" +
 				"null; [0, 7) ⊈ [0, 3)",
 			"when argument range starts and ends after valid index range end, fails;" +
@@ -500,7 +500,7 @@ class IndexRangeTests {
 	class MatchAllTests {
 		@DisplayName("\uD83D\uDC3F")
 		@Tests({
-			"when range is not empty, returns matching indexes;" +
+			"when range is not empty, returns matching items;" +
 				"[1, 9);" +
 				"[2, 4, 6, 8]",
 			"when range is empty, returns empty sequence;" +
@@ -668,7 +668,21 @@ class IndexRangeTests {
 	@DisplayName(".reverse()")
 	@Nested
 	class ReverseTests {
-		// TODO: implement IndexRange.reverse() tests
+		@Tests({
+			"when index range is not empty, returns reverse index range;" +
+				"[2, 9);" +
+				"(9, 2]",
+			"when index range is empty, returns empty reverse index range;" +
+				"[0, 0);" +
+				"(0, 0]"
+		})
+		void test(@IntRange IndexRange range,
+			@ReverseIntRange ReverseIndexRange expected) {
+
+			final var reverse = range.reverse();
+			assertEquals(expected, reverse,
+				format("%s.reverse()", range));
+		}
 	}
 
 	@DisplayName(".equals(Object)")
@@ -726,7 +740,7 @@ class IndexRangeTests {
 			"when index is before valid index range start, fails;" +
 				"[2, 6); -2;" +
 				"null; -2 ∉ [0, 4)",
-			"when index is at valid index range start, returns all items iterator;" +
+			"when index is at valid index range start, returns iterator;" +
 				"[2, 6); 0;" +
 				"[2, 3, 4, 5]; null",
 			"when index is within valid index range, returns suffix iterator;" +
@@ -817,10 +831,10 @@ class IndexRangeTests {
 	class ToStringTests {
 		@DisplayName("\uD83C\uDF41")
 		@Tests({
-			"when range is not empty, returns formatted string;" +
+			"when range is not empty, returns string representation;" +
 				"[6, 9);" +
 				"[6, 9)",
-			"when range is empty, returns formatted string;" +
+			"when range is empty, returns [0, 0);" +
 				"[0, 0);" +
 				"[0, 0)"
 		})
@@ -874,4 +888,3 @@ class IndexRangeTests {
 		}
 	}
 }
-

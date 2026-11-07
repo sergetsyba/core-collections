@@ -71,6 +71,15 @@ public class IndexRange implements Sequence<Integer> {
 	}
 
 	/**
+	 * Returns {@code true} when the specified index is within this index range; returns
+	 * {@code false} otherwise.
+	 */
+	public boolean contains(int index) {
+		return index >= start
+			&& index < end;
+	}
+
+	/**
 	 * Returns {@code true} when the specified index range is within this index range;
 	 * returns {@code false} otherwise.
 	 */
@@ -202,8 +211,7 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public Sequence<Integer> reverse() {
-		// todo: implement IndexRange.reverse()
-		throw new UnsupportedOperationException();
+		return new ReverseIndexRange(start, end);
 	}
 
 	@Override
@@ -267,7 +275,9 @@ public class IndexRange implements Sequence<Integer> {
 		if (object == this) {
 			return true;
 		}
-		if (!(object instanceof IndexRange)) {
+
+		final var klass = object.getClass();
+		if (!getClass().equals(klass)) {
 			return false;
 		}
 
