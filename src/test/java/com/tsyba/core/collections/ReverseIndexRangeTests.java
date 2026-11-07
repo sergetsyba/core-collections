@@ -12,7 +12,6 @@ import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -38,7 +37,7 @@ class ReverseIndexRangeTests {
 				final var expected = new ReverseIndexRange(expectedStart, expectedEnd);
 				assertEquals(expected, range,
 					format("parse(%s)", string));
-			} catch (ParseException exception) {
+			} catch (IllegalArgumentException exception) {
 				fail(format("parse(%s)", string),
 					exception);
 			}
@@ -184,7 +183,7 @@ class ReverseIndexRangeTests {
 				"(12, 8]; null",
 			"when index is last valid index, returns prefix;" +
 				"(12, 5]; 6;" +
-				"(12, 5]; null",
+				"(12, 6]; null",
 			"when index is at valid index range end, fails;" +
 				"(12, 5]; 7;" +
 				"null; 7 ∉ [0, 7)",
@@ -248,7 +247,7 @@ class ReverseIndexRangeTests {
 				"(12, 5]; 6;" +
 				"(6, 5]; null",
 			"when index is at valid index range end, fails;" +
-				"(12, 7]; 6;" +
+				"(12, 5]; 7;" +
 				"null; 7 ∉ [0, 7)",
 			"when index is after valid index range end, fails;" +
 				"(12, 5]; 9;" +
@@ -354,62 +353,82 @@ class ReverseIndexRangeTests {
 	@DisplayName(".contains(int)")
 	@Nested
 	class ContainsTests {
-		@DisplayName("\uD83C\uDF03")
+		@DisplayName("when range is not empty")
 		@Tests({
-			"when index is after range start, returns false;" +
+			"when item is after range start, returns false;" +
 				"(9, 3]; 11;" +
 				"false",
-			"when index is at start index, returns false;" +
+			"when item is at range start, returns false;" +
 				"(9, 3]; 9;" +
 				"false",
-			"when index is within range, returns true;" +
+			"when item is within range, returns true;" +
 				"(9, 3]; 6;" +
 				"true",
-			"when index is at range end, returns true;" +
+			"when item is at range end, returns true;" +
 				"(9, 3]; 3;" +
 				"true",
-			"when index is before range end, returns false;" +
+			"when item is before range end, returns false;" +
 				"(9, 3]; 2;" +
 				"false",
 		})
-		void test(@ReverseIntRange ReverseIndexRange range, int index, boolean expected) {
-			final var contains = range.contains(index);
-			assertEquals(expected, contains,
-				format("%s.contains(%d)", range, index));
+		void testRangeNotEmpty(@ReverseIntRange ReverseIndexRange range, int item,
+			boolean expected) {
+			test(range, item, expected);
 		}
 
-		// TODO: add empty range tests
+		@DisplayName("when range is empty")
+		@Tests({
+			"when item is after range start, returns false;" +
+				"(0, 0]; 2;" +
+				"false",
+			"when item is at range start, returns false;" +
+				"(0, 0]; 0;" +
+				"false",
+			"when item is before range end, returns false;" +
+				"(0, 0]; -1;" +
+				"false"
+		})
+		void testRangeEmpty(@ReverseIntRange ReverseIndexRange range, int item,
+			boolean expected) {
+			test(range, item, expected);
+		}
+
+		private void test(ReverseIndexRange range, int item, boolean expected) {
+			final var contains = range.contains(item);
+			assertEquals(expected, contains,
+				format("%s.contains(%d)", range, item));
+		}
 	}
 
 	@DisplayName(".findFirst(Integer)")
 	@Nested
 	class FindFirstTests {
-		@DisplayName("\uD83C\uDF11")
+		@DisplayName("when range is not empty")
 		@Tests({
-			"when index is after range end, returns empty optional;" +
+			"when item is after range start, returns empty optional;" +
 				"(11, 4]; 14;" +
 				"null",
-			"when index is at range end, returns empty optional;" +
+			"when item is at range start, returns empty optional;" +
 				"(11, 4]; 11;" +
 				"null",
-			"when index is first after range start, returns 0;" +
+			"when item is first after range start, returns 0;" +
 				"(11, 4]; 10;" +
 				"0",
-			"when index is within range, returns its index;" +
+			"when item is within range, returns its index;" +
 				"(11, 4]; 7;" +
 				"3",
-			"when index is at range start, returns its index;" +
+			"when item is at range end, returns its index;" +
 				"(11, 4]; 4;" +
 				"6",
-			"when index is after range end, returns empty optional;" +
+			"when item is before range end, returns empty optional;" +
 				"(11, 4]; 2;" +
 				"null",
-			"when index is null, returns empty optional;" +
+			"when item is null, returns empty optional;" +
 				"(11, 4]; null;" +
 				"null"
 		})
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		void test(@ReverseIntRange ReverseIndexRange range, Integer item,
+		void testRangeNotEmpty(@ReverseIntRange ReverseIndexRange range, Integer item,
 			@IntOptional Optional<Integer> expected) {
 
 			final var index = range.findFirst(item);
@@ -417,7 +436,29 @@ class ReverseIndexRangeTests {
 				format("%s.findFirst(%s)", range, item));
 		}
 
-		// TODO: add tests for empty index range
+		@DisplayName("when range is empty")
+		@Tests({
+			"when item is after range start, returns empty optional;" +
+				"(0, 0]; 2;" +
+				"null",
+			"when item is at range start, returns empty optional;" +
+				"(0, 0]; 0;" +
+				"null",
+			"when item is before range end, returns empty optional;" +
+				"(0, 0]; -3;" +
+				"null",
+			"when item is null, returns empty optional;" +
+				"(0, 0]; null;" +
+				"null"
+		})
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+		void testRangeEmpty(@ReverseIntRange ReverseIndexRange range, Integer item,
+			@IntOptional Optional<Integer> expected) {
+
+			final var index = range.findFirst(item);
+			assertEquals(expected, index,
+				format("%s.findFirst(%s)", range, item));
+		}
 	}
 
 	@DisplayName(".findAll(Integer)")
@@ -464,7 +505,7 @@ class ReverseIndexRangeTests {
 			range.iterator()
 				.forEachRemaining(iterated::add);
 
-			assertEquals(expected, iterated.toArray(new Integer[0]),
+			assertArrayEquals(expected, iterated.toArray(new Integer[0]),
 				format("%s.iterator()", range));
 		}
 	}
@@ -632,15 +673,9 @@ class ReverseIndexRangeTests {
 
 		@Override
 		protected ReverseIndexRange convert(String string) throws ArgumentConversionException {
-			if (string == null) {
-				return null;
-			}
-
-			try {
-				return ReverseIndexRange.parse(string);
-			} catch (ParseException exception) {
-				throw new ArgumentConversionException("", exception);
-			}
+			return string == null
+				? null
+				: ReverseIndexRange.parse(string);
 		}
 	}
 }

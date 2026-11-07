@@ -1,6 +1,5 @@
 package com.tsyba.core.collections;
 
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -16,12 +15,12 @@ class ReverseIndexRange extends IndexRange {
 	/**
 	 * Parses {@link ReverseIndexRange} from the specified string.
 	 *
-	 * @throws ParseException when the specified string does not contain a properly
-	 * formatted string representation of an {@link ReverseIndexRange}
-	 * @throws IllegalArgumentException when start index after end index the specified
-	 * formatted string representation of an {@link ReverseIndexRange}
+	 * @throws IllegalArgumentException when the specified string does not contain a
+	 * properly formatted string representation of an {@link ReverseIndexRange}; or when
+	 * the specified string contains a {@link ReverseIndexRange} with its start index
+	 * after its end index
 	 */
-	static ReverseIndexRange parse(String string) throws ParseException {
+	static ReverseIndexRange parse(String string) throws IllegalArgumentException {
 		final var pattern = Pattern.compile("\\(\\s*(\\d+),\\s*(\\d+)\\s*\\]");
 		final var matcher = pattern.matcher(string);
 
@@ -33,7 +32,7 @@ class ReverseIndexRange extends IndexRange {
 				Integer.parseInt(start),
 				Integer.parseInt(end));
 		} else {
-			throw new ParseException("Unsupported reverse index range format: " + string + ".", 0);
+			throw new IllegalArgumentException("Unsupported reverse index range format: " + string + ".");
 		}
 	}
 
@@ -148,6 +147,25 @@ class ReverseIndexRange extends IndexRange {
 	@Override
 	public IndexRange reverse() {
 		return new IndexRange(start, end);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (object == this) {
+			return true;
+		}
+
+		final var klass = object.getClass();
+		if (!getClass().equals(klass)) {
+			return false;
+		}
+
+		final var indexRange = (ReverseIndexRange) object;
+		return start == indexRange.start
+			&& end == indexRange.end;
 	}
 
 	@Override
