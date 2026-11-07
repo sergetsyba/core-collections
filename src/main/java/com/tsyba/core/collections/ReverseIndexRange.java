@@ -20,7 +20,7 @@ class ReverseIndexRange extends IndexRange {
 	 * the specified string contains a {@link ReverseIndexRange} with its start index
 	 * after its end index
 	 */
-	static ReverseIndexRange parse(String string) throws IllegalArgumentException {
+	public static ReverseIndexRange parse(String string) throws IllegalArgumentException {
 		final var pattern = Pattern.compile("\\(\\s*(\\d+),\\s*(\\d+)\\s*\\]");
 		final var matcher = pattern.matcher(string);
 

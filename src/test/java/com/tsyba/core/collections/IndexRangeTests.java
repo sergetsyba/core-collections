@@ -1,17 +1,9 @@
 package com.tsyba.core.collections;
 
-import com.tsyba.core.collections.converter.IndexRangeException;
-import com.tsyba.core.collections.converter.IntList;
-import com.tsyba.core.collections.converter.IntOptional;
-import com.tsyba.core.collections.converter.StringList;
+import com.tsyba.core.collections.converter.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -889,41 +881,6 @@ class IndexRangeTests {
 			final var string = range.toString();
 			assertEquals(expected, string,
 				format("%s.toString()", range));
-		}
-	}
-}
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(IntRange.Converter.class)
-@interface IntRange {
-	class Converter extends TypedArgumentConverter<String, IndexRange> {
-		protected Converter() {
-			super(String.class, IndexRange.class);
-		}
-
-		@Override
-		protected IndexRange convert(String s) throws ArgumentConversionException {
-			return s == null
-				? null
-				: IndexRange.parse(s);
-		}
-	}
-}
-
-@ConvertWith(IntRangeOptional.Converter.class)
-@Retention(RetentionPolicy.RUNTIME)
-@interface IntRangeOptional {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Optional> {
-		protected Converter() {
-			super(String.class, Optional.class);
-		}
-
-		@Override
-		protected Optional<IndexRange> convert(String s) throws ArgumentConversionException {
-			final var converter = new IntRange.Converter();
-			return Optional.ofNullable(s)
-				.map(converter::convert);
 		}
 	}
 }

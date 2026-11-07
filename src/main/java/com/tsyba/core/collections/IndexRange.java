@@ -60,11 +60,11 @@ public class IndexRange implements Sequence<Integer> {
 	 * Parses {@link IndexRange} from the specified string.
 	 *
 	 * @throws IllegalArgumentException when the specified string does not contain a
-	 * properly formatted string representation of an {@link IndexRange}; or when
-	 * the specified string contains an {@link IndexRange} with its start index
-	 * after its end index
+	 * properly formatted string representation of an {@link IndexRange}; or when the
+	 * specified string contains an {@link IndexRange} with its start index after its end
+	 * index
 	 */
-	static IndexRange parse(String string) throws IllegalArgumentException {
+	public static IndexRange parse(String string) throws IllegalArgumentException {
 		final var pattern = Pattern.compile("\\[\\s*(\\d+),\\s*(\\d+)\\s*\\)");
 		final var matcher = pattern.matcher(string);
 
