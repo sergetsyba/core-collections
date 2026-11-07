@@ -47,10 +47,14 @@ class ReverseIndexRangeTests {
 		@Tests({
 			"when string does not contain range, fails;" +
 				"not a range",
-			"when string does not contain bounds, fails;" +
+			"when string does not contain start and end, fails;" +
 				"(,]",
+			"when string does not contain start, fails;" +
+				"(, 3]",
 			"when start is not an integer, fails;" +
 				"(x, 5]",
+			"when string does not contain end, fails;" +
+				"(0,]",
 			"when end is not an integer, fails;" +
 				"(6, y]",
 			"when start is after end, fails;" +

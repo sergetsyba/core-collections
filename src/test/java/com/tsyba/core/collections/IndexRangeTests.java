@@ -15,8 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 class IndexRangeTests {
 	@DisplayName("IndexRange(int, int)")
@@ -62,6 +61,54 @@ class IndexRangeTests {
 			final var range = new IndexRange();
 			assertEquals(expected, range,
 				"new IndexRange()");
+		}
+	}
+
+	@DisplayName(".parse(String)")
+	@Nested
+	class ParseTests {
+		@DisplayName("when range is formatted properly")
+		@Tests({
+			"when range is not empty, returns parsed range;" +
+				"[4, 9);" +
+				"4; 9;",
+			"when range is empty, returns parsed empty range;" +
+				"[0, 0);" +
+				"0; 0;"
+		})
+		void testFormattedProperly(String string, int expectedStart, int expectedEnd) {
+			try {
+				final var range = IndexRange.parse(string);
+				final var expected = new IndexRange(expectedStart, expectedEnd);
+				assertEquals(expected, range,
+					format("parse(%s)", string));
+			} catch (IllegalArgumentException exception) {
+				fail(format("parse(%s)", string),
+					exception);
+			}
+		}
+
+		@DisplayName("when range is formatted improperly")
+		@Tests({
+			"when string does not contain range, fails;" +
+				"not a range",
+			"when string does not contain start and end, fails;" +
+				"[,)",
+			"when string does not contain start, fails;" +
+				"[, 6)",
+			"when start is not an integer, fails;" +
+				"[x, 9)",
+			"when string does not contain end, fails;" +
+				"[3,)",
+			"when end is not an integer, fails;" +
+				"[4, y)",
+			"when start is after end, fails;" +
+				"[9, 4)"
+		})
+		void testFormattedImproperly(String string) {
+			assertThrows(Exception.class,
+				() -> IndexRange.parse(string),
+				format("parse(%s)", string));
 		}
 	}
 
@@ -856,17 +903,9 @@ class IndexRangeTests {
 
 		@Override
 		protected IndexRange convert(String s) throws ArgumentConversionException {
-			if (s == null) {
-				return null;
-			}
-
-			final var length = s.length();
-			final var bounds = s.substring(1, length - 1)
-				.split("\\s*,\\s*");
-
-			return new IndexRange(
-				Integer.parseInt(bounds[0]),
-				Integer.parseInt(bounds[1]));
+			return s == null
+				? null
+				: IndexRange.parse(s);
 		}
 	}
 }
