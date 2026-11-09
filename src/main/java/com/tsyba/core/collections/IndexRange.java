@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * A semi-open, contiguous range of indexes in a {@link Sequence}.
@@ -55,6 +56,30 @@ public class IndexRange implements Sequence<Integer> {
 		this.end = 0;
 	}
 
+	/**
+	 * Parses {@link IndexRange} from the specified string.
+	 *
+	 * @throws IllegalArgumentException when the specified string does not contain a
+	 * properly formatted string representation of an {@link IndexRange}; or when the
+	 * specified string contains an {@link IndexRange} with its start index after its end
+	 * index
+	 */
+	public static IndexRange parse(String string) throws IllegalArgumentException {
+		final var pattern = Pattern.compile("\\[\\s*(\\d+),\\s*(\\d+)\\s*\\)");
+		final var matcher = pattern.matcher(string);
+
+		if (matcher.find()) {
+			final var start = matcher.group(1);
+			final var end = matcher.group(2);
+
+			return new IndexRange(
+				Integer.parseInt(start),
+				Integer.parseInt(end));
+		} else {
+			throw new IllegalArgumentException("Unsupported index range format: " + string + ".");
+		}
+	}
+
 	@Override
 	public int getCount() {
 		return end - start;
@@ -67,6 +92,15 @@ public class IndexRange implements Sequence<Integer> {
 	public boolean contains(Integer index) {
 		return index != null
 			&& index >= start
+			&& index < end;
+	}
+
+	/**
+	 * Returns {@code true} when the specified index is within this index range; returns
+	 * {@code false} otherwise.
+	 */
+	public boolean contains(int index) {
+		return index >= start
 			&& index < end;
 	}
 
@@ -202,8 +236,7 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public Sequence<Integer> reverse() {
-		// todo: implement IndexRange.reverse()
-		throw new UnsupportedOperationException();
+		return new ReverseIndexRange(start, end);
 	}
 
 	@Override
@@ -264,10 +297,15 @@ public class IndexRange implements Sequence<Integer> {
 
 	@Override
 	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
 		if (object == this) {
 			return true;
 		}
-		if (!(object instanceof IndexRange)) {
+
+		final var klass = object.getClass();
+		if (!getClass().equals(klass)) {
 			return false;
 		}
 

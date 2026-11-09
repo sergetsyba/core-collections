@@ -1,22 +1,13 @@
 package com.tsyba.core.collections;
 
-import com.tsyba.core.collections.converter.IndexRangeException;
-import com.tsyba.core.collections.converter.IntList;
-import com.tsyba.core.collections.converter.IntOptional;
-import com.tsyba.core.collections.converter.StringList;
+import com.tsyba.core.collections.converter.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.ConvertWith;
-import org.junit.jupiter.params.converter.TypedArgumentConverter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 class IndexRangeTests {
 	@DisplayName("IndexRange(int, int)")
@@ -65,12 +56,60 @@ class IndexRangeTests {
 		}
 	}
 
+	@DisplayName(".parse(String)")
+	@Nested
+	class ParseTests {
+		@DisplayName("when range is formatted properly")
+		@Tests({
+			"when range is not empty, returns parsed range;" +
+				"[4, 9);" +
+				"4; 9;",
+			"when range is empty, returns parsed empty range;" +
+				"[0, 0);" +
+				"0; 0;"
+		})
+		void testFormattedProperly(String string, int expectedStart, int expectedEnd) {
+			try {
+				final var range = IndexRange.parse(string);
+				final var expected = new IndexRange(expectedStart, expectedEnd);
+				assertEquals(expected, range,
+					format("parse(%s)", string));
+			} catch (IllegalArgumentException exception) {
+				fail(format("parse(%s)", string),
+					exception);
+			}
+		}
+
+		@DisplayName("when range is formatted improperly")
+		@Tests({
+			"when string does not contain range, fails;" +
+				"not a range",
+			"when string does not contain start and end, fails;" +
+				"[,)",
+			"when string does not contain start, fails;" +
+				"[, 6)",
+			"when start is not an integer, fails;" +
+				"[x, 9)",
+			"when string does not contain end, fails;" +
+				"[3,)",
+			"when end is not an integer, fails;" +
+				"[4, y)",
+			"when start is after end, fails;" +
+				"[9, 4)"
+		})
+		void testFormattedImproperly(String string) {
+			assertThrows(Exception.class,
+				() -> IndexRange.parse(string),
+				format("parse(%s)", string));
+		}
+	}
+
 	@DisplayName(".getCount()")
 	@Nested
 	class GetCountTests {
 		@DisplayName("\uD83C\uDFDC")
 		@Tests({
-			"when range is not empty, returns length;" +
+			"when range is not empty, returns item count;" +
 				"[9, 16);" +
 				"7",
 			"when range is empty, returns 0;" +
@@ -80,7 +119,7 @@ class IndexRangeTests {
 		void test(@IntRange IndexRange range, int expected) {
 			final var count = range.getCount();
 			assertEquals(expected, count,
-				format("%s.isEmpty()", range));
+				format("%s.getCount()", range));
 		}
 	}
 
@@ -92,7 +131,7 @@ class IndexRangeTests {
 			"when index range is not empty, returns its index range;" +
 				"[4, 9);" +
 				"[0, 5)",
-			"when index range is empty, returns empty range;" +
+			"when index range is empty, returns empty index range;" +
 				"[0, 0);" +
 				"[0, 0)"
 		})
@@ -219,7 +258,7 @@ class IndexRangeTests {
 	class GetFirstTests {
 		@DisplayName("\uD83C\uDFC0")
 		@Tests({
-			"when range is not empty, returns start index;" +
+			"when range is not empty, returns first item;" +
 				"[4, 7);" +
 				"4",
 			"when range is empty, returns empty optional;" +
@@ -239,7 +278,7 @@ class IndexRangeTests {
 	class GetLastTests {
 		@DisplayName("\uD83C\uDF81")
 		@Tests({
-			"when range is not empty, returns index before end;" +
+			"when range is not empty, returns last item;" +
 				"[4, 7);" +
 				"6",
 			"when range is empty, returns empty optional;" +
@@ -256,16 +295,16 @@ class IndexRangeTests {
 
 	@DisplayName(".get(Integer)")
 	@Nested
-	class GetAtTests {
+	class GetTests {
 		@DisplayName("when range is not empty")
 		@Tests({
 			"when index is before valid index range start, fails;" +
 				"[4, 8); -4;" +
 				"null; -4 ∉ [0, 4)",
-			"when index is at valid index range start, returns index;" +
+			"when index is at valid index range start, returns item at index;" +
 				"[4, 8); 0;" +
 				"4; null",
-			"when index is within valid index range, returns index;" +
+			"when index is within valid index range, returns item at index;" +
 				"[4, 8); 2;" +
 				"6; null",
 			"when index is at valid index range end, fails;" +
@@ -304,7 +343,7 @@ class IndexRangeTests {
 				final var value = range.get(index);
 				assertEquals(expected1, value,
 					format("%s.get(%d)", range, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
@@ -323,7 +362,7 @@ class IndexRangeTests {
 			"when index is before valid index range start, fails;" +
 				"[2, 9); -1;" +
 				"null; -1 ∉ [0, 7)",
-			"when index is at valid index range start, returns empty range;" +
+			"when index is at valid index range start, returns empty prefix;" +
 				"[2, 9); 0;" +
 				"[0, 0); null",
 			"when index is within valid index range, returns prefix;" +
@@ -364,13 +403,13 @@ class IndexRangeTests {
 			try {
 				final var prefix = range.getPrefix(index);
 				assertEquals(expected1, prefix,
-					format("%s.get(%d)", range, index));
-			} catch (Exception exception) {
+					format("%s.getPrefix(%d)", range, index));
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
 					assertEquals(expected2, exception,
-						format("%s.get(%d)", range, index));
+						format("%s.getPrefix(%d)", range, index));
 				}
 			}
 		}
@@ -384,7 +423,7 @@ class IndexRangeTests {
 			"when index is before valid index range start, fails;" +
 				"[2, 9); -1;" +
 				"null; -1 ∉ [0, 7)",
-			"when index is at valid index range start, returns range;" +
+			"when index is at valid index range start, returns suffix;" +
 				"[2, 9); 0;" +
 				"[2, 9); null",
 			"when index is within valid index range, returns suffix;" +
@@ -425,13 +464,13 @@ class IndexRangeTests {
 			try {
 				final var suffix = range.getSuffix(index);
 				assertEquals(expected1, suffix,
-					format("%s.get(%d)", range, index));
-			} catch (Exception exception) {
+					format("%s.getSuffix(%d)", range, index));
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
 					assertEquals(expected2, exception,
-						format("%s.get(%d)", range, index));
+						format("%s.getSuffix(%d)", range, index));
 				}
 			}
 		}
@@ -442,13 +481,13 @@ class IndexRangeTests {
 	class GetAtIndexRangeTests {
 		@DisplayName("when range is not empty")
 		@Tests({
-			"when argument range starts at valid index range start and ends within valid index range, returns range;" +
+			"when argument range starts at 0 and ends within valid index range, returns items in range;" +
 				"[6, 9); [0, 2);" +
 				"[6, 8); null",
-			"when argument range coincides with valid index range, returns range;" +
+			"when argument range equals valid index range, returns items in range;" +
 				"[6, 9); [0, 3);" +
 				"[6, 9); null",
-			"when argument range starts within valid index range and ends after valid index range end, fails;" +
+			"when argument range starts within and ends after valid index range end, fails;" +
 				"[6, 9); [0, 7);" +
 				"null; [0, 7) ⊈ [0, 3)",
 			"when argument range starts and ends after valid index range end, fails;" +
@@ -500,7 +539,7 @@ class IndexRangeTests {
 	class MatchAllTests {
 		@DisplayName("\uD83D\uDC3F")
 		@Tests({
-			"when range is not empty, returns matching indexes;" +
+			"when range is not empty, returns matching items;" +
 				"[1, 9);" +
 				"[2, 4, 6, 8]",
 			"when range is empty, returns empty sequence;" +
@@ -668,7 +707,21 @@ class IndexRangeTests {
 	@DisplayName(".reverse()")
 	@Nested
 	class ReverseTests {
-		// TODO: implement IndexRange.reverse() tests
+		@Tests({
+			"when index range is not empty, returns reverse index range;" +
+				"[2, 9);" +
+				"(9, 2]",
+			"when index range is empty, returns empty reverse index range;" +
+				"[0, 0);" +
+				"(0, 0]"
+		})
+		void test(@IntRange IndexRange range,
+			@ReverseIntRange ReverseIndexRange expected) {
+
+			final var reverse = range.reverse();
+			assertEquals(expected, reverse,
+				format("%s.reverse()", range));
+		}
 	}
 
 	@DisplayName(".equals(Object)")
@@ -726,7 +779,7 @@ class IndexRangeTests {
 			"when index is before valid index range start, fails;" +
 				"[2, 6); -2;" +
 				"null; -2 ∉ [0, 4)",
-			"when index is at valid index range start, returns all items iterator;" +
+			"when index is at valid index range start, returns iterator;" +
 				"[2, 6); 0;" +
 				"[2, 3, 4, 5]; null",
 			"when index is within valid index range, returns suffix iterator;" +
@@ -776,7 +829,7 @@ class IndexRangeTests {
 
 				assertEquals(expected1, iterated,
 					format("%s.iterator(%d)", range, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
@@ -817,10 +870,10 @@ class IndexRangeTests {
 	class ToStringTests {
 		@DisplayName("\uD83C\uDF41")
 		@Tests({
-			"when range is not empty, returns formatted string;" +
+			"when range is not empty, returns string representation;" +
 				"[6, 9);" +
 				"[6, 9)",
-			"when range is empty, returns formatted string;" +
+			"when range is empty, returns [0, 0);" +
 				"[0, 0);" +
 				"[0, 0)"
 		})
@@ -831,47 +884,3 @@ class IndexRangeTests {
 		}
 	}
 }
-
-@Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(IntRange.Converter.class)
-@interface IntRange {
-	class Converter extends TypedArgumentConverter<String, IndexRange> {
-		protected Converter() {
-			super(String.class, IndexRange.class);
-		}
-
-		@Override
-		protected IndexRange convert(String s) throws ArgumentConversionException {
-			if (s == null) {
-				return null;
-			}
-
-			final var length = s.length();
-			final var bounds = s.substring(1, length - 1)
-				.split("\\s*,\\s*");
-
-			return new IndexRange(
-				Integer.parseInt(bounds[0]),
-				Integer.parseInt(bounds[1]));
-		}
-	}
-}
-
-@ConvertWith(IntRangeOptional.Converter.class)
-@Retention(RetentionPolicy.RUNTIME)
-@interface IntRangeOptional {
-	@SuppressWarnings("rawtypes")
-	class Converter extends TypedArgumentConverter<String, Optional> {
-		protected Converter() {
-			super(String.class, Optional.class);
-		}
-
-		@Override
-		protected Optional<IndexRange> convert(String s) throws ArgumentConversionException {
-			final var converter = new IntRange.Converter();
-			return Optional.ofNullable(s)
-				.map(converter::convert);
-		}
-	}
-}
-
