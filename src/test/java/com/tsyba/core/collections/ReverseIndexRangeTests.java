@@ -470,10 +470,10 @@ class ReverseIndexRangeTests {
 			"when item is within range, returns its reversed index;" +
 				"(11, 4]; 6;" +
 				"[4]",
-			"when item is index before end, returns 0;" +
+			"when item is first index after range start, returns 0;" +
 				"(11, 4]; 10;" +
 				"[0]",
-			"when item is before range start, returns empty sequence;" +
+			"when item is before range end, returns empty sequence;" +
 				"(11, 4]; 1;" +
 				"[]",
 			"when item is null, returns empty sequence;" +
@@ -525,7 +525,7 @@ class ReverseIndexRangeTests {
 			"when index is within valid index range, iterates items starting at index;" +
 				"(10, 3]; 3;" +
 				"[6, 5, 4, 3]; null",
-			"when index is last valid index, iterates first item;" +
+			"when index is last valid index, iterates last item;" +
 				"(10, 3]; 6;" +
 				"[3]; null",
 			"when index is at valid index range end, fails;" +

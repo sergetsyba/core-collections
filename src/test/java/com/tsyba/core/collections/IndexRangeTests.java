@@ -119,7 +119,7 @@ class IndexRangeTests {
 		void test(@IntRange IndexRange range, int expected) {
 			final var count = range.getCount();
 			assertEquals(expected, count,
-				format("%s.isEmpty()", range));
+				format("%s.getCount()", range));
 		}
 	}
 
@@ -295,7 +295,7 @@ class IndexRangeTests {
 
 	@DisplayName(".get(Integer)")
 	@Nested
-	class GetAtTests {
+	class GetTests {
 		@DisplayName("when range is not empty")
 		@Tests({
 			"when index is before valid index range start, fails;" +
@@ -343,7 +343,7 @@ class IndexRangeTests {
 				final var value = range.get(index);
 				assertEquals(expected1, value,
 					format("%s.get(%d)", range, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
@@ -403,13 +403,13 @@ class IndexRangeTests {
 			try {
 				final var prefix = range.getPrefix(index);
 				assertEquals(expected1, prefix,
-					format("%s.get(%d)", range, index));
-			} catch (Exception exception) {
+					format("%s.getPrefix(%d)", range, index));
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
 					assertEquals(expected2, exception,
-						format("%s.get(%d)", range, index));
+						format("%s.getPrefix(%d)", range, index));
 				}
 			}
 		}
@@ -464,13 +464,13 @@ class IndexRangeTests {
 			try {
 				final var suffix = range.getSuffix(index);
 				assertEquals(expected1, suffix,
-					format("%s.get(%d)", range, index));
-			} catch (Exception exception) {
+					format("%s.getSuffix(%d)", range, index));
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
 					assertEquals(expected2, exception,
-						format("%s.get(%d)", range, index));
+						format("%s.getSuffix(%d)", range, index));
 				}
 			}
 		}
@@ -829,7 +829,7 @@ class IndexRangeTests {
 
 				assertEquals(expected1, iterated,
 					format("%s.iterator(%d)", range, index));
-			} catch (Exception exception) {
+			} catch (IndexNotInRangeException exception) {
 				if (expected2 == null) {
 					throw exception;
 				} else {
