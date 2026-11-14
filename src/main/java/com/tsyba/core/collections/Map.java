@@ -9,6 +9,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * An immutable, unordered {@link Collection} of key/value pairs, which provides efficient
+ * value look-up, given a key.
+ */
 public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	RobinHoodHashStore<Entry<K, V>> store;
 
@@ -51,7 +55,8 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	/**
 	 * Creates a map with the specified entries.
 	 * <p>
-	 * Ignores any {@code null} values among the specified entries, their keys or values.
+	 * Ignores any {@code null} entries among the specified ones, as well as entries with
+	 * {@code null} keys or values.
 	 * <p>
 	 * When the specified entries contain repeated keys, only the last occurrence of such
 	 * entry ends up in the map.
@@ -71,7 +76,8 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	/**
 	 * Creates a map with the specified entries.
 	 * <p>
-	 * Ignores any {@code null} values among the specified entries, their keys or values.
+	 * Ignores any {@code null} entries among the specified ones, as well as entries with
+	 * {@code null} keys or values.
 	 * <p>
 	 * When the specified entries contain repeated keys, only the last occurrence of such
 	 * entry ends up in the map.
@@ -127,6 +133,8 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	/**
 	 * Returns {@code true} when this map contains an entry with the specified key;
 	 * returns {@code false} otherwise.
+	 * <p>
+	 * Returns {@code false} when the specified key is {@code null}.
 	 */
 	public boolean containsKey(K key) {
 		return get(key)
@@ -136,6 +144,9 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	/**
 	 * Returns {@code true} when this map contains an entry with the specified key and
 	 * value; returns {@code false} otherwise.
+	 * <p>
+	 * Returns {@code false} when either the specified key or the specified value is
+	 * {@code null}.
 	 */
 	public boolean contains(K key, V value) {
 		if (key == null) {
@@ -155,9 +166,16 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	/**
 	 * Returns {@code true} when this map contains the specified entry; returns
 	 * {@code false} otherwise.
+	 * <p>
+	 * Returns {@code false} when the specified entry is {@code null} or has a
+	 * {@code null} key.
 	 */
 	@Override
 	public boolean contains(Entry<K, V> entry) {
+		if (entry == null || entry.key == null) {
+			return false;
+		}
+
 		final var index = store.find(entry.key);
 		if (index < 0) {
 			return false;
@@ -195,8 +213,8 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	/**
 	 * Returns value for the specified key in this map.
 	 * <p>
-	 * When this map contains no entry with the specified key, returns an empty
-	 * {@link Optional}.
+	 * When this map contains no entry with the specified key or the specified key is
+	 * {@code null}, returns an empty {@link Optional}.
 	 */
 	public Optional<V> get(K key) {
 		if (key == null) {
@@ -215,7 +233,7 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	/**
 	 * Returns entries with the specified keys in this map.
 	 * <p>
-	 * Ignores any {@code null} values among the specified keys.
+	 * Ignores any {@code null}s among the specified keys.
 	 */
 	@SafeVarargs
 	public final Map<K, V> get(K... keys) {

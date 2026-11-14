@@ -328,6 +328,12 @@ class MapTests {
 				"false",
 			"when entry key is absent, returns false;" +
 				"[q:A, z:E, d:R, m:L]; o:R;" +
+				"false",
+			"when entry key is null, returns false;" +
+				"[q:A, z:E, d:R, m:L]; null:R;" +
+				"false",
+			"when entry is null, returns false;" +
+				"[q:A, z:E, d:R, m:L]; null;" +
 				"false"
 		})
 		void testMapNotEmpty(@StringMap Map<String, String> entries,
@@ -339,6 +345,12 @@ class MapTests {
 		@Tests({
 			"when entry is not null, returns false;" +
 				"[]; H:d;" +
+				"false",
+			"when entry key is null, returns false;" +
+				"[]; null:R;" +
+				"false",
+			"when entry is null, returns false;" +
+				"[]; null;" +
 				"false"
 		})
 		void testMapEmpty(@StringMap Map<String, String> entries,
