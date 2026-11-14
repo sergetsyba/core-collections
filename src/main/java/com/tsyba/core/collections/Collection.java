@@ -25,8 +25,8 @@ public interface Collection<T> extends Iterable<T> {
 	 * otherwise.
 	 */
 	default boolean isEmpty() {
-		final var itemCount = getCount();
-		return itemCount == 0;
+		return !iterator()
+			.hasNext();
 	}
 
 	/**

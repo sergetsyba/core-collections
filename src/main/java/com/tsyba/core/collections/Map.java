@@ -6,9 +6,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
+public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	RobinHoodHashStore<Entry<K, V>> store;
 
 	Map(RobinHoodHashStore<Entry<K, V>> store) {
@@ -124,6 +125,15 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 	}
 
 	/**
+	 * Returns {@code true} when this map contains an entry with the specified key;
+	 * returns {@code false} otherwise.
+	 */
+	public boolean containsKey(K key) {
+		return get(key)
+			.isPresent();
+	}
+
+	/**
 	 * Returns {@code true} when this map contains an entry with the specified key and
 	 * value; returns {@code false} otherwise.
 	 */
@@ -137,18 +147,25 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 			return false;
 		}
 
-		final var entry = store.storage[index].item;
-		return entry.value.equals(value);
+		return store.storage[index]
+			.item.value
+			.equals(value);
 	}
 
 	/**
-	 * Returns {@code true} when this map contains all entries of the specified map;
-	 * returns {@code false} otherwise.
-	 * <p>
-	 * When the specified {@link Map} is empty, returns {@code true}.
+	 * Returns {@code true} when this map contains the specified entry; returns
+	 * {@code false} otherwise.
 	 */
-	public boolean contains(Map<K, V> entries) {
-		return entries.allMatch(this::contains);
+	@Override
+	public boolean contains(Entry<K, V> entry) {
+		final var index = store.find(entry.key);
+		if (index < 0) {
+			return false;
+		}
+
+		return store.storage[index]
+			.item.value
+			.equals(entry.value);
 	}
 
 	/**
@@ -226,69 +243,21 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		return entries.toImmutable();
 	}
 
-	/**
-	 * Returns {@code true} when any entry in this map satisfies the specified
-	 * {@link BiPredicate}; returns {@code false} otherwise.
-	 * <p>
-	 * When this map is empty, returns {@code false}.
-	 */
-	public boolean anyMatches(BiPredicate<K, V> condition) {
+	@Override
+	public Map<K, V> matchAll(Predicate<Entry<K, V>> condition) {
+		final var entries = new MutableMap<K, V>();
 		for (var entry : this) {
-			if (condition.test(entry.key, entry.value)) {
-				return true;
+			if (condition.test(entry)) {
+				entries.set(entry.key, entry.value);
 			}
 		}
 
-		return false;
+		return entries.toImmutable();
 	}
 
-	/**
-	 * Returns {@code true} when no entries in this map satisfy the specified
-	 * {@link BiPredicate}; returns {@code false} otherwise.
-	 * <p>
-	 * When this map is empty, returns {@code true};
-	 */
-	public boolean noneMatches(BiPredicate<K, V> condition) {
-		for (var entry : this) {
-			if (condition.test(entry.key, entry.value)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Returns {@code true} when all entries in this map satisfy the specified
-	 * {@link BiPredicate}; returns {@code false} otherwise.
-	 * <p>
-	 * When this map is empty, returns {@code true}.
-	 */
-	public boolean allMatch(BiPredicate<K, V> condition) {
-		for (var entry : this) {
-			if (!condition.test(entry.key, entry.value)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Returns value of some entry in this map, which satisfies the specified
-	 * {@link BiPredicate}.
-	 * <p>
-	 * When no entry in this map satisfies the specified {@link BiPredicate}, returns an
-	 * empty {@link Optional}.
-	 */
-	public Optional<V> matchAny(BiPredicate<K, V> condition) {
-		for (var entry : this) {
-			if (condition.test(entry.key, entry.value)) {
-				return Optional.of(entry.value);
-			}
-		}
-
-		return Optional.empty();
+	@Override
+	public Map<K, V> getDistinct() {
+		return this;
 	}
 
 	/**
@@ -304,18 +273,12 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		return this;
 	}
 
-	/**
-	 * Returns entries of this map, which satisfy the specified {@link BiPredicate}.
-	 * <p>
-	 * When no entry in this map satisfies the specified {@link BiPredicate}, returns an
-	 * empty {@link Map}.
-	 */
-	public Map<K, V> filter(BiPredicate<K, V> condition) {
-		final var entries = new MutableMap<K, V>();
+	@Override
+	public <R> Collection<R> convert(Function<Entry<K, V>, R> converter) {
+		final var entries = new MutableList<R>();
 		for (var entry : this) {
-			if (condition.test(entry.key, entry.value)) {
-				entries.set(entry.key, entry.value);
-			}
+			final var converted = converter.apply(entry);
+			entries.append(converted);
 		}
 
 		return entries.toImmutable();
@@ -338,20 +301,6 @@ public class Map<K, V> implements Iterable<Map.Entry<K, V>> {
 		}
 
 		return entries.toImmutable();
-	}
-
-	/**
-	 * Combines this map into a single value by applying the specified {@link TriFunction}
-	 * to each entry and an intermediate combination, using the specified initial value as
-	 * a starting point.
-	 */
-	public <R> R combine(R initial, TriFunction<R, K, V, R> combiner) {
-		var combined = initial;
-		for (var entry : this) {
-			combined = combiner.apply(combined, entry.key, entry.value);
-		}
-
-		return combined;
 	}
 
 	/**
