@@ -3,14 +3,18 @@ package com.tsyba.core.collections;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+/**
+ * A mutable, unordered {@link Collection} of key/value pairs, which provides efficient
+ * value look-up, given a key.
+ */
 public class MutableMap<K, V> extends Map<K, V> {
 	private static final int minimumCapacity = 64;
 
 	/**
 	 * Creates a map with the specified entries.
 	 * <p>
-	 * Ignores any {@code null} values among the specified entries, as well as entries
-	 * with {@code} null keys or values.
+	 * Ignores any {@code null} entries among the specified ones, as well as entries with
+	 * {@code null} keys or values.
 	 * <p>
 	 * When the specified entries contain repeated keys, only the last entry with such key
 	 * ends up in the map.
@@ -44,13 +48,12 @@ public class MutableMap<K, V> extends Map<K, V> {
 	/**
 	 * Returns value for the specified key in this map.
 	 * <p>
-	 * When this map contains no entry with the specified key, <em>inserts an entry with
-	 * the specified key and value into this map</em> and returns the specified value.
+	 * When this map contains no entry with the specified key, inserts an entry with the
+	 * specified key and backup value into this map and returns the specified backup
+	 * value.
 	 * <p>
-	 * When the specified key is {@code null} does not insert any entry, but returns the
-	 * specified value, even when it's {@code null}. When the specified value is
-	 * {@code null} and this map contains no entry with the specified key, does not insert
-	 * any entry and returns {@code null}.
+	 * Inserts nothing when either the specified key or the specified backup value is
+	 * {@code null}.
 	 */
 	public V get(K key, V backup) {
 		return get(key)
@@ -101,7 +104,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 * When this and the specified maps contain entries with the same key, calls the
 	 * specified {@link TriFunction} for each such entry, and replaces its value in this
 	 * map with a value returned from the specified {@link TriFunction}. The function is
-	 * called with the key, a value from this, and a value from the specified maps.
+	 * called with the key, a value from this map, and a value from the specified map.
 	 * <p>
 	 * When the specified {@link TriFunction} returns {@code null}, ignores the returned
 	 * value and preserves the original value of an entry in this map.
@@ -128,9 +131,9 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Removes an entry with the specified key from this map.
+	 * Removes an entry with the specified key from this map, if present.
 	 * <p>
-	 * Does nothing when this map contains no entry with the specified key.
+	 * Does nothing when the specified key is {@code null}.
 	 *
 	 * @return itself
 	 */
@@ -171,7 +174,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 
 		return this;
 	}
-
 
 	/**
 	 * Removes all entries from this map.
