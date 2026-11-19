@@ -417,9 +417,9 @@ class MutableMapTests {
 		}
 	}
 
-	@DisplayName(".clear()")
+	@DisplayName(".removeAll()")
 	@Nested
-	class ClearTests {
+	class RemoveAllTests {
 		@DisplayName("\uD83E\uDDF9")
 		@Tests({
 			"when map is not empty, removes all entries;" +
@@ -432,7 +432,7 @@ class MutableMapTests {
 		void test(@StringMutableMap MutableMap<String, String> entries,
 			@StringMap Map<String, String> expected) {
 
-			final var returned = entries.clear();
+			final var returned = entries.removeAll();
 			assertSame(entries, returned,
 				format("%s.clear()", entries));
 			assertEquals(expected, entries,

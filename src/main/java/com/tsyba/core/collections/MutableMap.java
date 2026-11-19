@@ -164,6 +164,8 @@ public class MutableMap<K, V> extends Map<K, V> {
 
 	/**
 	 * Removes entries with the specified keys from this map.
+	 * <p>
+	 * Ignores any {@code null}s among the specified keys.
 	 *
 	 * @return itself
 	 */
@@ -180,7 +182,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 *
 	 * @return itself
 	 */
-	public MutableMap<K, V> clear() {
+	public MutableMap<K, V> removeAll() {
 		this.store = new RobinHoodHashStore<>(minimumCapacity);
 		return this;
 	}
