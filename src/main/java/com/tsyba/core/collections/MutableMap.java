@@ -2,18 +2,9 @@ package com.tsyba.core.collections;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 
 public class MutableMap<K, V> extends Map<K, V> {
 	private static final int minimumCapacity = 64;
-
-	MutableMap(RobinHoodHashStore<Entry<K, V>> store) {
-		super(store);
-	}
-
-	MutableMap(Set<Entry<K, V>> store) {
-		super(store.store);
-	}
 
 	/**
 	 * Creates a map with the specified entries.
@@ -175,7 +166,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 */
 	public MutableMap<K, V> remove(Collection<K> keys) {
 		for (var key : keys) {
-			store.delete(key);
+			remove(key);
 		}
 
 		return this;
@@ -195,12 +186,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 	@Override
 	public MutableMap<K, V> iterate(BiConsumer<K, V> operation) {
 		return (MutableMap<K, V>) super.iterate(operation);
-	}
-
-	@Override
-	public Map<K, V> filter(BiPredicate<K, V> condition) {
-		final var filtered = super.filter(condition);
-		return new MutableMap<>(filtered.store);
 	}
 
 	@Override
