@@ -1,8 +1,5 @@
 package com.tsyba.core.collections;
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-
 /**
  * A mutable, unordered {@link Collection} of key/value pairs, which provides efficient
  * value look-up, given a key.
@@ -185,17 +182,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 	public MutableMap<K, V> removeAll() {
 		this.store = new RobinHoodHashStore<>(minimumCapacity);
 		return this;
-	}
-
-	@Override
-	public MutableMap<K, V> iterate(BiConsumer<K, V> operation) {
-		return (MutableMap<K, V>) super.iterate(operation);
-	}
-
-	@Override
-	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
-		final var converted = super.convert(converter);
-		return new MutableMap<>(converted);
 	}
 
 	/**

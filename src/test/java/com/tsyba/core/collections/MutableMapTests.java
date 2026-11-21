@@ -434,45 +434,9 @@ class MutableMapTests {
 
 			final var returned = entries.removeAll();
 			assertSame(entries, returned,
-				format("%s.clear()", entries));
+				format("%s.removeAll()", entries));
 			assertEquals(expected, entries,
-				format("%s.clear()", entries));
-		}
-	}
-
-	@DisplayName(".iterate(BiConsumer<K, V>)")
-	@Nested
-	class IterateTests {
-		@DisplayName("\uD83D\uDC0C")
-		@Tests({
-			"when map is not empty, iterates entries and returns itself;" +
-				"[t:E, g:A, v:K, w:R]"
-		})
-		void test(@StringMutableMap MutableMap<String, String> entries) {
-			@SuppressWarnings("ResultOfMethodCallIgnored")
-			final var returned = entries.iterate((key, value) -> key.toLowerCase());
-
-			assertSame(entries, returned,
-				format("%s.iterate(BiConsumer<K, V>)", entries));
-		}
-	}
-
-	@DisplayName(".convert(BiFunction<K, V, Entry<K, V>>)")
-	@Nested
-	class ConvertTests {
-		@DisplayName("\uD83D\uDCF9")
-		@Tests({
-			"when map is not empty, returns a mutable map;" +
-				"[g:E, r:t, k:c, s:Q]"
-		})
-		void test(@StringMutableMap MutableMap<String, String> entries) {
-			final var converted = entries.convert(Map.Entry::new);
-			final var klass = converted.getClass();
-
-			assertEquals(MutableMap.class, klass,
-				format("%s.convert(BiFunction<K, V, Entry<K, V>>)", entries));
-			assertNotSame(entries, converted,
-				format("%s.convert(BiFunction<K, V, Entry<K, V>>)", entries));
+				format("%s.removeAll()", entries));
 		}
 	}
 

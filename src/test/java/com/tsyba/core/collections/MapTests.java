@@ -657,33 +657,6 @@ class MapTests {
 		}
 	}
 
-	@DisplayName(".iterate(BiConsumer<K, V>)")
-	@Nested
-	class IterateTests {
-		@DisplayName("\uD83D\uDC0C")
-		@Tests({
-			"when map is not empty, iterates entries;" +
-				"[T:e, g:O, p:S, s:P];" +
-				"[Te, gO, pS, sP]",
-			"when map is empty, does nothing;" +
-				"[];" +
-				"[]"
-		})
-		void test(@StringMap Map<String, String> entries,
-			@StringSet Set<String> expected) {
-
-			final var iterated = new MutableSet<String>();
-			final var returned = entries.iterate((key, value) -> {
-				iterated.add(key + value);
-			});
-
-			assertSame(entries, returned,
-				format("%s.iterate(BiConsumer<K, V>)", entries));
-			assertEquals(expected, iterated,
-				format("%s.iterate(BiConsumer<K, V>)", entries));
-		}
-	}
-
 	@DisplayName(".convert(Function<Entry<K, V>, R>)")
 	@Nested
 	class ConvertFunctionTests {
@@ -757,59 +730,6 @@ class MapTests {
 
 			assertEquals(expected, converted,
 				format("%s.convert(<uppercase values to null>)", entries));
-		}
-	}
-
-	@DisplayName(".convert(BiFunction<K, V, Entry<L, W>>)")
-	@Nested
-	class ConvertTests {
-		@DisplayName("\uD83D\uDCF9")
-		@Tests({
-			"when all entries convert to not null, returns converted entries;" +
-				"[R:f, S:q, T:k, C:b, O:p];" +
-				"[r:F, s:Q, t:L, c:B, o:P]",
-			"when some entries convert to null, returns non-null converted entries;" +
-				"[r:F, S:q, t:K, C:b, O:p];" +
-				"[s:Q, c:B, o:P]",
-			"when all entries convert to null, returns empty map;" +
-				"[r:F, s:Q, t:K, c:B, o:P];" +
-				"[]",
-			"when some entry keys convert to null, returns non-null key converted entries;" +
-				"[r:f, S:q, t:k, C:b, o:p];" +
-				"[s:Q, c:B]",
-			"when all entry keys convert to null, returns empty map;" +
-				"[r:f, s:q, t:k, c:b, o:p];" +
-				"[]",
-			"when some entry values convert to null, returns non-null converted value entries;" +
-				"[R:F, S:q, T:K, C:B, O:p];" +
-				"[s:Q, o:P]",
-			"when all entry values convert to null, returns empty map;" +
-				"[R:F, S:Q, T:K, C:B, O:P];" +
-				"[]",
-			"when map is empty, returns empty map;" +
-				"[];" +
-				"[]"
-		})
-		void test(@StringMap Map<String, String> entries,
-			@StringMap Map<String, String> expected) {
-
-			final var converted = entries.convert((key1, value1) -> {
-				var key2 = key1.toLowerCase();
-				if (key1.equals(key2)) {
-					key2 = null;
-				}
-				var value2 = value1.toUpperCase();
-				if (value1.equals(value2)) {
-					value2 = null;
-				}
-
-				return key2 == null && value2 == null
-					? null
-					: new Map.Entry<>(key2, value2);
-			});
-
-			assertEquals(expected, converted,
-				format("%s.convert(BiFunction<K, V, Entry<L, W>>)", entries));
 		}
 	}
 

@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -278,44 +276,12 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 		return this;
 	}
 
-	/**
-	 * Applies the specified {@link BiConsumer} to each entry in this map.
-	 *
-	 * @return itself
-	 */
-	public Map<K, V> iterate(BiConsumer<K, V> operation) {
-		for (var entry : this) {
-			operation.accept(entry.key, entry.value);
-		}
-
-		return this;
-	}
-
 	@Override
-	public <R> Collection<R> convert(Function<Entry<K, V>, R> converter) {
+	public <R> List<R> convert(Function<Entry<K, V>, R> converter) {
 		final var entries = new MutableList<R>();
 		for (var entry : this) {
 			final var converted = converter.apply(entry);
 			entries.append(converted);
-		}
-
-		return entries.toImmutable();
-	}
-
-	/**
-	 * Returns entries of this map, converted by the specified {@link BiFunction}.
-	 * <p>
-	 * When the specified {@link BiFunction} returns a {@code null} or an {@link Entry}
-	 * with a {@code null} key or value, the converted entry is ignored. So, this method
-	 * can be used to both filter and convert this map in a single operation.
-	 */
-	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
-		final var entries = new MutableMap<L, W>();
-		for (var entry : this) {
-			final var converted = converter.apply(entry.key, entry.value);
-			if (converted != null) {
-				entries.set(converted.key, converted.value);
-			}
 		}
 
 		return entries.toImmutable();
