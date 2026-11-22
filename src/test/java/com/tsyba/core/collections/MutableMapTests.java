@@ -8,9 +8,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @DisplayName("MutableMap")
 class MutableMapTests {
@@ -437,6 +439,149 @@ class MutableMapTests {
 				format("%s.removeAll()", entries));
 			assertEquals(expected, entries,
 				format("%s.removeAll()", entries));
+		}
+	}
+
+	@DisplayName(".matchAll(Predicate<Entry<K, V>>)")
+	@Nested
+	class MatchAllTests {
+		@DisplayName("\uD83C\uDF3C")
+		@Tests({
+			"when map is not empty, returns mutable map;" +
+				"[q:V, W:a, r:Q, T:o, m:U]",
+			"when map is empty, returns empty mutable map;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var matched = entries.matchAll((entry) -> true);
+
+			assertEquals(MutableMap.class, matched.getClass(),
+				format("%s.matchAll(Predicate<Entry<K, V>>)", entries));
+		}
+	}
+
+	@DisplayName(".getDistinct()")
+	@Nested
+	class GetDistinctTests {
+		@DisplayName("\uD83C\uDF40")
+		@Tests({
+			"returns itself;" +
+				"[b:R, 5:x, q:t, 2:p]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var distinct = entries.getDistinct();
+			assertSame(entries, distinct,
+				format("%s.getDistinct()", entries));
+		}
+	}
+
+	@DisplayName(".sort(Comparator<Entry<K, V>>)")
+	@Nested
+	class SortComparatorTests {
+		@DisplayName("\uD83C\uDFB3")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[k:V, b:E, q:A, m:S]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var sorted = entries.sort((entry1, entry2) -> 0);
+
+			assertEquals(MutableList.class, sorted.getClass(),
+				format("%s.sort(Comparator<Entry<K, V>>)", entries));
+		}
+	}
+
+	@DisplayName(".sort()")
+	@Nested
+	class SortTests {
+		@DisplayName("\uD83C\uDFB6")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[b:R, c:E, l:O, R:s, T:q]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var sorted = entries.sort();
+
+			assertEquals(MutableList.class, sorted.getClass(),
+				format("%s.sort()", entries));
+		}
+	}
+
+	@DisplayName(".shuffle(Random)")
+	@Nested
+	class ShuffleRandomTests {
+		@DisplayName("\uD83C\uDFB2")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[v:K, c:W, y:Q, t:E]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var random = new Random();
+			final var shuffled = entries.shuffle(random);
+
+			assertEquals(MutableList.class, shuffled.getClass(),
+				format("%s.shuffle(Random)", entries));
+		}
+	}
+
+	@DisplayName(".shuffle()")
+	@Nested
+	class ShuffleTests {
+		@DisplayName("\uD83C\uDFAE")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[n:R, u:B, i:Q, s:E]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var shuffled = entries.shuffle();
+
+			assertEquals(MutableList.class, shuffled.getClass(),
+				format("%s.shuffle()", entries));
+		}
+	}
+
+	@DisplayName(".iterate(Consumer<Entry<K, V>>)")
+	@Nested
+	class IterateTests {
+		@DisplayName("\uD83D\uDC0C")
+		@Tests({
+			"when map is not empty, returns itself;" +
+				"[t:E, g:A, v:K, w:R]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var returned = entries.iterate((entry) -> {
+			});
+
+			assertSame(entries, returned,
+				format("%s.iterate(Consumer<Entry<K, V>>)", entries));
+		}
+	}
+
+	@DisplayName(".convert(Function<Entry<K, V>, R>)")
+	@Nested
+	class ConvertTests {
+		@DisplayName("\uD83E\uDD7A")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[f:u, n:b, x:k, r:t]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var converted = entries.convert(entry -> {
+				return new Map.Entry<>(entry.key, entry.value);
+			});
+
+			assertEquals(MutableList.class, converted.getClass(),
+				format("%s.convert(Function<Entry<K, V>, R>)", entries));
 		}
 	}
 

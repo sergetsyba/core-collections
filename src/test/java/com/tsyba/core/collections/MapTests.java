@@ -657,6 +657,29 @@ class MapTests {
 		}
 	}
 
+	@DisplayName(".iterate(Consumer<Entry<K, V>>)")
+	@Nested
+	class IterateTests {
+		@DisplayName("\uD83D\uDC0C")
+		@Tests({
+			"returns itself;" +
+				"[f:U, n:B, x:K, r:T]"
+		})
+		void test(@StringMap Map<String, String> entries) {
+			final var returned = entries.iterate((entry) -> {
+			});
+
+			final var a = new MutableMap<String, String>()
+				.set("a", "F")
+				.set("v", "W");
+
+			final var matched = a.matchAny(entry -> entry.key.equals("a"));
+
+			assertSame(entries, returned,
+				format("%s.iterate(Consumer<Entry<K, V>>)", entries));
+		}
+	}
+
 	@DisplayName(".convert(Function<Entry<K, V>, R>)")
 	@Nested
 	class ConvertFunctionTests {

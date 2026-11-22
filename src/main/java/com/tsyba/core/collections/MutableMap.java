@@ -1,5 +1,11 @@
 package com.tsyba.core.collections;
 
+import java.util.Comparator;
+import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 /**
  * A mutable, unordered {@link Collection} of key/value pairs, which provides efficient
  * value look-up, given a key.
@@ -182,6 +188,52 @@ public class MutableMap<K, V> extends Map<K, V> {
 	public MutableMap<K, V> removeAll() {
 		this.store = new RobinHoodHashStore<>(minimumCapacity);
 		return this;
+	}
+
+	@Override
+	public MutableMap<K, V> matchAll(Predicate<Entry<K, V>> condition) {
+		final var matched = super.matchAll(condition);
+		return new MutableMap<>(matched);
+	}
+
+	@Override
+	public MutableMap<K, V> getDistinct() {
+		return this;
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> sort(Comparator<Entry<K, V>> comparator) {
+		final var sorted = (List<Entry<K, V>>) super.sort(comparator);
+		return new MutableList<>(sorted.store);
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> sort() {
+		final var sorted = (List<Entry<K, V>>) super.sort();
+		return new MutableList<>(sorted.store);
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> shuffle(Random random) {
+		final var shuffled = (List<Entry<K, V>>) super.shuffle(random);
+		return new MutableList<>(shuffled.store);
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> shuffle() {
+		final var shuffled = (List<Entry<K, V>>) super.shuffle();
+		return new MutableList<>(shuffled.store);
+	}
+
+	@Override
+	public MutableMap<K, V> iterate(Consumer<Entry<K, V>> operation) {
+		return (MutableMap<K, V>) super.iterate(operation);
+	}
+
+	@Override
+	public <R> MutableList<R> convert(Function<Entry<K, V>, R> converter) {
+		final var converted = super.convert(converter);
+		return new MutableList<>(converted.store);
 	}
 
 	/**
