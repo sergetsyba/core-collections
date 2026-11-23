@@ -2,261 +2,166 @@
 
 ## Unit tests
 
-* **Use package access level for all unit test classes and methods.**
-* **Create a separate class with unit tests for each public class.**
-	* Name unit test classes after the class they test with a `Tests` suffix.
+### Structure
 
-	<details>
-	<summary>Example</summary>
-	<p>
+* Group unit tests for each tested type into a separate suite.
+    * Name test suite class after the type it tests with `Tests` suffix.
+    * Use tested type name for test suite description.
+* Group unit tests for each method being tested into a separate `@Nested` suite.
+    * Name test suite class after the method it tests with `Tests` suffix.
+    * When there are overloaded variants of the method being tested, include argument type
+      in the test suite class name.
+    * Use tested method signature for test suite description.
+        * Prefix method test descriptions with `.`, except for constructors.
+* Group test cases into parametrized tests by common test condition.
+    * Name test methods after the common condition with a `test...` prefix.
+        * Omit `a`/`an`/`the` articles and auxiliary verbs from test method name.
+    * When there is no common test condition name test method simply `test(...)`.
+* When there are multiple test conditions either split them into separate test methods
+  or regroup into a `@Nested` suite.
+    * Name nested test suite class after common test condition with `Tests` suffix.
+    * Omit articles and auxiliary verbs from class name, just like test method name.
+* Use package access level for all unit test classes and methods.
+* Order test suites in the same order corresponding methods are declared.
 
-	```java
-	// Collection.java
-	public class Collection {
+<details>
+<summary>Example</summary>
+<p>
+
+```java
+public class Collection<T> {
+	public boolean isEmpty() {
 		// ...
 	}
-	```
 
-	```java
-	// CollectionTests.java
-	class CollectionTests {
+	public boolean contains(Collection<T> items) {
 		// ...
 	}
-	```
-	</p>
-	</details>
+}
+```
 
-* **Create a separate inner class with unit tests for each public method.**
-	* Name the inner class after the method it tests with a `Tests` prefix.
-		* When there are multiple overloaded methods with the same name, **include
-			argument type in the inner class name** as well.
-	* Use signature of the method being tested as test description, prefixed with a dot,
-		but, excluding return type and argument names of the method.
+```java
 
-	<details>
-	<summary>Example</summary>
-	<p>
-	
-	```java
-	class Collection<T> {
-		public boolean contains(T item) {
+@DisplayName("Collection<T>")
+class CollectionTests {
+	@Nested
+	@DisplayName(".isEmpty()")
+	class IsEmptyTests {
+		void test() {
 			// ...
 		}
-		
-		@SafeVarargs
-		public boolean contains(T... items) {
-			// ...
+	}
+
+	@Nested
+	@DisplayName(".contains(Collection<T>)")
+	class ContainsCollectionTests {
+		void testCollectionNotEmpty() {
 		}
-		
-		public boolean contains(Collection<T> items) {
-			// ...
+
+		void testCollectionEmpty() {
 		}
-				
+	}
+}
+```
+
+</p>
+</details>
+
+### Descriptions
+
+* Describe test cases according to their input conditions and expected results.
+    * List test conditions first, starting with `when ...`.
+    * List expected result after test conditions, separated by a comma.
+* Describe nested test suites and groups of parametrized tests with their common
+  condition.
+    * Write common condition, starting with `when ...`.
+* Use natural grammar and sentence structure overall.
+    * Refer to collection elements as items, map elements as entries.
+    * Use `argument ...` to refer to a method argument when a test description needs to
+      distinguish between method argument and object being tested.
+* Write test descriptions in lower-case, unless referencing class names or methods.
+
+### Arguments
+
+* Use collections with at least 4 elements, unless a test requires a specific element
+  count.
+* Do not repeat collection elements between test cases, unless a test suite requires it.
+
+
+* Prefer provided convenience `@Tests` annotation for parametrized tests.
+    * Each test case is defined as a single string.
+    * Test arguments are separated by semicolons.
+    * First argument is a test case description.
+
+<details>
+<summary>Example</summary>
+<p>
+
+```java
+public class Collection<T> {
+	public boolean isEmpty() {
 		// ...
 	}
-	```
-	
-	```java
-	class CollectionTests {
-		@Nested
-		@DisplayName(".contains(T)")
-		class ContainsTests {
-			// ...
-		}
-		
-		@Nested
-		@DisplayName(".contains(T...)")
-		class ContainsVarargsTests {
-			// ...
-		}
-		
-		@Nested
-		@DisplayName(".contains(Collection<T>)")
-		class ContainsCollectionTests {
-			// ...
-		}
+
+	public boolean contains(Collection<T> items) {
+		// ...
 	}
-	```
-	</p>
-	</details>
+}
+```
 
-* **Name unit test functions according to the expected result and input conditions of a
-	method being tested.**
-	* State expected result first.
-	* Include conditions after the `When` infix.
-	* Omit `a`/`an`/`the` articles and auxiliary verbs.
+```java
 
-	<details>
-	<summary>Example</summary>
-	<p>
-
-	```java
-	public class Map<K, V> {
-		public boolean isEmpty() {
+@DisplayName("Collection<T>")
+class CollectionTests {
+	@Nested
+	@DisplayName(".isEmpty()")
+	class IsEmptyTests {
+		@DisplayName("🍅")
+		@Tests({
+			"when collection is not empty, returns false;" +
+				"[r, T, s, e, G]; false",
+			"when collection is empty, returns true;" +
+				"[]; true"
+		})
+		void test(@StringCollection Collection<String> items, boolean expected) {
 			// ...
 		}
 	}
-	```
 
-	```java
-	class MapTests {
-		@Nested
-		@DisplayName(".isEmpty()")
-		class IsEmptyTests {
-			@Test
-			void returnsTrueWhenMapEmpty() {
-				// ...
-			}
-			
-			@Test
-			void returnsFalseWhenMapNotEmpty() {
-				// ...
-			}
+	@Nested
+	@DisplayName(".contains(Collection<T>)")
+	class ContainsCollectionTests {
+		@DisplayName("when collection is not empty")
+		@Tests({
+			"when all argument items are present, returns true;" +
+				"[r, D, v, s]; [v, s, r];" +
+				"true",
+			"when some argument items are absent, returns false;" +
+				"[v, d, A, f, K, l]; [f, A, x, G, o];" +
+				"false",
+			"..."
+		})
+		void testCollectionNotEmpty(@StringCollection Collection<String> items1,
+			@StringCollection Collection<String> items2, boolean expected) {
+			// ...
 		}
-	}
-	```
-	</p>
-	</details>
 
-* **Describe unit tests according to input conditions and expected result of a method
-	being tested.**
-	* List test conditions first, starting with `when ... `.
-	* List expected result after test conditions, separated by a comma.
-	* Use natural grammar and sentence structure overall.
-	* Use lower-case, unless referencing class names or methods.
-	
-	<details>
-	<summary>Example</summary>
-	<p>
-
-	```java
-	public class Map<K, V> {
-		public boolean isEmpty() {
+		@DisplayName("when collection is empty")
+		@Tests({
+			"when argument collection is not empty, returns false;" +
+				"[]; [f, N, m, j, T];" +
+				"false",
+			"when argument collection is empty, returns true;" +
+				"[]; [];" +
+				"true",
+		})
+		void testCollectionEmpty(@StringCollection Collection<String> items1,
+			@StringCollection Collection<String> items2, boolean expected) {
 			// ...
 		}
 	}
-	```
+}
+```
 
-	```java
-	class MapTests {
-		@Nested
-		@DisplayName(".isEmpty()")
-		class IsEmptyTests {
-			@Test
-			@DisplayName("when map is empty, returns true")
-			void returnsTrueWhenMapEmpty() {
-				// ...
-			}
-			
-			@Test
-			@DisplayName("when map is not empty, returns false")
-			void returnsFalseWhenMapNotEmpty() {
-				// ...
-			}
-		}
-	}
-	```
-	</p>
-	</details>
-
-* **Group unit tests with common input conditions into an inner test class.**
-	* Name the inner class according to the common input conditions, with a `Tests`
-		suffix.
-	* Provide a description, stating input conditions, starting with `when ...`.
-	* Omit the common input conditions from the subsequent unit test function names and
-		descriptions.
-
-	<details>
-	<summary>Example</summary>
-	<p>
-
-	```java
-	public class Map<K, V> {
-		public boolean contains(T item) {
-			// ...
-		}
-	}
-	```
-
-	```java
-	class MapTests {
-		@Nested
-		@DisplayName(".contains(T)")
-		class ContainsTests {
-			@Nested
-			@DisplayName("when map is not empty")
-			class NotEmptyMapTests {
-				@Test
-				@DisplayName("when item is present, returns true")
-				void returnsTrueWhenItemPresent() {
-					// ...
-				}
-				
-				@Test
-				@DisplayName("when item is absent, returns false")
-				void returnsFalseWhenItemAbsent() {
-					// ...
-				}
-			}
-			
-			@Test
-			@DisplayName("when map is empty, returns false")
-			void returnsFalseWhenEmpty() {
-				// ...
-			}
-		}
-	}
-	```
-	</p>
-	</details>
-
-* When a method of a tested class takes an argument of the same class, **use `Arg` to
-	refer to the argument in unit test function names and `... argument ...` in their
-	descriptions**.
-	* Refer to the primary instance of the tested class without any additional moniker.
-
-	<details>
-	<summary>Example</summary>
-	<p>
-
-	```java
-	public class Set<T> {
-		public boolean contains(Set<T> items) {
-			// ...
-		}
-	}
-	```
-
-	```java
-	class SetTests {
-		@Nested
-		@DisplayName(".contains(Set<T>)")
-		class ContainsTests {
-			@Nested
-			@DisplayName("when set is not empty")
-			class NotEmptySetTests {
-				@Test
-				@DisplayName("when all items of argument set are present, returns true")
-				void returnsTrueWhenAllArgSetItemsPresent() {
-					// ...
-				}
-				
-				@Test
-				@DisplayName("when some items of argument set are absent, returns false")
-				void returnsFalseWhenSomeArgSetItemsAbsent() {
-					// ...
-				}
-				
-				@Test
-				@DisplayName("when argument set is empty, returns true")
-				void returnsTrueWhenArgSetEmpty() {
-					// ...
-				}
-			}
-			
-			// ...
-		}
-	}
-	```
-	</p>
-	</details>
+</p>
+</details>
