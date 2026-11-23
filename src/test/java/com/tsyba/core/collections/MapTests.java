@@ -257,64 +257,6 @@ class MapTests {
 		}
 	}
 
-	@DisplayName(".contains(K, V)")
-	@Nested
-	class ContainsTests {
-		@DisplayName("when map is not empty")
-		@Tests({
-			"when key is present and value equals, returns true;" +
-				"[k:V, e:R, k:K, s:S, b:L]; s; S;" +
-				"true",
-			"when key is present but value differs, returns false;" +
-				"[k:V, e:R, k:K, s:S, b:L]; s; O;" +
-				"false",
-			"when key is absent, returns false;" +
-				"[k:V, e:R, k:K, s:S, b:L]; R; S;" +
-				"false",
-			"when key is null, returns false;" +
-				"[k:V, e:R, k:K, s:S, b:L]; null; S;" +
-				"false",
-			"when value is null, returns false;" +
-				"[k:V, e:R, k:K, s:S, b:L]; s; null;" +
-				"false",
-			"when key and value are null, returns false;" +
-				"[k:V, e:R, k:K, s:S, b:L]; null; null;" +
-				"false"
-		})
-		void testMapNotEmpty(@StringMap Map<String, String> entries, String key,
-			String value, boolean expected) {
-			test(entries, key, value, expected);
-		}
-
-		@DisplayName("when map is empty")
-		@Tests({
-			"when key and value are not null, returns false;" +
-				"[]; H; d;" +
-				"false",
-			"when key is null, returns false;" +
-				"[]; null; E;" +
-				"false",
-			"when value is null, returns false;" +
-				"[]; r; null;" +
-				"false",
-			"when key and value are null, returns false;" +
-				"[]; null; null;" +
-				"false"
-		})
-		void testMapEmpty(@StringMap Map<String, String> entries, String key,
-			String value, boolean expected) {
-			test(entries, key, value, expected);
-		}
-
-		private void test(Map<String, String> entries, String key, String value,
-			boolean expected) {
-
-			final var contains = entries.contains(key, value);
-			assertEquals(expected, contains,
-				format("%s.contains(%s, %s)", entries, key, value));
-		}
-	}
-
 	@DisplayName(".contains(Entry<K, V>)")
 	@Nested
 	class ContainsEntryTests {
@@ -669,90 +611,79 @@ class MapTests {
 			final var returned = entries.iterate((entry) -> {
 			});
 
-			final var a = new MutableMap<String, String>()
-				.set("a", "F")
-				.set("v", "W");
-
-			final var matched = a.matchAny(entry -> entry.key.equals("a"));
-
 			assertSame(entries, returned,
 				format("%s.iterate(Consumer<Entry<K, V>>)", entries));
 		}
 	}
 
-	@DisplayName(".convert(Function<Entry<K, V>, R>)")
+	@DisplayName(".convert(Function<Entry<K, V>, Entry<L, W>>)")
 	@Nested
-	class ConvertFunctionTests {
+	class ConvertTests {
 		@DisplayName("when no entries convert to null")
 		@Tests({
-			"when all converted items are distinct, returns all converted items;" +
-				"[g:p, w:i, n:v, c:a];" +
-				"[p, i, v, a]",
-			"when some converted items are same, returns all converted items;" +
-				"[g:p, w:i, n:i, c:a];" +
-				"[p, i, i, a]",
-			"when all converted items are same, returns all converted items;" +
-				"[g:p, w:p, n:p, c:p];" +
-				"[p, p, p, p]"
+			"when all converted keys are distinct, returns converted entries;" +
+				"[R:f, S:q, T:k, C:b, O:p];" +
+				"[r:F, s:Q, t:K, c:B, o:P]",
+			"when some converted keys are same, keeps last occurring converted entries;" +
+				"[Ab:f, S:q, AB:B, T:k, C:b];" +
+				"[ab:B, s:Q, t:K, c:B]"
 		})
 		void testNoEntriesConvertNull(@StringMap Map<String, String> entries,
-			@StringList List<String> expected) {
+			@StringMap Map<String, String> expected) {
 			test(entries, expected);
 		}
 
 		@DisplayName("when some entries convert to null")
 		@Tests({
-			"when all non-null converted items are distinct, returns all non-null converted items;" +
-				"[G:p, w:i, n:v, c:a];" +
-				"[i, v, a]",
-			"when some non-null converted items are same, returns all non-null converted items;" +
-				"[G:p, w:i, n:i, c:a];" +
-				"[i, i, a]",
-			"when all non-null converted items are same, returns all non-null converted items;" +
-				"[G:p, w:i, n:i, c:i];" +
-				"[i, i, i]"
+			"when some entries convert to null, returns non-null converted entries;" +
+				"[R:f, s:Q, T:k, C:b, O:p];" +
+				"[r:F, t:K, c:B, o:P]",
+			"when some entries convert to null and converted keys are same, keeps last occurring converted entries;" +
+				"[Ab:f, s:Q, AB:B, T:k, C:b];" +
+				"[ab:B, t:K, c:B]"
 		})
 		void testSomeEntriesConvertNull(@StringMap Map<String, String> entries,
-			@StringList List<String> expected) {
+			@StringMap Map<String, String> expected) {
 			test(entries, expected);
 		}
 
 		@DisplayName("when all entries convert to null")
 		@Tests({
-			"returns empty collection;" +
-				"[G:P, w:I, n:V, c:A];" +
+			"returns empty map;" +
+				"[r:f, s:q, t:k, c:b, o:p];" +
 				"[]"
 		})
 		void testAllEntriesConvertNull(@StringMap Map<String, String> entries,
-			@StringList List<String> expected) {
+			@StringMap Map<String, String> expected) {
 			test(entries, expected);
 		}
 
 		@DisplayName("when map is empty")
 		@Tests({
-			"returns empty collection;" +
+			"returns empty map;" +
 				"[];" +
 				"[]"
 		})
 		void testMapEmpty(@StringMap Map<String, String> entries,
-			@StringList List<String> expected) {
+			@StringMap Map<String, String> expected) {
 			test(entries, expected);
 		}
 
-		private void test(Map<String, String> entries, List<String> expected) {
+		private void test(Map<String, String> entries, Map<String, String> expected) {
 			final var converted = entries.convert((entry) -> {
-				final var value = entry.value;
-				if (value.toUpperCase()
-					.equals(value)) {
+				if (entry.key.toLowerCase()
+					.equals(entry.key)) {
 
 					return null;
 				}
 
-				return value;
+				return new Map.Entry<>(
+					entry.key.toLowerCase(),
+					entry.value.toUpperCase());
 			});
 
 			assertEquals(expected, converted,
-				format("%s.convert(<uppercase values to null>)", entries));
+				format("%s.convert(<lowercase keys to null>)", entries));
 		}
 	}
 

@@ -475,6 +475,26 @@ class MutableMapTests {
 		}
 	}
 
+	@DisplayName(".convert(Function<Entry<K, V>, Entry<L, W>>)")
+	@Nested
+	class ConvertTests {
+		@DisplayName("\uD83E\uDD7A")
+		@Tests({
+			"when map is not empty, returns mutable map;" +
+				"[f:u, n:b, x:k, r:t]",
+			"when map is empty, returns empty mutable map;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var converted = entries.convert(entry -> {
+				return new Map.Entry<>(entry.key, entry.value);
+			});
+
+			assertEquals(MutableMap.class, converted.getClass(),
+				format("%s.convert(Function<Entry<K, V>, Entry<L, W>>)", entries));
+		}
+	}
+
 	@DisplayName(".sort(Comparator<Entry<K, V>>)")
 	@Nested
 	class SortComparatorTests {
@@ -562,26 +582,6 @@ class MutableMapTests {
 
 			assertSame(entries, returned,
 				format("%s.iterate(Consumer<Entry<K, V>>)", entries));
-		}
-	}
-
-	@DisplayName(".convert(Function<Entry<K, V>, R>)")
-	@Nested
-	class ConvertTests {
-		@DisplayName("\uD83E\uDD7A")
-		@Tests({
-			"when map is not empty, returns mutable list;" +
-				"[f:u, n:b, x:k, r:t]",
-			"when map is empty, returns empty mutable list;" +
-				"[]"
-		})
-		void test(@StringMutableMap MutableMap<String, String> entries) {
-			final var converted = entries.convert(entry -> {
-				return new Map.Entry<>(entry.key, entry.value);
-			});
-
-			assertEquals(MutableList.class, converted.getClass(),
-				format("%s.convert(Function<Entry<K, V>, R>)", entries));
 		}
 	}
 

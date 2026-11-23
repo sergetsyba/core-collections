@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -141,28 +140,6 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 	}
 
 	/**
-	 * Returns {@code true} when this map contains an entry with the specified key and
-	 * value; returns {@code false} otherwise.
-	 * <p>
-	 * Returns {@code false} when either the specified key or the specified value is
-	 * {@code null}.
-	 */
-	public boolean contains(K key, V value) {
-		if (key == null) {
-			return false;
-		}
-
-		final var index = store.find(key);
-		if (index < 0) {
-			return false;
-		}
-
-		return store.storage[index]
-			.item.value
-			.equals(value);
-	}
-
-	/**
 	 * Returns {@code true} when this map contains the specified entry; returns
 	 * {@code false} otherwise.
 	 * <p>
@@ -277,12 +254,19 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 		return this;
 	}
 
-	@Override
-	public <R> List<R> convert(Function<Entry<K, V>, R> converter) {
-		final var entries = new MutableList<R>();
+	/**
+	 * Returns entries of this map, converted by the specified {@link Function}.
+	 * <p>
+	 * Ignores the returned value when the specified {@link Function} returns
+	 * {@code null}.
+	 */
+	public <L, W> Map<L, W> convert(Function<Entry<K, V>, Entry<L, W>> converter) {
+		final var entries = new MutableMap<L, W>();
 		for (var entry : this) {
 			final var converted = converter.apply(entry);
-			entries.append(converted);
+			if (converted != null) {
+				entries.set(converted.key, converted.value);
+			}
 		}
 
 		return entries.toImmutable();
@@ -355,7 +339,7 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 		return "{" + join(":", ", ") + "}";
 	}
 
-	public static class Entry<K, V> {
+	public static class Entry<K, V> implements Comparable<Entry<K, V>> {
 		public final K key;
 		public final V value;
 
@@ -392,6 +376,13 @@ public class Map<K, V> implements Collection<Map.Entry<K, V>> {
 		@Override
 		public String toString() {
 			return key + ":" + value;
+		}
+
+		@Override
+		public int compareTo(Entry<K, V> o) {
+			// NOTE: temporarily added to stop crashing when calling sort
+			// TODO: remove
+			return 0;
 		}
 	}
 }

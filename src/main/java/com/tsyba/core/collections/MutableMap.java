@@ -202,6 +202,12 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	@Override
+	public <L, W> MutableMap<L, W> convert(Function<Entry<K, V>, Entry<L, W>> converter) {
+		final var converted = super.convert(converter);
+		return new MutableMap<>(converted);
+	}
+
+	@Override
 	public MutableList<Entry<K, V>> sort(Comparator<Entry<K, V>> comparator) {
 		final var sorted = (List<Entry<K, V>>) super.sort(comparator);
 		return new MutableList<>(sorted.store);
@@ -228,12 +234,6 @@ public class MutableMap<K, V> extends Map<K, V> {
 	@Override
 	public MutableMap<K, V> iterate(Consumer<Entry<K, V>> operation) {
 		return (MutableMap<K, V>) super.iterate(operation);
-	}
-
-	@Override
-	public <R> MutableList<R> convert(Function<Entry<K, V>, R> converter) {
-		final var converted = super.convert(converter);
-		return new MutableList<>(converted.store);
 	}
 
 	/**

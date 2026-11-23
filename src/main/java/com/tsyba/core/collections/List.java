@@ -178,7 +178,6 @@ public class List<T> implements Sequence<T> {
 		return (List<T>) Sequence.super.enumerate(operation);
 	}
 
-	@Override
 	public <R> List<R> convert(Function<T, R> converter) {
 		final var converted = new MutableList<R>();
 		for (var item : this) {

@@ -9,7 +9,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -34,11 +33,6 @@ public @interface StringCollection {
 
 				@Override
 				public Collection<String> matchAll(Predicate<String> condition) {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public <R> Collection<R> convert(Function<String, R> converter) {
 					throw new UnsupportedOperationException();
 				}
 
