@@ -3,7 +3,6 @@ package com.tsyba.core.collections;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -248,9 +247,6 @@ public interface Sequence<T> extends Collection<T> {
 
 		return this;
 	}
-
-	@Override
-	<R> Sequence<R> convert(Function<T, R> converter);
 
 	/**
 	 * Returns an {@link Iterator}, which starts with the item at the specified index.

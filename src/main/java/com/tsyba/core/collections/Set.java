@@ -131,8 +131,8 @@ public class Set<T> implements Collection<T> {
 	/**
 	 * Returns difference (A\B) of this set and the specified one.
 	 * <p>
-	 * A difference of two sets contains items from the first set, except those
-	 * common with the second set.
+	 * A difference of two sets contains items from the first set, except those common
+	 * with the second set.
 	 */
 	public Set<T> subtract(Set<T> set) {
 		final var capacity = getCount() + set.getCount();
@@ -214,7 +214,12 @@ public class Set<T> implements Collection<T> {
 		return (Set<T>) Collection.super.iterate(operation);
 	}
 
-	@Override
+	/**
+	 * Returns items of this set, converted by the specified {@link Function}.
+	 * <p>
+	 * Ignores the returned value when the specified {@link Function} returns
+	 * {@code null}.
+	 */
 	public <R> Set<R> convert(Function<T, R> converter) {
 		final var itemCount = getCount();
 		final var store = new RobinHoodHashStore<R>(itemCount);

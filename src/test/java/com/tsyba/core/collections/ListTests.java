@@ -537,8 +537,8 @@ class ListTests {
 			final var returned = items.enumerate(enumerated::put);
 
 			final var expected2 = new HashMap<Integer, String>();
-			expected.iterate((key, value) ->
-				expected2.put(Integer.parseInt(key), value));
+			expected.iterate((entry) ->
+				expected2.put(Integer.parseInt(entry.key), entry.value));
 
 			assertSame(items, returned,
 				format("%s.enumerate(BiConsumer<Integer, T>)", items));

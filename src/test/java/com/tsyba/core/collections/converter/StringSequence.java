@@ -11,7 +11,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -66,11 +65,6 @@ public @interface StringSequence {
 
 				@Override
 				public Sequence<String> reverse() {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public <R> Sequence<R> convert(Function<String, R> converter) {
 					throw new UnsupportedOperationException();
 				}
 

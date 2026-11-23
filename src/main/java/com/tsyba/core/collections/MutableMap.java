@@ -1,25 +1,23 @@
 package com.tsyba.core.collections;
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
+import java.util.Comparator;
+import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
+/**
+ * A mutable, unordered {@link Collection} of key/value pairs, which provides efficient
+ * value look-up, given a key.
+ */
 public class MutableMap<K, V> extends Map<K, V> {
 	private static final int minimumCapacity = 64;
-
-	MutableMap(RobinHoodHashStore<Entry<K, V>> store) {
-		super(store);
-	}
-
-	MutableMap(Set<Entry<K, V>> store) {
-		super(store.store);
-	}
 
 	/**
 	 * Creates a map with the specified entries.
 	 * <p>
-	 * Ignores any {@code null} values among the specified entries, as well as entries
-	 * with {@code} null keys or values.
+	 * Ignores any {@code null} entries among the specified ones, as well as entries with
+	 * {@code null} keys or values.
 	 * <p>
 	 * When the specified entries contain repeated keys, only the last entry with such key
 	 * ends up in the map.
@@ -53,13 +51,12 @@ public class MutableMap<K, V> extends Map<K, V> {
 	/**
 	 * Returns value for the specified key in this map.
 	 * <p>
-	 * When this map contains no entry with the specified key, <em>inserts an entry with
-	 * the specified key and value into this map</em> and returns the specified value.
+	 * When this map contains no entry with the specified key, inserts an entry with the
+	 * specified key and backup value into this map and returns the specified backup
+	 * value.
 	 * <p>
-	 * When the specified key is {@code null} does not insert any entry, but returns the
-	 * specified value, even when it's {@code null}. When the specified value is
-	 * {@code null} and this map contains no entry with the specified key, does not insert
-	 * any entry and returns {@code null}.
+	 * Inserts nothing when either the specified key or the specified backup value is
+	 * {@code null}.
 	 */
 	public V get(K key, V backup) {
 		return get(key)
@@ -110,7 +107,7 @@ public class MutableMap<K, V> extends Map<K, V> {
 	 * When this and the specified maps contain entries with the same key, calls the
 	 * specified {@link TriFunction} for each such entry, and replaces its value in this
 	 * map with a value returned from the specified {@link TriFunction}. The function is
-	 * called with the key, a value from this, and a value from the specified maps.
+	 * called with the key, a value from this map, and a value from the specified map.
 	 * <p>
 	 * When the specified {@link TriFunction} returns {@code null}, ignores the returned
 	 * value and preserves the original value of an entry in this map.
@@ -137,9 +134,9 @@ public class MutableMap<K, V> extends Map<K, V> {
 	}
 
 	/**
-	 * Removes an entry with the specified key from this map.
+	 * Removes an entry with the specified key from this map, if present.
 	 * <p>
-	 * Does nothing when this map contains no entry with the specified key.
+	 * Does nothing when the specified key is {@code null}.
 	 *
 	 * @return itself
 	 */
@@ -170,43 +167,73 @@ public class MutableMap<K, V> extends Map<K, V> {
 
 	/**
 	 * Removes entries with the specified keys from this map.
+	 * <p>
+	 * Ignores any {@code null}s among the specified keys.
 	 *
 	 * @return itself
 	 */
 	public MutableMap<K, V> remove(Collection<K> keys) {
 		for (var key : keys) {
-			store.delete(key);
+			remove(key);
 		}
 
 		return this;
 	}
-
 
 	/**
 	 * Removes all entries from this map.
 	 *
 	 * @return itself
 	 */
-	public MutableMap<K, V> clear() {
+	public MutableMap<K, V> removeAll() {
 		this.store = new RobinHoodHashStore<>(minimumCapacity);
 		return this;
 	}
 
 	@Override
-	public MutableMap<K, V> iterate(BiConsumer<K, V> operation) {
-		return (MutableMap<K, V>) super.iterate(operation);
+	public MutableMap<K, V> matchAll(Predicate<Entry<K, V>> condition) {
+		final var matched = super.matchAll(condition);
+		return new MutableMap<>(matched);
 	}
 
 	@Override
-	public Map<K, V> filter(BiPredicate<K, V> condition) {
-		final var filtered = super.filter(condition);
-		return new MutableMap<>(filtered.store);
+	public MutableMap<K, V> getDistinct() {
+		return this;
 	}
 
 	@Override
-	public <L, W> Map<L, W> convert(BiFunction<K, V, Entry<L, W>> converter) {
+	public <L, W> MutableMap<L, W> convert(Function<Entry<K, V>, Entry<L, W>> converter) {
 		final var converted = super.convert(converter);
 		return new MutableMap<>(converted);
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> sort(Comparator<Entry<K, V>> comparator) {
+		final var sorted = (List<Entry<K, V>>) super.sort(comparator);
+		return new MutableList<>(sorted.store);
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> sort() {
+		final var sorted = (List<Entry<K, V>>) super.sort();
+		return new MutableList<>(sorted.store);
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> shuffle(Random random) {
+		final var shuffled = (List<Entry<K, V>>) super.shuffle(random);
+		return new MutableList<>(shuffled.store);
+	}
+
+	@Override
+	public MutableList<Entry<K, V>> shuffle() {
+		final var shuffled = (List<Entry<K, V>>) super.shuffle();
+		return new MutableList<>(shuffled.store);
+	}
+
+	@Override
+	public MutableMap<K, V> iterate(Consumer<Entry<K, V>> operation) {
+		return (MutableMap<K, V>) super.iterate(operation);
 	}
 
 	/**

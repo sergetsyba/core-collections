@@ -418,8 +418,8 @@ class SequenceTests {
 			final var enumerated = new MutableMap<Integer, String>();
 			final var returned = items.enumerate(enumerated::set);
 
-			final var expected2 = expected.convert((key, value) ->
-				new Map.Entry<>(Integer.parseInt(key), value));
+			final var expected2 = expected.convert((entry) ->
+				new Map.Entry<>(Integer.parseInt(entry.key), entry.value));
 
 			assertSame(items, returned,
 				format("%s.enumerate(BiConsumer<Integer, T>)", items));

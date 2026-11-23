@@ -1,6 +1,5 @@
 package com.tsyba.core.collections;
 
-
 import com.tsyba.core.collections.converter.StringArray;
 import com.tsyba.core.collections.converter.StringCollection;
 import com.tsyba.core.collections.converter.StringMap;
@@ -9,22 +8,28 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
+@DisplayName("MutableMap")
 class MutableMapTests {
 	@DisplayName(".get(K, V)")
 	@Nested
-	class TestGet {
+	class GetTests {
 		@DisplayName("when map is not empty")
 		@Tests({
 			"when key is present, does not update entry and returns stored value;" +
 				"[h:E, d:Q, B:s, L:t, U:p]; L; X;" +
 				"[h:E, d:Q, B:s, L:t, U:p]; t",
+			"when key is present and value is null, does not update entry and returns stored value;" +
+				"[h:E, d:Q, B:s, L:t, U:p]; L; null;" +
+				"[h:E, d:Q, B:s, L:t, U:p]; t",
 			"when key is absent, inserts entry and returns argument value;" +
 				"[h:E, d:Q, B:s, L:t, U:p]; G; K;" +
-				"[h:E, d:Q, B:s, L:t, U:p, G:X]; K",
+				"[h:E, d:Q, B:s, L:t, U:p, G:K]; K",
 			"when key is absent and value is null, does not insert entry and returns null;" +
 				"[h:E, d:Q, B:s, L:t, U:p]; G; null;" +
 				"[h:E, d:Q, B:s, L:t, U:p]; null",
@@ -35,7 +40,7 @@ class MutableMapTests {
 				"[h:E, d:Q, B:s, L:t, U:p]; null; null;" +
 				"[h:E, d:Q, B:s, L:t, U:p]; null"
 		})
-		void testNotEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapNotEmpty(@StringMutableMap MutableMap<String, String> entries,
 			String key, String value,
 			@StringMap Map<String, String> expected1, String expected2) {
 			test(entries, key, value, expected1, expected2);
@@ -43,7 +48,7 @@ class MutableMapTests {
 
 		@DisplayName("when map is empty")
 		@Tests({
-			"when key is not null, inserts entry and returns argument value;" +
+			"when key and value are not null, inserts entry and returns argument value;" +
 				"[]; G; X;" +
 				"[G:X]; X",
 			"when key is null, does not insert entry and returns argument value;" +
@@ -52,11 +57,11 @@ class MutableMapTests {
 			"when value is null, does not insert entry and returns null;" +
 				"[]; G; null;" +
 				"[]; null",
-			"when key and value are null, does insert entry and returns null;" +
+			"when key and value are null, does not insert entry and returns null;" +
 				"[]; null; null;" +
 				"[]; null"
 		})
-		void testEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapEmpty(@StringMutableMap MutableMap<String, String> entries,
 			String key, String value,
 			@StringMap Map<String, String> expected1, String expected2) {
 			test(entries, key, value, expected1, expected2);
@@ -79,28 +84,28 @@ class MutableMapTests {
 		@DisplayName("when map is not empty")
 		@Tests({
 			"when key is absent, inserts new entry;" +
-				"[J:v, N:f, R:s]; K; O;" +
-				"[J:v, N:f, R:s, K:O]",
+				"[J:v, N:f, R:s, q:W]; K; O;" +
+				"[J:v, N:f, R:s, q:W, K:O]",
 			"when key is present, replaces stored value;" +
-				"[J:v, N:f, R:s]; N; O;" +
-				"[J:v, N:O, R:s]",
+				"[J:v, N:f, R:s, q:W]; N; O;" +
+				"[J:v, N:O, R:s, q:W]",
 			"when key is null, does nothing;" +
-				"[J:v, N:f, R:s]; null; O;" +
-				"[J:v, N:f, R:s]",
+				"[J:v, N:f, R:s, q:W]; null; O;" +
+				"[J:v, N:f, R:s, q:W]",
 			"when value is null, does nothing;" +
-				"[J:v, N:f, R:s]; K; null;" +
-				"[J:v, N:f, R:s]",
+				"[J:v, N:f, R:s, q:W]; K; null;" +
+				"[J:v, N:f, R:s, q:W]",
 			"when key and value are null, does nothing;" +
-				"[J:v, N:f, R:s]; null; null;" +
-				"[J:v, N:f, R:s]"
+				"[J:v, N:f, R:s, q:W]; null; null;" +
+				"[J:v, N:f, R:s, q:W]"
 		})
-		void testNotEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapNotEmpty(@StringMutableMap MutableMap<String, String> entries,
 			String key, String value,
 			@StringMap Map<String, String> expected) {
 			test(entries, key, value, expected);
 		}
 
-		@DisplayName("when map is not empty")
+		@DisplayName("when map is empty")
 		@Tests({
 			"when key and value are not null, inserts new entry;" +
 				"[]; K; O;" +
@@ -113,9 +118,9 @@ class MutableMapTests {
 				"[]",
 			"when key and value are null, does nothing;" +
 				"[]; null; null;" +
-				"[]",
+				"[]"
 		})
-		void testEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapEmpty(@StringMutableMap MutableMap<String, String> entries,
 			String key, String value,
 			@StringMap Map<String, String> expected) {
 			test(entries, key, value, expected);
@@ -134,7 +139,7 @@ class MutableMapTests {
 
 	@DisplayName(".add(Map<K, V>)")
 	@Nested
-	class TestAddMap {
+	class AddMapTests {
 		@DisplayName("when map is not empty")
 		@Tests({
 			"when all keys are absent, inserts new entries;" +
@@ -150,7 +155,7 @@ class MutableMapTests {
 				"[h:E, c:S, a:Q, K:n]; [];" +
 				"[h:E, c:S, a:Q, K:n]"
 		})
-		void testNotEmpty(@StringMutableMap MutableMap<String, String> entries1,
+		void testMapNotEmpty(@StringMutableMap MutableMap<String, String> entries1,
 			@StringMap Map<String, String> entries2,
 			@StringMap Map<String, String> expected) {
 			test(entries1, entries2, expected);
@@ -165,7 +170,7 @@ class MutableMapTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringMutableMap MutableMap<String, String> entries1,
+		void testMapEmpty(@StringMutableMap MutableMap<String, String> entries1,
 			@StringMap Map<String, String> entries2,
 			@StringMap Map<String, String> expected) {
 			test(entries1, entries2, expected);
@@ -184,7 +189,7 @@ class MutableMapTests {
 
 	@DisplayName(".add(Map<K, V>, TriFunction<K, V, V, V>)")
 	@Nested
-	class TestAddMapTriFunction {
+	class AddResolverTests {
 		@DisplayName("when map is not empty")
 		@Tests({
 			"when all keys are absent, inserts new entries;" +
@@ -199,14 +204,14 @@ class MutableMapTests {
 			"when all keys are present, replaces stored values with resolved ones;" +
 				"[k:v, E:F, s:d, m:p]; [s:F, E:W, m:Q];" +
 				"[k:v, E:F, s:F, m:Q]",
-			"when all keys are present and values resolve to null, does not replace stores values;" +
+			"when all keys are present and values resolve to null, does not replace stored values;" +
 				"[k:v, E:f, s:d, m:p]; [s:c, E:null, m:null];" +
 				"[k:v, E:f, s:c, m:p]",
 			"when argument map is empty, does nothing;" +
 				"[k:v, E:f, s:d, m:p]; [];" +
 				"[k:v, E:f, s:d, m:p]"
 		})
-		void testNotEmpty(@StringMutableMap MutableMap<String, String> entries1,
+		void testMapNotEmpty(@StringMutableMap MutableMap<String, String> entries1,
 			@StringMap Map<String, String> entries2,
 			@StringMap Map<String, String> expected) {
 			test(entries1, entries2, expected);
@@ -221,7 +226,7 @@ class MutableMapTests {
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringMutableMap MutableMap<String, String> entries1,
+		void testMapEmpty(@StringMutableMap MutableMap<String, String> entries1,
 			@StringMap Map<String, String> entries2,
 			@StringMap Map<String, String> expected) {
 			test(entries1, entries2, expected);
@@ -239,9 +244,9 @@ class MutableMapTests {
 			});
 
 			assertSame(entries1, returned,
-				format("%s.add(%s, func)", entries1, entries2));
+				format("%s.add(%s, TriFunction<K, V, V, V>)", entries1, entries2));
 			assertEquals(expected, entries1,
-				format("%s.add(%s, func)", entries1, entries2));
+				format("%s.add(%s, TriFunction<K, V, V, V>)", entries1, entries2));
 		}
 	}
 
@@ -253,14 +258,14 @@ class MutableMapTests {
 			"when key is present, removes its entry;" +
 				"[t:E, v:s, W:a, k:G]; W;" +
 				"[t:E, v:s, k:G]",
-			"when key is absent, does not nothing;" +
+			"when key is absent, does nothing;" +
 				"[t:E, v:s, W:a, k:G]; E;" +
 				"[t:E, v:s, W:a, k:G]",
 			"when key is null, does nothing;" +
 				"[t:E, v:s, W:a, k:G]; null;" +
 				"[t:E, v:s, W:a, k:G]"
 		})
-		void testNotEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapNotEmpty(@StringMutableMap MutableMap<String, String> entries,
 			String key, @StringMap Map<String, String> expected) {
 			test(entries, key, expected);
 		}
@@ -274,7 +279,7 @@ class MutableMapTests {
 				"[]; null;" +
 				"[]"
 		})
-		void testEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapEmpty(@StringMutableMap MutableMap<String, String> entries,
 			String key, @StringMap Map<String, String> expected) {
 			test(entries, key, expected);
 		}
@@ -290,8 +295,8 @@ class MutableMapTests {
 		}
 	}
 
-	@Nested
 	@DisplayName(".remove(K...)")
+	@Nested
 	class RemoveVarargsTests {
 		@DisplayName("when map is not empty")
 		@Tests({
@@ -301,20 +306,20 @@ class MutableMapTests {
 			"when some keys are present, removes present entries;" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, k, n, Q];" +
 				"[h:e, l:p, L:g, m:e]",
-			"when all entries are absent, does nothing;" +
+			"when all keys are absent, does nothing;" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, K, n, q];" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]",
 			"when some keys are null, removes non-null present entries;" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [o, null, null, k, Q];" +
 				"[h:e, l:p, L:g, m:e]",
 			"when all keys are null, does nothing;" +
-				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [null, null, null];" +
+				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [null, null, null, null];" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]",
 			"when argument array is empty, does nothing;" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]; [];" +
 				"[h:e, Q:c, k:R, l:p, L:g, m:e]"
 		})
-		void testNotEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapNotEmpty(@StringMutableMap MutableMap<String, String> entries,
 			@StringArray String[] keys, @StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
 		}
@@ -328,13 +333,13 @@ class MutableMapTests {
 				"[]; [j, null, null, K, s];" +
 				"[]",
 			"when all keys are null, does nothing;" +
-				"[]; [null, null, null];" +
+				"[]; [null, null, null, null];" +
 				"[]",
 			"when argument array is empty, does nothing;" +
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapEmpty(@StringMutableMap MutableMap<String, String> entries,
 			@StringArray String[] keys, @StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
 		}
@@ -358,7 +363,7 @@ class MutableMapTests {
 		@DisplayName("when map is not empty")
 		@Tests({
 			"when all keys are present, removes present entries;" +
-				"[h:R, b:S, F:s, c:L, P:p]; [P, b, c];" +
+				"[h:R, b:S, F:s, c:L, P:p]; [P, b, c, y:X];" +
 				"[h:R, F:s]",
 			"when some keys are present, removes present entries;" +
 				"[h:R, b:S, F:s, c:L, P:p]; [p, B, c, h];" +
@@ -366,11 +371,17 @@ class MutableMapTests {
 			"when all keys are absent, does nothing;" +
 				"[h:R, b:S, F:s, c:L, P:p]; [H, R, s, C];" +
 				"[h:R, b:S, F:s, c:L, P:p]",
+			"when some keys are null, removes non-null present entries;" +
+				"[h:R, b:S, F:s, c:L, P:p]; [null, B, null, h];" +
+				"[b:S, F:s, c:L, P:p]",
+			"when all keys are null, does nothing;" +
+				"[h:R, b:S, F:s, c:L, P:p]; [null, null, null, null];" +
+				"[h:R, b:S, F:s, c:L, P:p]",
 			"when argument collection is empty, does nothing;" +
 				"[h:R, b:S, F:s, c:L, P:p]; [];" +
 				"[h:R, b:S, F:s, c:L, P:p]"
 		})
-		void testNotEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapNotEmpty(@StringMutableMap MutableMap<String, String> entries,
 			@StringCollection Collection<String> keys,
 			@StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
@@ -381,17 +392,23 @@ class MutableMapTests {
 			"when argument collection is not empty, does nothing;" +
 				"[]; [J, f, e, O, l];" +
 				"[]",
+			"when some keys are null, does nothing;" +
+				"[]; [J, null, e, null, l];" +
+				"[]",
+			"when all keys are null, does nothing;" +
+				"[]; [null, null, null, null];" +
+				"[]",
 			"when argument collection is empty, does nothing;" +
 				"[]; [];" +
 				"[]"
 		})
-		void testEmpty(@StringMutableMap MutableMap<String, String> entries,
+		void testMapEmpty(@StringMutableMap MutableMap<String, String> entries,
 			@StringCollection Collection<String> keys,
 			@StringMap Map<String, String> expected) {
 			test(entries, keys, expected);
 		}
 
-		void test(MutableMap<String, String> entries, Collection<String> keys,
+		private void test(MutableMap<String, String> entries, Collection<String> keys,
 			Map<String, String> expected) {
 
 			final var returned = entries.remove(keys);
@@ -402,88 +419,194 @@ class MutableMapTests {
 		}
 	}
 
-	@DisplayName(".clear()")
-	@Tests({
-		"when map is not empty, removes all entries;" +
-			"[h:R, f:W, k:N, l:S];" +
-			"[]",
-		"when map is empty, does nothing;" +
-			"[];" +
-			"[]"
-	})
-	void testClear(@StringMutableMap MutableMap<String, String> entries,
-		@StringMap Map<String, String> expected) {
+	@DisplayName(".removeAll()")
+	@Nested
+	class RemoveAllTests {
+		@DisplayName("\uD83E\uDDF9")
+		@Tests({
+			"when map is not empty, removes all entries;" +
+				"[h:R, f:W, k:N, l:S];" +
+				"[]",
+			"when map is empty, does nothing;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries,
+			@StringMap Map<String, String> expected) {
 
-		final var returned = entries.clear();
-		assertSame(entries, returned,
-			format("%s.clear()", entries));
-		assertEquals(expected, entries,
-			format("%s.clear()", entries));
+			final var returned = entries.removeAll();
+			assertSame(entries, returned,
+				format("%s.removeAll()", entries));
+			assertEquals(expected, entries,
+				format("%s.removeAll()", entries));
+		}
 	}
 
-	@DisplayName(".iterate(BiConsumer<K, V>)")
-	@Tests({
-		"returns itself;" +
-			"[t:E, g:A, v:K, V:r]"
-	})
-	void testIterate(@StringMutableMap MutableMap<String, String> entries) {
-		@SuppressWarnings("ResultOfMethodCallIgnored")
-		final var returned = entries.iterate((key, value) -> key.toLowerCase());
+	@DisplayName(".matchAll(Predicate<Entry<K, V>>)")
+	@Nested
+	class MatchAllTests {
+		@DisplayName("\uD83C\uDF3C")
+		@Tests({
+			"when map is not empty, returns mutable map;" +
+				"[q:V, W:a, r:Q, T:o, m:U]",
+			"when map is empty, returns empty mutable map;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var matched = entries.matchAll((entry) -> true);
 
-		assertSame(returned, entries,
-			format("%s.iterate(BiConsumer<K, V>)", entries));
+			assertEquals(MutableMap.class, matched.getClass(),
+				format("%s.matchAll(Predicate<Entry<K, V>>)", entries));
+		}
 	}
 
-	@DisplayName(".filter(BiPredicate<K, V>)")
-	@Tests({
-		"returns a mutable map;" +
-			"[f:E, s:q, c:S, x:l]"
-	})
-	void testFilter(@StringMutableMap MutableMap<String, String> entries) {
-		final var filtered = entries.filter((key, value) -> value.isBlank());
-		final var klass = filtered.getClass();
-
-		assertEquals(MutableMap.class, klass,
-			format("%s.filter(BiPredicate<K, V>)", entries));
-		assertNotSame(entries, filtered,
-			format("%s.filter(BiPredicate<K, V>)", entries));
+	@DisplayName(".getDistinct()")
+	@Nested
+	class GetDistinctTests {
+		@DisplayName("\uD83C\uDF40")
+		@Tests({
+			"returns itself;" +
+				"[b:R, 5:x, q:t, 2:p]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var distinct = entries.getDistinct();
+			assertSame(entries, distinct,
+				format("%s.getDistinct()", entries));
+		}
 	}
 
-	@DisplayName(".convert(BiFunction<K, V, Entry<K, V>>)")
-	@Tests({
-		"returns a mutable map;" +
-			"[g:E, r:t, k:c, s:Q]"
-	})
-	void testConvert(@StringMutableMap MutableMap<String, String> entries) {
-		final var converted = entries.convert(Map.Entry::new);
-		final var klass = converted.getClass();
+	@DisplayName(".convert(Function<Entry<K, V>, Entry<L, W>>)")
+	@Nested
+	class ConvertTests {
+		@DisplayName("\uD83E\uDD7A")
+		@Tests({
+			"when map is not empty, returns mutable map;" +
+				"[f:u, n:b, x:k, r:t]",
+			"when map is empty, returns empty mutable map;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var converted = entries.convert(entry -> {
+				return new Map.Entry<>(entry.key, entry.value);
+			});
 
-		assertEquals(MutableMap.class, klass,
-			format("%s.convert(BiFunction<K, V, Entry<K, V>>)", entries));
-		assertNotSame(entries, converted,
-			format("%s.convert(BiFunction<K, V, Entry<K, V>>)", entries));
+			assertEquals(MutableMap.class, converted.getClass(),
+				format("%s.convert(Function<Entry<K, V>, Entry<L, W>>)", entries));
+		}
+	}
+
+	@DisplayName(".sort(Comparator<Entry<K, V>>)")
+	@Nested
+	class SortComparatorTests {
+		@DisplayName("\uD83C\uDFB3")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[k:V, b:E, q:A, m:S]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var sorted = entries.sort((entry1, entry2) -> 0);
+
+			assertEquals(MutableList.class, sorted.getClass(),
+				format("%s.sort(Comparator<Entry<K, V>>)", entries));
+		}
+	}
+
+	@DisplayName(".sort()")
+	@Nested
+	class SortTests {
+		@DisplayName("\uD83C\uDFB6")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[b:R, c:E, l:O, R:s, T:q]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var sorted = entries.sort();
+
+			assertEquals(MutableList.class, sorted.getClass(),
+				format("%s.sort()", entries));
+		}
+	}
+
+	@DisplayName(".shuffle(Random)")
+	@Nested
+	class ShuffleRandomTests {
+		@DisplayName("\uD83C\uDFB2")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[v:K, c:W, y:Q, t:E]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var random = new Random();
+			final var shuffled = entries.shuffle(random);
+
+			assertEquals(MutableList.class, shuffled.getClass(),
+				format("%s.shuffle(Random)", entries));
+		}
+	}
+
+	@DisplayName(".shuffle()")
+	@Nested
+	class ShuffleTests {
+		@DisplayName("\uD83C\uDFAE")
+		@Tests({
+			"when map is not empty, returns mutable list;" +
+				"[n:R, u:B, i:Q, s:E]",
+			"when map is empty, returns empty mutable list;" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var shuffled = entries.shuffle();
+
+			assertEquals(MutableList.class, shuffled.getClass(),
+				format("%s.shuffle()", entries));
+		}
+	}
+
+	@DisplayName(".iterate(Consumer<Entry<K, V>>)")
+	@Nested
+	class IterateTests {
+		@DisplayName("\uD83D\uDC0C")
+		@Tests({
+			"when map is not empty, returns itself;" +
+				"[t:E, g:A, v:K, w:R]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries) {
+			final var returned = entries.iterate((entry) -> {
+			});
+
+			assertSame(entries, returned,
+				format("%s.iterate(Consumer<Entry<K, V>>)", entries));
+		}
 	}
 
 	@DisplayName(".toImmutable()")
-	@Tests({
-		"when map is not empty, returns entries in Map;" +
-			"[g:M, t:Q, c:W, p:K, L:s];" +
-			"[g:M, t:Q, c:W, p:K, L:s]",
-		"when map is empty, returns empty Map;" +
-			"[];" +
-			"[]"
-	})
-	void testToImmutable(@StringMutableMap MutableMap<String, String> entries,
-		@StringMap Map<String, String> expected) {
+	@Nested
+	class ToImmutableTests {
+		@DisplayName("\uD83D\uDD12")
+		@Tests({
+			"when map is not empty, returns entries in immutable map;" +
+				"[g:M, t:Q, c:W, p:K, L:s];" +
+				"[g:M, t:Q, c:W, p:K, L:s]",
+			"when map is empty, returns empty immutable map;" +
+				"[];" +
+				"[]"
+		})
+		void test(@StringMutableMap MutableMap<String, String> entries,
+			@StringMap Map<String, String> expected) {
 
-		final var immutable = entries.toImmutable();
-		final var klass = immutable.getClass();
+			final var immutable = entries.toImmutable();
+			final var klass = immutable.getClass();
 
-		assertEquals(Map.class, klass,
-			format("%s.toImmutable()", entries));
-		assertEquals(expected, entries,
-			format("%s.toImmutable()", entries));
+			assertEquals(Map.class, klass,
+				format("%s.toImmutable()", entries));
+			assertEquals(expected, immutable,
+				format("%s.toImmutable()", entries));
+		}
 	}
 }
-
-// created on Sep 1, 2019

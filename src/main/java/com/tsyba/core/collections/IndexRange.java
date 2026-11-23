@@ -239,7 +239,6 @@ public class IndexRange implements Sequence<Integer> {
 		return new ReverseIndexRange(start, end);
 	}
 
-	@Override
 	public <R> Sequence<R> convert(Function<Integer, R> converter) {
 		final var store = new ContiguousArrayStore(end - start);
 		for (var index : this) {

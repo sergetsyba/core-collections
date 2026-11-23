@@ -24,7 +24,6 @@ public class NonComparableCollection implements Collection<Object> {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public <R> Collection<R> convert(Function<Object, R> converter) {
 		throw new UnsupportedOperationException();
 	}
